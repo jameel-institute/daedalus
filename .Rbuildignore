@@ -21,3 +21,6 @@
 ^\.covrignore$
 ^\.github$
 \.*gcov$
+^_pkgdown\.yml$
+^.*\.Rproj$
+^\.Rproj\.user$
