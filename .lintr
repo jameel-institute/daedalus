@@ -1,7 +1,24 @@
-linters: with_defaults(
-    object_length_linter = NULL,
-    object_usage_linter = NULL,
-    todo_comment_linter = NULL,
-    cyclocomp_linter = NULL
+linters: all_linters(
+    packages = c("lintr"),
+    object_name_linter = NULL,
+    extraction_operator_linter = NULL, # lints auto-generated vignette setup chunks
+    undesirable_function_linter(
+      modify_defaults(
+        default_undesirable_functions,
+        library = NULL # too many false positive in too many files
+      )
     )
-exclusions: list("tests/testthat.R", "R/cpp11.R")
+    )
+exclusions: list(
+    "tests/testthat.R" = list(
+      unused_import_linter = Inf
+    ),
+    "tests" = list(
+      undesirable_function_linter = Inf
+    ),
+    "data-raw" = list(
+      missing_package_linter = Inf,
+      namespace_linter = Inf
+    ),
+    "R/cpp11.R"
+    )
