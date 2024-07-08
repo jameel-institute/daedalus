@@ -1,0 +1,47 @@
+---
+output: github_document
+bibliography: vignettes/resources/references.json
+link-citations: true
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# {{ packagename }}: Optimise economic, social and health trade-offs in a pandemic
+
+<!-- badges: start -->
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![R build status](https://github.com/j-idea/daedalus/workflows/R-CMD-check/badge.svg)](https://github.com/j-idea/daedalus/actions/workflows/R-CMD-check.yaml)
+[![codecov.io](https://codecov.io/github/j-idea/daedalus/coverage.svg?branch=main)](https://codecov.io/github/j-idea/daedalus?branch=main)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![CRAN status](https://www.r-pkg.org/badges/version/daedalus)](https://CRAN.R-project.org/package=daedalus)
+<!-- badges: end -->
+
+_{{ packagename }}_ implements the integrated epidemiological and economic model in @haw2022.
+
+## Installation
+
+You can install the development version of daedalus from [GitHub](https://github.com/) using the _pak_ package.
+
+``` r
+# install.packages("pak")
+pak::pak("j-idea/daedalus")
+```
+
+## Get started
+
+WIP.
+
+## Related projects
+
+WIP.
+
+## References
