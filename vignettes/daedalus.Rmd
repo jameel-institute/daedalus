@@ -1,0 +1,21 @@
+---
+title: "Getting started with DAEDALUS"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with DAEDALUS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(daedalus)
+```
+
+This is a dummy vignette to generate the "Get started" tab on the package website.
