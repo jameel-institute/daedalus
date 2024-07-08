@@ -7,7 +7,7 @@ articles:
   - title: Package vignettes
     navbar: Package vignettes
     # add package vignettes here
-    # contents:
+    contents:
 reference:
  - title: All functions
    desc: All package functions
