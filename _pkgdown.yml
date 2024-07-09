@@ -3,11 +3,6 @@ template:
   bootstrap: 5
 development:
   mode: auto
-articles:
-  - title: Package vignettes
-    navbar: Package vignettes
-    # add package vignettes here
-    contents:
 reference:
  - title: All functions
    desc: All package functions
