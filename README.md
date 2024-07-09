@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# daedalus: Optimise economic, social and health trade-offs in a pandemic
+# daedelus: Optimise economic, social and health trade-offs in a pandemic
 
 <!-- badges: start -->
 
@@ -11,8 +11,6 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![R build
 status](https://github.com/j-idea/daedalus/workflows/R-CMD-check/badge.svg)](https://github.com/j-idea/daedalus/actions/workflows/R-CMD-check.yaml)
 [![codecov.io](https://codecov.io/github/j-idea/daedalus/coverage.svg?branch=main)](https://codecov.io/github/j-idea/daedalus?branch=main)
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/daedalus)](https://CRAN.R-project.org/package=daedalus)
 <!-- badges: end -->
