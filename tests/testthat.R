@@ -6,7 +6,9 @@
 # * https://r-pkgs.org/testing-design.html#sec-tests-files-overview
 # * https://testthat.r-lib.org/articles/special-files.html
 
+# nolint start
 library(testthat)
 library(daedalus)
+# nolint end
 
 test_check("daedalus")
