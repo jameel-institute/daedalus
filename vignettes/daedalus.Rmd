@@ -14,8 +14,4 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(daedalus)
-```
-
 This is a dummy vignette to generate the "Get started" tab on the package website.
