@@ -11,7 +11,8 @@ or
 proof-of-concept.](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
 [![R build
 status](https://github.com/j-idea/daedalus/workflows/R-CMD-check/badge.svg)](https://github.com/j-idea/daedalus/actions/workflows/R-CMD-check.yaml)
-[![codecov.io](https://codecov.io/github/j-idea/daedalus/coverage.svg?branch=main)](https://codecov.io/github/j-idea/daedalus?branch=main)
+[![Codecov test
+coverage](https://codecov.io/gh/j-idea/daedalus/branch/main/graph/badge.svg)](https://app.codecov.io/gh/j-idea/daedalus?branch=main)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/daedalus)](https://CRAN.R-project.org/package=daedalus)
 <!-- badges: end -->
