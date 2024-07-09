@@ -28,11 +28,11 @@ _daedalus_ implements the integrated epidemiological and economic model in @haw2
 
 ## Installation
 
-You can install the development version of daedalus from [GitHub](https://github.com/) using the _pak_ package.
+You can install the development version of daedalus from [GitHub](https://github.com/) using the _remotes_ package.
 
 ``` r
-# install.packages("pak")
-pak::pak("j-idea/daedalus")
+# install.packages("remotes")
+remotes::install_github("j-idea/daedalus", upgrade = FALSE)
 ```
 
 ## Get started
