@@ -22,11 +22,11 @@ in Haw et al. ([2022](#ref-haw2022)).
 ## Installation
 
 You can install the development version of daedalus from
-[GitHub](https://github.com/) using the *pak* package.
+[GitHub](https://github.com/) using the *remotes* package.
 
 ``` r
-# install.packages("pak")
-pak::pak("j-idea/daedalus")
+# install.packages("remotes")
+remotes::install_github("j-idea/daedalus", upgrade = FALSE)
 ```
 
 ## Get started
@@ -39,10 +39,9 @@ WIP.
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
+<div id="refs" class="references hanging-indent">
 
-<div id="ref-haw2022" class="csl-entry">
+<div id="ref-haw2022">
 
 Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo
 Pianella, Robert Johnson, Sumali Bajaj, et al. 2022. “Optimizing Social
