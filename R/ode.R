@@ -10,9 +10,31 @@
 #' May be a matrix to allow for multiple age groups. See [daedalus()] for an
 #' explanation of the epidemiological compartments.
 #' @param parameters List for the parameters used in the simulation. See
-#' [default_parameters()] for a list of parameters used in development.
+#' [default_parameters()] for a list of parameters used in the user-facing model
+#' function [daedalus()].
 #' @return A list with a single numeric vector of the same size as `state`,
 #' suitable as output for \pkg{deSolve} functions such as [deSolve::lsoda()].
+#' @details
+#'
+#' # Details: DAEDALUS model
+#'
+#' This section is a work in progress, and describes the DAEDALUS model in
+#' brief.
+#'
+#' The model is age-stratified, supports heterogeneity in social contacts
+#' between age groups, and currently supports four age groups.
+#'
+#' ## Epidemiological model
+#'
+#' The model has the following epidemiological compartments: susceptible
+#' (\eqn{S}), exposed (\eqn{E}), infectious and symptomatic (\eqn{I_s}),
+#' infectious asymptomatic (\eqn{I_a}), hospitalised (\eqn{H}), recovered
+#' (\eqn{R}), and dead (\eqn{D}).
+#'
+#' The model currently allows only uniform parameters for transitions between
+#' compartments. Group specific parameters are expected to be supported in
+#' future.
+#'
 #' @keywords internal
 .daedalus_ode <- function(t, state, parameters) {
   # prepare initial conditions
