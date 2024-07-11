@@ -9,6 +9,9 @@ exclusions: list(
     "tests" = list(
       undesirable_function_linter = Inf
     ),
+    "vignettes" = list(
+      undesirable_function_linter = Inf
+    ),
     "data-raw" = list(
       missing_package_linter = Inf,
       namespace_linter = Inf
