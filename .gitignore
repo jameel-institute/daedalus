@@ -15,3 +15,4 @@ docs
 .valgrind_ignore
 inst/doc
 pkgdown
+scratch.R

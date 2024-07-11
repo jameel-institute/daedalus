@@ -25,3 +25,4 @@
 ^\.Rproj\.user$
 ^CITATION\.cff$
 ^codecov\.yml$
+^scratch.R
