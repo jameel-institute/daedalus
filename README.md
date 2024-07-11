@@ -30,9 +30,77 @@ You can install the development version of daedalus from
 remotes::install_github("j-idea/daedalus", upgrade = FALSE)
 ```
 
-## Get started
+## Quick start
 
-WIP.
+``` r
+library(daedalus)
+```
+
+### Prepare contact matrix and initial conditions
+
+``` r
+polymod <- socialmixr::polymod
+# suppress messages that clog up test output
+suppressMessages(
+  contact_data <- socialmixr::contact_matrix(
+    polymod,
+    countries = "United Kingdom",
+    age.limits = c(0, 5, 20, 65),
+    symmetric = TRUE
+  )
+)
+
+# get demography vector
+demography <- contact_data[["demography"]][["population"]]
+
+# prepare contact matrix
+contact_matrix <- t(contact_data[["matrix"]]) / demography
+
+# initial state: one in every 1 million is infected
+initial_i <- 1e-6
+initial_state <- c(
+  S = 1.0 - initial_i, E = 0.0,
+  Is = initial_i, Ia = 0.0,
+  H = 0.0, R = 0, D = 0
+)
+
+# build for all age groups
+initial_state <- rbind(
+  initial_state,
+  initial_state,
+  initial_state,
+  initial_state
+)
+
+# multiply by demography vector for absolute values
+initial_state <- initial_state * demography
+```
+
+### Run model
+
+The model runs for 100 timesteps (assumed to be days) by default.
+
+``` r
+output <- daedalus(
+  initial_state,
+  parameters = default_parameters(contact_matrix = contact_matrix)
+)
+```
+
+Get the data in long or ‘tidy’ format using `prepare_output()`.
+
+``` r
+data <- prepare_output(output)
+
+head(data)
+#>   time age_group compartment   value
+#> 1    1       0-4 susceptible 3453667
+#> 2    2       0-4 susceptible 3453661
+#> 3    3       0-4 susceptible 3453654
+#> 4    4       0-4 susceptible 3453643
+#> 5    5       0-4 susceptible 3453626
+#> 6    6       0-4 susceptible 3453599
+```
 
 ## Related projects
 
@@ -40,9 +108,10 @@ WIP.
 
 ## References
 
-<div id="refs" class="references hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
-<div id="ref-haw2022">
+<div id="ref-haw2022" class="csl-entry">
 
 Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo
 Pianella, Robert Johnson, Sumali Bajaj, et al. 2022. “Optimizing Social

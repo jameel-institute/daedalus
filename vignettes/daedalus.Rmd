@@ -14,4 +14,81 @@ knitr::opts_chunk$set(
 )
 ```
 
-This is a dummy vignette to generate the "Get started" tab on the package website.
+This vignette shows how to get started with the DAEDALUS model in R.
+
+```{r libraries}
+# load the package
+library(daedalus)
+library(ggplot2)
+```
+
+### Prepare contact matrix and initial conditions
+
+Load a contact matrix for the U.K. from the [_socialmixr_ package](https://cran.r-project.org/package=socialmixr).
+
+```{r setup}
+polymod <- socialmixr::polymod
+# suppress messages that clog up test output
+contact_data <- socialmixr::contact_matrix(
+  polymod,
+  countries = "United Kingdom",
+  age.limits = c(0L, 5L, 20L, 65L),
+  symmetric = TRUE
+)
+
+# get demography vector
+demography <- contact_data[["demography"]][["population"]]
+
+# prepare contact matrix
+contact_matrix <- t(contact_data[["matrix"]]) / demography
+
+# initial state: one in every 1 million is infected
+initial_i <- 1e-6
+initial_state <- c(
+  S = 1.0 - initial_i, E = 0.0,
+  Is = initial_i, Ia = 0.0,
+  H = 0.0, R = 0.0, D = 0.0
+)
+
+# build for all age groups
+initial_state <- rbind(
+  initial_state,
+  initial_state,
+  initial_state,
+  initial_state
+)
+
+# multiply by demography vector for absolute values
+initial_state <- initial_state * demography
+```
+
+### Run model
+
+The model runs for 100 timesteps (assumed to be days) by default.
+
+```{r run_model}
+output <- daedalus(
+  initial_state,
+  parameters = default_parameters(contact_matrix = contact_matrix)
+)
+```
+
+Get the data in long or 'tidy' format using `prepare_output()`.
+
+```{r get_data}
+data <- prepare_output(output)
+
+head(data)
+```
+
+Plot the data to view the epidemic curve.
+
+```{r plot_epidemic}
+ggplot(data) +
+  geom_line(
+    aes(time, value, colour = compartment)
+  ) +
+  facet_wrap(
+    facets = vars(age_group)
+  )
+```
