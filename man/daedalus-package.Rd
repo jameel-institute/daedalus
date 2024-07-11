@@ -2,7 +2,6 @@
 % Please edit documentation in R/daedalus-package.R
 \docType{package}
 \name{daedalus-package}
-\alias{daedalus}
 \alias{daedalus-package}
 \title{daedalus: Optimise economic, social and health trade-offs in a pandemic}
 \description{

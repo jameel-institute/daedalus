@@ -15,9 +15,7 @@ suppressMessages(
 demography <- contact_data[["demography"]][["population"]]
 
 # prepare contact matrix
-contact_matrix <- t(contact_data[["matrix"]])
-contact_matrix <- contact_matrix / max(Re(eigen(contact_matrix)$values))
-contact_matrix <- contact_matrix / demography
+contact_matrix <- t(contact_data[["matrix"]]) / demography
 
 # initial state: one in every 1 million is infected
 initial_i <- 1e-6
