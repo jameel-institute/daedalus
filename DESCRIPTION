@@ -12,9 +12,15 @@ Description: Model and optimise the trade-offs between social and economic
 License: MIT + file LICENSE
 URL: https://github.com/j-idea/daedalus
 BugReports: https://github.com/j-idea/daedalus/issues
+Imports: 
+    checkmate,
+    deSolve,
+    utils
 Suggests:
+    ggplot2,
     knitr,
     rmarkdown,
+    socialmixr,
     spelling,
     testthat (>= 3.0.0)
 VignetteBuilder: 
