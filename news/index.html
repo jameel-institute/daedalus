@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,13 +34,25 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.2" id="daedalus-002">daedalus 0.0.2<a class="anchor" aria-label="anchor" href="#daedalus-002"></a></h2>
+<p>This patch version adds a basic epidemiological model (<a href="https://github.com/j-idea/daedalus/issues/7" class="external-link">#7</a>).</p>
+<ol style="list-style-type: decimal"><li><p>Added the model functions <code><a href="../reference/daedalus.html">daedalus()</a></code> (user-facing) and <code>.daedalus_ode()</code> (internal) to run a simple age-stratified (4 age groups) SEIR-HD epidemiological model taken from <a href="https://github.com/robj411" class="external-link">@robj411</a> <a href="https://github.com/robj411/p2_drivers" class="external-link uri">https://github.com/robj411/p2_drivers</a>,</p></li>
+<li><p>Added default model parameters in <code><a href="../reference/default_parameters.html">default_parameters()</a></code> which correspond roughly to pandemic influenza,</p></li>
+<li><p>Added <code><a href="../reference/prepare_output.html">prepare_output()</a></code> to prepare <code><a href="../reference/daedalus.html">daedalus()</a></code> output,</p></li>
+<li><p>Added tests for all functions,</p></li>
+<li><p>Updated the package infrastructure: <code>DESCRIPTION</code>, <code>NAMESPACE</code>, <code>WORDLIST</code>, <code>.Rbuildignore</code>, and <code>_pkgdown.yml</code> reference.</p></li>
+<li><p>Disabled the <code>undesirable_function_linter</code> in the vignettes as it flags <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code> calls.</p></li>
+<li><p>Updated the Readme and added content to the ‘Get started’ vignette.</p></li>
+</ol></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.1" id="daedalus-001">daedalus 0.0.1<a class="anchor" aria-label="anchor" href="#daedalus-001"></a></h2>
 <p>Initial package setup including GitHub Actions workflows and code quality checks.</p>
 <ul><li><p>Updated GH Actions workflows for R CMD check (fails on ‘NOTE’) and code test coverage;</p></li>
 <li><p>Added linting, citation update, Readme rendering, and license year update workflows;</p></li>
 <li><p>Added spellchecking and a known words list.</p></li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

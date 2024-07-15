@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,9 +60,88 @@
 
     
     
-<p>This is a dummy vignette to generate the “Get started” tab on the
-package website.</p>
-  </main>
+<p>This vignette shows how to get started with the DAEDALUS model in
+R.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># load the package</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/j-idea/daedalus" class="external-link">daedalus</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="prepare-contact-matrix-and-initial-conditions">Prepare contact matrix and initial conditions<a class="anchor" aria-label="anchor" href="#prepare-contact-matrix-and-initial-conditions"></a>
+</h3>
+<p>Load a contact matrix for the U.K. from the <a href="https://cran.r-project.org/package=socialmixr" class="external-link"><em>socialmixr</em>
+package</a>.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">polymod</span> <span class="op">&lt;-</span> <span class="fu">socialmixr</span><span class="fu">::</span><span class="va"><a href="https://epiforecasts.io/socialmixr/reference/polymod.html" class="external-link">polymod</a></span></span>
+<span><span class="co"># suppress messages that clog up test output</span></span>
+<span><span class="va">contact_data</span> <span class="op">&lt;-</span> <span class="fu">socialmixr</span><span class="fu">::</span><span class="fu"><a href="https://epiforecasts.io/socialmixr/reference/contact_matrix.html" class="external-link">contact_matrix</a></span><span class="op">(</span></span>
+<span>  <span class="va">polymod</span>,</span>
+<span>  countries <span class="op">=</span> <span class="st">"United Kingdom"</span>,</span>
+<span>  age.limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0L</span>, <span class="fl">5L</span>, <span class="fl">20L</span>, <span class="fl">65L</span><span class="op">)</span>,</span>
+<span>  symmetric <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Removing participants that have contacts without age information. To change this behaviour, set the 'missing.contact.age' option</span></span>
+<span></span>
+<span><span class="co"># get demography vector</span></span>
+<span><span class="va">demography</span> <span class="op">&lt;-</span> <span class="va">contact_data</span><span class="op">[[</span><span class="st">"demography"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"population"</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># prepare contact matrix</span></span>
+<span><span class="va">contact_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">contact_data</span><span class="op">[[</span><span class="st">"matrix"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="va">demography</span></span>
+<span></span>
+<span><span class="co"># initial state: one in every 1 million is infected</span></span>
+<span><span class="va">initial_i</span> <span class="op">&lt;-</span> <span class="fl">1e-6</span></span>
+<span><span class="va">initial_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  S <span class="op">=</span> <span class="fl">1.0</span> <span class="op">-</span> <span class="va">initial_i</span>, E <span class="op">=</span> <span class="fl">0.0</span>,</span>
+<span>  Is <span class="op">=</span> <span class="va">initial_i</span>, Ia <span class="op">=</span> <span class="fl">0.0</span>,</span>
+<span>  H <span class="op">=</span> <span class="fl">0.0</span>, R <span class="op">=</span> <span class="fl">0.0</span>, D <span class="op">=</span> <span class="fl">0.0</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># build for all age groups</span></span>
+<span><span class="va">initial_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
+<span>  <span class="va">initial_state</span>,</span>
+<span>  <span class="va">initial_state</span>,</span>
+<span>  <span class="va">initial_state</span>,</span>
+<span>  <span class="va">initial_state</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># multiply by demography vector for absolute values</span></span>
+<span><span class="va">initial_state</span> <span class="op">&lt;-</span> <span class="va">initial_state</span> <span class="op">*</span> <span class="va">demography</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="run-model">Run model<a class="anchor" aria-label="anchor" href="#run-model"></a>
+</h3>
+<p>The model runs for 100 timesteps (assumed to be days) by default.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span></span>
+<span>  <span class="va">initial_state</span>,</span>
+<span>  parameters <span class="op">=</span> <span class="fu"><a href="../reference/default_parameters.html">default_parameters</a></span><span class="op">(</span>contact_matrix <span class="op">=</span> <span class="va">contact_matrix</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Get the data in long or ‘tidy’ format using
+<code><a href="../reference/prepare_output.html">prepare_output()</a></code>.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_output.html">prepare_output</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   time age_group compartment   value</span></span>
+<span><span class="co">#&gt; 1    1       0-4 susceptible 3453667</span></span>
+<span><span class="co">#&gt; 2    2       0-4 susceptible 3453661</span></span>
+<span><span class="co">#&gt; 3    3       0-4 susceptible 3453654</span></span>
+<span><span class="co">#&gt; 4    4       0-4 susceptible 3453643</span></span>
+<span><span class="co">#&gt; 5    5       0-4 susceptible 3453627</span></span>
+<span><span class="co">#&gt; 6    6       0-4 susceptible 3453599</span></span></code></pre></div>
+<p>Plot the data to view the epidemic curve.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">compartment</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span></span>
+<span>    facets <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="daedalus_files/figure-html/plot_epidemic-1.png" width="700"></p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
