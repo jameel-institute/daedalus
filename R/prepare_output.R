@@ -10,31 +10,21 @@ prepare_output <- function(output) {
   # expect S3 type `deSolve`
   checkmate::assert_class(output, c("deSolve", "matrix"))
 
-  n_age_groups <- 4L
-  age_groups <- c("0-4", "5-19", "20-65", "65+")
-  compartments <- c(
-    "susceptible", "exposed", "infect_symp", "infect_asymp",
-    "hospitalised", "recovered", "dead"
-  )
-
   # NOTE: keeping this dependency free for now, easier implementations using
   # `{data.table}` or `{tidyr}` are available
-  #
-  # NOTE: hardcode the transformation from wide-format matrix to long-format
-  # data.frame; assumes four age groups and seven epi compartments
-  times <- unique(output[, "time"])
-  time <- rep(times, times = n_age_groups * length(compartments))
+  times <- output[, "time"]
+  time <- rep(times, times = N_AGE_GROUPS * N_EPI_COMPARTMENTS)
 
-  age_groups <- rep(age_groups, each = length(times))
-  age_groups <- rep(age_groups, times = length(compartments))
+  age_groups <- rep(AGE_GROUPS, each = length(times))
+  age_groups <- rep(age_groups, times = N_EPI_COMPARTMENTS)
 
-  compartments <- rep(compartments, each = n_age_groups * length(times))
+  compartments <- rep(COMPARTMENTS, each = N_AGE_GROUPS * length(times))
 
   data <- data.frame(
     time = time,
     age_group = age_groups,
     compartment = compartments,
-    value = c(output[, -1L])
+    value = c(output[, setdiff(colnames(output), "time")])
   )
 
   # return data
