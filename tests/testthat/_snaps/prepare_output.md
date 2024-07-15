@@ -1,4 +1,4 @@
-# prepare_output: basic expectations
+# prepare_output: basic expectations with re-infections
 
     Code
       head(prepare_output(output), 50L)
@@ -45,13 +45,13 @@
       39    1       65+ hospitalised 0.000000e+00
       40    2       65+ hospitalised 8.659953e-02
       41    1       0-4    recovered 0.000000e+00
-      42    2       0-4    recovered 4.983120e-01
+      42    2       0-4    recovered 4.969522e-01
       43    1      5-19    recovered 0.000000e+00
-      44    2      5-19    recovered 1.740512e+00
+      44    2      5-19    recovered 1.735899e+00
       45    1     20-65    recovered 0.000000e+00
-      46    2     20-65    recovered 5.281094e+00
+      46    2     20-65    recovered 5.266832e+00
       47    1       65+    recovered 0.000000e+00
-      48    2       65+    recovered 1.368431e+00
+      48    2       65+    recovered 1.364661e+00
       49    1       0-4         dead 0.000000e+00
       50    2       0-4         dead 1.604660e-04
 
