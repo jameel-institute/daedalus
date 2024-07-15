@@ -14,8 +14,8 @@ URL: https://github.com/j-idea/daedalus
 BugReports: https://github.com/j-idea/daedalus/issues
 Imports: 
     checkmate,
-    deSolve,
-    utils
+    cli,
+    deSolve
 Suggests:
     ggplot2,
     knitr,
