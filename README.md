@@ -61,7 +61,7 @@ initial_i <- 1e-6
 initial_state <- c(
   S = 1.0 - initial_i, E = 0.0,
   Is = initial_i, Ia = 0.0,
-  H = 0.0, R = 0, D = 0
+  H = 0.0, R = 0.0, D = 0.0
 )
 
 # build for all age groups
@@ -69,7 +69,8 @@ initial_state <- rbind(
   initial_state,
   initial_state,
   initial_state,
-  initial_state
+  initial_state,
+  deparse.level = 0L
 )
 
 # multiply by demography vector for absolute values
@@ -98,7 +99,7 @@ head(data)
 #> 2    2       0-4 susceptible 3453661
 #> 3    3       0-4 susceptible 3453654
 #> 4    4       0-4 susceptible 3453643
-#> 5    5       0-4 susceptible 3453626
+#> 5    5       0-4 susceptible 3453627
 #> 6    6       0-4 susceptible 3453599
 ```
 
