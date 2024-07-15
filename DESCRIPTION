@@ -18,6 +18,7 @@ Imports:
     deSolve
 Suggests:
     ggplot2,
+    glue,
     knitr,
     rmarkdown,
     socialmixr,

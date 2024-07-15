@@ -15,13 +15,45 @@
 daedalus <- function(initial_state, time_end = 300L,
                      parameters = default_parameters()) {
   # NOTE: see constants.R for package constants
-  checkmate::assert_matrix(
+  is_good_matrix <- checkmate::test_matrix(
     initial_state, "numeric",
     nrows = N_AGE_GROUPS, ncols = N_EPI_COMPARTMENTS,
     any.missing = FALSE
   )
-  checkmate::assert_count(time_end, positive = TRUE)
-  checkmate::assert_list(parameters, types = "numeric")
+  if (!is_good_matrix) {
+    cli::cli_abort(
+      c(
+        "Expected `initial_state` to be a numeric matrix with {N_AGE_GROUPS}
+        rows and {N_EPI_COMPARTMENTS} columns with no missing values, but it has
+        {nrow(initial_state)} rows and {ncol(initial_state)} columns.",
+        i = "The number of rows in `initial_state` represents the number of
+        age groups, while the number of columsn represents the number of
+        epidemiological compartments."
+      )
+    )
+  }
+
+  is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
+  if (!is_good_time_end) {
+    cli::cli_abort(
+      "Expected `time_end` to be a single positive number."
+    )
+  }
+  is_numeric_list <- checkmate::test_list(
+    parameters,
+    types = "numeric", any.missing = FALSE, all.missing = FALSE,
+    min.len = length(default_parameters())
+  )
+  if (!is_numeric_list) {
+    cli::cli_abort(
+      c(
+        "Expected `parameters` to be a list with only numeric elements (single
+        numeric values or matrices).",
+        i = "See {.fn daedalus::default_parameters} for allowed parameter names
+        and default values."
+      )
+    )
+  }
 
   data <- deSolve::lsoda(
     y = initial_state, times = seq.int(time_end),
