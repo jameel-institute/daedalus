@@ -1,50 +1,14 @@
 # Tests for prepare_output
-# Prepare some data
-polymod <- socialmixr::polymod
-# suppress messages that clog up test output
-suppressMessages(
-  contact_data <- socialmixr::contact_matrix(
-    polymod,
-    countries = "United Kingdom",
-    age.limits = c(0, 5, 20, 65),
-    symmetric = TRUE
-  )
-)
-
-# get demography vector
-demography <- contact_data[["demography"]][["population"]]
-
-# prepare contact matrix
-contact_matrix <- t(contact_data[["matrix"]]) / demography
-
-# initial state: one in every 1 million is infected
-initial_i <- 1e-6
-initial_state <- c(
-  S = 1.0 - initial_i, E = 0.0,
-  Is = initial_i, Ia = 0.0,
-  H = 0.0, R = 0, D = 0
-)
-
-# build for all age groups
-initial_state <- rbind(
-  initial_state,
-  initial_state,
-  initial_state,
-  initial_state
-) * demography
-
 # define end time
 time_end <- 2L
-n_age_groups <- 4L
-n_compartments <- 7L
 
 # basic output
-output <- daedalus(initial_state,
-  time_end = time_end,
-  parameters = default_parameters(contact_matrix = contact_matrix)
+output <- do.call(
+  daedalus,
+  c(default_inputs(), time = time_end)
 )
 
-test_that("prepare_output: basic expectations", {
+test_that("prepare_output: basic expectations with re-infections", {
   # expect no conditions
   expect_no_condition(
     prepare_output(output)
@@ -55,7 +19,7 @@ test_that("prepare_output: basic expectations", {
   expect_length(data, 4L)
   expect_identical(
     nrow(data),
-    time_end * n_age_groups * n_compartments
+    time_end * N_AGE_GROUPS * N_EPI_COMPARTMENTS
   )
   expect_named(
     data,

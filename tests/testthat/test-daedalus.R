@@ -1,54 +1,13 @@
-# Basic tests for the DAEDALUS model
-# Prepare some data
-polymod <- socialmixr::polymod
-# suppress messages that clog up test output
-suppressMessages(
-  contact_data <- socialmixr::contact_matrix(
-    polymod,
-    countries = "United Kingdom",
-    age.limits = c(0, 5, 20, 65),
-    symmetric = TRUE
-  )
-)
-
-# get demography vector
-demography <- contact_data[["demography"]][["population"]]
-
-# prepare contact matrix
-contact_matrix <- t(contact_data[["matrix"]]) / demography
-
-# initial state: one in every 1 million is infected
-initial_i <- 1e-6
-initial_state <- c(
-  S = 1.0 - initial_i, E = 0.0,
-  Is = initial_i, Ia = 0.0,
-  H = 0.0, R = 0, D = 0
-)
-
-# build for all age groups
-initial_state <- rbind(
-  initial_state,
-  initial_state,
-  initial_state,
-  initial_state
-)
-
-# multiply by demography vector for absolute values
-initial_state <- initial_state * demography
+# Basic tests for DAEDALUS
+initial_state <- default_inputs()[["initial_state"]]
 
 test_that("daedalus: basic expectations", {
   # expect no conditions
   expect_no_condition(
-    daedalus(
-      initial_state,
-      parameters = default_parameters(contact_matrix = contact_matrix)
-    )
+    do.call(daedalus, default_inputs())
   )
 
-  output <- daedalus(
-    initial_state,
-    parameters = default_parameters(contact_matrix = contact_matrix)
-  )
+  output <- do.call(daedalus, default_inputs())
 
   # expect classed output, type double, and non-negative
   expect_s3_class(output, "deSolve")
@@ -65,6 +24,55 @@ test_that("daedalus: basic expectations", {
   )
 })
 
+test_that("daedalus: statistical correctness", {
+  output <- do.call(daedalus, default_inputs())
+
+  # expectations when immunity wanes allowing R -> S
+  # no elegant way of programmatically accessing idx
+  deaths <- output[, (25L:28L) + 1L]
+  expect_true(
+    all(diff(deaths) >= 0.0)
+  )
+  susceptibles <- output[, (1L:4L) + 1L]
+  expect_false(
+    all(diff(susceptibles) <= 0.0)
+  )
+
+  recovered <- output[, (21L:24L) + 1L]
+  expect_false(
+    all(diff(recovered) >= 0.0)
+  )
+  # NOTE: added as a baseline to compare future model structure changes
+  expect_snapshot(
+    head(output, 50L) # checking with immunity waning
+  )
+
+  # expectations when immunity does not wane
+  # - monotonically decreasing susceptibles
+  # - monotonically increasing recovered and deaths
+  no_reinfections <- default_inputs()
+  no_reinfections[["parameters"]][["rho"]] <- 0.0
+
+  output <- do.call(daedalus, no_reinfections)
+  susceptibles <- output[, (1L:4L) + 1L]
+  expect_true(
+    all(diff(susceptibles) <= 0.0)
+  )
+
+  recovered <- output[, (21L:24L) + 1L]
+  expect_true(
+    all(diff(recovered) >= 0.0)
+  )
+
+  deaths <- output[, (25L:28L) + 1L]
+  expect_true(
+    all(diff(deaths) >= 0.0)
+  )
+
+  expect_snapshot(
+    head(output, 10L) # checking without immunity waning allowed
+  )
+})
 
 test_that("daedalus: errors and warnings", {
   # expect errors on poorly specified initial state
@@ -73,12 +81,12 @@ test_that("daedalus: errors and warnings", {
     regexp = "Must be of type 'matrix'"
   )
   expect_error(
-    daedalus(initial_state = matrix("1", 4L, 7L)),
+    daedalus(initial_state = matrix("1", N_AGE_GROUPS, N_EPI_COMPARTMENTS)),
     regexp = "Must store numerics"
   )
 
   expect_error(
-    daedalus(initial_state = initial_state[, -1L]),
+    daedalus(initial_state = initial_state[, -i_S]),
     regexp = "Must have exactly 7 cols"
   )
   expect_error(
