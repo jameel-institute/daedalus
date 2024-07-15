@@ -17,7 +17,8 @@ default_parameters <- function(...) {
     gamma = 1.0 / 7.0,
     eta = 1.0 / 100.0,
     omega = 1.0 / 100.0,
-    contact_matrix = matrix(1.0, 4L, 4L)
+    rho = 1.0 / 180.0,
+    contact_matrix = matrix(1.0, N_AGE_GROUPS, N_AGE_GROUPS)
   )
 
   is_empty_list <- checkmate::test_list(user_params, null.ok = TRUE, len = 0L)

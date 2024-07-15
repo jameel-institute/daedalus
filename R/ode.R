@@ -54,6 +54,7 @@ daedalus_rhs <- function(t, state, parameters) {
   gamma <- parameters[["gamma"]] # single recovery rate for Ia, Is and Hosp.
   eta <- parameters[["eta"]] # hospitalisation rate for symptomatics
   omega <- parameters[["omega"]] # mortality rate for Hosp.
+  rho <- parameters[["rho"]] # waning rate for infection-derived immunity
   cm <- parameters[["contact_matrix"]]
 
   # handle contribution of symptomatic and asymptomatic infections
@@ -65,7 +66,7 @@ daedalus_rhs <- function(t, state, parameters) {
   d_state <- array(0.0, dim = dim(state))
 
   # change in susceptibles
-  d_state[, i_S, ] <- -new_infections
+  d_state[, i_S, ] <- -new_infections + (rho * state[, i_R, ])
 
   # change in exposed
   d_state[, i_E, ] <- new_infections - (sigma * state[, i_E, ])
@@ -83,7 +84,8 @@ daedalus_rhs <- function(t, state, parameters) {
     ((gamma + omega) * state[, i_H, ])
 
   # change in recovered
-  d_state[, i_R, ] <- (gamma * rowSums(state[, c(i_Is, i_Ia, i_H), ]))
+  d_state[, i_R, ] <- (gamma * rowSums(state[, c(i_Is, i_Ia, i_H), ])) -
+    (rho * state[, i_R, ])
 
   # change in dead
   d_state[, i_D, ] <- omega * state[, i_H, ]
