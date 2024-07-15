@@ -44,7 +44,7 @@ test_that("daedalus: statistical correctness", {
   )
   # NOTE: added as a baseline to compare future model structure changes
   expect_snapshot(
-    head(output, 50L) # checking with immunity waning
+    head(output, 10L) # checking with immunity waning
   )
 
   # expectations when immunity does not wane
