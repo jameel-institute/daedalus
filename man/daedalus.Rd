@@ -4,16 +4,16 @@
 \alias{daedalus}
 \title{DAEDALUS model for health, social and economic costs of a pandemic}
 \usage{
-daedalus(initial_state, time_end = 100L, parameters = default_parameters())
+daedalus(initial_state, time_end = 300L, parameters = default_parameters())
 }
 \arguments{
 \item{initial_state}{The initial state of the population as a numeric matrix
 where rows represent age groups and columns represent epidemiological
 compartments.}
 
-\item{time_end}{An integer-like value (e.g. 100) for the number of timesteps
+\item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
-returned for each day. Defaults to 100 days.}
+returned for each day. Defaults to 300 days.}
 
 \item{parameters}{A list of model parameters. See \code{\link[=default_parameters]{default_parameters()}} for
 model defaults.}

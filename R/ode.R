@@ -36,26 +36,17 @@
 #' future.
 #'
 #' @keywords internal
-.daedalus_ode <- function(t, state, parameters) {
-  # prepare initial conditions
-  n_age_groups <- 4L # hard-coded for four age groups
-
-  # compartmental structure summary
-  # nolint start
-  # 1|2| 3| 4|5|6|7
-  # S|E|Is|Ia|H|R|D
-  # nolint end
-
-  # hardcoding the array/tensor dimensions
-  # 4 age groups, 7 epi compartments, single vaccination stratum (unvaccinated)
+daedalus_rhs <- function(t, state, parameters) {
+  # NOTE: see constants.R for compartmental indices
   # NOTE: DAEDALUS includes 3 vaccination strata and this implementation allows
   # for these to be added later
   state <- array(
     state,
-    dim = c(n_age_groups, 7L, 1L)
+    dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_VACCINE_STRATA)
   )
 
-  # NOTE: all parameters are uniform across age groups
+  # NOTE: all rate parameters are uniform across age groups, this may change
+  # in future.
   beta <- parameters[["beta"]] # transmissibility parameter
   sigma <- parameters[["sigma"]] # exposed to infectious
   p_sigma <- parameters[["p_sigma"]] # proportion symptomatic
@@ -63,41 +54,40 @@
   gamma <- parameters[["gamma"]] # single recovery rate for Ia, Is and Hosp.
   eta <- parameters[["eta"]] # hospitalisation rate for symptomatics
   omega <- parameters[["omega"]] # mortality rate for Hosp.
-
-  # contact matrix
   cm <- parameters[["contact_matrix"]]
 
   # handle contribution of symptomatic and asymptomatic infections
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
-  new_infections <- beta * state[, 1L, ] *
-    (cm %*% (state[, 3L, ] + state[, 4L, ] * epsilon))
+  new_infections <- beta * state[, i_S, ] *
+    (cm %*% (state[, i_Is, ] + state[, i_Ia, ] * epsilon))
 
   # create empty array of the dimensions of state
   d_state <- array(0.0, dim = dim(state))
 
   # change in susceptibles
-  d_state[, 1L, ] <- -new_infections
+  d_state[, i_S, ] <- -new_infections
 
   # change in exposed
-  d_state[, 2L, ] <- new_infections - (sigma * state[, 2L, ])
+  d_state[, i_E, ] <- new_infections - (sigma * state[, i_E, ])
 
   # change in infectious symptomatic
-  d_state[, 3L, ] <- (p_sigma * sigma * state[, 2L, ]) -
-    ((gamma + eta) * state[, 3L, ])
+  d_state[, i_Is, ] <- (p_sigma * sigma * state[, i_E, ]) -
+    ((gamma + eta) * state[, i_Is, ])
 
   # change in infectious asymptomatic
-  d_state[, 4L, ] <- (sigma * (1.0 - p_sigma) * state[, 2L, ]) -
-    (gamma * state[, 4L, ])
+  d_state[, i_Ia, ] <- (sigma * (1.0 - p_sigma) * state[, i_E, ]) -
+    (gamma * state[, i_Ia, ])
 
   # change in hospitalised
-  d_state[, 5L, ] <- (eta * state[, 3L, ]) - ((gamma + omega) * state[, 5L, ])
+  d_state[, i_H, ] <- (eta * state[, i_Is, ]) -
+    ((gamma + omega) * state[, i_H, ])
 
   # change in recovered
-  d_state[, 6L, ] <- (gamma * rowSums(state[, 3L:5L, ]))
+  d_state[, i_R, ] <- (gamma * rowSums(state[, c(i_Is, i_Ia, i_H), ]))
 
   # change in dead
-  d_state[, 7L, ] <- omega * state[, 5L, ]
+  d_state[, i_D, ] <- omega * state[, i_H, ]
 
   # return in the same order as state
-  return(list(c(d_state)))
+  list(c(d_state))
 }
