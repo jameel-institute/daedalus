@@ -3,6 +3,9 @@ linters: all_linters(
     extraction_operator_linter = NULL # lints auto-generated vignette setup chunks
     )
 exclusions: list(
+    "R/constants.R" = list(
+      object_name_linter = Inf # prevent uppercase constants being linted
+    ),
     "tests/testthat.R" = list(
       unused_import_linter = Inf
     ),
