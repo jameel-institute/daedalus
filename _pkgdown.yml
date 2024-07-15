@@ -4,15 +4,7 @@ template:
 development:
   mode: auto
 reference:
-  - title: Model function
-    desc: Run the DAEDALUS model
+  - title: All package functions
+    desc: All DAEDALUS functions
     contents:
-    - contains("daedalus")
-  - title: Model parameters
-    desc: Parameters for the DAEDALUS model
-    contents:
-    - contains("parameters")
-  - title: Helper functions
-    desc: Helper functions for the model
-    contents:
-    - prepare_output
+    - starts_with("*")
