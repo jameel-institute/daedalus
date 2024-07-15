@@ -78,49 +78,53 @@ test_that("daedalus: errors and warnings", {
   # expect errors on poorly specified initial state
   expect_error(
     daedalus(initial_state = as.data.frame(initial_state)),
-    regexp = "Must be of type 'matrix'"
+    regexp = "Expected `initial_state` to be a numeric matrix"
   )
   expect_error(
     daedalus(initial_state = matrix("1", N_AGE_GROUPS, N_EPI_COMPARTMENTS)),
-    regexp = "Must store numerics"
+    regexp = "Expected `initial_state` to be a numeric matrix"
   )
 
   expect_error(
     daedalus(initial_state = initial_state[, -i_S]),
-    regexp = "Must have exactly 7 cols"
+    regexp = glue::glue("and {N_EPI_COMPARTMENTS} columns")
   )
   expect_error(
     daedalus(initial_state = initial_state[-1L, ]),
-    regexp = "Must have exactly 4 rows"
+    regexp = glue::glue("with {N_AGE_GROUPS} rows")
   )
 
   initial_state_ <- initial_state
   initial_state_[1L, ] <- NA_real_
   expect_error(
     daedalus(initial_state_),
-    regexp = "Contains missing values"
+    regexp = "(Expected `initial_state`)*(with no missing values)"
   )
 
   # expect errors on poorly specified time_end
   expect_error(
-    daedalus(initial_state, time_end = -1)
+    daedalus(initial_state, time_end = -1),
+    regexp = "Expected `time_end` to be a single positive number."
   )
   expect_error(
-    daedalus(initial_state, time_end = 100.5)
+    daedalus(initial_state, time_end = 100.5),
+    regexp = "Expected `time_end` to be a single positive number."
   )
   expect_error(
-    daedalus(initial_state, time_end = Inf)
+    daedalus(initial_state, time_end = Inf),
+    regexp = "Expected `time_end` to be a single positive number."
   )
 
   # expect errors on poorly specified parameter list
   expect_error(
-    daedalus(initial_state, parameters = "parameters")
+    daedalus(initial_state, parameters = "parameters"),
+    regexp = "Expected `parameters` to be a list with only numeric elements"
   )
   expect_error(
     daedalus(
       initial_state,
       parameters = lapply(default_parameters(), as.character)
     ),
-    regexp = "(May only contain)*(numeric)"
+    regexp = "Expected `parameters` to be a list with only numeric elements"
   )
 })
