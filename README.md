@@ -77,14 +77,51 @@ initial_state <- rbind(
 initial_state <- initial_state * demography
 ```
 
+Prepare the initial state container, a 3D tensor.
+
+Constants `N_AGE_GROUPS`, `N_EPI_COMPARTMENTS`, `N_ECON_SECTORS`,
+`i_NOT_WORKING` and `i_WORKING_AGE` are package constants.
+
+``` r
+# construct state array, all working age individuals are uniformly
+# distributed into economic sectors including non-working
+state <- array(
+  0.0,
+  dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_SECTORS)
+)
+state[, , i_NOT_WORKING] <- initial_state
+state[i_WORKING_AGE, , ] <- matrix(
+  state[i_WORKING_AGE, , i_NOT_WORKING] * 1.0 / N_ECON_SECTORS,
+  nrow = N_EPI_COMPARTMENTS, ncol = N_ECON_SECTORS
+)
+
+# prepare workplace contacts
+cw <- c(0.0, rep(5.0, N_ECON_SECTORS - 1L)) # no work contacts for non-working
+
+# prepare consumer worker contacts
+consumer_contacts_per_sector <- withr::with_seed(
+  0L,
+  stats::runif(N_ECON_SECTORS, min = 5.0, max = 10.0)
+)
+consumer_contacts_per_sector[i_NOT_WORKING] <- 0.0
+cmcw <- matrix(
+  consumer_contacts_per_sector,
+  nrow = N_ECON_SECTORS, ncol = N_AGE_GROUPS
+) * demography / sum(demography)
+```
+
 ### Run model
 
 The model runs for 100 timesteps (assumed to be days) by default.
 
 ``` r
 output <- daedalus(
-  initial_state,
-  parameters = default_parameters(contact_matrix = contact_matrix)
+  state,
+  parameters = default_parameters(
+    contact_matrix = contact_matrix,
+    contacts_workplace = cw,
+    contacts_consumer_worker = cmcw
+  )
 )
 ```
 
@@ -94,13 +131,13 @@ Get the data in long or ‘tidy’ format using `prepare_output()`.
 data <- prepare_output(output)
 
 head(data)
-#>   time age_group compartment   value
-#> 1    1       0-4 susceptible 3453667
-#> 2    2       0-4 susceptible 3453661
-#> 3    3       0-4 susceptible 3453654
-#> 4    4       0-4 susceptible 3453643
-#> 5    5       0-4 susceptible 3453627
-#> 6    6       0-4 susceptible 3453599
+#>   time age_group compartment econ_sector   value
+#> 1    1       0-4 susceptible    sector_1 3453667
+#> 2    2       0-4 susceptible    sector_1 3453664
+#> 3    3       0-4 susceptible    sector_1 3453661
+#> 4    4       0-4 susceptible    sector_1 3453658
+#> 5    5       0-4 susceptible    sector_1 3453654
+#> 6    6       0-4 susceptible    sector_1 3453647
 ```
 
 ## Related projects
@@ -109,10 +146,9 @@ WIP.
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
+<div id="refs" class="references hanging-indent">
 
-<div id="ref-haw2022" class="csl-entry">
+<div id="ref-haw2022">
 
 Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo
 Pianella, Robert Johnson, Sumali Bajaj, et al. 2022. “Optimizing Social
