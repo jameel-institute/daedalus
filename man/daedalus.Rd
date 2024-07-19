@@ -7,9 +7,9 @@
 daedalus(initial_state, time_end = 300L, parameters = default_parameters())
 }
 \arguments{
-\item{initial_state}{The initial state of the population as a numeric matrix
-where rows represent age groups and columns represent epidemiological
-compartments.}
+\item{initial_state}{The initial state of the population as a numeric array
+where rows represent age groups, columns represent epidemiological
+compartments, and layers represent economic sectors.}
 
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
