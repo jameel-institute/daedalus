@@ -16,14 +16,14 @@ test_that("prepare_output: basic expectations with re-infections", {
   # expect data structure
   data <- prepare_output(output)
   expect_s3_class(data, "data.frame")
-  expect_length(data, 4L)
+  expect_length(data, N_OUTPUT_COLS)
   expect_identical(
     nrow(data),
-    time_end * N_AGE_GROUPS * N_EPI_COMPARTMENTS
+    time_end * N_AGE_GROUPS * N_EPI_COMPARTMENTS * N_ECON_SECTORS
   )
   expect_named(
     data,
-    c("time", "age_group", "compartment", "value")
+    c("time", "age_group", "compartment", "econ_sector", "value")
   )
   expect_type(
     data[["time"]], "double"
