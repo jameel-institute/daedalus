@@ -11,10 +11,17 @@ prepare_output(output)
 }
 \value{
 A \verb{<data.frame>} in long or 'tidy' format with the columns
-"time", "age_group", "compartment", and "value", for the age-group specific
-value of the number of individuals in each epidemiological compartment in
-each timestep.
+"time", "age_group", "compartment", "econ_sector", and "value", for the
+age-group specific value of the number of individuals in each economic sector
+and epidemiological compartment in each timestep.
 }
 \description{
 Convert DAEDALUS data into a long-format \verb{<data.frame>}.
+}
+\details{
+There are 45 economic sectors, given by \code{N_ECON_SECTORS}, with the first
+'sector' representing non-working individuals. All age groups that are
+considered non-working are in this first sector (children and retirees),
+while working-age individuals may be distributed flexibly into the various
+economic sectors (including non-working).
 }
