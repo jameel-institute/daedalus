@@ -36,10 +36,40 @@ initial_state <- rbind(
 # multiply by demography vector for absolute values
 initial_state <- initial_state * demography
 
+# construct state array, all working age individuals are uniformly
+# distributed into economic sectors including non-working
+state <- array(
+  0.0,
+  dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_SECTORS)
+)
+state[, , i_NOT_WORKING] <- initial_state
+state[i_WORKING_AGE, , ] <- matrix(
+  state[i_WORKING_AGE, , i_NOT_WORKING] * 1.0 / N_ECON_SECTORS,
+  nrow = N_EPI_COMPARTMENTS, ncol = N_ECON_SECTORS
+)
+
+#### Prepare workplace contacts ####
+cw <- c(0.0, rep(5.0, N_ECON_SECTORS - 1L)) # no work contacts for non-working
+
+#### Prepare consumer worker contacts ####
+consumer_contacts_per_sector <- withr::with_seed(
+  0L,
+  stats::runif(N_ECON_SECTORS, min = 5.0, max = 10.0)
+)
+consumer_contacts_per_sector[i_NOT_WORKING] <- 0.0
+cmcw <- matrix(
+  consumer_contacts_per_sector,
+  nrow = N_ECON_SECTORS, ncol = N_AGE_GROUPS
+) * demography / sum(demography)
+
 # helper function returning inputs for tests
 default_inputs <- function() {
   list(
-    initial_state = initial_state,
-    parameters = default_parameters(contact_matrix = contact_matrix)
+    initial_state = state,
+    parameters = default_parameters(
+      contact_matrix = contact_matrix,
+      contacts_workplace = cw,
+      contacts_consumer_worker = cmcw
+    )
   )
 }
