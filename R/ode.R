@@ -38,11 +38,11 @@
 #' @keywords internal
 daedalus_rhs <- function(t, state, parameters) {
   # NOTE: see constants.R for compartmental indices
-  # NOTE: DAEDALUS includes 3 vaccination strata and this implementation allows
-  # for these to be added later
+  # NOTE: DAEDALUS includes 45 vaccination strata for economic sectors,
+  # and these are represented by the third dimension of the tensor
   state <- array(
     state,
-    dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_VACCINE_STRATA)
+    dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_SECTORS)
   )
 
   # NOTE: all rate parameters are uniform across age groups, this may change
@@ -57,19 +57,57 @@ daedalus_rhs <- function(t, state, parameters) {
   rho <- parameters[["rho"]] # waning rate for infection-derived immunity
   cm <- parameters[["contact_matrix"]]
 
-  # handle contribution of symptomatic and asymptomatic infections
+  # mean contact rate in each sector; contacts ÷ sector population
+  cmw <- parameters[["contacts_workplace"]]
+
+  # NOTE: consumer-worker contacts are known per sector, and are scaled during
+  # pre-processing by the demographic distribution for an assumption of
+  # proportionality with population demography. This may need to change if
+  # epi compartments preventing contacts - hospitalisation and death - have
+  # age-specific entry rates (e.g. older people are hospitalised more).
+  cw <- parameters[["contacts_consumer_worker"]]
+
+  # NOTE: `demography` includes the hospitalised and dead. Should probably be
+  # removed. May not be a major factor as mortality rate * hosp_rate is low.
+  demography <- rowSums(state)
+
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
-  new_infections <- beta * state[, i_S, ] *
+  new_community_infections <- beta * state[, i_S, ] *
     (cm %*% (state[, i_Is, ] + state[, i_Ia, ] * epsilon))
+
+  working_age_infected <- state[i_WORKING_AGE, i_Is, ] +
+    state[i_WORKING_AGE, i_Ia, ] * epsilon
+
+  # NOTE: original DAEDALUS model lumped economic sectors with age strata, here
+  # we use a 3D tensor instead, where the first layer represents the non-working
+  new_workplace_infections <- beta *
+    state[i_WORKING_AGE, i_S, ] *
+    cmw * working_age_infected /
+    colSums(state[i_WORKING_AGE, , ])
+
+  # NOTE: only consumer to worker infections are currently allowed
+  new_comm_work_infections <- beta *
+    state[i_WORKING_AGE, i_S, ] *
+    (
+      cw %*% (
+        (
+          state[, i_Is, i_NOT_WORKING] + state[, i_Ia, i_NOT_WORKING] * epsilon
+        ) / demography
+      )
+    )
 
   # create empty array of the dimensions of state
   d_state <- array(0.0, dim = dim(state))
 
   # change in susceptibles
-  d_state[, i_S, ] <- -new_infections + (rho * state[, i_R, ])
+  d_state[, i_S, ] <- -new_community_infections + (rho * state[, i_R, ])
+  d_state[i_WORKING_AGE, i_S, ] <- d_state[i_WORKING_AGE, i_S, ] -
+    new_workplace_infections - new_comm_work_infections
 
   # change in exposed
-  d_state[, i_E, ] <- new_infections - (sigma * state[, i_E, ])
+  d_state[, i_E, ] <- new_community_infections - (sigma * state[, i_E, ])
+  d_state[i_WORKING_AGE, i_E, ] <- d_state[i_WORKING_AGE, i_E, ] +
+    new_workplace_infections + new_comm_work_infections
 
   # change in infectious symptomatic
   d_state[, i_Is, ] <- (p_sigma * sigma * state[, i_E, ]) -
@@ -84,7 +122,14 @@ daedalus_rhs <- function(t, state, parameters) {
     ((gamma + omega) * state[, i_H, ])
 
   # change in recovered
-  d_state[, i_R, ] <- (gamma * rowSums(state[, c(i_Is, i_Ia, i_H), ])) -
+  # NOTE: rowSums does not accept a `dims` argument, hence `apply()`
+  d_state[, i_R, ] <- (gamma *
+    apply(
+      X = state[, c(i_Is, i_Ia, i_H), ],
+      MARGIN = c(DIM_AGE_GROUPS, DIM_ECON_SECTORS),
+      FUN = sum
+    )
+  ) -
     (rho * state[, i_R, ])
 
   # change in dead
