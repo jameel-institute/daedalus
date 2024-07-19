@@ -18,8 +18,20 @@
 #'
 #' - Age group bins: 0-4 years, 5-19 years, 20-65 years (working age), 65+ years
 #'
+#' - Index of the working-age age groups: 3; see `AGE_GROUPS`
+#'
+#' - Number of economic sectors, including not-in-work: 3
+#'
+#' - Index of individuals not working as a quasi-economic sector: 1
+#'
+#' - Array dimension of age groups: 1
+#'
+#' - Array dimension of epidemiological compartments: 2
+#'
+#' - Array dimension of economic sectors: 3
 #'
 #' @keywords internal constant
+#' @export
 N_AGE_GROUPS <- 4L
 
 #' @name model_constants
@@ -27,6 +39,30 @@ N_VACCINE_STRATA <- 1L
 
 #' @name model_constants
 AGE_GROUPS <- c("0-4", "5-19", "20-65", "65+")
+
+#' @name model_constants
+#' @export
+i_WORKING_AGE <- 3L
+
+#' @name model_constants
+#' @export
+N_ECON_SECTORS <- 45L
+
+#' @name model_constants
+#' @export
+i_NOT_WORKING <- 1L
+
+#' @name model_constants
+DIM_AGE_GROUPS <- 1L
+
+#' @name model_constants
+DIM_EPI_COMPARTMENTS <- 2L
+
+#' @name model_constants
+DIM_ECON_SECTORS <- 3L
+
+#' @name model_constants
+N_OUTPUT_COLS <- 5L
 
 #' @title Epidemiological compartments and indices
 #' @description Names and indices for the epidemiological compartments used in
@@ -73,4 +109,5 @@ i_R <- 6L
 i_D <- 7L
 
 #' @name epi_constants
+#' @export
 N_EPI_COMPARTMENTS <- 7L
