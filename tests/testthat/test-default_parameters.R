@@ -58,4 +58,42 @@ test_that("default_parameters: errors and warnings", {
     ),
     regexp = "Expected user-provided `contact_matrix` to be a square matrix"
   )
+
+  # expectations on the within-sector workplace contacts
+  cw <- rep("1.0", N_ECON_SECTORS)
+  expect_error(
+    default_parameters(contacts_workplace = cw),
+    regexp = "(Expected)*(`contacts_workplace`)*(to be a numeric vector)"
+  )
+  cw <- rep(1.0, N_ECON_SECTORS - 1L)
+  expect_error(
+    default_parameters(contacts_workplace = cw),
+    regexp = "(Expected)*(`contacts_workplace`)*(to be a numeric vector)"
+  )
+  cw <- rep(-1.0, N_ECON_SECTORS)
+  expect_error(
+    default_parameters(contacts_workplace = cw),
+    regexp = "(Expected)*(`contacts_workplace`)*(to be a numeric vector)"
+  )
+
+  # expectations for consumer-worker contacts
+  cmcw <- matrix(
+    "1.0", N_ECON_SECTORS, N_AGE_GROUPS
+  )
+  expect_error(
+    default_parameters(contacts_consumer_worker = cmcw),
+    regexp = "(Expected)*(`contacts_consumer_worker`)*(to be a numeric matrix)"
+  )
+
+  expected_error <- glue::glue(
+    "Expected user-provided `contacts_consumer_worker` to have \\
+    {N_ECON_SECTORS} rows and {N_AGE_GROUPS} columns"
+  )
+  cmcw <- matrix(
+    1.0, N_ECON_SECTORS - 1L, N_AGE_GROUPS - 1L
+  )
+  expect_error(
+    default_parameters(contacts_consumer_worker = cmcw),
+    regexp = expected_error
+  )
 })

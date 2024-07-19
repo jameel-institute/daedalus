@@ -10,7 +10,8 @@ default_parameters(...)
 \item{...}{User-specified values to replace default parameter values.}
 }
 \description{
-Default parameters for DAEDALUS
+Useful defaults for the DAEDALUS model for use during
+development.
 }
 \examples{
 default_parameters(beta = 1.5 / 7.0)
