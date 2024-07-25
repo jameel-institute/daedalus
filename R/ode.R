@@ -67,6 +67,9 @@ daedalus_rhs <- function(t, state, parameters) {
   # age-specific entry rates (e.g. older people are hospitalised more).
   cw <- parameters[["contacts_consumer_worker"]]
 
+  # NOTE: worker contacts between sectors
+  cm_ww <- parameters[["contacts_between_sectors"]]
+
   # NOTE: `demography` includes the hospitalised and dead. Should probably be
   # removed. May not be a major factor as mortality rate * hosp_rate is low.
   demography <- rowSums(state)
@@ -82,7 +85,7 @@ daedalus_rhs <- function(t, state, parameters) {
   # we use a 3D tensor instead, where the first layer represents the non-working
   new_workplace_infections <- beta *
     state[i_WORKING_AGE, i_S, -i_NOT_WORKING] *
-    cmw * workplace_infected /
+    ((cmw * workplace_infected) + c(workplace_infected %*% cm_ww)) /
     colSums(state[i_WORKING_AGE, , -i_NOT_WORKING])
 
   # NOTE: only consumer to worker infections are currently allowed

@@ -16,6 +16,11 @@ default_parameters <- function(...) {
   # NOTE: default assumption is uniformly distributed contacts
   cmcw <- matrix(1.0, N_ECON_SECTORS, N_AGE_GROUPS)
 
+  # NOTE: dummy CM for between-sector contacts
+  # NOTE: if setting non-zero values, set diagonal = 0.0, captured by cmw;
+  # also set row 1 and col 1 = 0.0 as non-working
+  cm_ww <- matrix(0.0, nrow = N_ECON_SECTORS, ncol = N_ECON_SECTORS)
+
   # NOTE: these are arbitrary values roughly equivalent to
   # pandemic influenza, with R0 = 1.3, infectious period = 7 days
   # pre-infectious period = 3 days
@@ -30,7 +35,8 @@ default_parameters <- function(...) {
     rho = 1.0 / 180.0,
     contact_matrix = contact_matrix,
     contacts_workplace = cmw,
-    contacts_consumer_worker = cmcw
+    contacts_consumer_worker = cmcw,
+    contacts_between_sectors = cm_ww
   )
 
   is_empty_list <- checkmate::test_list(user_params, null.ok = TRUE, len = 0L)
@@ -134,6 +140,55 @@ default_parameters <- function(...) {
             i = "The number of rows corresponds to the number of economic
             sectors, and the number of colums to the number of demographic
             groups."
+          )
+        )
+      }
+    }
+
+    if ("contacts_between_sectors" %in% names(user_params)) {
+      is_good_cm_ww <- checkmate::test_matrix(
+        user_params[["contacts_between_sectors"]],
+        mode = "numeric", any.missing = FALSE
+      ) && checkmate::test_numeric(
+        user_params[["contacts_between_sectors"]],
+        lower = 0.0, finite = TRUE
+      )
+
+      is_good_cm_ww_dims <- checkmate::test_matrix(
+        user_params[["contacts_between_sectors"]],
+        nrows = N_ECON_SECTORS, ncols = N_ECON_SECTORS
+      )
+
+      is_zero_diagonal <- all(
+        diag(user_params[["contacts_between_sectors"]]) == 0.0
+      )
+
+      if (!is_good_cm_ww) {
+        cli::cli_abort(
+          "Expected user-provided `contacts_between_sectors` to be a numeric
+          matrix with no missing elements and with all elements finite and >=
+          0.0."
+        )
+      }
+      if (!is_good_cm_ww_dims) {
+        cli::cli_abort(
+          c(
+            "Expected user-provided `contacts_between_sectors` to be a square
+            numeric matrix with {N_ECON_SECTORS} rows and columns, but it has
+            {nrow(user_params[['contacts_consumer_worker']])} rows and
+            {ncol(user_params[['contacts_consumer_worker']])} columns.",
+            i = "The number of rows and columns corresponds to the number of
+            economic sectors."
+          )
+        )
+      }
+      if (!is_zero_diagonal) {
+        cli::cli_abort(
+          c(
+            "Expected user-provided `contacts_between_sectors` to be a hollow
+            matrix whose diagonal entries are all zero.",
+            i = "The diagonal represents worker-to-worker contacts within
+            economic sectors, and should be passed as `contacts_workplace`."
           )
         )
       }

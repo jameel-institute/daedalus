@@ -92,6 +92,8 @@ cmcw <- matrix(
 ) * demography / sum(demography)
 ```
 
+Note that the model allows for worker-to-worker contacts to be passed to `default_parameters()` as the named argument `"contacts_between_sectors"`, but the default behaviour is to assume there are no contacts between sectors.
+
 ### Run model
 
 The model runs for 100 timesteps (assumed to be days) by default.
