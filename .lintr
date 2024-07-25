@@ -3,6 +3,9 @@ linters: all_linters(
     extraction_operator_linter = NULL # lints auto-generated vignette setup chunks
     )
 exclusions: list(
+    "R/parameters.R" = list(
+      cyclocomp_linter = Inf # due to multiple if-statements in input checking
+    ),
     "R/constants.R" = list(
       object_name_linter = Inf # prevent uppercase constants being linted
     ),
