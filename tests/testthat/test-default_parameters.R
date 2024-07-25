@@ -96,4 +96,26 @@ test_that("default_parameters: errors and warnings", {
     default_parameters(contacts_consumer_worker = cmcw),
     regexp = expected_error
   )
+
+  # expectations for worker-worker contacts betweens sectors
+  cm_ww <- matrix("1.0", N_ECON_SECTORS, N_ECON_SECTORS)
+  expect_error(
+    default_parameters(contacts_between_sectors = cm_ww),
+    regexp = "(Expected)*(contacts_between_sectors)*(numeric matrix)"
+  )
+
+  cm_ww <- matrix(1.0, N_ECON_SECTORS - 2L, N_ECON_SECTORS - 2L)
+  expected_error <- glue::glue(
+    "Expected user-provided `contacts_between_sectors` to be a square numeric \\
+    matrix with {N_ECON_SECTORS} rows and columns"
+  )
+  expect_error(
+    default_parameters(contacts_between_sectors = cm_ww),
+    regexp = expected_error
+  )
+
+  cm_ww <- matrix(1.0, N_ECON_SECTORS, N_ECON_SECTORS)
+  expect_error(
+    default_parameters(contacts_between_sectors = cm_ww)
+  )
 })
