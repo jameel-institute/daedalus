@@ -73,7 +73,7 @@ daedalus_rhs <- function(t, state, parameters) {
 
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
   new_community_infections <- beta * state[, i_S, ] *
-    (cm %*% (state[, i_Is, ] + state[, i_Ia, ] * epsilon))
+    cm %*% (state[, i_Is, ] + state[, i_Ia, ] * epsilon)
 
   workplace_infected <- state[i_WORKING_AGE, i_Is, -i_NOT_WORKING] +
     state[i_WORKING_AGE, i_Ia, -i_NOT_WORKING] * epsilon
@@ -86,18 +86,15 @@ daedalus_rhs <- function(t, state, parameters) {
     colSums(state[i_WORKING_AGE, , -i_NOT_WORKING])
 
   # NOTE: only consumer to worker infections are currently allowed
-  new_comm_work_infections <- beta *
-    state[i_WORKING_AGE, i_S, -i_NOT_WORKING] *
-    (
-      cw %*% (
-        (
-          state[, i_Is, i_NOT_WORKING] + state[, i_Ia, i_NOT_WORKING] * epsilon
-        ) / demography
-      )
-    )
+  # NOTE: calculate FOI as β * Σ_{j=1}^{j=N} M_{ij} I_j / N_j
+  infected_consumers <- (state[, i_Is, i_NOT_WORKING] +
+    state[, i_Ia, i_NOT_WORKING] * epsilon) / demography
+  foi_cw <- beta * cw %*% infected_consumers
+
+  new_comm_work_infections <- state[i_WORKING_AGE, i_S, -i_NOT_WORKING] * foi_cw
 
   # create empty array of the dimensions of state
-  d_state <- array(0.0, dim = dim(state))
+  d_state <- array(0.0, dim(state))
 
   # change in susceptibles
   d_state[, i_S, ] <- -new_community_infections + (rho * state[, i_R, ])
@@ -106,33 +103,30 @@ daedalus_rhs <- function(t, state, parameters) {
     new_workplace_infections - new_comm_work_infections
 
   # change in exposed
-  d_state[, i_E, ] <- new_community_infections - (sigma * state[, i_E, ])
+  d_state[, i_E, ] <- new_community_infections - sigma * state[, i_E, ]
   d_state[i_WORKING_AGE, i_E, -i_NOT_WORKING] <-
     d_state[i_WORKING_AGE, i_E, -i_NOT_WORKING] +
     new_workplace_infections + new_comm_work_infections
 
   # change in infectious symptomatic
-  d_state[, i_Is, ] <- (p_sigma * sigma * state[, i_E, ]) -
-    ((gamma + eta) * state[, i_Is, ])
+  d_state[, i_Is, ] <- p_sigma * sigma * state[, i_E, ] -
+    (gamma + eta) * state[, i_Is, ]
 
   # change in infectious asymptomatic
-  d_state[, i_Ia, ] <- (sigma * (1.0 - p_sigma) * state[, i_E, ]) -
-    (gamma * state[, i_Ia, ])
+  d_state[, i_Ia, ] <- sigma * (1.0 - p_sigma) * state[, i_E, ] -
+    gamma * state[, i_Ia, ]
 
   # change in hospitalised
-  d_state[, i_H, ] <- (eta * state[, i_Is, ]) -
-    ((gamma + omega) * state[, i_H, ])
+  d_state[, i_H, ] <- eta * state[, i_Is, ] - (gamma + omega) * state[, i_H, ]
 
   # change in recovered
   # NOTE: rowSums does not accept a `dims` argument, hence `apply()`
-  d_state[, i_R, ] <- (gamma *
-    apply(
-      X = state[, c(i_Is, i_Ia, i_H), ],
-      MARGIN = c(DIM_AGE_GROUPS, DIM_ECON_SECTORS),
-      FUN = sum
-    )
-  ) -
-    (rho * state[, i_R, ])
+  all_infected <- apply(
+    state[, c(i_Is, i_Ia, i_H), ],
+    c(DIM_AGE_GROUPS, DIM_ECON_SECTORS),
+    sum
+  )
+  d_state[, i_R, ] <- gamma * all_infected - rho * state[, i_R, ]
 
   # change in dead
   d_state[, i_D, ] <- omega * state[, i_H, ]

@@ -44,7 +44,7 @@ default_parameters <- function(...) {
   if (!is_empty_list) {
     is_each_number <- all(
       vapply(
-        X = user_params[!grepl("^contact", names(user_params), fixed = TRUE)],
+        X = user_params[!startsWith(names(user_params), "contact")],
         FUN = checkmate::test_number,
         FUN.VALUE = logical(1L),
         # NOTE: rate parameter limits allowed may need to be tweaked
