@@ -87,12 +87,12 @@ Constants `N_AGE_GROUPS`, `N_EPI_COMPARTMENTS`, `N_ECON_SECTORS`,
 # distributed into economic sectors including non-working
 state <- array(
   0.0,
-  dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_SECTORS)
+  dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
 )
 state[, , i_NOT_WORKING] <- initial_state
 state[i_WORKING_AGE, , ] <- matrix(
-  state[i_WORKING_AGE, , i_NOT_WORKING] * 1.0 / N_ECON_SECTORS,
-  nrow = N_EPI_COMPARTMENTS, ncol = N_ECON_SECTORS
+  state[i_WORKING_AGE, , i_NOT_WORKING] * 1.0 / N_ECON_STRATA,
+  nrow = N_EPI_COMPARTMENTS, ncol = N_ECON_STRATA
 )
 
 # prepare workplace contacts
@@ -132,12 +132,12 @@ data <- prepare_output(output)
 
 head(data)
 #>   time age_group compartment econ_sector   value
-#> 1    1       0-4 susceptible    sector_1 3453667
-#> 2    2       0-4 susceptible    sector_1 3453664
-#> 3    3       0-4 susceptible    sector_1 3453661
-#> 4    4       0-4 susceptible    sector_1 3453658
-#> 5    5       0-4 susceptible    sector_1 3453654
-#> 6    6       0-4 susceptible    sector_1 3453647
+#> 1    1       0-4 susceptible    sector_0 3453667
+#> 2    2       0-4 susceptible    sector_0 3453664
+#> 3    3       0-4 susceptible    sector_0 3453661
+#> 4    4       0-4 susceptible    sector_0 3453658
+#> 5    5       0-4 susceptible    sector_0 3453654
+#> 6    6       0-4 susceptible    sector_0 3453647
 ```
 
 ## Related projects

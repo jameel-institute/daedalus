@@ -89,11 +89,11 @@ test_that("daedalus: errors and warnings", {
   )
   expect_error(
     daedalus(initial_state = array(1, dim = c(1L, 1L, 3L, 4L))),
-    regexp = "(Expected `initial_state`)*(array)*(with three dimensions)"
+    regexp = "(Expected `initial_state`)*(array)*(with 3 dimensions)"
   )
 
   expected_dims <- glue::glue_collapse(
-    c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_SECTORS),
+    c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA),
     sep = ", ", last = ", and "
   )
   expect_error(

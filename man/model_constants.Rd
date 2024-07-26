@@ -8,6 +8,7 @@
 \alias{AGE_GROUPS}
 \alias{i_WORKING_AGE}
 \alias{N_ECON_SECTORS}
+\alias{N_ECON_STRATA}
 \alias{i_NOT_WORKING}
 \alias{DIM_AGE_GROUPS}
 \alias{DIM_EPI_COMPARTMENTS}
@@ -34,6 +35,8 @@ An object of class \code{integer} of length 1.
 An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 1.
 }
 \usage{
 N_AGE_GROUPS
@@ -45,6 +48,8 @@ AGE_GROUPS
 i_WORKING_AGE
 
 N_ECON_SECTORS
+
+N_ECON_STRATA
 
 i_NOT_WORKING
 
@@ -71,8 +76,12 @@ The DAEDALUS model requires the following values to be fixed.
 \item Number of vaccination strata: 1
 \item Age group bins: 0-4 years, 5-19 years, 20-65 years (working age), 65+ years
 \item Index of the working-age age groups: 3; see \code{AGE_GROUPS}
-\item Number of economic sectors, including not-in-work: 3
-\item Index of individuals not working as a quasi-economic sector: 1
+\item Number of economic sectors: 45
+\item Index of individuals not working as a layer in the 3D state tensor: 1
+\item Number of economic strata: 46; note that this is always one more than the
+number of economic sectors, with the additional stratum for those not in work
+which includes all individuals not of working age, and a proportion of
+working age individuals.
 \item Array dimension of age groups: 1
 \item Array dimension of epidemiological compartments: 2
 \item Array dimension of economic sectors: 3

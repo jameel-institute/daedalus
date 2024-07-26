@@ -9,8 +9,9 @@ default_parameters <- function(...) {
   user_params <- list(...)
 
   contact_matrix <- matrix(1.0, N_AGE_GROUPS, N_AGE_GROUPS)
-  # lower for not in work
-  cmw <- c(0.0, rep(10.0, N_ECON_SECTORS - 1L))
+
+  # workplace contacts within sectors
+  cmw <- rep(10.0, N_ECON_SECTORS - 1L)
 
   # NOTE: default assumption is uniformly distributed contacts
   cmcw <- matrix(

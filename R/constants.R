@@ -20,9 +20,14 @@
 #'
 #' - Index of the working-age age groups: 3; see `AGE_GROUPS`
 #'
-#' - Number of economic sectors, including not-in-work: 3
+#' - Number of economic sectors: 45
 #'
-#' - Index of individuals not working as a quasi-economic sector: 1
+#' - Index of individuals not working as a layer in the 3D state tensor: 1
+#'
+#' - Number of economic strata: 46; note that this is always one more than the
+#' number of economic sectors, with the additional stratum for those not in work
+#' which includes all individuals not of working age, and a proportion of
+#' working age individuals.
 #'
 #' - Array dimension of age groups: 1
 #'
@@ -47,6 +52,10 @@ i_WORKING_AGE <- 3L
 #' @name model_constants
 #' @export
 N_ECON_SECTORS <- 45L
+
+#' @name model_constants
+#' @export
+N_ECON_STRATA <- N_ECON_SECTORS + 1L
 
 #' @name model_constants
 #' @export

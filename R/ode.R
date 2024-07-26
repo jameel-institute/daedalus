@@ -42,7 +42,7 @@ daedalus_rhs <- function(t, state, parameters) {
   # and these are represented by the third dimension of the tensor
   state <- array(
     state,
-    dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_SECTORS)
+    dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
   )
 
   # NOTE: all rate parameters are uniform across age groups, this may change
@@ -75,19 +75,19 @@ daedalus_rhs <- function(t, state, parameters) {
   new_community_infections <- beta * state[, i_S, ] *
     (cm %*% (state[, i_Is, ] + state[, i_Ia, ] * epsilon))
 
-  working_age_infected <- state[i_WORKING_AGE, i_Is, ] +
-    state[i_WORKING_AGE, i_Ia, ] * epsilon
+  workplace_infected <- state[i_WORKING_AGE, i_Is, -i_NOT_WORKING] +
+    state[i_WORKING_AGE, i_Ia, -i_NOT_WORKING] * epsilon
 
   # NOTE: original DAEDALUS model lumped economic sectors with age strata, here
   # we use a 3D tensor instead, where the first layer represents the non-working
   new_workplace_infections <- beta *
-    state[i_WORKING_AGE, i_S, ] *
-    cmw * working_age_infected /
-    colSums(state[i_WORKING_AGE, , ])
+    state[i_WORKING_AGE, i_S, -i_NOT_WORKING] *
+    cmw * workplace_infected /
+    colSums(state[i_WORKING_AGE, , -i_NOT_WORKING])
 
   # NOTE: only consumer to worker infections are currently allowed
   new_comm_work_infections <- beta *
-    state[i_WORKING_AGE, i_S, ] *
+    state[i_WORKING_AGE, i_S, -i_NOT_WORKING] *
     (
       cw %*% (
         (
@@ -101,12 +101,14 @@ daedalus_rhs <- function(t, state, parameters) {
 
   # change in susceptibles
   d_state[, i_S, ] <- -new_community_infections + (rho * state[, i_R, ])
-  d_state[i_WORKING_AGE, i_S, ] <- d_state[i_WORKING_AGE, i_S, ] -
+  d_state[i_WORKING_AGE, i_S, -i_NOT_WORKING] <-
+    d_state[i_WORKING_AGE, i_S, -i_NOT_WORKING] -
     new_workplace_infections - new_comm_work_infections
 
   # change in exposed
   d_state[, i_E, ] <- new_community_infections - (sigma * state[, i_E, ])
-  d_state[i_WORKING_AGE, i_E, ] <- d_state[i_WORKING_AGE, i_E, ] +
+  d_state[i_WORKING_AGE, i_E, -i_NOT_WORKING] <-
+    d_state[i_WORKING_AGE, i_E, -i_NOT_WORKING] +
     new_workplace_infections + new_comm_work_infections
 
   # change in infectious symptomatic
