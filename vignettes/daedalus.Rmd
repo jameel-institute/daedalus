@@ -19,7 +19,6 @@ This vignette shows how to get started with the DAEDALUS model in R.
 ```{r libraries}
 # load the package
 library(daedalus)
-library(dplyr)
 library(ggplot2)
 ```
 
@@ -28,6 +27,7 @@ library(ggplot2)
 Load a contact matrix for the U.K. from the [_socialmixr_ package](https://cran.r-project.org/package=socialmixr).
 
 ```{r setup}
+# NOTE: to be replaced with package data
 polymod <- socialmixr::polymod
 # suppress messages that clog up test output
 contact_data <- socialmixr::contact_matrix(
@@ -71,8 +71,7 @@ Constants `N_AGE_GROUPS`, `N_EPI_COMPARTMENTS`, `N_ECON_SECTORS`, `i_NOT_WORKING
 # construct state array, all working age individuals are uniformly
 # distributed into economic sectors including non-working (hence + 1)
 state <- array(
-  0.0,
-  dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
+  0.0, c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
 )
 state[, , i_NOT_WORKING] <- initial_state
 state[i_WORKING_AGE, , ] <- matrix(
@@ -119,9 +118,9 @@ head(data)
 Plot the data to view the epidemic curve.
 
 ```{r plot_epidemic}
-data |>
-  filter(compartment == "infect_symp") |>
-  ggplot() +
+ggplot(
+  data[data$compartment == "infect_symp", ]
+) +
   geom_line(
     aes(time, value, colour = econ_sector),
     show.legend = FALSE,
