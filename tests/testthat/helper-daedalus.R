@@ -61,14 +61,16 @@ cmcw <- matrix(
   nrow = N_ECON_SECTORS, ncol = N_AGE_GROUPS
 ) * demography / sum(demography)
 
+parameters <- default_parameters(
+  contact_matrix = contact_matrix,
+  contacts_workplace = cw,
+  contacts_consumer_worker = cmcw
+)
+
 # helper function returning inputs for tests
 default_inputs <- function() {
   list(
     initial_state = state,
-    parameters = default_parameters(
-      contact_matrix = contact_matrix,
-      contacts_workplace = cw,
-      contacts_consumer_worker = cmcw
-    )
+    parameters = parameters
   )
 }

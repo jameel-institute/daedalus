@@ -85,8 +85,7 @@ cw <- rep(5.0, N_ECON_SECTORS)
 
 # prepare consumer worker contacts
 consumer_contacts_per_sector <- withr::with_seed(
-  0L,
-  stats::runif(N_ECON_SECTORS, min = 5.0, max = 10.0)
+  0L, runif(N_ECON_SECTORS, min = 5.0, max = 10.0)
 )
 cmcw <- matrix(
   consumer_contacts_per_sector,
