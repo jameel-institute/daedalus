@@ -14,14 +14,7 @@ default_parameters <- function(...) {
   cmw <- rep(10.0, N_ECON_SECTORS - 1L)
 
   # NOTE: default assumption is uniformly distributed contacts
-  cmcw <- matrix(
-    rep(
-      rep(1.0, N_AGE_GROUPS),
-      N_ECON_SECTORS
-    ),
-    nrow = N_ECON_SECTORS,
-    ncol = N_AGE_GROUPS
-  )
+  cmcw <- matrix(1.0, N_ECON_SECTORS, N_AGE_GROUPS)
 
   # NOTE: these are arbitrary values roughly equivalent to
   # pandemic influenza, with R0 = 1.3, infectious period = 7 days
