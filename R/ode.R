@@ -42,7 +42,7 @@ daedalus_rhs <- function(t, state, parameters) {
   # and these are represented by the third dimension of the tensor
   state <- array(
     state,
-    dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
+    c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
   )
 
   # NOTE: all rate parameters are uniform across age groups, this may change
