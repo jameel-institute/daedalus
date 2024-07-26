@@ -50,7 +50,23 @@ specific to the epidemiological model.</p>
 <span></span>
 <span><span class="va">N_VACCINE_STRATA</span></span>
 <span></span>
-<span><span class="va">AGE_GROUPS</span></span></code></pre></div>
+<span><span class="va">AGE_GROUPS</span></span>
+<span></span>
+<span><span class="va">i_WORKING_AGE</span></span>
+<span></span>
+<span><span class="va">N_ECON_SECTORS</span></span>
+<span></span>
+<span><span class="va">N_ECON_STRATA</span></span>
+<span></span>
+<span><span class="va">i_NOT_WORKING</span></span>
+<span></span>
+<span><span class="va">DIM_AGE_GROUPS</span></span>
+<span></span>
+<span><span class="va">DIM_EPI_COMPARTMENTS</span></span>
+<span></span>
+<span><span class="va">DIM_ECON_SECTORS</span></span>
+<span></span>
+<span><span class="va">N_OUTPUT_COLS</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -58,6 +74,14 @@ specific to the epidemiological model.</p>
     <p>An object of class <code>integer</code> of length 1.</p>
 <p>An object of class <code>integer</code> of length 1.</p>
 <p>An object of class <code>character</code> of length 4.</p>
+<p>An object of class <code>integer</code> of length 1.</p>
+<p>An object of class <code>integer</code> of length 1.</p>
+<p>An object of class <code>integer</code> of length 1.</p>
+<p>An object of class <code>integer</code> of length 1.</p>
+<p>An object of class <code>integer</code> of length 1.</p>
+<p>An object of class <code>integer</code> of length 1.</p>
+<p>An object of class <code>integer</code> of length 1.</p>
+<p>An object of class <code>integer</code> of length 1.</p>
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -68,6 +92,16 @@ specific to the epidemiological model.</p>
     <p>The DAEDALUS model requires the following values to be fixed.</p><ul><li><p>Number of age groups: 4</p></li>
 <li><p>Number of vaccination strata: 1</p></li>
 <li><p>Age group bins: 0-4 years, 5-19 years, 20-65 years (working age), 65+ years</p></li>
+<li><p>Index of the working-age age groups: 3; see <code>AGE_GROUPS</code></p></li>
+<li><p>Number of economic sectors: 45</p></li>
+<li><p>Index of individuals not working as a layer in the 3D state tensor: 1</p></li>
+<li><p>Number of economic strata: 46; note that this is always one more than the
+number of economic sectors, with the additional stratum for those not in work
+which includes all individuals not of working age, and a proportion of
+working age individuals.</p></li>
+<li><p>Array dimension of age groups: 1</p></li>
+<li><p>Array dimension of epidemiological compartments: 2</p></li>
+<li><p>Array dimension of economic sectors: 3</p></li>
 </ul></div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
