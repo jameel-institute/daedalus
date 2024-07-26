@@ -29,29 +29,31 @@ daedalus <- function(initial_state, time_end = 300L,
 
   is_good_array <- checkmate::test_array(
     initial_state,
-    d = 3L
+    d = DIM_ECON_SECTORS
   )
   if (!is_good_array) {
     cli::cli_abort(
-      "Expected `initial_state` to be a numeric {.cls {'array'}} with three
-      dimensions, but it has {length(dim(initial_state))} dimensions."
+      "Expected `initial_state` to be a numeric {.cls {'array'}} with
+      {DIM_ECON_SECTORS} dimensions, but it has
+      {length(dim(initial_state))} dimensions."
     )
   }
 
   has_correct_dims <- identical(
     dim(initial_state),
-    c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_SECTORS)
+    c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
   )
   if (!has_correct_dims) {
     cli::cli_abort(
       c(
         "Expected `initial_state` to have dimensions
-        {c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_SECTORS)},
+        {c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)},
         but it has dimensions {dim(initial_state)}.",
         i = "The number of rows in `initial_state` represents the number of
         age groups, the number of columns represents the number of
         epidemiological compartments, and the lenght of the third dimension
-        represents the number of economic sectors."
+        represents the number of economic strata, which is the number of
+        economic sectors, plus one for those not-in-work."
       )
     )
   }

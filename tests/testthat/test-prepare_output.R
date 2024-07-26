@@ -19,7 +19,7 @@ test_that("prepare_output: basic expectations with re-infections", {
   expect_length(data, N_OUTPUT_COLS)
   expect_identical(
     nrow(data),
-    time_end * N_AGE_GROUPS * N_EPI_COMPARTMENTS * N_ECON_SECTORS
+    time_end * N_AGE_GROUPS * N_EPI_COMPARTMENTS * N_ECON_STRATA
   )
   expect_named(
     data,

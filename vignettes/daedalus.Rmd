@@ -69,26 +69,25 @@ Constants `N_AGE_GROUPS`, `N_EPI_COMPARTMENTS`, `N_ECON_SECTORS`, `i_NOT_WORKING
 
 ```{r}
 # construct state array, all working age individuals are uniformly
-# distributed into economic sectors including non-working
+# distributed into economic sectors including non-working (hence + 1)
 state <- array(
   0.0,
-  dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_SECTORS)
+  dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
 )
 state[, , i_NOT_WORKING] <- initial_state
 state[i_WORKING_AGE, , ] <- matrix(
-  state[i_WORKING_AGE, , i_NOT_WORKING] * 1.0 / N_ECON_SECTORS,
-  nrow = N_EPI_COMPARTMENTS, ncol = N_ECON_SECTORS
+  state[i_WORKING_AGE, , i_NOT_WORKING] * 1.0 / (N_ECON_STRATA),
+  nrow = N_EPI_COMPARTMENTS, ncol = N_ECON_STRATA
 )
 
 # prepare workplace contacts
-cw <- c(0.0, rep(5.0, N_ECON_SECTORS - 1L)) # no work contacts for non-working
+cw <- rep(5.0, N_ECON_SECTORS)
 
 # prepare consumer worker contacts
 consumer_contacts_per_sector <- withr::with_seed(
   0L,
   stats::runif(N_ECON_SECTORS, min = 5.0, max = 10.0)
 )
-consumer_contacts_per_sector[i_NOT_WORKING] <- 0.0
 cmcw <- matrix(
   consumer_contacts_per_sector,
   nrow = N_ECON_SECTORS, ncol = N_AGE_GROUPS

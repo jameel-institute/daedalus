@@ -22,17 +22,18 @@ prepare_output <- function(output) {
   # NOTE: keeping this dependency free for now, easier implementations using
   # `{data.table}` or `{tidyr}` are available
   times <- output[, "time"]
-  time <- rep(times, times = N_AGE_GROUPS * N_EPI_COMPARTMENTS * N_ECON_SECTORS)
+  time <- rep(times, times = N_AGE_GROUPS * N_EPI_COMPARTMENTS * N_ECON_STRATA)
 
   age_groups <- rep(AGE_GROUPS, each = length(times))
   age_groups <- rep(age_groups, times = N_EPI_COMPARTMENTS)
-  age_groups <- rep(age_groups, times = N_ECON_SECTORS)
+  age_groups <- rep(age_groups, times = N_ECON_STRATA)
 
   compartments <- rep(COMPARTMENTS, each = N_AGE_GROUPS * length(times))
-  compartments <- rep(compartments, times = N_ECON_SECTORS)
+  compartments <- rep(compartments, times = N_ECON_STRATA)
 
+  # NOTE: sector 0 indicates not-in-work; consider alternatives
   econ_sector <- rep(
-    sprintf("sector_%i", seq.int(N_ECON_SECTORS)),
+    sprintf("sector_%i", seq.int(0L, N_ECON_SECTORS)),
     each = N_AGE_GROUPS * N_EPI_COMPARTMENTS * max(time)
   )
 

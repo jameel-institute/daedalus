@@ -2,6 +2,7 @@
 
 export(N_AGE_GROUPS)
 export(N_ECON_SECTORS)
+export(N_ECON_STRATA)
 export(N_EPI_COMPARTMENTS)
 export(daedalus)
 export(default_parameters)
