@@ -22,91 +22,11 @@ library(daedalus)
 library(ggplot2)
 ```
 
-### Prepare contact matrix and initial conditions
-
-Load a contact matrix for the U.K. from the [_socialmixr_ package](https://cran.r-project.org/package=socialmixr).
-
-```{r setup}
-# NOTE: to be replaced with package data
-polymod <- socialmixr::polymod
-# suppress messages that clog up test output
-contact_data <- socialmixr::contact_matrix(
-  polymod,
-  countries = "United Kingdom",
-  age.limits = c(0L, 5L, 20L, 65L),
-  symmetric = TRUE
-)
-
-# get demography vector
-demography <- contact_data[["demography"]][["population"]]
-
-# prepare contact matrix
-contact_matrix <- t(contact_data[["matrix"]]) / demography
-
-# initial state: one in every 1 million is infected
-initial_i <- 1e-6
-initial_state <- c(
-  S = 1.0 - initial_i, E = 0.0,
-  Is = initial_i, Ia = 0.0,
-  H = 0.0, R = 0.0, D = 0.0
-)
-
-# build for all age groups
-initial_state <- rbind(
-  initial_state,
-  initial_state,
-  initial_state,
-  initial_state
-)
-
-# multiply by demography vector for absolute values
-initial_state <- initial_state * demography
-```
-
-Prepare the initial state container, a 3D tensor.
-
-Constants `N_AGE_GROUPS`, `N_EPI_COMPARTMENTS`, `N_ECON_SECTORS`, `i_NOT_WORKING` and `i_WORKING_AGE` are package constants.
-
-```{r}
-# construct state array, all working age individuals are uniformly
-# distributed into economic sectors including non-working (hence + 1)
-state <- array(
-  0.0, c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
-)
-state[, , i_NOT_WORKING] <- initial_state
-state[i_WORKING_AGE, , ] <- matrix(
-  state[i_WORKING_AGE, , i_NOT_WORKING] * 1.0 / (N_ECON_STRATA),
-  nrow = N_EPI_COMPARTMENTS, ncol = N_ECON_STRATA
-)
-
-# prepare workplace contacts
-cw <- rep(5.0, N_ECON_SECTORS)
-
-# prepare consumer worker contacts
-consumer_contacts_per_sector <- withr::with_seed(
-  0L, runif(N_ECON_SECTORS, min = 5.0, max = 10.0)
-)
-cmcw <- matrix(
-  consumer_contacts_per_sector,
-  nrow = N_ECON_SECTORS, ncol = N_AGE_GROUPS
-) * demography / sum(demography)
-```
-
-Note that the model allows for worker-to-worker contacts to be passed to `default_parameters()` as the named argument `"contacts_between_sectors"`, but the default behaviour is to assume there are no contacts between sectors.
-
-### Run model
-
-The model runs for 100 timesteps (assumed to be days) by default.
+The model runs for 300 timesteps (assumed to be days) by default.
+The `daedalus()` function documentation has more information on the pathogen parameter defaults in the **Details** section.
 
 ```{r run_model}
-output <- daedalus(
-  state,
-  parameters = default_parameters(
-    contact_matrix = contact_matrix,
-    contacts_workplace = cw,
-    contacts_consumer_worker = cmcw
-  )
-)
+output <- daedalus("Canada")
 ```
 
 Get the data in long or 'tidy' format using `prepare_output()`.
@@ -121,7 +41,7 @@ Plot the data to view the epidemic curve.
 
 ```{r plot_epidemic}
 ggplot(
-  data[data$compartment == "infect_symp", ]
+  data[data$compartment == "infect_symp" & data$age_group == "20-65", ]
 ) +
   geom_line(
     aes(time, value, colour = econ_sector),
