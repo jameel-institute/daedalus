@@ -16,8 +16,7 @@ May be a matrix to allow for multiple age groups. See \code{\link[=daedalus]{dae
 explanation of the epidemiological compartments.}
 
 \item{parameters}{List for the parameters used in the simulation. See
-\code{\link[=default_parameters]{default_parameters()}} for a list of parameters used in the user-facing model
-function \code{\link[=daedalus]{daedalus()}}.}
+\code{\link[=daedalus]{daedalus()}} for a list of model parameters.}
 }
 \value{
 A list with a single numeric vector of the same size as \code{state},

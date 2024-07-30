@@ -13,7 +13,7 @@ territory.
 \item{demography}{A four value named vector for the number of individuals
 in each demographic group.}
 \item{contact_matrix}{A 16-element square matrix giving the mean number of
-social contacts between individuals of the four age groups}.
+social contacts between individuals of the four age groups.}
 \item{workers}{A 45-element vector giving the number of individuals in each
 economic sector included in the model.}
 }
