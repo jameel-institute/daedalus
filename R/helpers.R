@@ -12,7 +12,6 @@
 #' with each layer giving the proportion of individuals of each group in each
 #' epidemiological compartment.
 #' @keywords internal
-#' @export
 make_initial_state <- function(country,
                                p_infectious = 1e-6, p_asymptomatic = 0.0) {
   # NOTE: no checks on country as this is tested in top-level fn `daedalus()`
