@@ -3,11 +3,7 @@
 time_end <- 2L
 
 # basic output
-output <- do.call(
-  daedalus,
-  c(default_inputs(), time = time_end)
-)
-
+output <- daedalus("Canada", time_end = time_end)
 test_that("prepare_output: basic expectations with re-infections", {
   # expect no conditions
   expect_no_condition(

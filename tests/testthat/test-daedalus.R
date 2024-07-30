@@ -1,13 +1,11 @@
 # Basic tests for DAEDALUS
-initial_state <- default_inputs()[["initial_state"]]
-
 test_that("daedalus: basic expectations", {
   # expect no conditions
   expect_no_condition(
-    do.call(daedalus, default_inputs())
+    daedalus("Canada")
   )
 
-  output <- do.call(daedalus, default_inputs())
+  output <- daedalus("Canada")
 
   # expect classed output, type double, and non-negative
   expect_s3_class(output, "deSolve")
@@ -25,7 +23,7 @@ test_that("daedalus: basic expectations", {
 })
 
 test_that("daedalus: statistical correctness", {
-  output <- do.call(daedalus, default_inputs())
+  output <- daedalus("Canada")
 
   # expectations when immunity wanes allowing R -> S
   # no elegant way of programmatically accessing idx
@@ -51,10 +49,7 @@ test_that("daedalus: statistical correctness", {
   # expectations when immunity does not wane
   # - monotonically decreasing susceptibles
   # - monotonically increasing recovered and deaths
-  no_reinfections <- default_inputs()
-  no_reinfections[["parameters"]][["rho"]] <- 0.0
-
-  output <- do.call(daedalus, no_reinfections)
+  output <- daedalus("Canada", rho = 0.0)
   susceptibles <- output[, (1L:4L) + 1L]
   expect_true(
     all(diff(susceptibles) <= 0.0)
@@ -78,64 +73,23 @@ test_that("daedalus: statistical correctness", {
 })
 
 test_that("daedalus: errors and warnings", {
-  # expect errors on poorly specified initial state
+  # expect errors on country
   expect_error(
-    daedalus(initial_state = as.data.frame(initial_state)),
-    regexp = "(Expected `initial_state` to be a numeric)*(array)"
-  )
-  expect_error(
-    daedalus(initial_state = matrix("1", N_AGE_GROUPS, N_EPI_COMPARTMENTS)),
-    regexp = "(Expected `initial_state` to be a numeric)*(array)"
-  )
-  expect_error(
-    daedalus(initial_state = array(1, dim = c(1L, 1L, 3L, 4L))),
-    regexp = "(Expected `initial_state`)*(array)*(with 3 dimensions)"
-  )
-
-  expected_dims <- glue::glue_collapse(
-    c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA),
-    sep = ", ", last = ", and "
-  )
-  expect_error(
-    daedalus(initial_state = initial_state[, -i_S, ]),
-    regexp = glue::glue("to have dimensions {expected_dims},")
-  )
-  expect_error(
-    daedalus(initial_state = initial_state[-1L, , ]),
-    regexp = glue::glue("to have dimensions {expected_dims},")
-  )
-
-  initial_state_ <- initial_state
-  initial_state_[1L, , ] <- NA_real_
-  expect_error(
-    daedalus(initial_state_),
-    regexp = "(Expected `initial_state`)*(array)*(with no missing elements)"
+    daedalus("U.K."),
+    regexp = "(Expected `country` to be)*(from among `COUNTRY_NAMES`)"
   )
 
   # expect errors on poorly specified time_end
   expect_error(
-    daedalus(initial_state, time_end = -1),
+    daedalus("Canada", time_end = -1),
     regexp = "Expected `time_end` to be a single positive number."
   )
   expect_error(
-    daedalus(initial_state, time_end = 100.5),
+    daedalus("Canada", time_end = 100.5),
     regexp = "Expected `time_end` to be a single positive number."
   )
   expect_error(
-    daedalus(initial_state, time_end = Inf),
+    daedalus("Canada", time_end = Inf),
     regexp = "Expected `time_end` to be a single positive number."
-  )
-
-  # expect errors on poorly specified parameter list
-  expect_error(
-    daedalus(initial_state, parameters = "parameters"),
-    regexp = "Expected `parameters` to be a list with only numeric elements"
-  )
-  expect_error(
-    daedalus(
-      initial_state,
-      parameters = lapply(default_parameters(), as.character)
-    ),
-    regexp = "Expected `parameters` to be a list with only numeric elements"
   )
 })
