@@ -10,8 +10,7 @@
 #' May be a matrix to allow for multiple age groups. See [daedalus()] for an
 #' explanation of the epidemiological compartments.
 #' @param parameters List for the parameters used in the simulation. See
-#' [default_parameters()] for a list of parameters used in the user-facing model
-#' function [daedalus()].
+#' [daedalus()] for a list of model parameters.
 #' @return A list with a single numeric vector of the same size as `state`,
 #' suitable as output for \pkg{deSolve} functions such as [deSolve::lsoda()].
 #' @details
@@ -72,7 +71,7 @@ daedalus_rhs <- function(t, state, parameters) {
 
   # NOTE: `demography` includes the hospitalised and dead. Should probably be
   # removed. May not be a major factor as mortality rate * hosp_rate is low.
-  demography <- rowSums(state)
+  demography <- parameters[["demography"]]
 
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
   new_community_infections <- beta * state[, i_S, ] *
