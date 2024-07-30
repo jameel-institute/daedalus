@@ -67,3 +67,4 @@ and symptomatic ("infect_symp"), infectious and asymptomatic ("infect_asymp")
 , hospitalised, recovered, and dead.
 }
 \keyword{datasets}
+\keyword{internal}
