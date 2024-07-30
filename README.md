@@ -32,97 +32,31 @@ remotes::install_github("j-idea/daedalus", upgrade = FALSE)
 
 ## Quick start
 
+The model can be run for any country or territory in the `COUNTRY_NAMES`
+list by passing the country name to the function. This automatically
+pulls country-specific demographic and economic data, which is included
+in the package, into the model.
+
+The model runs for 300 timesteps (assumed to be days) by default.
+
 ``` r
 library(daedalus)
+
+# run model for Canada
+output <- daedalus("Canada")
 ```
 
-### Prepare contact matrix and initial conditions
+Users can specify pathogen parameter values as well as change the
+initial conditions by passing arguments to `daedalus()` as `...`. The
+function documentation details which parameters are accepted.
 
 ``` r
-polymod <- socialmixr::polymod
-# suppress messages that clog up test output
-suppressMessages(
-  contact_data <- socialmixr::contact_matrix(
-    polymod,
-    countries = "United Kingdom",
-    age.limits = c(0, 5, 20, 65),
-    symmetric = TRUE
-  )
-)
+# not run
+# e.g. change the transmission rate
+daedalus("Canada", beta = 1.5 / 7.0) # assume R0 of 1.5, 7 days infectious period
 
-# get demography vector
-demography <- contact_data[["demography"]][["population"]]
-
-# prepare contact matrix
-contact_matrix <- t(contact_data[["matrix"]]) / demography
-
-# initial state: one in every 1 million is infected
-initial_i <- 1e-6
-initial_state <- c(
-  S = 1.0 - initial_i, E = 0.0,
-  Is = initial_i, Ia = 0.0,
-  H = 0.0, R = 0.0, D = 0.0
-)
-
-# build for all age groups
-initial_state <- rbind(
-  initial_state,
-  initial_state,
-  initial_state,
-  initial_state,
-  deparse.level = 0L
-)
-
-# multiply by demography vector for absolute values
-initial_state <- initial_state * demography
-```
-
-Prepare the initial state container, a 3D tensor.
-
-Constants `N_AGE_GROUPS`, `N_EPI_COMPARTMENTS`, `N_ECON_SECTORS`,
-`i_NOT_WORKING` and `i_WORKING_AGE` are package constants.
-
-``` r
-# construct state array, all working age individuals are uniformly
-# distributed into economic sectors including non-working
-state <- array(
-  0.0,
-  dim = c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
-)
-state[, , i_NOT_WORKING] <- initial_state
-state[i_WORKING_AGE, , ] <- matrix(
-  state[i_WORKING_AGE, , i_NOT_WORKING] * 1.0 / N_ECON_STRATA,
-  nrow = N_EPI_COMPARTMENTS, ncol = N_ECON_STRATA
-)
-
-# prepare workplace contacts
-cw <- c(0.0, rep(5.0, N_ECON_SECTORS - 1L)) # no work contacts for non-working
-
-# prepare consumer worker contacts
-consumer_contacts_per_sector <- withr::with_seed(
-  0L,
-  stats::runif(N_ECON_SECTORS, min = 5.0, max = 10.0)
-)
-consumer_contacts_per_sector[i_NOT_WORKING] <- 0.0
-cmcw <- matrix(
-  consumer_contacts_per_sector,
-  nrow = N_ECON_SECTORS, ncol = N_AGE_GROUPS
-) * demography / sum(demography)
-```
-
-### Run model
-
-The model runs for 100 timesteps (assumed to be days) by default.
-
-``` r
-output <- daedalus(
-  state,
-  parameters = default_parameters(
-    contact_matrix = contact_matrix,
-    contacts_workplace = cw,
-    contacts_consumer_worker = cmcw
-  )
-)
+# e.g. change the hospitalisation rate
+daedalus("Canada", eta = 1.0 / 1000) # assume 1 in 1000 infectious need hospital
 ```
 
 Get the data in long or ‘tidy’ format using `prepare_output()`.
@@ -132,12 +66,12 @@ data <- prepare_output(output)
 
 head(data)
 #>   time age_group compartment econ_sector   value
-#> 1    1       0-4 susceptible    sector_0 3453667
-#> 2    2       0-4 susceptible    sector_0 3453664
-#> 3    3       0-4 susceptible    sector_0 3453661
-#> 4    4       0-4 susceptible    sector_0 3453658
-#> 5    5       0-4 susceptible    sector_0 3453654
-#> 6    6       0-4 susceptible    sector_0 3453647
+#> 1    1       0-4 susceptible    sector_0 1993130
+#> 2    2       0-4 susceptible    sector_0 1993128
+#> 3    3       0-4 susceptible    sector_0 1993127
+#> 4    4       0-4 susceptible    sector_0 1993125
+#> 5    5       0-4 susceptible    sector_0 1993123
+#> 6    6       0-4 susceptible    sector_0 1993121
 ```
 
 ## Related projects
