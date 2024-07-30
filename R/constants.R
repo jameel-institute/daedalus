@@ -36,7 +36,6 @@
 #' - Array dimension of economic sectors: 3
 #'
 #' @keywords internal constant
-#' @export
 N_AGE_GROUPS <- 4L
 
 #' @name model_constants
@@ -46,19 +45,15 @@ N_VACCINE_STRATA <- 1L
 AGE_GROUPS <- c("0-4", "5-19", "20-65", "65+")
 
 #' @name model_constants
-#' @export
 i_WORKING_AGE <- 3L
 
 #' @name model_constants
-#' @export
 N_ECON_SECTORS <- 45L
 
 #' @name model_constants
-#' @export
 N_ECON_STRATA <- N_ECON_SECTORS + 1L
 
 #' @name model_constants
-#' @export
 i_NOT_WORKING <- 1L
 
 #' @name model_constants
@@ -91,6 +86,8 @@ N_OUTPUT_COLS <- 5L
 #'
 #' @name epi_constants
 #' @rdname epi_constants
+#'
+#' @keywords internal constant
 COMPARTMENTS <- c(
   "susceptible", "exposed", "infect_symp", "infect_asymp",
   "hospitalised", "recovered", "dead"
@@ -118,5 +115,4 @@ i_R <- 6L
 i_D <- 7L
 
 #' @name epi_constants
-#' @export
 N_EPI_COMPARTMENTS <- 7L
