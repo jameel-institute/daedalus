@@ -1,25 +1,32 @@
-#' @title Default parameters for DAEDALUS
-#' @description Useful defaults for the DAEDALUS model for use during
-#' development.
-#' @param ... User-specified values to replace default parameter values.
-#' @export
-#' @examples
-#' default_parameters(beta = 1.5 / 7.0)
-default_parameters <- function(...) {
+#' @title Make a parameter list for DAEDALUS
+#' @description Helper function to prepare a parameter list for `daedalus()`,
+#' allowing the use of country-specific contact matrices and user-specified
+#' pathogen parameter values.
+#' @param country A string giving a country name for which stored demographic
+#' and economic data are extracted.
+#' @param ... User-specified values to replace default pathogen parameter values
+#' .
+make_parameters <- function(country, ...) {
   user_params <- list(...)
 
-  contact_matrix <- matrix(1.0, N_AGE_GROUPS, N_AGE_GROUPS)
+  # NOTE: country name is input checked in top-level fn `daedalus()`
+  country_data_ <- daedalus::country_data[[country]]
+  economic_contacts <- economic_contacts
+  demography <- country_data_[["demography"]]
+
+  cm <- country_data_[["contact_matrix"]] / demography
 
   # workplace contacts within sectors
-  cmw <- rep(10.0, N_ECON_SECTORS - 1L)
+  cmw <- economic_contacts[["contacts_workplace"]]
 
-  # NOTE: default assumption is uniformly distributed contacts
-  cmcw <- matrix(1.0, N_ECON_SECTORS, N_AGE_GROUPS)
+  # NOTE: default assumption for consumer to worker contacts
+  # is workplace contacts `cmw` distributed in proportion to demography
+  cmcw <- matrix(
+    cmw, N_ECON_SECTORS, N_AGE_GROUPS
+  ) * demography / sum(demography)
 
-  # NOTE: dummy CM for between-sector contacts
-  # NOTE: if setting non-zero values, set diagonal = 0.0, captured by cmw;
-  # also set row 1 and col 1 = 0.0 as non-working
-  cm_ww <- matrix(0.0, nrow = N_ECON_SECTORS, ncol = N_ECON_SECTORS)
+  # NOTE: dummy CM for between-sector contacts; see data-raw/economic_contacts.R
+  cm_ww <- economic_contacts[["contacts_between_sectors"]]
 
   # NOTE: these are arbitrary values roughly equivalent to
   # pandemic influenza, with R0 = 1.3, infectious period = 7 days
@@ -33,7 +40,8 @@ default_parameters <- function(...) {
     eta = 1.0 / 100.0,
     omega = 1.0 / 100.0,
     rho = 1.0 / 180.0,
-    contact_matrix = contact_matrix,
+    demography = demography,
+    contact_matrix = cm,
     contacts_workplace = cmw,
     contacts_consumer_worker = cmcw,
     contacts_between_sectors = cm_ww
@@ -43,9 +51,9 @@ default_parameters <- function(...) {
   if (!is_empty_list) {
     is_each_number <- all(
       vapply(
-        X = user_params[!startsWith(names(user_params), "contact")],
-        FUN = checkmate::test_number,
-        FUN.VALUE = logical(1L),
+        user_params[!startsWith(names(user_params), "contact")],
+        checkmate::test_number,
+        logical(1L),
         # NOTE: rate parameter limits allowed may need to be tweaked
         lower = 0.0,
         finite = TRUE
@@ -53,9 +61,13 @@ default_parameters <- function(...) {
     )
     if (!is_each_number) {
       cli::cli_abort(
-        "Expected each user-provided parameter to be a single positive and
-        finite number. Only user-provided `contact_matrix` may be a numeric
-        matrix."
+        c(
+          "Expected each parameter passed in `...` to be a single positive and
+          finite number. Only user-provided contact data may be numeric vectors
+          or matrices.",
+          i = "See the Help page for {.help daedalus::daedalus} for parameters
+          that can be user specified."
+        )
       )
     }
 
