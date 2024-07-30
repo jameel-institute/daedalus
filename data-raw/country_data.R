@@ -10,8 +10,8 @@ library(stringr)
 # Walker et al. 2020
 
 # load country data
-country_data <- fread("country_data.csv")
-sector_contacts <- fread("sectorcontacts.csv")
+country_data <- fread("data-raw/country_data.csv")
+sector_contacts <- fread("data-raw/sectorcontacts.csv")
 
 # NOTE: there is an issue with Monaco where most data are missing
 
@@ -38,7 +38,7 @@ daedalus_demography <- copy(country_demography)
 daedalus_demography[, age_group := fcase(
   age_upper <= 5L, "0-4",
   age_lower >= 5L & age_upper <= 20L, "5-19",
-  age_lower >= 20L & age_upper <= 65, "19-64",
+  age_lower >= 20L & age_upper <= 65, "20-64",
   age_lower >= 65, "65+"
 )]
 daedalus_demography <- daedalus_demography[
@@ -153,5 +153,12 @@ country_data <- Map(daedalus_demography, daedalus_contacts, daedalus_workers,
 )
 names(country_data) <- names(daedalus_contacts)
 
+# order alphabetically
+country_data <- country_data[sort(names(country_data))]
+
 # allow overwriting as this will probably change often
 usethis::use_data(country_data, overwrite = TRUE)
+
+#### save country names ####
+country_names <- names(country_data)
+usethis::use_data(country_names, overwrite = TRUE)
