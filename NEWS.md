@@ -1,3 +1,17 @@
+# daedalus 0.0.3
+
+This patch version adds workplace infections to the epidemiological model, and adds country demography data.
+
+1. Added worker-to-worker infections within and between sectors, and consumer to worker contacts (#9).
+
+2. Added package data: `country_data` (country demography data) and `economic_contacts` (sector-wise contacts data). Note that worker-to-worker contacts between sectors currently takes a dummy value as it is not expected to be used in the near future (#11).
+
+3. Modified `daedalus::daedalus()` to take a single required argument for country name to run the model with package data for country contact matrices and economic and demographic data (#11). Users can still pass infection parameters via `...`.
+
+4. Made package function `default_parameters()` internal and renamed to `make_parameters()`; added the internal helper function `make_initial_state()` to quickly generate country-appropriate initial states.
+
+5. Added documentation and tests for modified function calls.
+
 # daedalus 0.0.2
 
 This patch version adds a basic epidemiological model (#7).
