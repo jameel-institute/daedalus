@@ -13,6 +13,6 @@
 #' \eqn{10^{-6}}, and with its diagonal set to zero, for the number of contacts
 #' between workers across economic sectors.}
 #' }
-#' @source NOTE as yet unknown; see processing details in
-#' `data-raw/economic_contacts.R
+#' @source Adapted from \doi{10.1016/j.epidem.2024.100778}; see processing
+#' details in `data-raw/economic_contacts.R
 "economic_contacts"
