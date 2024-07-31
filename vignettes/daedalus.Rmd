@@ -1,6 +1,8 @@
 ---
 title: "Getting started with DAEDALUS"
 output: rmarkdown::html_vignette
+bibliography: resources/references.json
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Getting started with DAEDALUS}
   %\VignetteEngine{knitr::rmarkdown}
@@ -22,12 +24,20 @@ library(daedalus)
 library(ggplot2)
 ```
 
-The model runs for 300 timesteps (assumed to be days) by default.
-The `daedalus()` function documentation has more information on the pathogen parameter defaults in the **Details** section.
+The model can be run for any country or territory simply by passing its name to `daedalus()`.
+
+The package provides data from @walker2020 on country demography, country workforce per economic sector, and social contacts between age groups in `country_data`.
+The package also provides data from @jarvis2024 on workplace contacts in economic sectors.
+Both datasets are accessed by internal functions to reduce the need for user input.
 
 ```{r run_model}
 output <- daedalus("Canada")
 ```
+
+The model runs for 300 timesteps (assumed to be days) by default.
+The `daedalus()` function documentation has more information on the pathogen parameter defaults in the **Details** section.
+
+Users can pass country data and pathogen parameters to override the package defaults by passing appropriately named arguments to `daedalus()` via R's `...` system.
 
 Get the data in long or 'tidy' format using `prepare_output()`.
 
@@ -52,3 +62,5 @@ ggplot(
     facets = vars(age_group)
   )
 ```
+
+## References
