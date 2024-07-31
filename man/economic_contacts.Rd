@@ -19,8 +19,8 @@ between workers across economic sectors.}
 }
 }
 \source{
-NOTE as yet unknown; see processing details in
-`data-raw/economic_contacts.R
+Adapted from \doi{10.1016/j.epidem.2024.100778}; see processing
+details in `data-raw/economic_contacts.R
 }
 \usage{
 economic_contacts

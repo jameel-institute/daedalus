@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette shows how to get started with the DAEDALUS model in R.
+This vignette shows how to get started with the DAEDALUS model adapted from @haw2022 in R.
 
 ```{r libraries}
 # load the package
