@@ -29,19 +29,26 @@ test_that("make_parameters: basic expectations", {
 test_that("Errors on `...` passed to `daedalus()`:", {
   expect_error(
     daedalus("Canada", beta = "0.01"),
-    regexp = "(Model options)*(`...`)*(may only be numeric)"
+    regexp = "^(?=.*Model options)(?=.*`\\.\\.\\.`)(?=.*may only be numeric)",
+    perl = TRUE
   )
   expect_error(
     daedalus("Canada", beta = c(0.1, 0.1)),
-    regexp = "(Expected each parameter)*(`...`)*(to be a single)*(number)"
+    regexp =
+      "^(?=.*Expected each parameter)(?=.*\\.\\.\\.)(?=.*single positive)",
+    perl = TRUE
   )
   expect_error(
     daedalus("Canada", beta = -0.1),
-    regexp = "(Expected each parameter)*(`...`)*(to be a single)*(number)"
+    regexp =
+      "^(?=.*Expected each parameter)(?=.*\\.\\.\\.)(?=.*single positive)",
+    perl = TRUE
   )
   expect_error(
     daedalus("Canada", beta = Inf),
-    regexp = "(Expected each parameter)*(`...`)*(to be a single)*(number)"
+    regexp =
+      "^(?=.*Expected each parameter)(?=.*\\.\\.\\.)(?=.*single positive)",
+    perl = TRUE
   )
 
   # specific checks on poorly specified community contact matrix
@@ -50,22 +57,25 @@ test_that("Errors on `...` passed to `daedalus()`:", {
       "Canada",
       contact_matrix = matrix("a", N_AGE_GROUPS, N_AGE_GROUPS)
     ),
-    regexp = "(Model options)*(`...`)*(may only be numeric)"
+    regexp = "^(?=.*Model options)(?=.*`\\.\\.\\.`)(?=.*may only be numeric)",
+    perl = TRUE
   )
   expect_error(
     daedalus(
       "Canada",
       contact_matrix = list(matrix(1.0, N_AGE_GROUPS, N_AGE_GROUPS))
     ),
-    regexp = "(Model options)*(`...`)*(may only be numeric)"
+    regexp = "^(?=.*Model options)(?=.*`\\.\\.\\.`)(?=.*may only be numeric)",
+    perl = TRUE
   )
 
   cm <- matrix(1.0, N_AGE_GROUPS, N_AGE_GROUPS)
   cm[1L, ] <- NA_real_
-
   expect_error(
     daedalus("Canada", contact_matrix = cm),
-    regexp = "(Expected)*(`contact_matrix` to have no missing elements.)"
+    regexp =
+      "^(?=.*Expected)(?=.*`contact_matrix`)(?=.*have no missing elements)",
+    perl = TRUE
   )
 
   cm <- matrix(1.0, N_AGE_GROUPS - 1L, N_AGE_GROUPS)
@@ -95,18 +105,21 @@ test_that("Errors on `...` passed to `daedalus()`:", {
   cw <- matrix(1.0, N_ECON_SECTORS, N_ECON_SECTORS)
   expect_error(
     daedalus("Canada", contacts_workplace = cw),
-    regexp = "(Expected)*(`contacts_workplace`)*(to be a numeric vector)"
+    regexp = "^(?=.*Expected)(?=.*`contacts_workplace`)(?=.*numeric vector)",
+    perl = TRUE
   )
 
   cw <- rep(1.0, N_ECON_SECTORS - 1L)
   expect_error(
     daedalus("Canada", contacts_workplace = cw),
-    regexp = "(Expected)*(`contacts_workplace`)*(to be a numeric vector)"
+    regexp = "^(?=.*Expected)(?=.*`contacts_workplace`)(?=.*numeric vector)",
+    perl = TRUE
   )
   cw <- rep(-1.0, N_ECON_SECTORS)
   expect_error(
     daedalus("Canada", contacts_workplace = cw),
-    regexp = "(Expected)*(`contacts_workplace`)*(to be a numeric vector)"
+    regexp = "^(?=.*Expected)(?=.*`contacts_workplace`)(?=.*numeric vector)",
+    perl = TRUE
   )
 
   # expectations for consumer-worker contacts
@@ -121,7 +134,9 @@ test_that("Errors on `...` passed to `daedalus()`:", {
   cmcw <- rep(1.0, N_ECON_SECTORS)
   expect_error(
     daedalus("Canada", contacts_consumer_worker = cmcw),
-    regexp = "(Expected)*(`contacts_consumer_worker` to be a numeric matrix)"
+    regexp =
+      "^(?=.*Expected)(?=.*`contacts_consumer_worker`)(?=.*numeric matrix)",
+    perl = TRUE
   )
 
   expected_error <- glue::glue(
@@ -157,12 +172,16 @@ test_that("Errors on `...` passed to `daedalus()`:", {
   cm_ww[, 1L] <- NA_real_
   expect_error(
     daedalus("Canada", contacts_between_sectors = cm_ww),
-    regexp = "(Expected)*(numeric matrix)*(with no missing elements)"
+    regexp =
+      "^(?=.*Expected)(?=.*numeric matrix)(?=.*with no missing elements)",
+    perl = TRUE
   )
 
   cm_ww <- matrix(1.0, N_ECON_SECTORS, N_ECON_SECTORS)
   expect_error(
     daedalus("Canada", contacts_between_sectors = cm_ww),
-    regexp = "(Expected)*(a hollow matrix)*(diagonal entries are all zero)"
+    regexp =
+      "^(?=.*Expected)(?=.*diagonal entries are all zero)",
+    perl = TRUE
   )
 })
