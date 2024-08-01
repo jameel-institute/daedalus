@@ -1,7 +1,10 @@
+#!/usr/bin/env Rscript
 ## code to prepare `country_data` ##
 
 library(data.table)
 library(stringr)
+library(usethis)
+library(checkmate)
 
 # column names
 # Npop: individuals in each age group
@@ -21,6 +24,7 @@ country_demography <- country_data[, c("country", ..cols_demography)] |>
   melt(id.vars = "country")
 
 bin_size <- 5L
+n_age_groups <- 4L
 
 country_demography[, c("age_lower", "age_upper") := list(
   as.numeric(str_extract(variable, "\\d+")),
@@ -50,11 +54,26 @@ daedalus_demography <- daedalus_demography[
 # split by country and convert to named vector
 daedalus_demography <- split(daedalus_demography, by = "country")
 daedalus_demography <- lapply(daedalus_demography, function(dt) {
-  v <- dt[["value"]]
+  v <- round(dt[["value"]]) # round to avoid fractions if any
   names(v) <- dt[["age_group"]]
   v
 })
 
+# run assertion on demography data
+assert_list(
+  daedalus_demography, "numeric",
+  any.missing = FALSE, all.missing = FALSE,
+  len = nrow(country_data), names = "unique"
+)
+assert_true(
+  all(
+    vapply(
+      daedalus_demography, test_integerish, logical(1),
+      lower = 0, any.missing = FALSE, all.missing = FALSE,
+      len = n_age_groups
+    )
+  )
+)
 
 #### process contacts data ####
 cols_contacts <- colnames(country_data)[colnames(country_data) %like% "CM"]
@@ -119,9 +138,29 @@ daedalus_contacts <- lapply(daedalus_contacts, function(dt) {
   dt
 })
 
+# check processed matrices
+# NOTE: Andorra and Monaco are both NaN - check this data
+assert_true(
+  all(
+    vapply(
+      daedalus_contacts, test_matrix, logical(1),
+      mode = "numeric", nrows = n_age_groups,
+      ncols = n_age_groups
+    )
+  )
+)
+check_true(
+  all(
+    vapply(
+      daedalus_contacts, test_numeric, logical(1),
+      lower = 0.0, finite = TRUE, any.missing = FALSE, all.missing = FALSE
+    )
+  )
+)
+
 #### process economic sector data ####
 # TODO: figure out which sector is non-working
-cols_workers <- cols_demography <- colnames(country_data)[
+cols_workers <- colnames(country_data)[
   colnames(country_data) %like% "NNs"
 ]
 country_workers <- country_data[, c("country", ..cols_workers)]
@@ -138,6 +177,22 @@ country_workers[, sector_name := sector_contacts$sector[sector]]
 # split by country and return vector of sector-wise values only
 daedalus_workers <- split(country_workers, by = "country") |>
   lapply(`[[`, "value")
+
+# check worker data
+assert_list(
+  daedalus_workers, "numeric",
+  any.missing = FALSE, all.missing = FALSE,
+  len = nrow(country_data), names = "unique"
+)
+assert_true(
+  all(
+    vapply(
+      daedalus_workers, test_integerish, logical(1),
+      lower = 0, any.missing = FALSE, all.missing = FALSE,
+      len = daedalus:::N_ECON_SECTORS
+    )
+  )
+)
 
 ### combine and save country-wise data ####
 # NOTE: names are provisional
