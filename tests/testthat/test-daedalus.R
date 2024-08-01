@@ -1,11 +1,9 @@
 # Basic tests for DAEDALUS
 test_that("daedalus: basic expectations", {
   # expect no conditions
-  expect_no_condition(
-    daedalus("Canada")
-  )
-
-  output <- daedalus("Canada")
+  expect_no_condition({
+    output <- daedalus("Canada")
+  })
 
   # expect classed output, type double, and non-negative
   expect_s3_class(output, "deSolve")
@@ -76,20 +74,22 @@ test_that("daedalus: errors and warnings", {
   # expect errors on country
   expect_error(
     daedalus("U.K."),
-    regexp = "(Expected `country` to be)*(from among `COUNTRY_NAMES`)"
+    regexp =
+      "^(?=.*Expected `country` to be)(?=.*from among `country_names`)",
+    perl = TRUE
   )
 
   # expect errors on poorly specified time_end
   expect_error(
     daedalus("Canada", time_end = -1),
-    regexp = "Expected `time_end` to be a single positive number."
+    regexp = "Expected `time_end` to be a single positive integer-like number."
   )
   expect_error(
     daedalus("Canada", time_end = 100.5),
-    regexp = "Expected `time_end` to be a single positive number."
+    regexp = "Expected `time_end` to be a single positive integer-like number."
   )
   expect_error(
     daedalus("Canada", time_end = Inf),
-    regexp = "Expected `time_end` to be a single positive number."
+    regexp = "Expected `time_end` to be a single positive integer-like number."
   )
 })
