@@ -1,6 +1,7 @@
 linters: all_linters(
     indentation_linter = NULL, # unstable as of lintr 3.1.0
-    extraction_operator_linter = NULL # lints auto-generated vignette setup chunks
+    extraction_operator_linter = NULL, # lints auto-generated vignette setup chunks
+    implicit_integer_linter = NULL # turn off due to multiple integerish values used
     )
 exclusions: list(
     "R/parameters.R" = list(
