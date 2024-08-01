@@ -74,9 +74,7 @@ test_that("daedalus: errors and warnings", {
   # expect errors on country
   expect_error(
     daedalus("U.K."),
-    regexp =
-      "^(?=.*Expected `country` to be)(?=.*from among `country_names`)",
-    perl = TRUE
+    regexp = "Expected `country` to be.*from among `country_names`"
   )
 
   # expect errors on poorly specified time_end
