@@ -218,7 +218,8 @@ make_parameters <- function(country, ...) {
           among the model parameters, and will not be passed to the model:
           {.str {setdiff(names(user_params), names(params))}}.",
           i = "Model parameters are named: {.str {names(params)}}."
-        )
+        ),
+        call = parent.frame() # to show parent env rather than helper fn
       )
     }
     user_params[!names(user_params) %in% names(params)] <- NULL

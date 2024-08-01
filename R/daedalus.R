@@ -1,7 +1,7 @@
 #' @title DAEDALUS model for health, social and economic costs of a pandemic
 #'
 #' @description Run the DAEDALUS model from R. This is a work in progress.
-#' @param country A country or territory name from among `COUNTRY_NAMES`.
+#' @param country A country or territory name from among `country_names`.
 #' @param ... Additional arguments passed to `make_parameters()` or
 #' `make_initial_state()`. See **Details** for permitted arguments.
 #' @param time_end An integer-like value for the number of timesteps
@@ -95,7 +95,7 @@
 #' @return A `<deSolve>` object.
 #' @export
 daedalus <- function(country, ...,
-                     time_end = 300L) {
+                     time_end = 300) {
   # input checking
   # NOTE: names are case sensitive
   is_good_country <- checkmate::test_string(country) &&
@@ -107,7 +107,7 @@ daedalus <- function(country, ...,
     cli::cli_abort(
       c(
         "Expected `country` to be a single string giving a country name from
-        among `COUNTRY_NAMES`, but it is not.",
+        among `country_names`, but it is not.",
         i = "Country names are case sensitive and must be an exact match."
       )
     )
@@ -116,7 +116,10 @@ daedalus <- function(country, ...,
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
   if (!is_good_time_end) {
     cli::cli_abort(
-      "Expected `time_end` to be a single positive number."
+      c(
+        "Expected `time_end` to be a single positive integer-like number.",
+        i = "E.g. `time_end = 100`, but not `time_end = 100.5`"
+      )
     )
   }
 
