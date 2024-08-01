@@ -34,7 +34,7 @@ Both datasets are accessed by internal functions to reduce the need for user inp
 output <- daedalus("Canada")
 ```
 
-The model runs for 300 timesteps (assumed to be days) by default.
+The model runs for 300 timesteps by default; timesteps should be interpreted as days since model parameters are in terms of days.
 The `daedalus()` function documentation has more information on the pathogen parameter defaults in the **Details** section.
 
 Users can pass country data and pathogen parameters to override the package defaults by passing appropriately named arguments to `daedalus()` via R's `...` system.

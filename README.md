@@ -32,7 +32,7 @@ remotes::install_github("j-idea/daedalus", upgrade = FALSE)
 
 ## Quick start
 
-The model can be run for any country or territory in the `COUNTRY_NAMES`
+The model can be run for any country or territory in the `country_names`
 list by passing the country name to the function. This automatically
 pulls country-specific demographic and economic data, which is included
 in the package, into the model (see the [‘Get started’
