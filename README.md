@@ -36,7 +36,7 @@ The model can be run for any country or territory in the `country_names`
 list by passing the country name to the function. This automatically
 pulls country-specific demographic and economic data, which is included
 in the package, into the model (see the [‘Get started’
-vignette](articles/daedalus.html) for more details).
+vignette](daedalus.html) for more details).
 
 The model runs for 300 timesteps (assumed to be days) by default.
 
