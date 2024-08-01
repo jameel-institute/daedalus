@@ -16,4 +16,3 @@ docs
 inst/doc
 pkgdown
 scratch.R
-data-raw/*.csv
