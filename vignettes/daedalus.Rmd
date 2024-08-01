@@ -24,7 +24,8 @@ library(daedalus)
 library(ggplot2)
 ```
 
-The model can be run for any country or territory simply by passing its name to `daedalus()`.
+The model can be run for any country or territory included in package data simply by passing its name to `daedalus()`.
+The `country_names` vector holds a list of country and territory names for which data is available.
 
 The package provides data from @walker2020 on country demography, country workforce per economic sector, and social contacts between age groups in `country_data`.
 The package also provides data from @jarvis2024 on workplace contacts in economic sectors.
@@ -32,6 +33,18 @@ Both datasets are accessed by internal functions to reduce the need for user inp
 
 ```{r run_model}
 output <- daedalus("Canada")
+```
+
+Users can specify pathogen parameter values as well as change the initial conditions by passing arguments to `daedalus()` as `...`.
+The function documentation details which parameters are accepted.
+
+```r
+# not run
+# e.g. change the transmission rate
+daedalus("Canada", beta = 1.5 / 7.0) # assume R0 of 1.5, 7 days infectious period
+
+# e.g. change the hospitalisation rate
+daedalus("Canada", eta = 1.0 / 1000) # assume 1 in 1000 infectious need hospital
 ```
 
 The model runs for 300 timesteps by default; timesteps should be interpreted as days since model parameters are in terms of days.
