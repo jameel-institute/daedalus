@@ -4,10 +4,10 @@
 \alias{daedalus}
 \title{DAEDALUS model for health, social and economic costs of a pandemic}
 \usage{
-daedalus(country, ..., time_end = 300L)
+daedalus(country, ..., time_end = 300)
 }
 \arguments{
-\item{country}{A country or territory name from among \code{COUNTRY_NAMES}.}
+\item{country}{A country or territory name from among \code{country_names}.}
 
 \item{...}{Additional arguments passed to \code{make_parameters()} or
 \code{make_initial_state()}. See \strong{Details} for permitted arguments.}
