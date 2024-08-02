@@ -67,6 +67,5 @@ make_initial_state <- function(country,
   initial_state[i_WORKING_AGE, , -i_NOT_WORKING] <-
     initial_state[i_WORKING_AGE, , -i_NOT_WORKING] * sector_workforce
 
-  # return
   initial_state
 }
