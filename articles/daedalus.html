@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,111 +60,61 @@
 
     
     
-<p>This vignette shows how to get started with the DAEDALUS model in
-R.</p>
+<p>This vignette shows how to get started with the DAEDALUS model
+adapted from <span class="citation">Haw et al. (<a href="#ref-haw2022">2022</a>)</span> in R.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># load the package</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/j-idea/daedalus" class="external-link">daedalus</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
-<div class="section level3">
-<h3 id="prepare-contact-matrix-and-initial-conditions">Prepare contact matrix and initial conditions<a class="anchor" aria-label="anchor" href="#prepare-contact-matrix-and-initial-conditions"></a>
-</h3>
-<p>Load a contact matrix for the U.K. from the <a href="https://cran.r-project.org/package=socialmixr" class="external-link"><em>socialmixr</em>
-package</a>.</p>
+<p>The model can be run for any country or territory included in package
+data simply by passing its name to <code><a href="../reference/daedalus.html">daedalus()</a></code>. The
+<code>country_names</code> vector holds a list of country and territory
+names for which data is available.</p>
+<p>The package provides data from <span class="citation">Walker et al.
+(<a href="#ref-walker2020">2020</a>)</span> on country demography,
+country workforce per economic sector, and social contacts between age
+groups in <code>country_data</code>. The package also provides data from
+<span class="citation">Jarvis et al. (<a href="#ref-jarvis2024">2024</a>)</span> on workplace contacts in
+economic sectors. Both datasets are accessed by internal functions to
+reduce the need for user input.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># NOTE: to be replaced with package data</span></span>
-<span><span class="va">polymod</span> <span class="op">&lt;-</span> <span class="fu">socialmixr</span><span class="fu">::</span><span class="va"><a href="https://epiforecasts.io/socialmixr/reference/polymod.html" class="external-link">polymod</a></span></span>
-<span><span class="co"># suppress messages that clog up test output</span></span>
-<span><span class="va">contact_data</span> <span class="op">&lt;-</span> <span class="fu">socialmixr</span><span class="fu">::</span><span class="fu"><a href="https://epiforecasts.io/socialmixr/reference/contact_matrix.html" class="external-link">contact_matrix</a></span><span class="op">(</span></span>
-<span>  <span class="va">polymod</span>,</span>
-<span>  countries <span class="op">=</span> <span class="st">"United Kingdom"</span>,</span>
-<span>  age.limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0L</span>, <span class="fl">5L</span>, <span class="fl">20L</span>, <span class="fl">65L</span><span class="op">)</span>,</span>
-<span>  symmetric <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Removing participants that have contacts without age information. To change this behaviour, set the 'missing.contact.age' option</span></span>
-<span></span>
-<span><span class="co"># get demography vector</span></span>
-<span><span class="va">demography</span> <span class="op">&lt;-</span> <span class="va">contact_data</span><span class="op">[[</span><span class="st">"demography"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"population"</span><span class="op">]</span><span class="op">]</span></span>
-<span></span>
-<span><span class="co"># prepare contact matrix</span></span>
-<span><span class="va">contact_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">contact_data</span><span class="op">[[</span><span class="st">"matrix"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="va">demography</span></span>
-<span></span>
-<span><span class="co"># initial state: one in every 1 million is infected</span></span>
-<span><span class="va">initial_i</span> <span class="op">&lt;-</span> <span class="fl">1e-6</span></span>
-<span><span class="va">initial_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  S <span class="op">=</span> <span class="fl">1.0</span> <span class="op">-</span> <span class="va">initial_i</span>, E <span class="op">=</span> <span class="fl">0.0</span>,</span>
-<span>  Is <span class="op">=</span> <span class="va">initial_i</span>, Ia <span class="op">=</span> <span class="fl">0.0</span>,</span>
-<span>  H <span class="op">=</span> <span class="fl">0.0</span>, R <span class="op">=</span> <span class="fl">0.0</span>, D <span class="op">=</span> <span class="fl">0.0</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># build for all age groups</span></span>
-<span><span class="va">initial_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
-<span>  <span class="va">initial_state</span>,</span>
-<span>  <span class="va">initial_state</span>,</span>
-<span>  <span class="va">initial_state</span>,</span>
-<span>  <span class="va">initial_state</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># multiply by demography vector for absolute values</span></span>
-<span><span class="va">initial_state</span> <span class="op">&lt;-</span> <span class="va">initial_state</span> <span class="op">*</span> <span class="va">demography</span></span></code></pre></div>
-<p>Prepare the initial state container, a 3D tensor.</p>
-<p>Constants <code>N_AGE_GROUPS</code>, <code>N_EPI_COMPARTMENTS</code>,
-<code>N_ECON_SECTORS</code>, <code>i_NOT_WORKING</code> and
-<code>i_WORKING_AGE</code> are package constants.</p>
+<code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span><span class="op">)</span></span></code></pre></div>
+<p>Users can specify pathogen parameter values as well as change the
+initial conditions by passing arguments to <code><a href="../reference/daedalus.html">daedalus()</a></code> as
+<code>...</code>. The function documentation details which parameters
+are accepted.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># construct state array, all working age individuals are uniformly</span></span>
-<span><span class="co"># distributed into economic sectors including non-working (hence + 1)</span></span>
-<span><span class="va">state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span></span>
-<span>  <span class="fl">0.0</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">N_AGE_GROUPS</span>, <span class="va">N_EPI_COMPARTMENTS</span>, <span class="va">N_ECON_STRATA</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">state</span><span class="op">[</span>, , <span class="va">i_NOT_WORKING</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">initial_state</span></span>
-<span><span class="va">state</span><span class="op">[</span><span class="va">i_WORKING_AGE</span>, , <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
-<span>  <span class="va">state</span><span class="op">[</span><span class="va">i_WORKING_AGE</span>, , <span class="va">i_NOT_WORKING</span><span class="op">]</span> <span class="op">*</span> <span class="fl">1.0</span> <span class="op">/</span> <span class="op">(</span><span class="va">N_ECON_STRATA</span><span class="op">)</span>,</span>
-<span>  nrow <span class="op">=</span> <span class="va">N_EPI_COMPARTMENTS</span>, ncol <span class="op">=</span> <span class="va">N_ECON_STRATA</span></span>
-<span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># not run</span></span>
+<span><span class="co"># e.g. change the transmission rate</span></span>
+<span><span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, beta <span class="op">=</span> <span class="fl">1.5</span> <span class="op">/</span> <span class="fl">7.0</span><span class="op">)</span> <span class="co"># assume R0 of 1.5, 7 days infectious period</span></span>
 <span></span>
-<span><span class="co"># prepare workplace contacts</span></span>
-<span><span class="va">cw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">5.0</span>, <span class="va">N_ECON_SECTORS</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># prepare consumer worker contacts</span></span>
-<span><span class="va">consumer_contacts_per_sector</span> <span class="op">&lt;-</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_seed.html" class="external-link">with_seed</a></span><span class="op">(</span></span>
-<span>  <span class="fl">0L</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">N_ECON_SECTORS</span>, min <span class="op">=</span> <span class="fl">5.0</span>, max <span class="op">=</span> <span class="fl">10.0</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">cmcw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
-<span>  <span class="va">consumer_contacts_per_sector</span>,</span>
-<span>  nrow <span class="op">=</span> <span class="va">N_ECON_SECTORS</span>, ncol <span class="op">=</span> <span class="va">N_AGE_GROUPS</span></span>
-<span><span class="op">)</span> <span class="op">*</span> <span class="va">demography</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">demography</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="run-model">Run model<a class="anchor" aria-label="anchor" href="#run-model"></a>
-</h3>
-<p>The model runs for 100 timesteps (assumed to be days) by default.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span></span>
-<span>  <span class="va">state</span>,</span>
-<span>  parameters <span class="op">=</span> <span class="fu"><a href="../reference/default_parameters.html">default_parameters</a></span><span class="op">(</span></span>
-<span>    contact_matrix <span class="op">=</span> <span class="va">contact_matrix</span>,</span>
-<span>    contacts_workplace <span class="op">=</span> <span class="va">cw</span>,</span>
-<span>    contacts_consumer_worker <span class="op">=</span> <span class="va">cmcw</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># e.g. change the hospitalisation rate</span></span>
+<span><span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, eta <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> <span class="fl">1000</span><span class="op">)</span> <span class="co"># assume 1 in 1000 infectious need hospital</span></span></code></pre></div>
+<p>The model runs for 300 timesteps by default; timesteps should be
+interpreted as days since model parameters are in terms of days. The
+<code><a href="../reference/daedalus.html">daedalus()</a></code> function documentation has more information on
+the pathogen parameter defaults in the <strong>Details</strong>
+section.</p>
+<p>Users can pass country data and pathogen parameters to override the
+package defaults by passing appropriately named arguments to
+<code><a href="../reference/daedalus.html">daedalus()</a></code> via R’s <code>...</code> system.</p>
 <p>Get the data in long or ‘tidy’ format using
 <code><a href="../reference/prepare_output.html">prepare_output()</a></code>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_output.html">prepare_output</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   time age_group compartment econ_sector   value</span></span>
-<span><span class="co">#&gt; 1    1       0-4 susceptible    sector_0 3453667</span></span>
-<span><span class="co">#&gt; 2    2       0-4 susceptible    sector_0 3453664</span></span>
-<span><span class="co">#&gt; 3    3       0-4 susceptible    sector_0 3453661</span></span>
-<span><span class="co">#&gt; 4    4       0-4 susceptible    sector_0 3453658</span></span>
-<span><span class="co">#&gt; 5    5       0-4 susceptible    sector_0 3453654</span></span>
-<span><span class="co">#&gt; 6    6       0-4 susceptible    sector_0 3453647</span></span></code></pre></div>
+<span><span class="co">#&gt; 1    1       0-4 susceptible    sector_0 1993130</span></span>
+<span><span class="co">#&gt; 2    2       0-4 susceptible    sector_0 1993128</span></span>
+<span><span class="co">#&gt; 3    3       0-4 susceptible    sector_0 1993127</span></span>
+<span><span class="co">#&gt; 4    4       0-4 susceptible    sector_0 1993125</span></span>
+<span><span class="co">#&gt; 5    5       0-4 susceptible    sector_0 1993123</span></span>
+<span><span class="co">#&gt; 6    6       0-4 susceptible    sector_0 1993121</span></span></code></pre></div>
 <p>Plot the data to view the epidemic curve.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
-<span>  <span class="va">data</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">compartment</span> <span class="op">==</span> <span class="st">"infect_symp"</span>, <span class="op">]</span></span>
+<span>  <span class="va">data</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">compartment</span> <span class="op">==</span> <span class="st">"infect_symp"</span> <span class="op">&amp;</span> <span class="va">data</span><span class="op">$</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"20-65"</span>, <span class="op">]</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">value</span>, colour <span class="op">=</span> <span class="va">econ_sector</span><span class="op">)</span>,</span>
@@ -175,9 +125,34 @@ package</a>.</p>
 <span>    facets <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="daedalus_files/figure-html/plot_epidemic-1.png" width="700"></p>
+<div class="section level2 unnumbered">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-haw2022" class="csl-entry">
+Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo
+Pianella, Robert Johnson, Sumali Bajaj, et al. 2022. <span>“Optimizing
+Social and Economic Activity While Containing SARS-CoV-2 Transmission
+Using DAEDALUS.”</span> <em>Nature Computational Science</em> 2 (4):
+223–33. <a href="https://doi.org/10.1038/s43588-022-00233-0" class="external-link">https://doi.org/10.1038/s43588-022-00233-0</a>.
 </div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside>
+<div id="ref-jarvis2024" class="csl-entry">
+Jarvis, Christopher I., Pietro Coletti, Jantien A. Backer, James D.
+Munday, Christel Faes, Philippe Beutels, Christian L. Althaus, et al.
+2024. <span>“Social Contact Patterns Following the COVID-19 Pandemic: A
+Snapshot of Post-Pandemic Behaviour from the CoMix Study.”</span>
+<em>Epidemics</em> 48 (September): 100778. <a href="https://doi.org/10.1016/j.epidem.2024.100778" class="external-link">https://doi.org/10.1016/j.epidem.2024.100778</a>.
+</div>
+<div id="ref-walker2020" class="csl-entry">
+Walker, Patrick G. T., Charles Whittaker, Oliver J. Watson, Marc
+Baguelin, Peter Winskill, Arran Hamlet, Bimandra A. Djafaara, et al.
+2020. <span>“The Impact of COVID-19 and Strategies for Mitigation and
+Suppression in Low- and Middle-Income Countries.”</span>
+<em>Science</em> 369 (6502): 413–22. <a href="https://doi.org/10.1126/science.abc0035" class="external-link">https://doi.org/10.1126/science.abc0035</a>.
+</div>
+</div>
+</div>
+  </main>
 </div>
 
 

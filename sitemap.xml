@@ -7,12 +7,16 @@
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
 <url><loc>/news/index.html</loc></url>
+<url><loc>/reference/country_data.html</loc></url>
+<url><loc>/reference/country_names.html</loc></url>
 <url><loc>/reference/daedalus-package.html</loc></url>
 <url><loc>/reference/daedalus.html</loc></url>
 <url><loc>/reference/daedalus_rhs.html</loc></url>
-<url><loc>/reference/default_parameters.html</loc></url>
+<url><loc>/reference/economic_contacts.html</loc></url>
 <url><loc>/reference/epi_constants.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/make_initial_state.html</loc></url>
+<url><loc>/reference/make_parameters.html</loc></url>
 <url><loc>/reference/model_constants.html</loc></url>
 <url><loc>/reference/prepare_output.html</loc></url>
 </urlset>

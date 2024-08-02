@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,10 +34,19 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.3" id="daedalus-003">daedalus 0.0.3<a class="anchor" aria-label="anchor" href="#daedalus-003"></a></h2>
+<p>This patch version adds workplace infections to the epidemiological model, and adds country demography data.</p>
+<ol style="list-style-type: decimal"><li><p>Added worker-to-worker infections within and between sectors, and consumer to worker contacts (<a href="https://github.com/j-idea/daedalus/issues/9" class="external-link">#9</a>).</p></li>
+<li><p>Added package data: <code>country_data</code> (country demography data) and <code>economic_contacts</code> (sector-wise contacts data). Note that worker-to-worker contacts between sectors currently takes a dummy value as it is not expected to be used in the near future (<a href="https://github.com/j-idea/daedalus/issues/11" class="external-link">#11</a>).</p></li>
+<li><p>Modified <code><a href="../reference/daedalus.html">daedalus::daedalus()</a></code> to take a single required argument for country name to run the model with package data for country contact matrices and economic and demographic data (<a href="https://github.com/j-idea/daedalus/issues/11" class="external-link">#11</a>). Users can still pass infection parameters via <code>...</code>.</p></li>
+<li><p>Made package function <code>default_parameters()</code> internal and renamed to <code><a href="../reference/make_parameters.html">make_parameters()</a></code>; added the internal helper function <code><a href="../reference/make_initial_state.html">make_initial_state()</a></code> to quickly generate country-appropriate initial states.</p></li>
+<li><p>Added documentation and tests for modified function calls.</p></li>
+</ol></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.2" id="daedalus-002">daedalus 0.0.2<a class="anchor" aria-label="anchor" href="#daedalus-002"></a></h2>
 <p>This patch version adds a basic epidemiological model (<a href="https://github.com/j-idea/daedalus/issues/7" class="external-link">#7</a>).</p>
 <ol style="list-style-type: decimal"><li><p>Added the model functions <code><a href="../reference/daedalus.html">daedalus()</a></code> (user-facing) and <code>.daedalus_ode()</code> (internal) to run a simple age-stratified (4 age groups) SEIR-HD epidemiological model taken from <a href="https://github.com/robj411" class="external-link">@robj411</a> <a href="https://github.com/robj411/p2_drivers" class="external-link uri">https://github.com/robj411/p2_drivers</a>,</p></li>
-<li><p>Added default model parameters in <code><a href="../reference/default_parameters.html">default_parameters()</a></code> which correspond roughly to pandemic influenza,</p></li>
+<li><p>Added default model parameters in <code>default_parameters()</code> which correspond roughly to pandemic influenza,</p></li>
 <li><p>Added <code><a href="../reference/prepare_output.html">prepare_output()</a></code> to prepare <code><a href="../reference/daedalus.html">daedalus()</a></code> output,</p></li>
 <li><p>Added tests for all functions,</p></li>
 <li><p>Updated the package infrastructure: <code>DESCRIPTION</code>, <code>NAMESPACE</code>, <code>WORDLIST</code>, <code>.Rbuildignore</code>, and <code>_pkgdown.yml</code> reference.</p></li>
