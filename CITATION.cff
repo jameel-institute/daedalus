@@ -8,7 +8,7 @@ message: 'To cite package "daedalus" in publications use:'
 type: software
 license: MIT
 title: 'daedalus: Optimise economic, social and health trade-offs in a pandemic'
-version: 0.0.2
+version: 0.0.3
 abstract: Model and optimise the trade-offs between social and economic activity while
   containing a pandemic, as presented in Haw et al. (2022) <doi.org/10.1038/s43588-022-00233-0>.
 authors:
@@ -32,6 +32,17 @@ keywords:
 - r-package
 - sdg-3
 references:
+- type: software
+  title: 'R: A Language and Environment for Statistical Computing'
+  notes: Depends
+  url: https://www.R-project.org/
+  authors:
+  - name: R Core Team
+  institution:
+    name: R Foundation for Statistical Computing
+    address: Vienna, Austria
+  year: '2024'
+  version: '>= 2.10'
 - type: software
   title: checkmate
   abstract: 'checkmate: Fast and Versatile Argument Checks'
