@@ -2,6 +2,19 @@
 #'
 #' @description Run the DAEDALUS model from R. This is a work in progress.
 #' @param country A country or territory name from among `country_names`.
+#' @param epidemic A string for the infection parameter set to use.
+#' Infection parameter sets may be known by the name of the outbreak or the
+#' causative pathogen;
+#' see **Details** for more on which epidemics are supported.
+#' See `epidemic_names` for allowed names, as the name must match exactly.
+#' Defaults to simulating an epidemic similar to Covid-19 outbreaks caused by
+#' the wild type of the SARS-CoV-2 virus.
+#'
+#' Selecting an epidemic automatically pulls in infection parameters
+#' associated with the epidemic; these are stored as packaged data in
+#' `infection_data`.
+#' Default infection parameters for epidemics can be over-ridden by passing them
+#' as named arguments via `...`.
 #' @param ... Additional arguments passed to `make_parameters()` or
 #' `make_initial_state()`. See **Details** for permitted arguments.
 #' @param time_end An integer-like value for the number of timesteps
@@ -9,6 +22,14 @@
 #' returned for each day. Defaults to 300 days.
 #'
 #' @details
+#'
+#' ## Included epidemics
+#'
+#' Epidemics for which data are available are (pathogen in parentheses):
+#' SARS 2004 (SARS-CoV-1), influenza 2009 (influenza A H1N1),
+#' influenza 1957 (influenza A H2N2), influenza 1918 (influenza A H1N1),
+#' Covid-19 wild type (SARS-Cov-2 wild type),
+#' Covid-19 Omicron (SARS-CoV-2 omicron), Covid-19 Delta (SARS-CoV-2 delta).
 #'
 #' DAEDALUS allows users to substitute default model parameters with custom
 #' values by passing them as `...` (see examples). These arguments are passed on
@@ -18,7 +39,8 @@
 #'
 #' ## Initial state
 #'
-#' `make_initial_state()` accepts the following parameters:
+#' Users can pass the following initial state parameters, which are handled
+#' internally by `make_initial_state()`:
 #'
 #' - `p_infectious`: A single numeric value in the range \eqn{(0.0, 1.0)} giving
 #' the proportion of individuals in each age group and economic sector that are
@@ -31,54 +53,56 @@
 #'
 #' ## Model parameters
 #'
-#' `make_parameters()` allows users to pass the following pathogen parameters:
+#' Users can pass the following infection and country parameters, which are
+#' handled internally by `make_parameters()`:
 #'
-#' - `beta`: A single numeric value > 0.0 for the infection transmission rate
-#' \eqn{\beta}. Defaults to 0.0186, assuming an \eqn{R_0} of 1.3
-#' and an infectious period (\eqn{T_I}) of 7.0 days
-#' (for \eqn{\beta = R_0 / T_I}).
+#' - `r0`: A single numeric value for the basic reproduction value of the
+#' infection \eqn{R_0}.
 #'
 #' - `sigma`: A single numeric value > 0.0 for the rate of transition from the
-#' exposed compartment to one of two infectious compartments. Defaults to 0.333
-#' assuming a pre-infectious period of 3.0 days.
+#' exposed compartment to one of two infectious compartments.
 #'
 #' - `p_sigma`: A single numeric value in the range \eqn{(0.0, 1.0)} for the
 #' proportion of infectious individuals who are also symptomatic. Asymptomatic
 #' individuals can have a different contribution to the force of infection from
-#' symptomatic individuals. Defaults to 0.66.
+#' symptomatic individuals.
 #'
 #' - `epsilon`: A single numeric value for the relative contribution of
 #' asymptomatic infectious individuals to the force of infection (compared to
-#' symptomatic individuals). Defaults to 0.2.
+#' symptomatic individuals).
 #'
-#' - `gamma`: A single numeric value for the recovery rate. Defaults to 0.143,
-#' assuming an infectious period of 7.0 days.
+#' - `gamma_Is`: A single numeric value for the recovery rate of infectious
+#' individuals who are not hospitalised.
 #'
-#' - `eta`: A single numeric value for the hospitalisation rate of symptomatic
-#' infectious individuals. Defaults to 0.01, assuming one of every hundred
-#' symptomatic individuals needs hospitalisation.
+#' - `gamma_Ia`: A single numeric value for the recovery rate from asymptomatic
+#' infection.
 #'
-#' - `omega`: A single numeric value for the mortality rate of hospitalised
-#' individuals. Defaults to 0.01, assuming one in every hundred hospitalisations
-#' results in death.
+#' - `gamma_H`: A numeric vector of length 4 for the age-specific recovery rate
+#' for individuals who are hospitalised.
+#'
+#' - `eta`: A numeric vector of length `N_AGE_GROUPS` (4) for the age-specific
+#' hospitalisation rate for individuals who are infectious and symptomatic.
+#'
+#' - `omega`: A numeric vector of length `N_AGE_GROUPS` (4) for the age-specific
+#' mortality rate for individuals who are hospitalised.
 #'
 #' - `rho`: A single numeric value for the rate at which infection-derived
 #' immunity wanes, returning individuals in the 'recovered' compartment to the
-#' 'susceptible' compartment. Defaults to 0.00556, assuming that such immunity
-#' lasts on average 180 days.
+#' 'susceptible' compartment.
 #'
 #' - `demography`: A numeric vector of length `N_AGE_GROUPS` (4), giving the
 #' number of individuals in each age group of interest. By default, this is
-#' taken from `country_data` based on the `country` selected.
+#' taken from `daedalus::country_data` based on the `country` selected.
 #'
-#' - `contact_matrix`: A square numeric matrix with `N_AGE_GROUPS` rows and
+#' - `contact_matrix`: A square numeric matrix with `N_AGE_GROUPS` (4) rows and
 #' columns, giving the per-capita number of contacts between individuals of each
-#' age group. By default, this is taken from `country_data` based on `country`.
+#' age group. By default, this is taken from `daedalus::country_data` based on
+#' the user-specified `country`.
 #'
 #' - `contacts_workplace`: A numeric vector of length `N_ECON_SECTORS` (45),
 #' giving the per-capita number of worker-to-worker interactions within economic
 #' sectors. Defaults to a standard value provided by the package as
-#' `economic_contacts`.
+#' `daedalus::economic_contacts`.
 #'
 #' - `contacts_consumer_worker`: A numeric matrix with `N_ECON_SECTORS` rows
 #' (45) and `N_AGE_GROUPS` columns (4) giving the per-capita contacts between
@@ -87,14 +111,26 @@
 #' demography.
 #'
 #' - `contacts_between_sectors`: A square numeric matrix with `N_ECON_SECTORS`
-#' rows and columns and with a zero diagonal, giving the number of
+#' (45) rows and columns and with a zero diagonal, giving the number of
 #' worker-to-worker contacts across economic sectors. Defaults to the package
 #' standard of a null matrix as between-sector-contacts are not currently
 #' modelled.
 #'
 #' @return A `<deSolve>` object.
+#'
+#' @examples
+#' # with default infection parameters associated with an epidemic
+#' output <- daedalus(country = "United Kingdom", epidemic = "influenza_1918")
+#'
+#' # with some infection parameters over-ridden by the user
+#' output <- daedalus(
+#'   country = "United Kingdom", epidemic = "influenza_1918",
+#'   r0 = 3.0
+#' )
 #' @export
-daedalus <- function(country, ...,
+daedalus <- function(country,
+                     epidemic = "sars_cov_2_pre_alpha",
+                     ...,
                      time_end = 300) {
   # input checking
   # NOTE: names are case sensitive
@@ -107,8 +143,23 @@ daedalus <- function(country, ...,
     cli::cli_abort(
       c(
         "Expected `country` to be a single string giving a country name from
-        among `country_names`, but it is not.",
+        among `country_names`.",
         i = "Country names are case sensitive and must be an exact match."
+      )
+    )
+  }
+
+  is_good_epidemic <- checkmate::test_string(epidemic) &&
+    checkmate::test_subset(
+      epidemic, names(daedalus::infection_data),
+      empty.ok = FALSE
+    )
+  if (!is_good_epidemic) {
+    cli::cli_abort(
+      c(
+        "Expected `epidemic` to be a string from among `epidemic_names`, but
+        it is not.",
+        i = "Epidemic names are case sensitive and must be an exact match."
       )
     )
   }
@@ -151,7 +202,7 @@ daedalus <- function(country, ...,
 
   parameters <- do.call(
     make_parameters,
-    c(list(country = country), parameters[
+    c(list(country = country, epidemic = epidemic), parameters[
       !names(parameters) %in% names(init_state_params)
     ])
   )
