@@ -10,20 +10,23 @@ make_parameters <- function(country, ...) {
   user_params <- list(...)
 
   # NOTE: country name is input checked in top-level fn `daedalus()`
-  country_data_ <- daedalus::country_data[[country]]
-  economic_contacts <- economic_contacts
-  demography <- country_data_[["demography"]]
-
-  cm <- country_data_[["contact_matrix"]] / demography
+  # NOTE: scaling by leading eigenvalue needed to parameterise transmission
+  # using r0 - scaling could be moved to data prep step if data are not to be
+  # served to users and are purely internal
+  cm <- country_params[["contact_matrix"]]
+  cm <- (cm / max(Re(eigen(cm, only.values = TRUE)$value))) / demography
 
   # workplace contacts within sectors
   cmw <- economic_contacts[["contacts_workplace"]]
+  cmw <- cmw / max(Re(eigen(diag(cmw))$values))
 
   # NOTE: default assumption for consumer to worker contacts
   # is workplace contacts `cmw` distributed in proportion to demography
   cmcw <- matrix(
     cmw, N_ECON_SECTORS, N_AGE_GROUPS
   ) * demography / sum(demography)
+  # NOTE: scaling by largest singular value using base::svd, accessed as "d"
+  cmcw <- cmcw / max(Re(svd(cmcw)[["d"]]))
 
   # NOTE: dummy CM for between-sector contacts; see data-raw/economic_contacts.R
   cm_ww <- economic_contacts[["contacts_between_sectors"]]
