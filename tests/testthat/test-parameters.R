@@ -1,47 +1,81 @@
 # Basic unit tests for the default model parameter expectations
 test_that("make_parameters: basic expectations", {
   # expect no conditions on commonly expected function usage
-  expect_no_condition(make_parameters("Canada"))
-  expect_no_condition(make_parameters("Canada", beta = 999))
+  expect_no_condition(make_parameters("Canada", epidemic = "influenza_1918"))
+  expect_no_condition(
+    make_parameters("Canada", epidemic = "influenza_1918", r0 = 999)
+  )
   expect_no_condition(
     make_parameters(
       "Canada",
+      epidemic = "influenza_1918",
       contact_matrix = matrix(2, N_AGE_GROUPS, N_AGE_GROUPS)
     )
   )
 
   expect_warning(
-    make_parameters("Canada", alpha = 999),
-    regexp = "parameters were passed that are not among the model parameters"
+    make_parameters("Canada", epidemic = "influenza_1918", alpha = 999),
+    regexp = "User provided parameters that are not among the model parameters"
   )
 
   # NOTE: warning about extra parameters suppressed
   suppressWarnings({
-    modified_param_names <- names(make_parameters("Canada", alpha = 999))
+    modified_param_names <- names(
+      make_parameters("Canada", epidemic = "influenza_1918", alpha = 999)
+    )
   })
   expect_identical(
     modified_param_names,
-    names(make_parameters("Canada"))
+    names(make_parameters("Canada", epidemic = "influenza_1918"))
   )
 })
 
 # NOTE: testing that `...` parameter errors are bubbled up from `daedalus()`
 test_that("Errors on `...` passed to `daedalus()`:", {
   expect_error(
-    daedalus("Canada", beta = "0.01"),
+    daedalus("Canada", r0 = "0.01"),
     regexp = "Model options.*`\\.\\.\\.`.*may only be numeric"
   )
   expect_error(
-    daedalus("Canada", beta = c(0.1, 0.1)),
-    regexp = "Expected each parameter.*`\\.\\.\\..*single positive"
+    daedalus("Canada", r0 = c(0.1, 0.1)),
+    regexp = "Expected the following parameters.*`\\.\\.\\..*single positive"
   )
   expect_error(
-    daedalus("Canada", beta = -0.1),
-    regexp = "Expected each parameter.*`\\.\\.\\..*single positive"
+    daedalus("Canada", r0 = -0.1),
+    regexp = "Expected the following parameters.*`\\.\\.\\..*single positive"
   )
   expect_error(
-    daedalus("Canada", beta = Inf),
-    regexp = "Expected each parameter.*`\\.\\.\\..*single positive"
+    daedalus("Canada", r0 = Inf),
+    regexp = "Expected the following parameters.*`\\.\\.\\..*single positive"
+  )
+
+  # checks on allowed numeric vector inputs
+  "Expected the following parameters passed in `...` to be numeric
+          vectors of length {N_AGE_GROUPS} with positive and finite values:
+          {.str {intersect(names(user_params), allowed_numerics)}}"
+
+  param_passed <- "eta"
+  expected_error <- glue::glue(
+    "Expected the following parameters passed in `...` to be numeric \\
+    vectors of length {N_AGE_GROUPS} with positive and finite values: \\
+    {glue::double_quote(param_passed)}"
+  )
+
+  expect_error(
+    daedalus("Canada", eta = c(0.1, 0.1)),
+    regexp = expected_error
+  )
+  expect_error(
+    daedalus("Canada", eta = 0.1),
+    regexp = expected_error
+  )
+  expect_error(
+    daedalus("Canada", eta = rep(Inf, 4)),
+    regexp = expected_error
+  )
+  expect_error(
+    daedalus("Canada", eta = rep(-1.0, 4)),
+    regexp = expected_error
   )
 
   # specific checks on poorly specified community contact matrix
@@ -144,12 +178,12 @@ test_that("Errors on `...` passed to `daedalus()`:", {
 
   cm_ww <- matrix(1.0, N_ECON_SECTORS - 2L, N_ECON_SECTORS - 2L)
   expected_error <- glue::glue(
-    "Expected user-provided `contacts_between_sectors` to be a square numeric \\
+    "Expected `contacts_between_sectors` to be a square numeric \\
     matrix with {N_ECON_SECTORS} rows and columns"
   )
   expect_error(
     daedalus("Canada", contacts_between_sectors = cm_ww),
-    regexp = expected_error
+    regexp = as.character(expected_error), perl = TRUE
   )
 
   cm_ww <- matrix(1.0, N_ECON_SECTORS, N_ECON_SECTORS)

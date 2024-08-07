@@ -8,6 +8,7 @@
 
 # nolint start
 library(testthat)
+library(checkmate)
 library(daedalus)
 # nolint end
 
