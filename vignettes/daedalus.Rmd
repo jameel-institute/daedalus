@@ -32,25 +32,33 @@ The package also provides data from @jarvis2024 on workplace contacts in economi
 Both datasets are accessed by internal functions to reduce the need for user input.
 
 ```{r run_model}
+# simulates a Covid-19 wild type outbreak by default
 output <- daedalus("Canada")
 ```
 
-Users can specify pathogen parameter values as well as change the initial conditions by passing arguments to `daedalus()` as `...`.
+Users can quickly model one of seven epidemics by passing a name from `daedalus::epidemic_names` to the `epidemic` argument.
+
+Users can also override epidemic-specific infection parameter values as well as change the initial conditions by passing arguments to `daedalus()` as `...`.
 The function documentation details which parameters are accepted.
 
 ```r
 # not run
-# e.g. change the transmission rate
-daedalus("Canada", beta = 1.5 / 7.0) # assume R0 of 1.5, 7 days infectious period
+# e.g. change the transmission rate by changing r0
+daedalus("Canada", r0 = 1.3) # assume r0 of 1.5, 7 days infectious period
 
-# e.g. change the hospitalisation rate
-daedalus("Canada", eta = 1.0 / 1000) # assume 1 in 1000 infectious need hospital
+# e.g. change the hospitalisation risk profile to model
+# 1918 Influenza epidemic but with risk of severe disease
+# increasing with age
+daedalus(
+  "Canada", epidemic = "influenza_1918",
+  eta = c(2.0, 3.0, 5.0, 15.0)
+)
 ```
 
 The model runs for 300 timesteps by default; timesteps should be interpreted as days since model parameters are in terms of days.
-The `daedalus()` function documentation has more information on the pathogen parameter defaults in the **Details** section.
+The `daedalus()` function documentation has more information on the infection parameter defaults in the **Details** section.
 
-Users can pass country data and pathogen parameters to override the package defaults by passing appropriately named arguments to `daedalus()` via R's `...` system.
+Users can pass country data and infection parameters to override the package defaults by passing appropriately named arguments to `daedalus()` via R's `...` system.
 
 Get the data in long or 'tidy' format using `prepare_output()`.
 
@@ -68,8 +76,7 @@ ggplot(
 ) +
   geom_line(
     aes(time, value, colour = econ_sector),
-    show.legend = FALSE,
-    position = "jitter"
+    show.legend = FALSE
   ) +
   facet_wrap(
     facets = vars(age_group)

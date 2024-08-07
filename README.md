@@ -38,7 +38,8 @@ pulls country-specific demographic and economic data, which is included
 in the package, into the model (see the [‘Get started’
 vignette](daedalus.html) for more details).
 
-The model runs for 300 timesteps (assumed to be days) by default.
+The model runs for 300 timesteps (days), and simulates an early-stage
+Covid-19-like pandemic by default.
 
 ``` r
 library(daedalus)
@@ -47,9 +48,23 @@ library(daedalus)
 output <- daedalus("Canada")
 ```
 
-Users can specify pathogen parameter values as well as change the
-initial conditions by passing arguments to `daedalus()` as `...`. The
-function documentation details which parameters are accepted.
+Users can select infection parameters from among seven epidemics caused
+by directly-transmitted viral respiratory pathogens, which are stored in
+the package as `infection_data`: SARS 2004 (SARS-CoV-1), influenza 2009
+(influenza A H1N1), influenza 1957 (influenza A H2N2), influenza 1918
+(influenza A H1N1), Covid-19 wild type (SARS-Cov-2 wild type, Covid-19
+Omicron (SARS-CoV-2 omicron), and Covid-19 Delta (SARS-CoV-2 delta).
+
+``` r
+# second argument `epidemic` takes the epidemic name
+output <- daedalus("Canada", "influenza_1918")
+```
+
+Users can over-ride infection parameter values, initial conditions (such
+as initial infections), and country characteristics (such as demographic
+or workforce details) by passing appropriately named arguments to
+`daedalus()` as `...`. The function documentation details which
+parameters are accepted.
 
 ``` r
 # not run
@@ -58,6 +73,12 @@ daedalus("Canada", beta = 1.5 / 7.0) # assume R0 of 1.5, 7 days infectious perio
 
 # e.g. change the hospitalisation rate
 daedalus("Canada", eta = 1.0 / 1000) # assume 1 in 1000 infectious need hospital
+
+# e.g. assume uniform community social contacts among the four age groups
+daedalus("Canada", contact_matrix = matrix(1.0, 4L, 4L))
+
+# e.g. change initial proportion of infectious individuals
+daedalus("Canada", p_infectious = 0.01)
 ```
 
 Get the data in long or ‘tidy’ format using `prepare_output()`.
@@ -68,11 +89,11 @@ data <- prepare_output(output)
 head(data)
 #>   time age_group compartment econ_sector   value
 #> 1    1       0-4 susceptible    sector_0 1993130
-#> 2    2       0-4 susceptible    sector_0 1993128
-#> 3    3       0-4 susceptible    sector_0 1993127
-#> 4    4       0-4 susceptible    sector_0 1993125
-#> 5    5       0-4 susceptible    sector_0 1993123
-#> 6    6       0-4 susceptible    sector_0 1993121
+#> 2    2       0-4 susceptible    sector_0 1993123
+#> 3    3       0-4 susceptible    sector_0 1993111
+#> 4    4       0-4 susceptible    sector_0 1993087
+#> 5    5       0-4 susceptible    sector_0 1993039
+#> 6    6       0-4 susceptible    sector_0 1992943
 ```
 
 ## Related projects
