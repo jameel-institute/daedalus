@@ -1,15 +1,22 @@
 #' @title Make a parameter list for DAEDALUS
 #' @description Helper function to prepare a parameter list for `daedalus()`,
 #' allowing the use of country-specific contact matrices and user-specified
-#' pathogen parameter values.
-#' @param country A string giving a country name for which stored demographic
-#' and economic data are extracted.
-#' @param ... User-specified values to replace default pathogen parameter values
-#' .
-make_parameters <- function(country, ...) {
+#' infection parameter values.
+#' @inheritParams daedalus
+#' @param ... User-specified values to replace default infection or country
+#' parameter values.
+#' @return A list of model parameters suitable for the country or territory
+#' specified in `country` and for the infection specified in `epidemic`, with
+#' any user-specified over-rides from `...`.
+#' @keywords internal
+make_parameters <- function(country, epidemic, ...) {
   user_params <- list(...)
 
   # NOTE: country name is input checked in top-level fn `daedalus()`
+  country_params <- daedalus::country_data[[country]]
+  demography <- country_params[["demography"]]
+  economic_contacts <- daedalus::economic_contacts
+
   # NOTE: scaling by leading eigenvalue needed to parameterise transmission
   # using r0 - scaling could be moved to data prep step if data are not to be
   # served to users and are purely internal
@@ -31,18 +38,9 @@ make_parameters <- function(country, ...) {
   # NOTE: dummy CM for between-sector contacts; see data-raw/economic_contacts.R
   cm_ww <- economic_contacts[["contacts_between_sectors"]]
 
-  # NOTE: these are arbitrary values roughly equivalent to
-  # pandemic influenza, with R0 = 1.3, infectious period = 7 days
-  # pre-infectious period = 3 days
-  params <- list(
-    beta = 1.3 / 7.0,
-    sigma = 1.0 / 3.0,
-    p_sigma = 0.66,
-    epsilon = 0.2,
-    gamma = 1.0 / 7.0,
-    eta = 1.0 / 100.0,
-    omega = 1.0 / 100.0,
-    rho = 1.0 / 180.0,
+  # get infection params from `infection_data`
+  infection_params <- daedalus::infection_data[[epidemic]]
+  country_params <- list(
     demography = demography,
     contact_matrix = cm,
     contacts_workplace = cmw,
@@ -50,11 +48,22 @@ make_parameters <- function(country, ...) {
     contacts_between_sectors = cm_ww
   )
 
+  params <- c(infection_params, country_params)
+
+  # check all user inputs
   is_empty_list <- checkmate::test_list(user_params, null.ok = TRUE, len = 0L)
   if (!is_empty_list) {
+    # NOTE: some infection parameters must be numbers (numeric length 1)
+    # while others are numeric vectors of length `N_AGE_GROUPS`
+    allowed_numerics_names <- c("eta", "gamma_H", "omega")
+    contact_data_names <- c(
+      "contact_matrix", "contacts_workplace", "contacts_consumer_worker",
+      "contacts_between_sectors"
+    )
     is_each_number <- all(
       vapply(
-        user_params[!startsWith(names(user_params), "contact")],
+        user_params[!names(user_params) %in%
+          c(allowed_numerics_names, contact_data_names)],
         checkmate::test_number,
         logical(1L),
         # NOTE: rate parameter limits allowed may need to be tweaked
@@ -62,12 +71,37 @@ make_parameters <- function(country, ...) {
         finite = TRUE
       )
     )
+
+    is_numeric_good <- all(
+      vapply(
+        user_params[allowed_numerics_names], checkmate::test_numeric,
+        logical(1L),
+        len = N_AGE_GROUPS, lower = 0.0,
+        finite = TRUE, null.ok = TRUE
+      )
+    )
+
     if (!is_each_number) {
       cli::cli_abort(
         c(
-          "Expected each parameter passed in `...` to be a single positive and
-          finite number. Only user-provided contact data may be numeric vectors
-          or matrices.",
+          "Expected the following parameters passed in `...` to be a single
+          positive and finite number:
+          {.str {setdiff(
+            names(user_params), c(allowed_numerics_names, contact_data_names)
+          )}}",
+          i = "Only user-provided contact data may be numeric vectors
+          or matrices. See the Help page for {.help daedalus::daedalus} for
+          parameters that can be user specified."
+        )
+      )
+    }
+
+    if (!is_numeric_good) {
+      cli::cli_abort(
+        c(
+          "Expected the following parameters passed in `...` to be numeric
+          vectors of length {N_AGE_GROUPS} with positive and finite values:
+          {.str {intersect(names(user_params), allowed_numerics)}}",
           i = "See the Help page for {.help daedalus::daedalus} for parameters
           that can be user specified."
         )
@@ -90,6 +124,7 @@ make_parameters <- function(country, ...) {
         user_params[["contact_matrix"]],
         nrows = N_AGE_GROUPS, ncols = N_AGE_GROUPS
       )
+
       if (!is_good_cm_dims) {
         cli::cli_abort(
           c(
@@ -110,6 +145,7 @@ make_parameters <- function(country, ...) {
         len = N_ECON_SECTORS,
         lower = 0.0, finite = TRUE, any.missing = FALSE
       )
+
       if (!is_good_cw) {
         cli::cli_abort(
           c(
@@ -133,6 +169,7 @@ make_parameters <- function(country, ...) {
         lower = 0.0,
         finite = TRUE
       )
+
       is_good_cmcw_dims <- checkmate::test_matrix(
         user_params[["contacts_consumer_worker"]],
         nrows = N_ECON_SECTORS, ncols = N_AGE_GROUPS
@@ -145,6 +182,7 @@ make_parameters <- function(country, ...) {
           0.0."
         )
       }
+
       if (!is_good_cmcw_dims) {
         cli::cli_abort(
           c(
@@ -185,18 +223,19 @@ make_parameters <- function(country, ...) {
           0.0."
         )
       }
+
       if (!is_good_cm_ww_dims) {
         cli::cli_abort(
           c(
-            "Expected user-provided `contacts_between_sectors` to be a square
-            numeric matrix with {N_ECON_SECTORS} rows and columns, but it has
-            {nrow(user_params[['contacts_consumer_worker']])} rows and
-            {ncol(user_params[['contacts_consumer_worker']])} columns.",
+            "Expected `contacts_between_sectors` to be a square
+            numeric matrix with {N_ECON_SECTORS} rows and columns.",
             i = "The number of rows and columns corresponds to the number of
             economic sectors."
-          )
+          ),
+          .envir = parent.frame()
         )
       }
+
       if (!is_zero_diagonal) {
         cli::cli_abort(
           c(
@@ -214,17 +253,19 @@ make_parameters <- function(country, ...) {
       names(user_params),
       subset.of = c(names(params), NULL)
     )
+
     if (!has_identical_names) {
       cli::cli_warn(
         c(
-          "The following user-provided parameters were passed that are not
-          among the model parameters, and will not be passed to the model:
+          "User provided parameters that are not among the model parameters;
+          these will not be passed to the model:
           {.str {setdiff(names(user_params), names(params))}}.",
           i = "Model parameters are named: {.str {names(params)}}."
         ),
         call = parent.frame() # to show parent env rather than helper fn
       )
     }
+
     user_params[!names(user_params) %in% names(params)] <- NULL
 
     # replace defaults with user values
