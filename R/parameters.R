@@ -101,7 +101,7 @@ make_parameters <- function(country, epidemic, ...) {
         c(
           "Expected the following parameters passed in `...` to be numeric
           vectors of length {N_AGE_GROUPS} with positive and finite values:
-          {.str {intersect(names(user_params), allowed_numerics)}}",
+          {.str {intersect(names(user_params), allowed_numerics_names)}}",
           i = "See the Help page for {.help daedalus::daedalus} for parameters
           that can be user specified."
         )

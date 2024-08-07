@@ -20,6 +20,24 @@ test_that("daedalus: basic expectations", {
   )
 })
 
+# test that daedalus runs for all epidemic infection parameter sets
+test_that("daedalus: Runs for all epidemics", {
+  epidemic_names <- names(infection_data)
+  # expect no conditions
+  expect_no_condition({
+    output_list <- lapply(epidemic_names, daedalus, country = "Canada")
+  })
+
+  # expect classed output, type double, and non-negative
+  checkmate::expect_list(output_list, "deSolve")
+  expect_true(
+    all(vapply(output_list, function(x) {
+      all(x >= 0.0)
+    }, FUN.VALUE = logical(1)))
+  )
+})
+
+# test statistical correctness for only the covid wildtype infection param set
 test_that("daedalus: statistical correctness", {
   output <- daedalus("Canada")
 
@@ -89,5 +107,32 @@ test_that("daedalus: errors and warnings", {
   expect_error(
     daedalus("Canada", time_end = Inf),
     regexp = "Expected `time_end` to be a single positive integer-like number."
+  )
+
+  # expect errors on epidemic
+  expected_error <- "Expected `epidemic` to be a string from among `epidemic_names`"
+  expect_error(
+    daedalus(
+      "Canada", "unfluenza_1920"
+    ),
+    regexp =
+    )
+  expect_error(
+    daedalus(
+      "Canada", NULL
+    ),
+    regexp = "Expected `epidemic` to be a string from among `epidemic_names`"
+  )
+  expect_error(
+    daedalus(
+      "Canada", NA_character_
+    ),
+    regexp = "Expected `epidemic` to be a string from among `epidemic_names`"
+  )
+  expect_error(
+    daedalus(
+      "Canada", 1L
+    ),
+    regexp = "Expected `epidemic` to be a string from among `epidemic_names`"
   )
 })
