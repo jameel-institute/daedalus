@@ -4,17 +4,36 @@
 \alias{make_parameters}
 \title{Make a parameter list for DAEDALUS}
 \usage{
-make_parameters(country, ...)
+make_parameters(country, epidemic, ...)
 }
 \arguments{
-\item{country}{A string giving a country name for which stored demographic
-and economic data are extracted.}
+\item{country}{A country or territory name from among \code{country_names}.}
 
-\item{...}{User-specified values to replace default pathogen parameter values
-.}
+\item{epidemic}{A string for the infection parameter set to use.
+Infection parameter sets may be known by the name of the outbreak or the
+causative pathogen;
+see \strong{Details} for more on which epidemics are supported.
+See \code{epidemic_names} for allowed names, as the name must match exactly.
+Defaults to simulating an epidemic similar to Covid-19 outbreaks caused by
+the wild type of the SARS-CoV-2 virus.
+
+Selecting an epidemic automatically pulls in infection parameters
+associated with the epidemic; these are stored as packaged data in
+\code{infection_data}.
+Default infection parameters for epidemics can be over-ridden by passing them
+as named arguments via \code{...}.}
+
+\item{...}{User-specified values to replace default infection or country
+parameter values.}
+}
+\value{
+A list of model parameters suitable for the country or territory
+specified in \code{country} and for the infection specified in \code{epidemic}, with
+any user-specified over-rides from \code{...}.
 }
 \description{
 Helper function to prepare a parameter list for \code{daedalus()},
 allowing the use of country-specific contact matrices and user-specified
-pathogen parameter values.
+infection parameter values.
 }
+\keyword{internal}

@@ -4,10 +4,24 @@
 \alias{daedalus}
 \title{DAEDALUS model for health, social and economic costs of a pandemic}
 \usage{
-daedalus(country, ..., time_end = 300)
+daedalus(country, epidemic = "sars_cov_2_pre_alpha", ..., time_end = 300)
 }
 \arguments{
 \item{country}{A country or territory name from among \code{country_names}.}
+
+\item{epidemic}{A string for the infection parameter set to use.
+Infection parameter sets may be known by the name of the outbreak or the
+causative pathogen;
+see \strong{Details} for more on which epidemics are supported.
+See \code{epidemic_names} for allowed names, as the name must match exactly.
+Defaults to simulating an epidemic similar to Covid-19 outbreaks caused by
+the wild type of the SARS-CoV-2 virus.
+
+Selecting an epidemic automatically pulls in infection parameters
+associated with the epidemic; these are stored as packaged data in
+\code{infection_data}.
+Default infection parameters for epidemics can be over-ridden by passing them
+as named arguments via \code{...}.}
 
 \item{...}{Additional arguments passed to \code{make_parameters()} or
 \code{make_initial_state()}. See \strong{Details} for permitted arguments.}
@@ -23,14 +37,25 @@ A \verb{<deSolve>} object.
 Run the DAEDALUS model from R. This is a work in progress.
 }
 \details{
+\subsection{Included epidemics}{
+
+Epidemics for which data are available are (pathogen in parentheses):
+SARS 2004 (SARS-CoV-1), influenza 2009 (influenza A H1N1),
+influenza 1957 (influenza A H2N2), influenza 1918 (influenza A H1N1),
+Covid-19 wild type (SARS-Cov-2 wild type),
+Covid-19 Omicron (SARS-CoV-2 omicron), Covid-19 Delta (SARS-CoV-2 delta).
+
 DAEDALUS allows users to substitute default model parameters with custom
 values by passing them as \code{...} (see examples). These arguments are passed on
 to the internal functions \code{make_parameters()} and \code{make_initial_state()} as
 appropriate. Any arguments that are passed and are not suitable for those
 functions will throw a warning.
+}
+
 \subsection{Initial state}{
 
-\code{make_initial_state()} accepts the following parameters:
+Users can pass the following initial state parameters, which are handled
+internally by \code{make_initial_state()}:
 \itemize{
 \item \code{p_infectious}: A single numeric value in the range \eqn{(0.0, 1.0)} giving
 the proportion of individuals in each age group and economic sector that are
@@ -44,54 +69,64 @@ asymptomatic. Defaults to 0.0.
 
 \subsection{Model parameters}{
 
-\code{make_parameters()} allows users to pass the following pathogen parameters:
+Users can pass the following infection and country parameters, which are
+handled internally by \code{make_parameters()}:
 \itemize{
-\item \code{beta}: A single numeric value > 0.0 for the infection transmission rate
-\eqn{\beta}. Defaults to 0.0186, assuming an \eqn{R_0} of 1.3
-and an infectious period (\eqn{T_I}) of 7.0 days
-(for \eqn{\beta = R_0 / T_I}).
+\item \code{r0}: A single numeric value for the basic reproduction value of the
+infection \eqn{R_0}.
 \item \code{sigma}: A single numeric value > 0.0 for the rate of transition from the
-exposed compartment to one of two infectious compartments. Defaults to 0.333
-assuming a pre-infectious period of 3.0 days.
+exposed compartment to one of two infectious compartments.
 \item \code{p_sigma}: A single numeric value in the range \eqn{(0.0, 1.0)} for the
 proportion of infectious individuals who are also symptomatic. Asymptomatic
 individuals can have a different contribution to the force of infection from
-symptomatic individuals. Defaults to 0.66.
+symptomatic individuals.
 \item \code{epsilon}: A single numeric value for the relative contribution of
 asymptomatic infectious individuals to the force of infection (compared to
-symptomatic individuals). Defaults to 0.2.
-\item \code{gamma}: A single numeric value for the recovery rate. Defaults to 0.143,
-assuming an infectious period of 7.0 days.
-\item \code{eta}: A single numeric value for the hospitalisation rate of symptomatic
-infectious individuals. Defaults to 0.01, assuming one of every hundred
-symptomatic individuals needs hospitalisation.
-\item \code{omega}: A single numeric value for the mortality rate of hospitalised
-individuals. Defaults to 0.01, assuming one in every hundred hospitalisations
-results in death.
+symptomatic individuals).
+\item \code{gamma_Is}: A single numeric value for the recovery rate of infectious
+individuals who are not hospitalised.
+\item \code{gamma_Ia}: A single numeric value for the recovery rate from asymptomatic
+infection.
+\item \code{gamma_H}: A numeric vector of length 4 for the age-specific recovery rate
+for individuals who are hospitalised.
+\item \code{eta}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the age-specific
+hospitalisation rate for individuals who are infectious and symptomatic.
+\item \code{omega}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the age-specific
+mortality rate for individuals who are hospitalised.
 \item \code{rho}: A single numeric value for the rate at which infection-derived
 immunity wanes, returning individuals in the 'recovered' compartment to the
-'susceptible' compartment. Defaults to 0.00556, assuming that such immunity
-lasts on average 180 days.
+'susceptible' compartment.
 \item \code{demography}: A numeric vector of length \code{N_AGE_GROUPS} (4), giving the
 number of individuals in each age group of interest. By default, this is
-taken from \code{country_data} based on the \code{country} selected.
-\item \code{contact_matrix}: A square numeric matrix with \code{N_AGE_GROUPS} rows and
+taken from \code{daedalus::country_data} based on the \code{country} selected.
+\item \code{contact_matrix}: A square numeric matrix with \code{N_AGE_GROUPS} (4) rows and
 columns, giving the per-capita number of contacts between individuals of each
-age group. By default, this is taken from \code{country_data} based on \code{country}.
+age group. By default, this is taken from \code{daedalus::country_data} based on
+the user-specified \code{country}.
 \item \code{contacts_workplace}: A numeric vector of length \code{N_ECON_SECTORS} (45),
 giving the per-capita number of worker-to-worker interactions within economic
 sectors. Defaults to a standard value provided by the package as
-\code{economic_contacts}.
+\code{daedalus::economic_contacts}.
 \item \code{contacts_consumer_worker}: A numeric matrix with \code{N_ECON_SECTORS} rows
 (45) and \code{N_AGE_GROUPS} columns (4) giving the per-capita contacts between
 individuals in each economic sector and consumers. Defaults to the
 sector-wise workplace contacts distributed in proportion to country
 demography.
 \item \code{contacts_between_sectors}: A square numeric matrix with \code{N_ECON_SECTORS}
-rows and columns and with a zero diagonal, giving the number of
+(45) rows and columns and with a zero diagonal, giving the number of
 worker-to-worker contacts across economic sectors. Defaults to the package
 standard of a null matrix as between-sector-contacts are not currently
 modelled.
 }
 }
+}
+\examples{
+# with default infection parameters associated with an epidemic
+output <- daedalus(country = "United Kingdom", epidemic = "influenza_1918")
+
+# with some infection parameters over-ridden by the user
+output <- daedalus(
+  country = "United Kingdom", epidemic = "influenza_1918",
+  r0 = 3.0
+)
 }
