@@ -10,6 +10,9 @@ exclusions: list(
     "R/constants.R" = list(
       object_name_linter = Inf # prevent uppercase constants being linted
     ),
+    "R/ode.R" = list(
+      object_name_linter = Inf # prevent parameter names being linted
+    ),
     "tests/testthat.R" = list(
       unused_import_linter = Inf
     ),
