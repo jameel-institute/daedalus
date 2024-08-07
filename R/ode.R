@@ -44,29 +44,28 @@ daedalus_rhs <- function(t, state, parameters) {
     c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
   )
 
-  # NOTE: all rate parameters are uniform across age groups, this may change
-  # in future.
-  beta <- parameters[["beta"]] # transmissibility parameter
+  r0 <- parameters[["r0"]]
   sigma <- parameters[["sigma"]] # exposed to infectious
   p_sigma <- parameters[["p_sigma"]] # proportion symptomatic
   epsilon <- parameters[["epsilon"]] # relative FOI from asymptomatics
-  gamma <- parameters[["gamma"]] # single recovery rate for Ia, Is and Hosp.
+  gamma_Is <- parameters[["gamma_Is"]] # single recovery rate for Is and Hosp.
+  gamma_Ia <- parameters[["gamma_Ia"]] # recovery rate for Ia
+  rho <- parameters[["rho"]] # waning rate for infection-derived immunity
+
+  # NOTE: these params are vectors of length `N_AGE_GROUPS`
+  gamma_H <- parameters[["gamma_H"]] # recovery rate for H
   eta <- parameters[["eta"]] # hospitalisation rate for symptomatics
   omega <- parameters[["omega"]] # mortality rate for Hosp.
-  rho <- parameters[["rho"]] # waning rate for infection-derived immunity
+
   cm <- parameters[["contact_matrix"]]
-
-  # mean contact rate in each sector; contacts ÷ sector population
   cmw <- parameters[["contacts_workplace"]]
-
   # NOTE: consumer-worker contacts are known per sector, and are scaled during
   # pre-processing by the demographic distribution for an assumption of
   # proportionality with population demography. This may need to change if
   # epi compartments preventing contacts - hospitalisation and death - have
   # age-specific entry rates (e.g. older people are hospitalised more).
   cw <- parameters[["contacts_consumer_worker"]]
-
-  # NOTE: worker contacts between sectors
+  # NOTE: worker contacts between sectors takes a dummy value of 1e-6
   cm_ww <- parameters[["contacts_between_sectors"]]
 
   # NOTE: `demography` includes the hospitalised and dead. Should probably be
@@ -74,7 +73,7 @@ daedalus_rhs <- function(t, state, parameters) {
   demography <- parameters[["demography"]]
 
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
-  new_community_infections <- beta * state[, i_S, ] *
+  new_community_infections <- r0 * state[, i_S, ] *
     cm %*% (state[, i_Is, ] + state[, i_Ia, ] * epsilon)
 
   workplace_infected <- state[i_WORKING_AGE, i_Is, -i_NOT_WORKING] +
@@ -82,7 +81,7 @@ daedalus_rhs <- function(t, state, parameters) {
 
   # NOTE: original DAEDALUS model lumped economic sectors with age strata, here
   # we use a 3D tensor instead, where the first layer represents the non-working
-  new_workplace_infections <- beta *
+  new_workplace_infections <- r0 *
     state[i_WORKING_AGE, i_S, -i_NOT_WORKING] *
     ((cmw * workplace_infected) + c(workplace_infected %*% cm_ww)) /
     colSums(state[i_WORKING_AGE, , -i_NOT_WORKING])
@@ -91,7 +90,7 @@ daedalus_rhs <- function(t, state, parameters) {
   # NOTE: calculate FOI as β * Σ_{j=1}^{j=N} M_{ij} I_j / N_j
   infected_consumers <- (state[, i_Is, i_NOT_WORKING] +
     state[, i_Ia, i_NOT_WORKING] * epsilon) / demography
-  foi_cw <- beta * cw %*% infected_consumers
+  foi_cw <- r0 * cw %*% infected_consumers
 
   new_comm_work_infections <- state[i_WORKING_AGE, i_S, -i_NOT_WORKING] * foi_cw
 
@@ -112,23 +111,20 @@ daedalus_rhs <- function(t, state, parameters) {
 
   # change in infectious symptomatic
   d_state[, i_Is, ] <- p_sigma * sigma * state[, i_E, ] -
-    (gamma + eta) * state[, i_Is, ]
+    (gamma_Is + eta) * state[, i_Is, ]
 
   # change in infectious asymptomatic
   d_state[, i_Ia, ] <- sigma * (1.0 - p_sigma) * state[, i_E, ] -
-    gamma * state[, i_Ia, ]
+    gamma_Ia * state[, i_Ia, ]
 
   # change in hospitalised
-  d_state[, i_H, ] <- eta * state[, i_Is, ] - (gamma + omega) * state[, i_H, ]
+  d_state[, i_H, ] <- eta * state[, i_Is, ] - (gamma_H + omega) * state[, i_H, ]
 
-  # change in recovered
-  # NOTE: rowSums does not accept a `dims` argument, hence `apply()`
-  all_infected <- apply(
-    state[, c(i_Is, i_Ia, i_H), ],
-    c(DIM_AGE_GROUPS, DIM_ECON_SECTORS),
-    sum
-  )
-  d_state[, i_R, ] <- gamma * all_infected - rho * state[, i_R, ]
+  # change in recovered - NOTE: different recovery rates for each compartment
+  d_state[, i_R, ] <- gamma_Is * state[, i_Is, ] +
+    gamma_Ia * state[, i_Ia, ] +
+    gamma_H * state[, i_H, ] -
+    rho * state[, i_R, ]
 
   # change in dead
   d_state[, i_D, ] <- omega * state[, i_H, ]
