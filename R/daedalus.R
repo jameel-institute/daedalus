@@ -42,12 +42,12 @@
 #' Users can pass the following initial state parameters, which are handled
 #' internally by `make_initial_state()`:
 #'
-#' - `p_infectious`: A single numeric value in the range \eqn{(0.0, 1.0)} giving
+#' - `p_infectious`: A single numeric value in the range \eqn{[0.0, 1.0]} giving
 #' the proportion of individuals in each age group and economic sector that are
 #' to be initialised as infectious. Defaults to `1e-6`, or one in every one
 #' million as infectious.
 #'
-#' - `p_asymptomatic`: A single numeric value in the range \eqn{(0.0, 1.0)} for
+#' - `p_asymptomatic`: A single numeric value in the range \eqn{[0.0, 1.0]} for
 #' the proportion of initially infectious individuals who are considered to be
 #' asymptomatic. Defaults to 0.0.
 #'
@@ -62,7 +62,7 @@
 #' - `sigma`: A single numeric value > 0.0 for the rate of transition from the
 #' exposed compartment to one of two infectious compartments.
 #'
-#' - `p_sigma`: A single numeric value in the range \eqn{(0.0, 1.0)} for the
+#' - `p_sigma`: A single numeric value in the range \eqn{[0.0, 1.0]} for the
 #' proportion of infectious individuals who are also symptomatic. Asymptomatic
 #' individuals can have a different contribution to the force of infection from
 #' symptomatic individuals.
@@ -77,8 +77,8 @@
 #' - `gamma_Ia`: A single numeric value for the recovery rate from asymptomatic
 #' infection.
 #'
-#' - `gamma_H`: A numeric vector of length 4 for the age-specific recovery rate
-#' for individuals who are hospitalised.
+#' - `gamma_H`: A numeric vector of length `N_AGE_GROUPS` (4) for the
+#' age-specific recovery rate for individuals who are hospitalised.
 #'
 #' - `eta`: A numeric vector of length `N_AGE_GROUPS` (4) for the age-specific
 #' hospitalisation rate for individuals who are infectious and symptomatic.

@@ -57,11 +57,11 @@ functions will throw a warning.
 Users can pass the following initial state parameters, which are handled
 internally by \code{make_initial_state()}:
 \itemize{
-\item \code{p_infectious}: A single numeric value in the range \eqn{(0.0, 1.0)} giving
+\item \code{p_infectious}: A single numeric value in the range \eqn{[0.0, 1.0]} giving
 the proportion of individuals in each age group and economic sector that are
 to be initialised as infectious. Defaults to \code{1e-6}, or one in every one
 million as infectious.
-\item \code{p_asymptomatic}: A single numeric value in the range \eqn{(0.0, 1.0)} for
+\item \code{p_asymptomatic}: A single numeric value in the range \eqn{[0.0, 1.0]} for
 the proportion of initially infectious individuals who are considered to be
 asymptomatic. Defaults to 0.0.
 }
@@ -76,7 +76,7 @@ handled internally by \code{make_parameters()}:
 infection \eqn{R_0}.
 \item \code{sigma}: A single numeric value > 0.0 for the rate of transition from the
 exposed compartment to one of two infectious compartments.
-\item \code{p_sigma}: A single numeric value in the range \eqn{(0.0, 1.0)} for the
+\item \code{p_sigma}: A single numeric value in the range \eqn{[0.0, 1.0]} for the
 proportion of infectious individuals who are also symptomatic. Asymptomatic
 individuals can have a different contribution to the force of infection from
 symptomatic individuals.
@@ -87,8 +87,8 @@ symptomatic individuals).
 individuals who are not hospitalised.
 \item \code{gamma_Ia}: A single numeric value for the recovery rate from asymptomatic
 infection.
-\item \code{gamma_H}: A numeric vector of length 4 for the age-specific recovery rate
-for individuals who are hospitalised.
+\item \code{gamma_H}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the
+age-specific recovery rate for individuals who are hospitalised.
 \item \code{eta}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the age-specific
 hospitalisation rate for individuals who are infectious and symptomatic.
 \item \code{omega}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the age-specific

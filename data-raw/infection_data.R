@@ -1,13 +1,11 @@
 ## code to prepare `infection_data` dataset goes here
 
 library(data.table)
-library(readxl)
 library(checkmate)
 library(stringr)
 
 # read data from inst/extdata/
-data <- read_excel("inst/extdata/sevenpathogens.xlsx")
-setDT(data)
+data <- fread("inst/extdata/sevenpathogens.csv")
 
 # standardise names
 colnames(data) <- str_to_lower(colnames(data)) |> str_replace_all("\\s|-", "_")
