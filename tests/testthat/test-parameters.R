@@ -30,6 +30,14 @@ test_that("make_parameters: basic expectations", {
   )
 })
 
+# adding snapshot test on all infection parameter values to catch
+# potentially unwanted raw data changes
+test_that("infection_data: Snapshot tests", {
+  expect_snapshot(
+    infection_data
+  )
+})
+
 # NOTE: testing that `...` parameter errors are bubbled up from `daedalus()`
 test_that("Errors on `...` passed to `daedalus()`:", {
   expect_error(
