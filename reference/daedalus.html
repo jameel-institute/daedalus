@@ -40,7 +40,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus</span><span class="op">(</span><span class="va">country</span>, <span class="va">...</span>, time_end <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus</span><span class="op">(</span><span class="va">country</span>, epidemic <span class="op">=</span> <span class="st">"sars_cov_2_pre_alpha"</span>, <span class="va">...</span>, time_end <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -49,6 +49,21 @@
 
 <dl><dt id="arg-country">country<a class="anchor" aria-label="anchor" href="#arg-country"></a></dt>
 <dd><p>A country or territory name from among <code>country_names</code>.</p></dd>
+
+
+<dt id="arg-epidemic">epidemic<a class="anchor" aria-label="anchor" href="#arg-epidemic"></a></dt>
+<dd><p>A string for the infection parameter set to use.
+Infection parameter sets may be known by the name of the outbreak or the
+causative pathogen;
+see <strong>Details</strong> for more on which epidemics are supported.
+See <code>epidemic_names</code> for allowed names, as the name must match exactly.
+Defaults to simulating an epidemic similar to Covid-19 outbreaks caused by
+the wild type of the SARS-CoV-2 virus.</p>
+<p>Selecting an epidemic automatically pulls in infection parameters
+associated with the epidemic; these are stored as packaged data in
+<code>infection_data</code>.
+Default infection parameters for epidemics can be over-ridden by passing them
+as named arguments via <code>...</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -68,19 +83,33 @@ returned for each day. Defaults to 300 days.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>DAEDALUS allows users to substitute default model parameters with custom
+
+<div class="section">
+<h3 id="included-epidemics">Included epidemics<a class="anchor" aria-label="anchor" href="#included-epidemics"></a></h3>
+
+
+<p>Epidemics for which data are available are (pathogen in parentheses):
+SARS 2004 (SARS-CoV-1), influenza 2009 (influenza A H1N1),
+influenza 1957 (influenza A H2N2), influenza 1918 (influenza A H1N1),
+Covid-19 wild type (SARS-Cov-2 wild type),
+Covid-19 Omicron (SARS-CoV-2 omicron), Covid-19 Delta (SARS-CoV-2 delta).</p>
+<p>DAEDALUS allows users to substitute default model parameters with custom
 values by passing them as <code>...</code> (see examples). These arguments are passed on
 to the internal functions <code><a href="make_parameters.html">make_parameters()</a></code> and <code><a href="make_initial_state.html">make_initial_state()</a></code> as
 appropriate. Any arguments that are passed and are not suitable for those
-functions will throw a warning.</p><div class="section">
+functions will throw a warning.</p>
+</div>
+
+<div class="section">
 <h3 id="initial-state">Initial state<a class="anchor" aria-label="anchor" href="#initial-state"></a></h3>
 
 
-<p><code><a href="make_initial_state.html">make_initial_state()</a></code> accepts the following parameters:</p><ul><li><p><code>p_infectious</code>: A single numeric value in the range \((0.0, 1.0)\) giving
+<p>Users can pass the following initial state parameters, which are handled
+internally by <code><a href="make_initial_state.html">make_initial_state()</a></code>:</p><ul><li><p><code>p_infectious</code>: A single numeric value in the range \([0.0, 1.0]\) giving
 the proportion of individuals in each age group and economic sector that are
 to be initialised as infectious. Defaults to <code>1e-6</code>, or one in every one
 million as infectious.</p></li>
-<li><p><code>p_asymptomatic</code>: A single numeric value in the range \((0.0, 1.0)\) for
+<li><p><code>p_asymptomatic</code>: A single numeric value in the range \([0.0, 1.0]\) for
 the proportion of initially infectious individuals who are considered to be
 asymptomatic. Defaults to 0.0.</p></li>
 </ul></div>
@@ -89,49 +118,49 @@ asymptomatic. Defaults to 0.0.</p></li>
 <h3 id="model-parameters">Model parameters<a class="anchor" aria-label="anchor" href="#model-parameters"></a></h3>
 
 
-<p><code><a href="make_parameters.html">make_parameters()</a></code> allows users to pass the following pathogen parameters:</p><ul><li><p><code>beta</code>: A single numeric value &gt; 0.0 for the infection transmission rate
-\(\beta\). Defaults to 0.0186, assuming an \(R_0\) of 1.3
-and an infectious period (\(T_I\)) of 7.0 days
-(for \(\beta = R_0 / T_I\)).</p></li>
+<p>Users can pass the following infection and country parameters, which are
+handled internally by <code><a href="make_parameters.html">make_parameters()</a></code>:</p><ul><li><p><code>r0</code>: A single numeric value for the basic reproduction value of the
+infection \(R_0\).</p></li>
 <li><p><code>sigma</code>: A single numeric value &gt; 0.0 for the rate of transition from the
-exposed compartment to one of two infectious compartments. Defaults to 0.333
-assuming a pre-infectious period of 3.0 days.</p></li>
-<li><p><code>p_sigma</code>: A single numeric value in the range \((0.0, 1.0)\) for the
+exposed compartment to one of two infectious compartments.</p></li>
+<li><p><code>p_sigma</code>: A single numeric value in the range \([0.0, 1.0]\) for the
 proportion of infectious individuals who are also symptomatic. Asymptomatic
 individuals can have a different contribution to the force of infection from
-symptomatic individuals. Defaults to 0.66.</p></li>
+symptomatic individuals.</p></li>
 <li><p><code>epsilon</code>: A single numeric value for the relative contribution of
 asymptomatic infectious individuals to the force of infection (compared to
-symptomatic individuals). Defaults to 0.2.</p></li>
-<li><p><code>gamma</code>: A single numeric value for the recovery rate. Defaults to 0.143,
-assuming an infectious period of 7.0 days.</p></li>
-<li><p><code>eta</code>: A single numeric value for the hospitalisation rate of symptomatic
-infectious individuals. Defaults to 0.01, assuming one of every hundred
-symptomatic individuals needs hospitalisation.</p></li>
-<li><p><code>omega</code>: A single numeric value for the mortality rate of hospitalised
-individuals. Defaults to 0.01, assuming one in every hundred hospitalisations
-results in death.</p></li>
+symptomatic individuals).</p></li>
+<li><p><code>gamma_Is</code>: A single numeric value for the recovery rate of infectious
+individuals who are not hospitalised.</p></li>
+<li><p><code>gamma_Ia</code>: A single numeric value for the recovery rate from asymptomatic
+infection.</p></li>
+<li><p><code>gamma_H</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4) for the
+age-specific recovery rate for individuals who are hospitalised.</p></li>
+<li><p><code>eta</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4) for the age-specific
+hospitalisation rate for individuals who are infectious and symptomatic.</p></li>
+<li><p><code>omega</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4) for the age-specific
+mortality rate for individuals who are hospitalised.</p></li>
 <li><p><code>rho</code>: A single numeric value for the rate at which infection-derived
 immunity wanes, returning individuals in the 'recovered' compartment to the
-'susceptible' compartment. Defaults to 0.00556, assuming that such immunity
-lasts on average 180 days.</p></li>
+'susceptible' compartment.</p></li>
 <li><p><code>demography</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4), giving the
 number of individuals in each age group of interest. By default, this is
-taken from <code>country_data</code> based on the <code>country</code> selected.</p></li>
-<li><p><code>contact_matrix</code>: A square numeric matrix with <code>N_AGE_GROUPS</code> rows and
+taken from <code><a href="country_data.html">daedalus::country_data</a></code> based on the <code>country</code> selected.</p></li>
+<li><p><code>contact_matrix</code>: A square numeric matrix with <code>N_AGE_GROUPS</code> (4) rows and
 columns, giving the per-capita number of contacts between individuals of each
-age group. By default, this is taken from <code>country_data</code> based on <code>country</code>.</p></li>
+age group. By default, this is taken from <code><a href="country_data.html">daedalus::country_data</a></code> based on
+the user-specified <code>country</code>.</p></li>
 <li><p><code>contacts_workplace</code>: A numeric vector of length <code>N_ECON_SECTORS</code> (45),
 giving the per-capita number of worker-to-worker interactions within economic
 sectors. Defaults to a standard value provided by the package as
-<code>economic_contacts</code>.</p></li>
+<code><a href="economic_contacts.html">daedalus::economic_contacts</a></code>.</p></li>
 <li><p><code>contacts_consumer_worker</code>: A numeric matrix with <code>N_ECON_SECTORS</code> rows
 (45) and <code>N_AGE_GROUPS</code> columns (4) giving the per-capita contacts between
 individuals in each economic sector and consumers. Defaults to the
 sector-wise workplace contacts distributed in proportion to country
 demography.</p></li>
 <li><p><code>contacts_between_sectors</code>: A square numeric matrix with <code>N_ECON_SECTORS</code>
-rows and columns and with a zero diagonal, giving the number of
+(45) rows and columns and with a zero diagonal, giving the number of
 worker-to-worker contacts across economic sectors. Defaults to the package
 standard of a null matrix as between-sector-contacts are not currently
 modelled.</p></li>
@@ -139,6 +168,18 @@ modelled.</p></li>
 
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># with default infection parameters associated with an epidemic</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span>country <span class="op">=</span> <span class="st">"United Kingdom"</span>, epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># with some infection parameters over-ridden by the user</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>, epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span></span>
+<span class="r-in"><span>  r0 <span class="op">=</span> <span class="fl">3.0</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
