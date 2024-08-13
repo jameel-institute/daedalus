@@ -122,7 +122,8 @@ daedalus_contacts[, c("to_new", "from_new") := list(
   )
 )]
 
-# get weighted mean of contacts between new age group bins
+# get weighted sum of contacts between new age group bins
+# and scale by bin population
 setnames(daedalus_demography_tmp, "value", "popsize")
 daedalus_demography_tmp <- daedalus_demography_tmp[
   , c("country", "age_upper", "popsize")
@@ -134,11 +135,14 @@ daedalus_contacts <- merge(
   by.x = c("country", "to"), by.y = c("country", "age_upper")
 )
 
+# weighted sum calculation here: must correspond to P2 drivers repo
 daedalus_contacts <- daedalus_contacts[, list(
-  contacts = weighted.mean(contacts, popsize, na.rm = TRUE)
+  contacts = sum(contacts * popsize),
+  popsize = sum(unique(popsize)) # unique as popsize is repeated during join
 ),
 by = c("to_new", "from_new", "country")
 ]
+daedalus_contacts[, contacts := contacts / popsize]
 
 levels <- c("0-4", "5-19", "20-64", "65+")
 daedalus_contacts[, c("to_new", "from_new") := list(
@@ -150,7 +154,6 @@ daedalus_contacts[, c("to_new", "from_new") := list(
 daedalus_contacts <- daedalus_contacts[
   , c("country", "to_new", "from_new", "contacts")
 ]
-
 
 # substitute missing values with 1s
 daedalus_contacts[, contacts := nafill(contacts, fill = 1.0)]
@@ -221,17 +224,28 @@ assert_true(
 
 ### combine and save country-wise data ####
 # NOTE: names are provisional
-country_data_tmp <- Map(daedalus_demography, daedalus_contacts, daedalus_workers,
-  f = function(x, y, z) {
-    l <- list(
-      demography = x,
-      contact_matrix = y,
-      workers = z
-    )
-    l
-  }
+country_names <- names(daedalus_demography)
+names(country_names) <- country_names
+assert_set_equal(
+  names(daedalus_demography), names(daedalus_contacts),
+  ordered = TRUE
 )
-names(country_data_tmp) <- names(daedalus_contacts)
+assert_set_equal(
+  names(daedalus_demography), names(daedalus_workers),
+  ordered = TRUE
+)
+country_data_tmp <- lapply(country_names, function(n) {
+  l <- list(
+    demography = daedalus_demography[[n]],
+    contact_matrix = daedalus_contacts[[n]],
+    workers = daedalus_workers[[n]]
+  )
+  l
+})
+assert_set_equal(
+  names(country_data_tmp), country_names,
+  ordered = TRUE
+)
 
 # order alphabetically and overwrite original data read in
 country_data <- copy(country_data_tmp[sort(names(country_data_tmp))])
