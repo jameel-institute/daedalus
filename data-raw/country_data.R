@@ -13,8 +13,8 @@ library(checkmate)
 # Walker et al. 2020
 
 # load country data
-country_data <- fread("data-raw/country_data.csv")
-sector_contacts <- fread("data-raw/sectorcontacts.csv")
+country_data <- fread("inst/extdata/country_data.csv")
+sector_contacts <- fread("inst/extdata/sectorcontacts.csv")
 
 # NOTE: there is an issue with Monaco where most data are missing
 
@@ -45,6 +45,9 @@ daedalus_demography[, age_group := fcase(
   age_lower >= 20L & age_upper <= 65, "20-64",
   age_lower >= 65, "65+"
 )]
+
+daedalus_demography_tmp <- copy(daedalus_demography) # needed later
+
 daedalus_demography <- daedalus_demography[
   ,
   list(value = sum(value)),
@@ -92,7 +95,8 @@ country_contacts[, c("to", "from") := transpose(
 )]
 country_contacts$variable <- NULL
 
-# assign age groups
+# assign age groups - assume upper limit as identifier
+# e.g. 0-5 identified by 5
 lookup <- setNames(seq_along(letters), letters)
 daedalus_contacts <- copy(country_contacts)
 daedalus_contacts[, c("to", "from") := list(
@@ -103,7 +107,7 @@ daedalus_contacts[, c("to", "from") := list(
 # TODO: check whether values represent a symmetric matrix, i.e., does
 # to and from matter
 # assume open intervals on RHS
-daedalus_contacts[, c("to", "from") := list(
+daedalus_contacts[, c("to_new", "from_new") := list(
   fcase(
     to <= 5L, "0-4",
     to >= 5L & to <= 20L, "5-19",
@@ -118,23 +122,44 @@ daedalus_contacts[, c("to", "from") := list(
   )
 )]
 
-# TODO: correct contact averaging procedure
-daedalus_contacts <- daedalus_contacts[,
-  list(value = mean(value, na.rm = TRUE)),
-  by = c("country", "to", "from")
+# get weighted mean of contacts between new age group bins
+setnames(daedalus_demography_tmp, "value", "popsize")
+daedalus_demography_tmp <- daedalus_demography_tmp[
+  , c("country", "age_upper", "popsize")
+]
+setnames(daedalus_contacts, "value", "contacts")
+daedalus_contacts <- merge(
+  daedalus_contacts,
+  daedalus_demography_tmp,
+  by.x = c("country", "to"), by.y = c("country", "age_upper")
+)
+
+daedalus_contacts <- daedalus_contacts[, list(
+  contacts = weighted.mean(contacts, popsize, na.rm = TRUE)
+),
+by = c("to_new", "from_new", "country")
 ]
 
 levels <- c("0-4", "5-19", "20-64", "65+")
-daedalus_contacts[, c("to", "from") := list(
-  to = factor(to, levels = levels),
-  from = factor(from, levels = levels)
+daedalus_contacts[, c("to_new", "from_new") := list(
+  to = factor(to_new, levels = levels),
+  from = factor(from_new, levels = levels)
 )]
+
+# subset columns
+daedalus_contacts <- daedalus_contacts[
+  , c("country", "to_new", "from_new", "contacts")
+]
+
+
+# substitute missing values with 1s
+daedalus_contacts[, contacts := nafill(contacts, fill = 1.0)]
 
 # split by country and cast to wide
 daedalus_contacts <- split(daedalus_contacts, by = "country")
 daedalus_contacts <- lapply(daedalus_contacts, function(dt) {
-  dt <- dcast(dt, to ~ from, value.var = "value")
-  dt <- as.matrix(dt, rownames = "to")
+  dt <- dcast(dt, to_new ~ from_new, value.var = "contacts")
+  dt <- as.matrix(dt, rownames = "to_new")
   dt
 })
 
@@ -196,7 +221,7 @@ assert_true(
 
 ### combine and save country-wise data ####
 # NOTE: names are provisional
-country_data <- Map(daedalus_demography, daedalus_contacts, daedalus_workers,
+country_data_tmp <- Map(daedalus_demography, daedalus_contacts, daedalus_workers,
   f = function(x, y, z) {
     l <- list(
       demography = x,
@@ -206,10 +231,10 @@ country_data <- Map(daedalus_demography, daedalus_contacts, daedalus_workers,
     l
   }
 )
-names(country_data) <- names(daedalus_contacts)
+names(country_data_tmp) <- names(daedalus_contacts)
 
-# order alphabetically
-country_data <- country_data[sort(names(country_data))]
+# order alphabetically and overwrite original data read in
+country_data <- copy(country_data_tmp[sort(names(country_data_tmp))])
 
 # allow overwriting as this will probably change often
 usethis::use_data(country_data, overwrite = TRUE)
