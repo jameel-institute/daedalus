@@ -1,19 +1,23 @@
 #' @title Generate a default initial state for DAEDALUS
 #' @description Function to prepare the model initial state.
 #'
-#' @param country A string for the country name.
-#' @param p_infectious A single value between 0.0 and 1.0 for the proportion of
-#' individuals infectious This is applied to individuals in all economic
-#' sectors.
-#' @param p_asymptomatic A single value between 0.0 and 1.0 for the proportion
-#' of infections that are asymptomatic.
+#' @inheritParams daedalus
 #'
-#' @return AN array with as many dimensions as `N_ECON_STRATA` (currently, 46)
+#' @return An array with as many dimensions as `N_ECON_STRATA` (currently, 46)
 #' with each layer giving the proportion of individuals of each group in each
 #' epidemiological compartment.
 #' @keywords internal
-make_initial_state <- function(country,
-                               p_infectious = 1e-6, p_asymptomatic = 0.0) {
+make_initial_state <- function(country, initial_state_manual) {
+  # NOTE: country checked in daedalus()
+  initial_infect_state <- list(
+    p_infectious = 1e-6,
+    p_asymptomatic = 0.0
+  )
+  initial_infect_state[names(initial_state_manual)] <- initial_state_manual
+
+  p_infectious <- initial_infect_state[["p_infectious"]]
+  p_asymptomatic <- initial_infect_state[["p_asymptomatic"]]
+
   # NOTE: no checks on country as this is tested in top-level fn `daedalus()`
   # check other inputs
   is_good_p_infectious <- checkmate::test_number(
@@ -22,7 +26,8 @@ make_initial_state <- function(country,
   )
   if (!is_good_p_infectious) {
     cli::cli_abort(
-      "`p_infectious` must be a single number in the range [0.0, 1.0]."
+      "`p_infectious` must be a single number in the range [0.0, 1.0].",
+      .envir = parent.frame()
     )
   }
 
@@ -64,8 +69,12 @@ make_initial_state <- function(country,
   initial_state[i_WORKING_AGE, , i_NOT_WORKING] <-
     initial_state[i_WORKING_AGE, , i_NOT_WORKING] * inactive_workers
 
+  # explicit col-wise multiplication as R tries to guess interpretation of `*`
   initial_state[i_WORKING_AGE, , -i_NOT_WORKING] <-
-    initial_state[i_WORKING_AGE, , -i_NOT_WORKING] * sector_workforce
+    initial_state[i_WORKING_AGE, , -i_NOT_WORKING] %*% diag(sector_workforce)
+
+  # set all economic sector non-working age values to 0
+  initial_state[-i_WORKING_AGE, , -i_NOT_WORKING] <- 0.0
 
   initial_state
 }
