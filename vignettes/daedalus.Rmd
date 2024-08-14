@@ -33,7 +33,7 @@ Both datasets are accessed by internal functions to reduce the need for user inp
 
 ```{r run_model}
 # simulate a Covid-19 wild type outbreak
-output <- daedalus("Canada", "sars_cov_2_pre_alpha")
+data <- daedalus("Canada", "sars_cov_2_pre_alpha")
 ```
 
 Users can quickly model one of seven epidemics by passing a name from `daedalus::epidemic_names` to the `epidemic` argument, which is the second argument.
@@ -42,6 +42,10 @@ The package data object `daedalus::epidemic_names` gives the allowed epidemic id
 ```{r epidemic_names}
 daedalus::epidemic_names
 ```
+
+
+The model runs for 300 timesteps by default; timesteps should be interpreted as days since model parameters are in terms of days.
+The `daedalus()` function documentation has more information on the infection parameter defaults in the **Details** section.
 
 Users can also override epidemic-specific infection parameter values as well as change the initial conditions by passing arguments to `daedalus()` in one of three lists: `country_params_manual`, `infect_params_manual`, and `initial_state_manual`, which override the country contact data, the infection parameters, and the initial state defaults respectively.
 The function documentation for `daedalus::daedalus()` details which parameters are accepted.
@@ -58,17 +62,6 @@ daedalus(
   "Canada", epidemic = "influenza_1918",
   infect_params_manual = list(eta = c(2.0, 3.0, 5.0, 15.0))
 )
-```
-
-The model runs for 300 timesteps by default; timesteps should be interpreted as days since model parameters are in terms of days.
-The `daedalus()` function documentation has more information on the infection parameter defaults in the **Details** section.
-
-Get the data in long or 'tidy' format using `prepare_output()`.
-
-```{r get_data}
-data <- prepare_output(output)
-
-head(data)
 ```
 
 Plot the data to view the epidemic curve.
