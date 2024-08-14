@@ -23,6 +23,24 @@
 #' Default infection parameters for epidemics can be over-ridden by passing them
 #' as a named list to `infection_params_manual`.
 #'
+#' @param response_strategy A string for the name of response strategy followed;
+#' defaults to "none". The response strategy determines how contacts are scaled
+#' while the strategy is active, with contact scaling taken from the package
+#' data object `daedalus::closure_data`.
+#'
+#' @param implementation_level A string for the level at which the strategy is
+#' implemented; defaults to "light".
+#'
+#' @param response_threshold A named vector of length 1, with the value
+#' representing the total number of individuals in a compartment, while the name
+#' indicates the compartment name. The response chosen in `response_strategy` is
+#' triggered when the response threshold is reached.
+#'
+#' @param end_threshold A named vector of length 1, with the value
+#' representing the total number of individuals in a compartment, while the name
+#' indicates the compartment name. The response chosen in `response_strategy` is
+#' ended when the end threshold is reached.
+#'
 #' @param country_params_manual An optional **named** list of country-specific
 #' contact data. See **Details** for allowed values.
 #'
@@ -160,16 +178,24 @@
 #' @export
 daedalus <- function(country,
                      epidemic,
+                     response_strategy = c(
+                       "none", "elimination", "economic_closures",
+                       "school_closures"
+                     ),
+                     implementation_level = c("light", "heavy"),
+                     response_threshold = NULL,
+                     end_threshold = NULL,
                      country_params_manual = list(),
                      infect_params_manual = list(),
                      initial_state_manual = list(),
                      time_end = 300) {
   # input checking
   # NOTE: names are case sensitive
-  country <- rlang::arg_match(
-    country, daedalus::country_names
-  )
+  country <- rlang::arg_match(country, daedalus::country_names)
   epidemic <- rlang::arg_match(epidemic, daedalus::epidemic_names)
+
+  response_strategy <- rlang::arg_match(response_strategy)
+  implementation_level <- rlang::arg_match(implementation_level)
 
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
   if (!is_good_time_end) {
@@ -182,14 +208,30 @@ daedalus <- function(country,
   }
 
   initial_state <- make_initial_state(country, initial_state_manual)
+  # add a switch for the intervention
+  initial_state <- c(initial_state, switch = 0.0)
+
   parameters <- c(
     make_country_parameters(country, country_params_manual),
     make_infection_parameters(epidemic, infect_params_manual)
   )
 
+  # NOTE: a 'closure' is an intervention - terminology taken from EPPI
+  # and should probably be renamed to avoid confusion
+  # TODO: add input checking on closure args once the overall mechanism is
+  # discussed - may move to using conditionals in ODE RHS
+
+  # get the response strategy and prepare eventfun and rootfun for deSolve
+  closure <- daedalus::closure_data[[response_strategy]][[implementation_level]]
+  closure_event <- make_closure_event(response_threshold, end_threshold)
+
+  parameters <- c(parameters, list(openness = closure))
+
   data <- deSolve::lsoda(
     y = initial_state, times = seq.int(time_end),
-    func = daedalus_rhs, parms = parameters
+    func = daedalus_rhs, parms = parameters,
+    events = list(func = closure_event[["event_function"]], root = TRUE),
+    rootfunc = closure_event[["root_function"]]
   )
 
   data

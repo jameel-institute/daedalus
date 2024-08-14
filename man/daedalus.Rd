@@ -7,6 +7,10 @@
 daedalus(
   country,
   epidemic,
+  response_strategy = c("none", "elimination", "economic_closures", "school_closures"),
+  implementation_level = c("light", "heavy"),
+  response_threshold = NULL,
+  end_threshold = NULL,
   country_params_manual = list(),
   infect_params_manual = list(),
   initial_state_manual = list(),
@@ -34,6 +38,24 @@ associated with the epidemic; these are stored as packaged data in
 \code{infection_data}.
 Default infection parameters for epidemics can be over-ridden by passing them
 as a named list to \code{infection_params_manual}.}
+
+\item{response_strategy}{A string for the name of response strategy followed;
+defaults to "none". The response strategy determines how contacts are scaled
+while the strategy is active, with contact scaling taken from the package
+data object \code{daedalus::closure_data}.}
+
+\item{implementation_level}{A string for the level at which the strategy is
+implemented; defaults to "light".}
+
+\item{response_threshold}{A named vector of length 1, with the value
+representing the total number of individuals in a compartment, while the name
+indicates the compartment name. The response chosen in \code{response_strategy} is
+triggered when the response threshold is reached.}
+
+\item{end_threshold}{A named vector of length 1, with the value
+representing the total number of individuals in a compartment, while the name
+indicates the compartment name. The response chosen in \code{response_strategy} is
+ended when the end threshold is reached.}
 
 \item{country_params_manual}{An optional \strong{named} list of country-specific
 contact data. See \strong{Details} for allowed values.}
