@@ -1,119 +1,116 @@
-# Basic unit tests for the default model parameter expectations
-test_that("make_parameters: basic expectations", {
-  # expect no conditions on commonly expected function usage
-  expect_no_condition(make_parameters("Canada", epidemic = "influenza_1918"))
-  expect_no_condition(
-    make_parameters("Canada", epidemic = "influenza_1918", r0 = 999)
-  )
-  expect_no_condition(
-    make_parameters(
-      "Canada",
-      epidemic = "influenza_1918",
-      contact_matrix = matrix(2, N_AGE_GROUPS, N_AGE_GROUPS)
-    )
-  )
-
-  expect_warning(
-    make_parameters("Canada", epidemic = "influenza_1918", alpha = 999),
-    regexp = "User provided parameters that are not among the model parameters"
-  )
-
-  # NOTE: warning about extra parameters suppressed
-  suppressWarnings({
-    modified_param_names <- names(
-      make_parameters("Canada", epidemic = "influenza_1918", alpha = 999)
-    )
-  })
-  expect_identical(
-    modified_param_names,
-    names(make_parameters("Canada", epidemic = "influenza_1918"))
-  )
-})
-
-# adding snapshot test on all infection parameter values to catch
-# potentially unwanted raw data changes
-test_that("infection_data: Snapshot tests", {
-  expect_snapshot(
-    infection_data
-  )
-})
-
-# NOTE: testing that `...` parameter errors are bubbled up from `daedalus()`
-test_that("Errors on `...` passed to `daedalus()`:", {
+# # Basic unit tests for the default model parameter expectations
+# NOTE: testing that parameter errors are bubbled up from `daedalus()`
+test_that("Errors on model parameters passed to `daedalus()`:", {
   expect_error(
-    daedalus("Canada", r0 = "0.01"),
-    regexp = "Model options.*`\\.\\.\\.`.*may only be numeric"
+    daedalus(
+      "Canada", "influenza_1918",
+      infect_params_manual = list(r0 = "0.01")
+    ),
+    regexp = "Expected.*`infect_params_manual`.*single positive.*finite number"
   )
   expect_error(
-    daedalus("Canada", r0 = c(0.1, 0.1)),
-    regexp = "Expected the following parameters.*`\\.\\.\\..*single positive"
+    daedalus(
+      "Canada", "influenza_1918",
+      infect_params_manual = list(r0 = c(0.1, 0.1))
+    ),
+    regexp = "Expected.*`infect_params_manual`.*single positive.*finite number"
   )
   expect_error(
-    daedalus("Canada", r0 = -0.1),
-    regexp = "Expected the following parameters.*`\\.\\.\\..*single positive"
+    daedalus(
+      "Canada", "influenza_1918",
+      infect_params_manual = list(r0 = -0.1)
+    ),
+    regexp = "Expected.*`infect_params_manual`.*single positive.*finite number"
   )
   expect_error(
-    daedalus("Canada", r0 = Inf),
-    regexp = "Expected the following parameters.*`\\.\\.\\..*single positive"
+    daedalus(
+      "Canada", "influenza_1918",
+      infect_params_manual = list(r0 = Inf)
+    ),
+    regexp = "Expected.*`infect_params_manual`.*single positive.*finite number"
   )
 
-  # checks on allowed numeric vector inputs
-  "Expected the following parameters passed in `...` to be numeric
-          vectors of length {N_AGE_GROUPS} with positive and finite values:
-          {.str {intersect(names(user_params), allowed_numerics)}}"
-
+  # checks on expected numerics of correct length
   param_passed <- "eta"
   expected_error <- glue::glue(
-    "Expected the following parameters passed in `...` to be numeric \\
-    vectors of length {N_AGE_GROUPS} with positive and finite values: \\
+    "Expected the following parameters passed in `infect_params_manual` to be \\
+    numeric vectors of length {N_AGE_GROUPS} with positive and finite values: \\
     {glue::double_quote(param_passed)}"
   )
 
   expect_error(
-    daedalus("Canada", eta = c(0.1, 0.1)),
+    daedalus(
+      "Canada", "influenza_1918",
+      infect_params_manual = list(eta = c(0.1, 0.1))
+    ),
     regexp = expected_error
   )
   expect_error(
-    daedalus("Canada", eta = 0.1),
+    daedalus(
+      "Canada", "influenza_1918",
+      infect_params_manual = list(eta = 0.1)
+    ),
     regexp = expected_error
   )
   expect_error(
-    daedalus("Canada", eta = rep(Inf, 4)),
+    daedalus(
+      "Canada", "influenza_1918",
+      infect_params_manual = list(eta = rep(Inf, 4))
+    ),
     regexp = expected_error
   )
   expect_error(
-    daedalus("Canada", eta = rep(-1.0, 4)),
+    daedalus(
+      "Canada", "influenza_1918",
+      infect_params_manual = list(eta = rep(-1.0, 4))
+    ),
     regexp = expected_error
+  )
+
+  # checks on extra infection parameters - now bumped up to error
+  expect_error(
+    daedalus(
+      "Canada", "influenza_1918",
+      infect_params_manual = list(dummy_param = 0.1)
+    ),
+    regexp = "`infect_params_manual` found parameters that are not allowed"
   )
 
   # specific checks on poorly specified community contact matrix
   expect_error(
     daedalus(
-      "Canada",
-      contact_matrix = matrix("a", N_AGE_GROUPS, N_AGE_GROUPS)
+      "Canada", "influenza_1918",
+      country_params_manual = list(
+        contact_matrix = matrix("a", N_AGE_GROUPS, N_AGE_GROUPS)
+      )
     ),
-    regexp = "Model options.*`\\.\\.\\.`.*may only be numeric"
+    regexp = "Expected user-provided `contact_matrix` to be a numeric matrix"
   )
   expect_error(
     daedalus(
-      "Canada",
-      contact_matrix = list(matrix(1.0, N_AGE_GROUPS, N_AGE_GROUPS))
+      "Canada", "influenza_1918",
+      country_params_manual = list(
+        contact_matrix = list(matrix(1.0, N_AGE_GROUPS, N_AGE_GROUPS))
+      )
     ),
-    regexp = "Model options.*`\\.\\.\\.`.*may only be numeric"
+    regexp = "Expected user-provided `contact_matrix` to be a numeric matrix"
   )
 
   cm <- matrix(1.0, N_AGE_GROUPS, N_AGE_GROUPS)
   cm[1L, ] <- NA_real_
   expect_error(
-    daedalus("Canada", contact_matrix = cm),
-    regexp = "Expected.*`contact_matrix`.*have no missing elements"
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(contact_matrix = cm)
+    ),
+    regexp = "Expected.*`contact_matrix`.*no missing elements"
   )
 
   cm <- matrix(1.0, N_AGE_GROUPS - 1L, N_AGE_GROUPS)
   expect_error(
     daedalus(
-      "Canada",
-      contact_matrix = cm
+      "Canada", "influenza_1918",
+      country_params_manual = list(contact_matrix = cm)
     ),
     regexp = "Expected user-provided `contact_matrix` to be a square matrix"
   )
@@ -121,8 +118,8 @@ test_that("Errors on `...` passed to `daedalus()`:", {
   cm <- matrix(1.0, N_AGE_GROUPS, N_AGE_GROUPS - 1L)
   expect_error(
     daedalus(
-      "Canada",
-      contact_matrix = cm
+      "Canada", "influenza_1918",
+      country_params_manual = list(contact_matrix = cm)
     ),
     regexp = "Expected user-provided `contact_matrix` to be a square matrix"
   )
@@ -130,23 +127,35 @@ test_that("Errors on `...` passed to `daedalus()`:", {
   # expectations on the within-sector workplace contacts
   cw <- rep("1.0", N_ECON_SECTORS)
   expect_error(
-    daedalus("Canada", contacts_workplace = cw),
-    regexp = "Model options passed as `...` may only be numeric elements"
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(contacts_workplace = cw)
+    ),
+    regexp = "Expected.*`contacts_workplace`.*numeric vector"
   )
   cw <- matrix(1.0, N_ECON_SECTORS, N_ECON_SECTORS)
   expect_error(
-    daedalus("Canada", contacts_workplace = cw),
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(contacts_workplace = cw)
+    ),
     regexp = "Expected.*`contacts_workplace`.*numeric vector"
   )
 
   cw <- rep(1.0, N_ECON_SECTORS - 1L)
   expect_error(
-    daedalus("Canada", contacts_workplace = cw),
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(contacts_workplace = cw)
+    ),
     regexp = "Expected.*`contacts_workplace`.*numeric vector"
   )
   cw <- rep(-1.0, N_ECON_SECTORS)
   expect_error(
-    daedalus("Canada", contacts_workplace = cw),
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(contacts_workplace = cw)
+    ),
     regexp = "Expected.*`contacts_workplace`.*numeric vector"
   )
 
@@ -155,13 +164,19 @@ test_that("Errors on `...` passed to `daedalus()`:", {
     "1.0", N_ECON_SECTORS, N_AGE_GROUPS
   )
   expect_error(
-    daedalus("Canada", contacts_consumer_worker = cmcw),
-    regexp = "Model options passed as `...` may only be numeric elements"
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(contacts_consumer_worker = cmcw)
+    ),
+    regexp = "Expected.*`contacts_consumer_worker`.*numeric matrix"
   )
 
   cmcw <- rep(1.0, N_ECON_SECTORS)
   expect_error(
-    daedalus("Canada", contacts_consumer_worker = cmcw),
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(contacts_consumer_worker = cmcw)
+    ),
     regexp = "Expected.*`contacts_consumer_worker`.*numeric matrix"
   )
 
@@ -173,15 +188,21 @@ test_that("Errors on `...` passed to `daedalus()`:", {
     1.0, N_ECON_SECTORS - 1L, N_AGE_GROUPS - 1L
   )
   expect_error(
-    daedalus("Canada", contacts_consumer_worker = cmcw),
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(contacts_consumer_worker = cmcw)
+    ),
     regexp = expected_error
   )
 
   # expectations for worker-worker contacts betweens sectors
   cm_ww <- matrix("1.0", N_ECON_SECTORS, N_ECON_SECTORS)
   expect_error(
-    daedalus("Canada", contacts_between_sectors = cm_ww),
-    regexp = "Model options passed as `...` may only be numeric elements"
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(contacts_between_sectors = cm_ww)
+    ),
+    regexp = "Expected.*`contacts_between_sectors`.*numeric matrix"
   )
 
   cm_ww <- matrix(1.0, N_ECON_SECTORS - 2L, N_ECON_SECTORS - 2L)
@@ -190,21 +211,62 @@ test_that("Errors on `...` passed to `daedalus()`:", {
     matrix with {N_ECON_SECTORS} rows and columns"
   )
   expect_error(
-    daedalus("Canada", contacts_between_sectors = cm_ww),
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(contacts_between_sectors = cm_ww)
+    ),
     regexp = as.character(expected_error), perl = TRUE
   )
 
   cm_ww <- matrix(1.0, N_ECON_SECTORS, N_ECON_SECTORS)
   cm_ww[, 1L] <- NA_real_
   expect_error(
-    daedalus("Canada", contacts_between_sectors = cm_ww),
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(contacts_between_sectors = cm_ww)
+    ),
     regexp =
       "Expected.*numeric matrix.*with no missing elements"
   )
 
   cm_ww <- matrix(1.0, N_ECON_SECTORS, N_ECON_SECTORS)
   expect_error(
-    daedalus("Canada", contacts_between_sectors = cm_ww),
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(contacts_between_sectors = cm_ww)
+    ),
     regexp = "Expected.*diagonal entries are all zero"
+  )
+
+  # expect errors for inadmissible country parameters
+  expect_error(
+    daedalus(
+      "Canada", "influenza_1918",
+      country_params_manual = list(dummy_value = matrix(1, N_AGE_GROUPS))
+    ),
+    regexp =
+      "`country_params_manual` found.*parameters that are not.*allowed"
+  )
+})
+
+# special test that `make_country_parameters()` processes between-sector matrix
+test_that("`make_country_parameters` scales between-sector matrix", {
+  cm_ww <- matrix(1, N_ECON_SECTORS, N_ECON_SECTORS)
+  diag(cm_ww) <- 0.0
+
+  p <- make_country_parameters("Canada", list(contacts_between_sectors = cm_ww))
+
+  expect_identical(
+    max(Re(eigen(p[["contacts_between_sectors"]])$values)),
+    1.0,
+    tolerance = 1e-12
+  )
+})
+
+# adding snapshot test on all infection parameter values to catch
+# potentially unwanted raw data changes
+test_that("infection_data: Snapshot tests", {
+  expect_snapshot(
+    infection_data
   )
 })
