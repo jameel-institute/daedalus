@@ -17,7 +17,8 @@ Depends:
 Imports: 
     checkmate,
     cli,
-    deSolve
+    deSolve,
+    rlang
 Suggests:
     ggplot2,
     glue,
