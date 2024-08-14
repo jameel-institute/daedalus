@@ -21,7 +21,8 @@ make_parameters <- function(country, epidemic, ...) {
   # using r0 - scaling could be moved to data prep step if data are not to be
   # served to users and are purely internal
   cm <- country_params[["contact_matrix"]]
-  cm <- (cm / max(Re(eigen(cm, only.values = TRUE)$values))) / demography
+  cm <- (cm / max(Re(eigen(cm, only.values = TRUE)$values)))
+  cm <- cm %*% diag(1 / demography)
 
   # workplace contacts within sectors
   cmw <- economic_contacts[["contacts_workplace"]]
