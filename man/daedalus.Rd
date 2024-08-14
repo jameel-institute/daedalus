@@ -4,10 +4,22 @@
 \alias{daedalus}
 \title{DAEDALUS model for health, social and economic costs of a pandemic}
 \usage{
-daedalus(country, epidemic = "sars_cov_2_pre_alpha", ..., time_end = 300)
+daedalus(
+  country,
+  epidemic,
+  country_params_manual = list(),
+  infect_params_manual = list(),
+  initial_state_manual = list(),
+  time_end = 300
+)
 }
 \arguments{
-\item{country}{A country or territory name from among \code{country_names}.}
+\item{country}{A country or territory name from among \code{country_names}.
+Country-specific data such as the community and workplace contacts, the
+demography, and the distribution of the workforce into economic sectors is
+automatically accessed from package data for the relevant country name.
+Some contact data values can be over-ridden by the user by passing them as a
+named list to \code{country_params_manual}.}
 
 \item{epidemic}{A string for the infection parameter set to use.
 Infection parameter sets may be known by the name of the outbreak or the
@@ -21,10 +33,19 @@ Selecting an epidemic automatically pulls in infection parameters
 associated with the epidemic; these are stored as packaged data in
 \code{infection_data}.
 Default infection parameters for epidemics can be over-ridden by passing them
-as named arguments via \code{...}.}
+as a named list to \code{infection_params_manual}.}
 
-\item{...}{Additional arguments passed to \code{make_parameters()} or
-\code{make_initial_state()}. See \strong{Details} for permitted arguments.}
+\item{country_params_manual}{An optional \strong{named} list of country-specific
+contact data. See \strong{Details} for allowed values.}
+
+\item{infect_params_manual}{An optional \strong{named} list of infection
+parameters that can be passed to over-ride the default values for the chosen
+\code{epidemic}. See \strong{Details} for allowed values.}
+
+\item{initial_state_manual}{An optional \strong{named} list with the names
+\code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and
+symptomatic individuals in each age group and economic sector.
+Defaults to \code{1e-6} and \code{0.0} respectively.}
 
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
@@ -46,16 +67,17 @@ Covid-19 wild type (SARS-Cov-2 wild type),
 Covid-19 Omicron (SARS-CoV-2 omicron), Covid-19 Delta (SARS-CoV-2 delta).
 
 DAEDALUS allows users to substitute default model parameters with custom
-values by passing them as \code{...} (see examples). These arguments are passed on
-to the internal functions \code{make_parameters()} and \code{make_initial_state()} as
+values by passing them in the appropriate argument (see examples).
+These arguments are passed on to the internal functions
+\code{make_country_parameters()} and \code{make_infection_parameters()} as
 appropriate. Any arguments that are passed and are not suitable for those
-functions will throw a warning.
+functions will throw an error.
 }
 
 \subsection{Initial state}{
 
-Users can pass the following initial state parameters, which are handled
-internally by \code{make_initial_state()}:
+Users can pass the following initial state parameters to
+\code{initial_state_manual}:
 \itemize{
 \item \code{p_infectious}: A single numeric value in the range \eqn{[0.0, 1.0]} giving
 the proportion of individuals in each age group and economic sector that are
@@ -67,10 +89,34 @@ asymptomatic. Defaults to 0.0.
 }
 }
 
-\subsection{Model parameters}{
+\subsection{Country parameters}{
 
-Users can pass the following infection and country parameters, which are
-handled internally by \code{make_parameters()}:
+\code{country_params_manual} may be a named list of one or more of the following:
+\itemize{
+\item \code{contact_matrix}: A square numeric matrix with \code{N_AGE_GROUPS} (4) rows and
+columns, giving the per-capita number of contacts between individuals of each
+age group. By default, this is taken from \code{daedalus::country_data} based on
+the user-specified \code{country}.
+\item \code{contacts_workplace}: A numeric vector of length \code{N_ECON_SECTORS} (45),
+giving the per-capita number of worker-to-worker interactions within economic
+sectors. Defaults to a standard value provided by the package as
+\code{daedalus::economic_contacts}.
+\item \code{contacts_consumer_worker}: A numeric matrix with \code{N_ECON_SECTORS} rows
+(45) and \code{N_AGE_GROUPS} columns (4) giving the per-capita contacts between
+individuals in each economic sector and consumers. Defaults to the
+sector-wise workplace contacts distributed in proportion to country
+demography.
+\item \code{contacts_between_sectors}: A square numeric matrix with \code{N_ECON_SECTORS}
+(45) rows and columns and with a zero diagonal, giving the number of
+worker-to-worker contacts across economic sectors. Defaults to the package
+standard of a null matrix as between-sector-contacts are not currently
+modelled.
+}
+}
+
+\subsection{Infection parameters}{
+
+\code{infect_params_manual} may be a named list of one or more of the following:
 \itemize{
 \item \code{r0}: A single numeric value for the basic reproduction value of the
 infection \eqn{R_0}.
@@ -96,27 +142,6 @@ mortality rate for individuals who are hospitalised.
 \item \code{rho}: A single numeric value for the rate at which infection-derived
 immunity wanes, returning individuals in the 'recovered' compartment to the
 'susceptible' compartment.
-\item \code{demography}: A numeric vector of length \code{N_AGE_GROUPS} (4), giving the
-number of individuals in each age group of interest. By default, this is
-taken from \code{daedalus::country_data} based on the \code{country} selected.
-\item \code{contact_matrix}: A square numeric matrix with \code{N_AGE_GROUPS} (4) rows and
-columns, giving the per-capita number of contacts between individuals of each
-age group. By default, this is taken from \code{daedalus::country_data} based on
-the user-specified \code{country}.
-\item \code{contacts_workplace}: A numeric vector of length \code{N_ECON_SECTORS} (45),
-giving the per-capita number of worker-to-worker interactions within economic
-sectors. Defaults to a standard value provided by the package as
-\code{daedalus::economic_contacts}.
-\item \code{contacts_consumer_worker}: A numeric matrix with \code{N_ECON_SECTORS} rows
-(45) and \code{N_AGE_GROUPS} columns (4) giving the per-capita contacts between
-individuals in each economic sector and consumers. Defaults to the
-sector-wise workplace contacts distributed in proportion to country
-demography.
-\item \code{contacts_between_sectors}: A square numeric matrix with \code{N_ECON_SECTORS}
-(45) rows and columns and with a zero diagonal, giving the number of
-worker-to-worker contacts across economic sectors. Defaults to the package
-standard of a null matrix as between-sector-contacts are not currently
-modelled.
 }
 }
 }
@@ -127,6 +152,18 @@ output <- daedalus(country = "United Kingdom", epidemic = "influenza_1918")
 # with some infection parameters over-ridden by the user
 output <- daedalus(
   country = "United Kingdom", epidemic = "influenza_1918",
-  r0 = 3.0
+  infect_params_manual = list(r0 = 1.3)
+)
+
+# with some country parameters over-ridden by the user
+output <- daedalus(
+  country = "United Kingdom", epidemic = "influenza_1918",
+  country_params_manual = list(contact_matrix = matrix(1, 4, 4))
+)
+
+# with default initial conditions over-ridden by the user
+output <- daedalus(
+  country = "United Kingdom", epidemic = "influenza_1918",
+  initial_state_manual = list(p_infectious = 1e-3)
 )
 }
