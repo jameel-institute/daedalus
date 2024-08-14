@@ -3,7 +3,7 @@
 time_end <- 2L
 
 # basic output
-output <- daedalus("Canada", time_end = time_end)
+output <- daedalus("Canada", "influenza_1918", time_end = time_end)
 test_that("prepare_output: basic expectations with re-infections", {
   # expect no conditions
   expect_no_condition(
