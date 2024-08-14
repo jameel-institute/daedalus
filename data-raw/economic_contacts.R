@@ -11,7 +11,7 @@ library(checkmate)
 # `cm_ww`: contacts worker-to-worker between economic sectors
 
 #### process social contacts within economic sectors ####
-contacts_workplace <- fread("data-raw/sectorcontacts.csv")
+contacts_workplace <- fread("inst/extdata/sectorcontacts.csv")
 contacts_workplace <- contacts_workplace[["n_cnt"]]
 
 assert_numeric(
@@ -23,7 +23,7 @@ assert_numeric(
 #### worker-to-worker contacts between sectors ####
 # prepare dummy values with low to no effect
 contacts_between_sectors <- matrix(
-  1.0e-6, N_ECON_SECTORS, N_ECON_SECTORS
+  0.0, N_ECON_SECTORS, N_ECON_SECTORS
 )
 diag(contacts_between_sectors) <- 0.0
 
