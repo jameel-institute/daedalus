@@ -4,20 +4,23 @@
 \alias{make_initial_state}
 \title{Generate a default initial state for DAEDALUS}
 \usage{
-make_initial_state(country, p_infectious = 1e-06, p_asymptomatic = 0)
+make_initial_state(country, initial_state_manual)
 }
 \arguments{
-\item{country}{A string for the country name.}
+\item{country}{A country or territory name from among \code{country_names}.
+Country-specific data such as the community and workplace contacts, the
+demography, and the distribution of the workforce into economic sectors is
+automatically accessed from package data for the relevant country name.
+Some contact data values can be over-ridden by the user by passing them as a
+named list to \code{country_params_manual}.}
 
-\item{p_infectious}{A single value between 0.0 and 1.0 for the proportion of
-individuals infectious This is applied to individuals in all economic
-sectors.}
-
-\item{p_asymptomatic}{A single value between 0.0 and 1.0 for the proportion
-of infections that are asymptomatic.}
+\item{initial_state_manual}{An optional \strong{named} list with the names
+\code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and
+symptomatic individuals in each age group and economic sector.
+Defaults to \code{1e-6} and \code{0.0} respectively.}
 }
 \value{
-AN array with as many dimensions as \code{N_ECON_STRATA} (currently, 46)
+An array with as many dimensions as \code{N_ECON_STRATA} (currently, 46)
 with each layer giving the proportion of individuals of each group in each
 epidemiological compartment.
 }
