@@ -1,0 +1,84 @@
+---
+title: "Modelling threshold-dependent economic closures"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Modelling threshold-dependent economic closures}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(daedalus)
+library(data.table)
+library(ggplot2)
+
+response_threshold <- 1000
+```
+
+Initially run the model with no response, and then with an elimination response activated when total hospitalisations reach 1000 or after 30 days, whichever is sooner.
+We run both models for 100 days as the epidemic peak occurs within this timeframe.
+
+```{r}
+data_baseline <- daedalus(
+  "Canada",
+  "influenza_1918",
+  infect_params_manual = list(
+    rho = 0.0
+  ), # prevent re-infection
+  response_threshold = response_threshold,
+  response_strategy = "none",
+  time_end = 100
+)
+
+data_baseline$scenario <- "no_response"
+```
+
+
+```{r run_model}
+# run the model with a heavy elimination intervention
+data_intervention <- daedalus(
+  "Canada",
+  "influenza_1918",
+  infect_params_manual = list(
+    rho = 0.0
+  ), # prevent re-infection
+  response_threshold = response_threshold,
+  response_strategy = "elimination",
+  time_end = 100
+)
+
+data_intervention$scenario <- "elimination"
+```
+
+Plot the total hospital occupancy for both scenarios to view the effect of interventions.
+
+```{r}
+data <- rbindlist(list(data_baseline, data_intervention))
+```
+
+```{r plot_data}
+# sum over age and econ strata as total is more relevant
+data <- data[compartment == "hospitalised", .(value = sum(value)),
+  by = c("time", "compartment", "scenario")
+]
+
+# check actual outcomes of interest - these don't look as good
+ggplot(data) +
+  geom_line(aes(time, value, colour = scenario)) +
+  geom_hline(
+    yintercept = response_threshold, linetype = "dotted"
+  ) +
+  labs(y = "Total hospital occupancy", x = "Days", col = "Scenario") +
+  theme(legend.position = "top")
+```
+
+**Note that** the effect of response strategies that introduce closures does not appear to be very large --- this is because the full range of interventions associated with each strategy is yet to be implemented.
