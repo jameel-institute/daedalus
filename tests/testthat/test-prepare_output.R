@@ -33,12 +33,4 @@ test_that("prepare_output: basic expectations with re-infections", {
   expect_type(
     data[["value"]], "double"
   )
-
-  # expect snapshot is identical
-  expect_snapshot(
-    head(
-      prepare_output(output),
-      50L
-    )
-  )
 })

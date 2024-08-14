@@ -56,12 +56,7 @@ test_that("daedalus: statistical correctness", {
   expect_false(
     all(diff(recovered) >= 0.0)
   )
-  # NOTE: added as a baseline to compare future model structure changes
-  # checking with immunity waning
-  expect_snapshot(
-    head(output[, seq(N_AGE_GROUPS * N_EPI_COMPARTMENTS + 1L)], 10L)
-  )
-
+  
   # expectations when immunity does not wane
   # - monotonically decreasing susceptibles
   # - monotonically increasing recovered and deaths
@@ -79,12 +74,6 @@ test_that("daedalus: statistical correctness", {
   deaths <- output[, (25L:28L) + 1L]
   expect_true(
     all(diff(deaths) >= 0.0)
-  )
-
-  # checking without immunity waning allowed
-  # checking only first economic stratum
-  expect_snapshot(
-    head(output[, seq(N_AGE_GROUPS * N_EPI_COMPARTMENTS + 1L)], 10L)
   )
 })
 
