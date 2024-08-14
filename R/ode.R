@@ -39,8 +39,9 @@ daedalus_rhs <- function(t, state, parameters) {
   # NOTE: see constants.R for compartmental indices
   # NOTE: DAEDALUS includes 45 vaccination strata for economic sectors,
   # and these are represented by the third dimension of the tensor
-  state <- array(
-    state,
+  state_ <- state[-length(state)]
+  state_ <- array(
+    state_,
     c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
   )
 
@@ -72,63 +73,72 @@ daedalus_rhs <- function(t, state, parameters) {
   # removed. May not be a major factor as mortality rate * hosp_rate is low.
   demography <- parameters[["demography"]]
 
-  # NOTE: epsilon controls relative contribution of infectious asymptomatic
-  new_community_infections <- r0 * state[, i_S, ] *
-    cm %*% (state[, i_Is, ] + state[, i_Ia, ] * epsilon)
+  # scaling economic sector openness
+  openness <- parameters[["openness"]]
+  switch <- state["switch"]
+  scaling <- (1 - ((1 - openness) * switch)) # clunky
+  r0_econ <- r0 * scaling
+  r0 <- r0 * mean(scaling) # as otherwise no scaling on r0
 
-  workplace_infected <- state[i_WORKING_AGE, i_Is, -i_NOT_WORKING] +
-    state[i_WORKING_AGE, i_Ia, -i_NOT_WORKING] * epsilon
+  # NOTE: epsilon controls relative contribution of infectious asymptomatic
+  new_community_infections <- r0 * state_[, i_S, ] *
+    cm %*% (state_[, i_Is, ] + state_[, i_Ia, ] * epsilon)
+
+  workplace_infected <- state_[i_WORKING_AGE, i_Is, -i_NOT_WORKING] +
+    state_[i_WORKING_AGE, i_Ia, -i_NOT_WORKING] * epsilon
 
   # NOTE: original DAEDALUS model lumped economic sectors with age strata, here
   # we use a 3D tensor instead, where the first layer represents the non-working
-  new_workplace_infections <- r0 *
-    state[i_WORKING_AGE, i_S, -i_NOT_WORKING] *
+  new_workplace_infections <- r0_econ *
+    state_[i_WORKING_AGE, i_S, -i_NOT_WORKING] *
     ((cmw * workplace_infected) + c(workplace_infected %*% cm_ww)) /
-    colSums(state[i_WORKING_AGE, , -i_NOT_WORKING])
+    colSums(state_[i_WORKING_AGE, , -i_NOT_WORKING])
 
   # NOTE: only consumer to worker infections are currently allowed
   # NOTE: calculate FOI as β * Σ_{j=1}^{j=N} M_{ij} I_j / N_j
-  infected_consumers <- (state[, i_Is, i_NOT_WORKING] +
-    state[, i_Ia, i_NOT_WORKING] * epsilon) / demography
-  foi_cw <- r0 * cw %*% infected_consumers
+  infected_consumers <- (state_[, i_Is, i_NOT_WORKING] +
+    state_[, i_Ia, i_NOT_WORKING] * epsilon) / demography
+  foi_cw <- r0_econ * cw %*% infected_consumers
 
-  new_comm_work_infections <- state[i_WORKING_AGE, i_S, -i_NOT_WORKING] * foi_cw
+  new_comm_work_infections <- state_[i_WORKING_AGE, i_S, -i_NOT_WORKING] *
+    foi_cw
 
   # create empty array of the dimensions of state
-  d_state <- array(0.0, dim(state))
+  d_state <- array(0.0, dim(state_))
 
   # change in susceptibles
-  d_state[, i_S, ] <- -new_community_infections + (rho * state[, i_R, ])
+  d_state[, i_S, ] <- -new_community_infections + (rho * state_[, i_R, ])
   d_state[i_WORKING_AGE, i_S, -i_NOT_WORKING] <-
     d_state[i_WORKING_AGE, i_S, -i_NOT_WORKING] -
     new_workplace_infections - new_comm_work_infections
 
   # change in exposed
-  d_state[, i_E, ] <- new_community_infections - sigma * state[, i_E, ]
+  d_state[, i_E, ] <- new_community_infections - sigma * state_[, i_E, ]
   d_state[i_WORKING_AGE, i_E, -i_NOT_WORKING] <-
     d_state[i_WORKING_AGE, i_E, -i_NOT_WORKING] +
     new_workplace_infections + new_comm_work_infections
 
   # change in infectious symptomatic
-  d_state[, i_Is, ] <- p_sigma * sigma * state[, i_E, ] -
-    (gamma_Is + eta) * state[, i_Is, ]
+  d_state[, i_Is, ] <- p_sigma * sigma * state_[, i_E, ] -
+    (gamma_Is + eta) * state_[, i_Is, ]
 
   # change in infectious asymptomatic
-  d_state[, i_Ia, ] <- sigma * (1.0 - p_sigma) * state[, i_E, ] -
-    gamma_Ia * state[, i_Ia, ]
+  d_state[, i_Ia, ] <- sigma * (1.0 - p_sigma) * state_[, i_E, ] -
+    gamma_Ia * state_[, i_Ia, ]
 
   # change in hospitalised
-  d_state[, i_H, ] <- eta * state[, i_Is, ] - (gamma_H + omega) * state[, i_H, ]
+  d_state[, i_H, ] <- eta * state_[, i_Is, ] -
+    (gamma_H + omega) * state_[, i_H, ]
 
   # change in recovered - NOTE: different recovery rates for each compartment
-  d_state[, i_R, ] <- gamma_Is * state[, i_Is, ] +
-    gamma_Ia * state[, i_Ia, ] +
-    gamma_H * state[, i_H, ] -
-    rho * state[, i_R, ]
+  d_state[, i_R, ] <- gamma_Is * state_[, i_Is, ] +
+    gamma_Ia * state_[, i_Ia, ] +
+    gamma_H * state_[, i_H, ] -
+    rho * state_[, i_R, ]
 
   # change in dead
-  d_state[, i_D, ] <- omega * state[, i_H, ]
+  d_state[, i_D, ] <- omega * state_[, i_H, ]
 
   # return in the same order as state
-  list(c(d_state))
+  list(c(d_state, 0.0))
 }
