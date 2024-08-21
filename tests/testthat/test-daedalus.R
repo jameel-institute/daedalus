@@ -5,8 +5,9 @@ test_that("daedalus: basic expectations", {
     output <- daedalus("Canada", "influenza_1918")
   })
 
-  # expect classed output, type double, and non-negative
-  expect_s3_class(output, "deSolve")
+  # expect type double and non-negative
+  # no better way to expect matrix: see github.com/r-lib/testthat/issues/1448
+  expect_true(is.matrix(output))
   expect_type(output, "double")
   expect_true(all(output >= 0.0))
 
@@ -29,7 +30,7 @@ test_that("daedalus: Runs for all epidemics", {
   })
 
   # expect classed output, type double, and non-negative
-  checkmate::expect_list(output_list, "deSolve")
+  checkmate::expect_list(output_list, "matrix")
   expect_true(
     all(vapply(output_list, function(x) {
       all(x >= 0.0)

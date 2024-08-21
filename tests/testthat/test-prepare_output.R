@@ -1,6 +1,6 @@
 # Tests for prepare_output
 # define end time
-time_end <- 2L
+time_end <- 50L
 
 # basic output
 output <- daedalus("Canada", "influenza_1918", time_end = time_end)
