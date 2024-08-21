@@ -24,22 +24,27 @@
 #' as a named list to `infection_params_manual`.
 #'
 #' @param response_strategy A string for the name of response strategy followed;
-#' defaults to "none". The response strategy determines how contacts are scaled
-#' while the strategy is active, with contact scaling taken from the package
-#' data object `daedalus::closure_data`.
+#' defaults to "none". The response strategy determines the country-specific
+#' response threshold following which the response is activated. See
+#' `response_threshold`.
+#'
+#' While the response strategy is active, economic contacts are scaled using the
+#' package data object `daedalus::closure_data`.
 #'
 #' @param implementation_level A string for the level at which the strategy is
 #' implemented; defaults to "light".
 #'
-#' @param response_threshold A named vector of length 1, with the value
-#' representing the total number of individuals in a compartment, while the name
-#' indicates the compartment name. The response chosen in `response_strategy` is
-#' triggered when the response threshold is reached.
+#' @param response_threshold A single numeric value for the total number of
+#' hospitalisations that causes an epidemic response
+#' (specified by `response_strategy`) to be triggered, if it has not already
+#' been triggered via `response_time`. Currently defaults to 1000, which
+#' overrides the default response- and country-specific threshold values held in
+#' [daedalus::country_data].
 #'
-#' @param end_threshold A named vector of length 1, with the value
-#' representing the total number of individuals in a compartment, while the name
-#' indicates the compartment name. The response chosen in `response_strategy` is
-#' ended when the end threshold is reached.
+#' @param response_time A single numeric value for the time in days
+#' at which the selected response is activated. This is ignored if the response
+#' has already been activated by the hospitalisation threshold being reached.
+#' Defaults to 30 days.
 #'
 #' @param country_params_manual An optional **named** list of country-specific
 #' contact data. See **Details** for allowed values.
@@ -183,8 +188,8 @@ daedalus <- function(country,
                        "school_closures"
                      ),
                      implementation_level = c("light", "heavy"),
-                     response_threshold = NULL,
-                     end_threshold = NULL,
+                     response_time = 30,
+                     response_threshold = 1000,
                      country_params_manual = list(),
                      infect_params_manual = list(),
                      initial_state_manual = list(),
@@ -207,7 +212,30 @@ daedalus <- function(country,
     )
   }
 
+  is_good_response_time <- checkmate::test_integerish(
+    response_time,
+    upper = time_end - 2L, lower = 2L, any.missing = FALSE
+  )
+  if (!is_good_response_time) {
+    cli::cli_abort(
+      "Expected `response_time` to be between 2 and {time_end - 2L}."
+    )
+  }
+
+  is_good_threshold <- checkmate::test_count(
+    response_threshold,
+    positive = TRUE
+  )
+  if (!is_good_threshold) {
+    cli::cli_abort(
+      "Expected `response_threshold` to be a positive finite integer."
+    )
+  }
+
   initial_state <- make_initial_state(country, initial_state_manual)
+  initial_state <- c(initial_state)
+  # assign names for later subsetting
+  names(initial_state) <- as.character(seq_along(initial_state))
   # add a switch for the intervention
   initial_state <- c(initial_state, switch = 0.0)
 
@@ -216,23 +244,48 @@ daedalus <- function(country,
     make_infection_parameters(epidemic, infect_params_manual)
   )
 
-  # NOTE: a 'closure' is an intervention - terminology taken from EPPI
-  # and should probably be renamed to avoid confusion
-  # TODO: add input checking on closure args once the overall mechanism is
-  # discussed - may move to using conditionals in ODE RHS
+  # add the appropriate economic openness vectors to parameters
+  openness <- daedalus::closure_data[[
+    response_strategy
+  ]][[implementation_level]]
+  parameters <- c(parameters, list(openness = openness))
 
-  # get the response strategy and prepare eventfun and rootfun for deSolve
-  closure <- daedalus::closure_data[[response_strategy]][[implementation_level]]
-  closure_event <- make_closure_event(response_threshold, end_threshold)
+  # get activation and termination events
+  activation_event <- make_response_threshold_event(response_threshold)
+  termination_event <- make_rt_end_event() # NOTE: only type of end event as yet
 
-  parameters <- c(parameters, list(openness = closure))
+  # two-stage model run: run from 0:response_time with switch = 0.0, or off
+  # from response_time:time_end run with switch = 1.0, or on
+  # NOTE: state is carried over. This looks ugly and might not scale if
+  # parameter uncertainty is needed in future.
+  times_stage_one <- seq(1, response_time)
+  times_stage_two <- seq(response_time, time_end)
 
-  data <- deSolve::lsoda(
-    y = initial_state, times = seq.int(time_end),
+  data_stage_one <- deSolve::lsoda(
+    y = initial_state, times = times_stage_one,
     func = daedalus_rhs, parms = parameters,
-    events = list(func = closure_event[["event_function"]], root = TRUE),
-    rootfunc = closure_event[["root_function"]]
+    events = list(func = activation_event[["event_function"]], root = TRUE),
+    rootfunc = activation_event[["root_function"]]
   )
 
-  data
+  # carry over initial state; could be named more clearly?
+  initial_state <- utils::tail(
+    data_stage_one[, !colnames(data_stage_one) %in% c("time", "switch")], 1L
+  )
+  initial_state <- c(initial_state)
+  names(initial_state) <- as.character(seq_along(initial_state))
+  initial_state <- c(initial_state, switch = 1.0)
+
+  data_stage_two <- deSolve::lsoda(
+    initial_state, times_stage_two,
+    daedalus_rhs, parameters,
+    events = list(func = termination_event[["event_function"]], root = TRUE),
+    rootfunc = termination_event[["root_function"]]
+  )
+
+  data <- rbind(data_stage_one, data_stage_two)
+
+  data <- data[!duplicated(data[, "time"]), ]
+
+  prepare_output(data)
 }
