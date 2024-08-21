@@ -44,7 +44,7 @@ make_rt_end_event <- function() {
     cm <- parameters[["contact_matrix"]] %*% diag(parameters[["demography"]])
 
     # arbitrary precision, may not be hit!
-    rt(parameters[["r0"]], state, cm) - 0.99
+    r_eff(parameters[["r0"]], state, cm) - 0.99
   }
 
   event_function <- function(time, state, parameters) {
