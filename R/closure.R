@@ -1,18 +1,11 @@
-#' @title Event and root-finding functions for thresholded interventions
+#' @title Event and root-finding functions to trigger response strategies
 #' @description Prepare functions that can be passed to [deSolve::lsoda()] as
-#' event and root-finding functions, which trigger and end interventions that
-#' scale disease transmission.
+#' event and root-finding functions, which trigger response strategies that
+#' reduce disease transmission.
 #' @inheritParams daedalus
 #' @keywords internal
-make_closure_event <- function(response_threshold, end_threshold) {
+make_response_threshold_event <- function(response_threshold) {
   # NOTE: input checking at top level
-  # get compartment names and values
-  name_response_cmpt <- names(response_threshold)
-  name_end_cmpt <- names(end_threshold)
-
-  i_response_cmpt <- which(COMPARTMENTS == name_response_cmpt)
-  i_end_cmpt <- which(COMPARTMENTS == name_end_cmpt)
-
   ## event triggered when thresholds are crossed
   root_function <- function(time, state, parameters) {
     state <- state[-length(state)]
@@ -21,29 +14,41 @@ make_closure_event <- function(response_threshold, end_threshold) {
       c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
     )
 
-    root <- c(
-      sum(state[, i_response_cmpt, ]) - response_threshold,
-      sum(state[, i_end_cmpt, ]) - end_threshold
-    )
-    root
+    get_hospitalisations(state) - response_threshold
   }
 
   event_function <- function(time, state, parameters) {
-    state_ <- state[-length(state)]
-    state_ <- array(
-      state_,
+    state["switch"] <- 1.0
+
+    state
+  }
+
+  list(root_function = root_function, event_function = event_function)
+}
+
+#' @title Event and root-finding functions to terminate epidemic responses
+#' @description Prepare functions that can be passed to [deSolve::lsoda()] as
+#' event and root-finding functions, which trigger and end interventions that
+#' scale disease transmission.
+#' @keywords internal
+make_rt_end_event <- function() {
+  # NOTE: state reconstruction could be sped up
+  root_function <- function(time, state, parameters) {
+    state <- state[-length(state)]
+    state <- array(
+      state,
       c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
     )
 
-    root <- c(
-      sum(state_[, i_response_cmpt, ]) - response_threshold,
-      sum(state_[, i_end_cmpt, ]) - end_threshold
-    )
+    # because contacts are divided by demography during parameter prep
+    cm <- parameters[["contact_matrix"]] %*% diag(parameters[["demography"]])
 
-    which_root <- which(abs(root) < 1e-6)
+    # arbitrary precision, may not be hit!
+    rt(parameters[["r0"]], state, cm) - 0.99
+  }
 
-    if (length(which_root) == 0) which_root <- 0 # handle empty which() output
-    state["switch"] <- if (which_root == 1) 1.0 else 0.0
+  event_function <- function(time, state, parameters) {
+    state["switch"] <- 0.0
 
     state
   }
