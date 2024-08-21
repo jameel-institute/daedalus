@@ -9,8 +9,8 @@ daedalus(
   epidemic,
   response_strategy = c("none", "elimination", "economic_closures", "school_closures"),
   implementation_level = c("light", "heavy"),
-  response_threshold = NULL,
-  end_threshold = NULL,
+  response_time = 30,
+  response_threshold = 1000,
   country_params_manual = list(),
   infect_params_manual = list(),
   initial_state_manual = list(),
@@ -40,22 +40,27 @@ Default infection parameters for epidemics can be over-ridden by passing them
 as a named list to \code{infection_params_manual}.}
 
 \item{response_strategy}{A string for the name of response strategy followed;
-defaults to "none". The response strategy determines how contacts are scaled
-while the strategy is active, with contact scaling taken from the package
-data object \code{daedalus::closure_data}.}
+defaults to "none". The response strategy determines the country-specific
+response threshold following which the response is activated. See
+\code{response_threshold}.
+
+While the response strategy is active, economic contacts are scaled using the
+package data object \code{daedalus::closure_data}.}
 
 \item{implementation_level}{A string for the level at which the strategy is
 implemented; defaults to "light".}
 
-\item{response_threshold}{A named vector of length 1, with the value
-representing the total number of individuals in a compartment, while the name
-indicates the compartment name. The response chosen in \code{response_strategy} is
-triggered when the response threshold is reached.}
+\item{response_time}{A single numeric value for the time in days
+at which the selected response is activated. This is ignored if the response
+has already been activated by the hospitalisation threshold being reached.
+Defaults to 30 days.}
 
-\item{end_threshold}{A named vector of length 1, with the value
-representing the total number of individuals in a compartment, while the name
-indicates the compartment name. The response chosen in \code{response_strategy} is
-ended when the end threshold is reached.}
+\item{response_threshold}{A single numeric value for the total number of
+hospitalisations that causes an epidemic response
+(specified by \code{response_strategy}) to be triggered, if it has not already
+been triggered via \code{response_time}. Currently defaults to 1000, which
+overrides the default response- and country-specific threshold values held in
+\link{country_data}.}
 
 \item{country_params_manual}{An optional \strong{named} list of country-specific
 contact data. See \strong{Details} for allowed values.}

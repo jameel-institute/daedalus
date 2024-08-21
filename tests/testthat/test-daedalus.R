@@ -1,22 +1,46 @@
 # Basic tests for DAEDALUS
 test_that("daedalus: basic expectations", {
+  time_end <- 100L
   # expect no conditions
   expect_no_condition({
-    output <- daedalus("Canada", "influenza_1918")
+    data <- daedalus("Canada", "influenza_1918", time_end = time_end)
   })
 
   # expect type double and non-negative
-  # no better way to expect matrix: see github.com/r-lib/testthat/issues/1448
-  expect_true(is.matrix(output))
-  expect_type(output, "double")
-  expect_true(all(output >= 0.0))
+  expect_s3_class(data, "data.frame")
+  expect_length(data, N_OUTPUT_COLS)
+
+  # as non-working groups do not have data per sector
+  expected_rows <- time_end * N_EPI_COMPARTMENTS *
+    (N_AGE_GROUPS + N_ECON_SECTORS)
+
+  expect_identical(
+    nrow(data),
+    expected_rows
+  )
+  expect_named(
+    data,
+    c("time", "age_group", "compartment", "econ_sector", "value")
+  )
+  expect_type(
+    data[["time"]], "double"
+  )
+  expect_type(
+    data[["age_group"]], "character"
+  )
+  expect_type(
+    data[["compartment"]], "character"
+  )
+  expect_type(
+    data[["value"]], "double"
+  )
 
   # expect closed population with no change in total size
   # NOTE: disregard first column holding time
   # NOTE: set tolerance to a reasonable value
   expect_identical(
-    sum(tail(output[, -1L], 1)),
-    sum(head(output[, -1L], 1)),
+    sum(data[data$time == max(data$time), ]$value),
+    sum(data[data$time == min(data$time), ]$value),
     tolerance = 1e-12
   )
 })
@@ -30,10 +54,10 @@ test_that("daedalus: Runs for all epidemics", {
   })
 
   # expect classed output, type double, and non-negative
-  checkmate::expect_list(output_list, "matrix")
+  checkmate::expect_list(output_list, "data.frame")
   expect_true(
     all(vapply(output_list, function(x) {
-      all(x >= 0.0)
+      all(x$value >= 0.0)
     }, FUN.VALUE = logical(1)))
   )
 })
@@ -64,19 +88,21 @@ test_that("daedalus: Passing model parameters", {
 # test statistical correctness for only the covid wildtype infection param set
 test_that("daedalus: statistical correctness", {
   output <- daedalus("Canada", "influenza_1918")
+  # tests on single compartment without workers
+  output <- output[output$age_group == "65+", ]
 
   # expectations when immunity wanes allowing R -> S
   # no elegant way of programmatically accessing idx
-  deaths <- output[, (25L:28L) + 1L]
+  deaths <- output[output$compartment == "dead", ]$value
   expect_true(
     all(diff(deaths) >= 0.0)
   )
-  susceptibles <- output[, (1L:4L) + 1L]
+  susceptibles <- output[output$compartment == "susceptible", ]$value
   expect_false(
     all(diff(susceptibles) <= 0.0)
   )
 
-  recovered <- output[, (21L:24L) + 1L]
+  recovered <- output[output$compartment == "recovered", ]$value
   expect_false(
     all(diff(recovered) >= 0.0)
   )
@@ -88,17 +114,19 @@ test_that("daedalus: statistical correctness", {
     "Canada", "influenza_1918",
     infect_params_manual = list(rho = 0.0)
   )
-  susceptibles <- output[, (1L:4L) + 1L]
+  output <- output[output$age_group == "65+", ]
+
+  susceptibles <- output[output$compartment == "susceptible", ]$value
   expect_true(
     all(diff(susceptibles) <= 0.0)
   )
 
-  recovered <- output[, (21L:24L) + 1L]
+  recovered <- output[output$compartment == "recovered", ]$value
   expect_true(
     all(diff(recovered) >= 0.0)
   )
 
-  deaths <- output[, (25L:28L) + 1L]
+  deaths <- output[output$compartment == "dead", ]$value
   expect_true(
     all(diff(deaths) >= 0.0)
   )
@@ -144,5 +172,53 @@ test_that("daedalus: errors and warnings", {
       "Canada", 1L
     ),
     regexp = "`epidemic` must be a character vector, not the number 1"
+  )
+
+  # expect errors on bad response thresholds
+  expect_error(
+    daedalus("Canada", "sars_cov_1", response_threshold = 0),
+    regexp = "Expected `response_threshold` to be a positive finite integer."
+  )
+  expect_error(
+    daedalus("Canada", "sars_cov_1", response_threshold = -1),
+    regexp = "Expected `response_threshold` to be a positive finite integer."
+  )
+  expect_error(
+    daedalus("Canada", "sars_cov_1", response_threshold = Inf),
+    regexp = "Expected `response_threshold` to be a positive finite integer."
+  )
+  expect_error(
+    daedalus("Canada", "sars_cov_1", response_threshold = NA_real_),
+    regexp = "Expected `response_threshold` to be a positive finite integer."
+  )
+  expect_error(
+    daedalus("Canada", "sars_cov_1", response_threshold = 10.5),
+    regexp = "Expected `response_threshold` to be a positive finite integer."
+  )
+
+  # expect errors on bad response time
+  expect_error(
+    daedalus("Canada", "sars_cov_1", response_time = -1),
+    regexp = "Expected `response_time` to be between 2"
+  )
+  expect_error(
+    daedalus("Canada", "sars_cov_1", response_time = 30, time_end = 30),
+    regexp = "Expected `response_time` to be between 2"
+  )
+  expect_error(
+    daedalus("Canada", "sars_cov_1", response_time = 30, time_end = 10),
+    regexp = "Expected `response_time` to be between 2"
+  )
+  expect_error(
+    daedalus("Canada", "sars_cov_1", response_time = Inf),
+    regexp = "Expected `response_time` to be between 2"
+  )
+  expect_error(
+    daedalus("Canada", "sars_cov_1", response_time = NA_real_),
+    regexp = "Expected `response_time` to be between 2"
+  )
+  expect_error(
+    daedalus("Canada", "sars_cov_1", response_time = 10.5),
+    regexp = "Expected `response_time` to be between 2"
   )
 })
