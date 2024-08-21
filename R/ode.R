@@ -49,7 +49,7 @@ daedalus_rhs <- function(t, state, parameters) {
   sigma <- parameters[["sigma"]] # exposed to infectious
   p_sigma <- parameters[["p_sigma"]] # proportion symptomatic
   epsilon <- parameters[["epsilon"]] # relative FOI from asymptomatics
-  gamma_Is <- parameters[["gamma_Is"]] # single recovery rate for Is and Hosp.
+  gamma_Is <- parameters[["gamma_Is"]] # single recovery rate for Is
   gamma_Ia <- parameters[["gamma_Ia"]] # recovery rate for Ia
   rho <- parameters[["rho"]] # waning rate for infection-derived immunity
 
@@ -76,7 +76,7 @@ daedalus_rhs <- function(t, state, parameters) {
   # scaling economic sector openness
   openness <- parameters[["openness"]]
   switch <- state["switch"]
-  scaling <- (1 - ((1 - openness) * switch)) # clunky
+  scaling <- 1 - (1 - openness) * switch # clunky
   r0_econ <- r0 * scaling
   r0 <- r0 * mean(scaling) # as otherwise no scaling on r0
 
@@ -139,6 +139,8 @@ daedalus_rhs <- function(t, state, parameters) {
   # change in dead
   d_state[, i_D, ] <- omega * state_[, i_H, ]
 
+  d_switch <- 0.0
+
   # return in the same order as state
-  list(c(d_state, 0.0))
+  list(c(d_state, d_switch))
 }

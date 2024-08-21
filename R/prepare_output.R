@@ -16,12 +16,10 @@
 #'
 #' @export
 prepare_output <- function(output) {
-  # expect S3 type `deSolve`
-  checkmate::assert_class(output, c("deSolve", "matrix"))
-
-  # assign dummy colnames
-  bad_colnames <- which(!colnames(output) %in% c("time", "switch"))
-  colnames(output)[bad_colnames] <- as.character(bad_colnames - 1)
+  # TODO: add more checks and allow deSolve
+  checkmate::assert_matrix(
+    output
+  )
 
   # NOTE: keeping this dependency free for now, easier implementations using
   # `{data.table}` or `{tidyr}` are available
