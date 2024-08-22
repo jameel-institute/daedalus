@@ -25,3 +25,4 @@ considered non-working are in this first sector (children and retirees),
 while working-age individuals may be distributed flexibly into the various
 economic sectors (including non-working).
 }
+\keyword{internal}
