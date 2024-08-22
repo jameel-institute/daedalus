@@ -168,6 +168,10 @@ infection_data <- Map(
 
 usethis::use_data(infection_data, overwrite = TRUE)
 
+# save infection parameter names
+infection_parameter_names <- names(infection_data)
+usethis::use_data(infection_parameter_names, overwrite = TRUE)
+
 # save epidemic names for easy reference
 epidemic_names <- names(infection_data)
 usethis::use_data(epidemic_names, overwrite = TRUE)

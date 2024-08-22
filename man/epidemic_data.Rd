@@ -4,6 +4,7 @@
 \name{epidemic_data}
 \alias{epidemic_data}
 \alias{infection_data}
+\alias{infection_parameter_names}
 \alias{epidemic_names}
 \title{Infection characteristics for model epidemics}
 \format{
@@ -39,6 +40,12 @@ immunity wanes, returning individuals in the 'recovered' compartment to the
 }
 }
 
+\subsection{\code{infection_parameter_names}}{
+
+A character vector with 10 names for the infection parameters in
+\code{infection_data}. Mainly for internal use.
+}
+
 \subsection{\code{epidemic_names}}{
 
 A character vector with 7 elements.
@@ -49,6 +56,8 @@ See processing details in `data-raw/infection_data.R
 }
 \usage{
 infection_data
+
+infection_parameter_names
 
 epidemic_names
 }
