@@ -70,6 +70,12 @@
 "infection_data"
 
 #' @name epidemic_data
+#' @format ## `infection_parameter_names`
+#' A character vector with 10 names for the infection parameters in
+#' `infection_data`. Mainly for internal use.
+"infection_parameter_names"
+
+#' @name epidemic_data
 #' @format ## `epidemic_names`
 #' A character vector with 7 elements.
 "epidemic_names"
