@@ -13,14 +13,9 @@
 #' considered non-working are in this first sector (children and retirees),
 #' while working-age individuals may be distributed flexibly into the various
 #' economic sectors (including non-working).
-#'
-#' @export
+#' @keywords internal
 prepare_output <- function(output) {
-  # TODO: add more checks and allow deSolve
-  checkmate::assert_matrix(
-    output
-  )
-
+  # no input checking on internal function
   # NOTE: keeping this dependency free for now, easier implementations using
   # `{data.table}` or `{tidyr}` are available
   times <- output[, "time"]
@@ -34,8 +29,9 @@ prepare_output <- function(output) {
   compartments <- rep(compartments, N_ECON_STRATA)
 
   # NOTE: sector 0 indicates not-in-work; consider alternatives
+  # padding sectors with zeros
   econ_sector <- rep(
-    sprintf("sector_%i", seq.int(0L, N_ECON_SECTORS)),
+    sprintf("sector_%02i", seq.int(0L, N_ECON_SECTORS)),
     each = N_AGE_GROUPS * N_EPI_COMPARTMENTS * max(time)
   )
 
@@ -49,6 +45,9 @@ prepare_output <- function(output) {
     econ_sector = econ_sector,
     value = values
   )
+
+  # remove economic sectors for non-working age groups
+  data <- data[!(data$age_group != "20-65" & data$econ_sector != "sector_00"), ]
 
   # return data
   data
