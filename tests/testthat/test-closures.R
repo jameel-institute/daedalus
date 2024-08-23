@@ -1,0 +1,100 @@
+# expectations that interventions work
+response_names <- c(
+  "none", "elimination",
+  "economic_closures", "school_closures"
+)
+response_level <- c("light", "heavy")
+
+test_that("Closures: basic expectations: runs without errors", {
+  # test all responses
+  expect_no_condition({
+    output_list <- lapply(response_names, function(x) {
+      daedalus("Canada", "sars_cov_1", response_strategy = x)
+    })
+  })
+
+  # test some combinations of responses and implementation levels
+  expect_no_condition({
+    output_list <- Map(
+      response_names, response_level,
+      f = function(x, y) {
+        daedalus(
+          "Canada", "sars_cov_1",
+          response_strategy = x, implementation_level = y
+        )
+      }
+    )
+  })
+})
+
+# expect that applying closures reduce epidemic size
+test_that("Closures: basic statistical correctness: reduces epidemic size", {
+  output_list <- lapply(response_names, function(x) {
+    daedalus(
+      "Canada", "sars_cov_1",
+      response_strategy = x,
+      implementation_level = "light", # test on light as this differs b/w strats
+      infect_params_manual = list(rho = 0.0)
+    )
+  })
+
+  epidemic_sizes <- vapply(
+    output_list, function(x) {
+      sum(x[x$compartment == "recovered" & x$time == max(x$time), ]$value)
+    }, numeric(1)
+  )
+
+  expect_true(
+    all(epidemic_sizes[-1] < epidemic_sizes[1])
+  )
+})
+
+# expect that earlier closures reduce epidemic size
+test_that("Closures: earlier closures reduce epidemic size", {
+  response_times <- c(200, 10)
+  response_threshold <- 1e7 # very high to prevent auto-activation
+  output_list <- lapply(response_times, function(x) {
+    daedalus(
+      "Canada", "sars_cov_1",
+      response_strategy = "elimination",
+      response_time = x,
+      response_threshold = response_threshold,
+      implementation_level = "light",
+      infect_params_manual = list(rho = 0.0)
+    )
+  })
+
+  epidemic_sizes <- vapply(
+    output_list, function(x) {
+      sum(x[x$compartment == "recovered" & x$time == max(x$time), ]$value)
+    }, numeric(1)
+  )
+
+  expect_true(
+    epidemic_sizes[2] < epidemic_sizes[1]
+  )
+})
+
+# expect that lower activation threshold reduces epidemic size
+test_that("Closures: lower threshold reduces epidemic size", {
+  response_thresholds <- c(1000, 100)
+  output_list <- lapply(response_thresholds, function(x) {
+    daedalus(
+      "Canada", "sars_cov_1",
+      response_strategy = "elimination",
+      response_threshold = x,
+      response_time = 200, # artificially high
+      infect_params_manual = list(rho = 0.0)
+    )
+  })
+
+  epidemic_sizes <- vapply(
+    output_list, function(x) {
+      sum(x[x$compartment == "recovered" & x$time == max(x$time), ]$value)
+    }, numeric(1)
+  )
+
+  expect_true(
+    epidemic_sizes[2] < epidemic_sizes[1]
+  )
+})
