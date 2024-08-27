@@ -1,3 +1,26 @@
+# daedalus 0.0.4
+
+This patch adds some basic pandemic response functionality (#15). This functionality is shown in a new vignette `thresholded_interventions.Rmd`.
+
+1. The function signature for `daedalus()` has been changed to accept `response_strategy`, `implementation_level`, `response_time`, and `response_threshold` arguments which specify these parameters. Sensible defaults for the strategy are "none", and a "light" implementation level for other strategies.
+
+2. The model supports the "none", "economic closures", "school closures", and "elimination" strategies, with economic sector openness coefficients for the "light" and "heavy" implementation of these strategies stored in the package data object `closure_data`. The `data-raw/closure_data.R` file shows how this data is generated from raw data files provided by EPPI and added in `inst/extdata`.
+
+3. Closures are triggered by the response time being reached, or the total hospitalisation reaching the response threshold. The state variable has been expanded by one to accommodate a switch that is initially zero, is changed to one (for on) when the response is activated, and back to zero when the response ends. Responses currently end on the same trigger of the effective R being less than 1.0.
+
+4. The `make_parameters()` function has been split into `make_infect_parameters()` and `make_country_parameters()` to be clearer and more manageable. `daedalus()`-level override for parameters which was originally implemented as `...` has been replaced with three separate overrides: `country_params_manual`, `infect_params_manual`, and `initial_state_manual`, for users to pass custom values.
+
+5. `prepare_output()` has been made internal; it omits data for non-working age groups in economic sectors (as these are always 0), and pads all sector numbers to fit the format `sector_XX`.
+
+6. Internal functions for R effective calculations and getting the total hospitalisations, `r_eff()` and `get_hospitalisations()` have been added.
+
+7. Closures are implemented as `deSolve::events` triggered by a rootfinding function, with separate functions for activation and termination, which are implemented as `make_response_threshold_event()` and `make_rt_end_event()`.
+
+8. `contacts_between_sectors` is now set to 0.0, it was previously 1e-6.
+
+9. Added tests for closure triggers having expected effects; but closure end points are not specifically tested.
+
+
 # daedalus 0.0.3
 
 This patch version adds workplace infections to the epidemiological model, and adds country demography data.
