@@ -43,38 +43,31 @@ for more details).
 library(daedalus)
 
 # run model for Canada
-output <- daedalus("Canada", "influenza_1918")
+data <- daedalus("Canada", "influenza_1918")
+
+head(data)
+#>   time age_group compartment econ_sector   value
+#> 1    1       0-4 susceptible   sector_00 1993130
+#> 2    2       0-4 susceptible   sector_00 1993128
+#> 3    3       0-4 susceptible   sector_00 1993126
+#> 4    4       0-4 susceptible   sector_00 1993123
+#> 5    5       0-4 susceptible   sector_00 1993118
+#> 6    6       0-4 susceptible   sector_00 1993109
 ```
 
 Users can select infection parameters from among seven epidemics caused
 by directly-transmitted viral respiratory pathogens, which are stored in
-the package as `daedalus::infection_data`: SARS 2004 (SARS-CoV-1),
-influenza 2009 (influenza A H1N1), influenza 1957 (influenza A H2N2),
-influenza 1918 (influenza A H1N1), Covid-19 wild type (SARS-Cov-2 wild
-type), Covid-19 Omicron (SARS-CoV-2 omicron), and Covid-19 Delta
-(SARS-CoV-2 delta).
-
-Epidemic identifiers are stored as `daedalus::epidemic_names`.
+the package as `daedalus::infection_data`, with epidemic identifiers are
+stored as `daedalus::epidemic_names`.
 
 Users can override default country contact data and epidemic-specific
 infection arguments by passing named lists of parameters to
 `daedalus()`; see the function documentation for more details.
 
-A helper function prepares the data in long or ‘tidy’ format using
-`prepare_output()`.
-
-``` r
-data <- prepare_output(output)
-
-head(data)
-#>   time age_group compartment econ_sector   value
-#> 1    1       0-4 susceptible    sector_0 1993130
-#> 2    2       0-4 susceptible    sector_0 1993128
-#> 3    3       0-4 susceptible    sector_0 1993126
-#> 4    4       0-4 susceptible    sector_0 1993123
-#> 5    5       0-4 susceptible    sector_0 1993118
-#> 6    6       0-4 susceptible    sector_0 1993109
-```
+Users can also model the implementation of pandemic response measures:
+for more on this see the documentation for the main model function
+`daedalus()`, and the vignette on modelling interventions on the package
+website.
 
 ## Related projects
 
