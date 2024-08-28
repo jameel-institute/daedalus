@@ -7,12 +7,13 @@
 make_initial_state(country, initial_state_manual)
 }
 \arguments{
-\item{country}{A country or territory name from among \code{country_names}.
+\item{country}{A country or territory object of class \verb{<country>}.
+Available country and territory names are given in \link{country_names}.
 Country-specific data such as the community and workplace contacts, the
 demography, and the distribution of the workforce into economic sectors is
 automatically accessed from package data for the relevant country name.
-Some contact data values can be over-ridden by the user by passing them as a
-named list to \code{country_params_manual}.}
+To override package defaults for contact data values, use the \code{\link[=set_data]{set_data()}}
+method for the \verb{<country>} class. See \code{\link[=country]{country()}} for more.}
 
 \item{initial_state_manual}{An optional \strong{named} list with the names
 \code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and

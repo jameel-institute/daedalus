@@ -55,8 +55,8 @@ make_initial_state <- function(country, initial_state_manual) {
   )
 
   # get demography and sector workforce
-  demography <- daedalus::country_data[[country]][["demography"]]
-  sector_workforce <- daedalus::country_data[[country]][["workers"]]
+  demography <- get_data(country, "demography")
+  sector_workforce <- get_data(country, "workers")
 
   # calculate non-working working-age, and prepare initial state accounting
   # for distribution of working age into economic sectors
