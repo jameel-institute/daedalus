@@ -2,56 +2,12 @@
 % Please edit documentation in R/parameters.R
 \name{make_model_parameters}
 \alias{make_model_parameters}
-\alias{make_country_parameters}
 \alias{make_infection_parameters}
-\title{Make a list of model parameters for DAEDALUS}
+\title{Make infection parameters list for DAEDALUS}
 \usage{
-make_country_parameters(country, country_params_manual)
-
 make_infection_parameters(epidemic, infect_params_manual)
 }
-\arguments{
-\item{country}{A country or territory name from among \code{country_names}.
-Country-specific data such as the community and workplace contacts, the
-demography, and the distribution of the workforce into economic sectors is
-automatically accessed from package data for the relevant country name.
-Some contact data values can be over-ridden by the user by passing them as a
-named list to \code{country_params_manual}.}
-
-\item{country_params_manual}{An optional \strong{named} list of country-specific
-contact data. See \strong{Details} for allowed values.}
-
-\item{epidemic}{A string for the infection parameter set to use.
-Infection parameter sets may be known by the name of the outbreak or the
-causative pathogen;
-see \strong{Details} for more on which epidemics are supported.
-See \code{epidemic_names} for allowed names, as the name must match exactly.
-Defaults to simulating an epidemic similar to Covid-19 outbreaks caused by
-the wild type of the SARS-CoV-2 virus.
-
-Selecting an epidemic automatically pulls in infection parameters
-associated with the epidemic; these are stored as packaged data in
-\code{infection_data}.
-Default infection parameters for epidemics can be over-ridden by passing them
-as a named list to \code{infection_params_manual}.}
-
-\item{infect_params_manual}{An optional \strong{named} list of infection
-parameters that can be passed to over-ride the default values for the chosen
-\code{epidemic}. See \strong{Details} for allowed values.}
-}
-\value{
-A list of model parameters suitable for the country or territory
-specified in \code{country} and for the infection specified in \code{epidemic}, with
-any user-specified over-rides.
-}
 \description{
-Functions to access and prepare country demography, economic
-sector, and contact data, and epidemic-specific infection parameter data,
-while allowing users to pass custom values for contact data and infection
-parameters.
-
-Helper function to prepare a parameter list for \code{daedalus()},
-allowing the use of country-specific contact matrices and user-specified
-infection parameter values.
+Make infection parameters list for DAEDALUS
 }
 \keyword{internal}
