@@ -11,19 +11,19 @@ daedalus(
   implementation_level = c("light", "heavy"),
   response_time = 30,
   response_threshold = 1000,
-  country_params_manual = list(),
   infect_params_manual = list(),
   initial_state_manual = list(),
   time_end = 300
 )
 }
 \arguments{
-\item{country}{A country or territory name from among \code{country_names}.
+\item{country}{A country or territory object of class \verb{<country>}.
+Available country and territory names are given in \link{country_names}.
 Country-specific data such as the community and workplace contacts, the
 demography, and the distribution of the workforce into economic sectors is
 automatically accessed from package data for the relevant country name.
-Some contact data values can be over-ridden by the user by passing them as a
-named list to \code{country_params_manual}.}
+To override package defaults for contact data values, use the \code{\link[=set_data]{set_data()}}
+method for the \verb{<country>} class. See \code{\link[=country]{country()}} for more.}
 
 \item{epidemic}{A string for the infection parameter set to use.
 Infection parameter sets may be known by the name of the outbreak or the
@@ -62,9 +62,6 @@ been triggered via \code{response_time}. Currently defaults to 1000, which
 overrides the default response- and country-specific threshold values held in
 \link{country_data}.}
 
-\item{country_params_manual}{An optional \strong{named} list of country-specific
-contact data. See \strong{Details} for allowed values.}
-
 \item{infect_params_manual}{An optional \strong{named} list of infection
 parameters that can be passed to over-ride the default values for the chosen
 \code{epidemic}. See \strong{Details} for allowed values.}
@@ -77,6 +74,9 @@ Defaults to \code{1e-6} and \code{0.0} respectively.}
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
 returned for each day. Defaults to 300 days.}
+
+\item{country_params_manual}{An optional \strong{named} list of country-specific
+contact data. See \strong{Details} for allowed values.}
 }
 \value{
 A \verb{<deSolve>} object.
