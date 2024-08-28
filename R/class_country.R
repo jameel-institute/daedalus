@@ -292,3 +292,71 @@ format.country <- function(x, ...) {
   invisible(x)
 }
 
+#' @title Get `<country>` parameters
+#' @name get_data
+#' @export
+get_data.country <- function(x, ...) {
+  validate_country(x)
+
+  to_get <- unlist(rlang::list2(...))
+  checkmate::assert_character(to_get)
+  is_single_string <- checkmate::test_string(to_get)
+
+  if (is_single_string) {
+    x[[to_get]]
+  } else {
+    x[to_get]
+  }
+}
+
+#' @title Set `<country>` parameters
+#' @name set_data
+#' @export
+set_data.country <- function(x, ...) {
+  to_set <- rlang::list2(...)
+  checkmate::assert_list(to_set, "numeric", any.missing = FALSE)
+  allowed_params <- c(
+    "contact_matrix", "contacts_workplace",
+    "contacts_consumer_worker"
+  )
+  checkmate::assert_subset(
+    names(to_set), allowed_params
+  )
+
+  x[names(to_set)] <- to_set
+
+  validate_country(x)
+
+  x
+}
+
+#' Prepare country parameters for model
+#'
+#' @name prepare_parameters
+#' @keywords internal
+prepare_parameters.country <- function(x) {
+  validate_country(x)
+
+  demography <- get_data(x, "demography")
+
+  # scale contacts by largest real eigenvalue
+  cm <- get_data(x, "contact_matrix")
+  eigv <- max(Re(eigen(cm)$values))
+  cm <- (cm / eigv) %*% diag(1 / demography)
+
+  cmw <- get_data(x, "contacts_workplace")
+  cmw <- cmw / max(cmw) # max(cmw) is leading eigenvalue of diag matrix cmw
+
+  cmcw <- get_data(x, "contacts_consumer_worker")
+  # NOTE: scaling by largest singular value using base::svd, accessed as "d"
+  singv <- max(Re(svd(cmcw)[["d"]]))
+  cmcw <- cmcw / singv
+
+  list(
+    demography = demography,
+    contact_matrix = cm,
+    contacts_workplace = cmw,
+    contacts_consumer_worker = cmcw,
+    contacts_between_sectors = get_data(x, "contacts_between_sectors") # 0s
+  )
+}
