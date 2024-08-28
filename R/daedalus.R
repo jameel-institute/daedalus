@@ -2,12 +2,13 @@
 #'
 #' @description Run the DAEDALUS model from R. This is a work in progress.
 #'
-#' @param country A country or territory name from among `country_names`.
+#' @param country A country or territory object of class `<country>`.
+#' Available country and territory names are given in [daedalus::country_names].
 #' Country-specific data such as the community and workplace contacts, the
 #' demography, and the distribution of the workforce into economic sectors is
 #' automatically accessed from package data for the relevant country name.
-#' Some contact data values can be over-ridden by the user by passing them as a
-#' named list to `country_params_manual`.
+#' To override package defaults for contact data values, use the [set_data()]
+#' method for the `<country>` class. See [country()] for more.
 #'
 #' @param epidemic A string for the infection parameter set to use.
 #' Infection parameter sets may be known by the name of the outbreak or the
@@ -190,13 +191,12 @@ daedalus <- function(country,
                      implementation_level = c("light", "heavy"),
                      response_time = 30,
                      response_threshold = 1000,
-                     country_params_manual = list(),
                      infect_params_manual = list(),
                      initial_state_manual = list(),
                      time_end = 300) {
   # input checking
   # NOTE: names are case sensitive
-  country <- rlang::arg_match(country, daedalus::country_names)
+  checkmate::assert_class(country, "country")
   epidemic <- rlang::arg_match(epidemic, daedalus::epidemic_names)
 
   response_strategy <- rlang::arg_match(response_strategy)
@@ -235,7 +235,7 @@ daedalus <- function(country,
   initial_state <- as.numeric(make_initial_state(country, initial_state_manual))
 
   parameters <- c(
-    make_country_parameters(country, country_params_manual),
+    prepare_parameters(country),
     make_infection_parameters(epidemic, infect_params_manual)
   )
 
