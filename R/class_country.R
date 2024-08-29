@@ -173,12 +173,13 @@ validate_country <- function(x) {
     "contacts_workplace", "contacts_consumer_worker",
     "contacts_between_sectors", "workers"
   )
-  has_invariants <- checkmate::check_subset(
-    attributes(x)$names, expected_invariants
+  has_invariants <- checkmate::test_names(
+    attributes(x)$names,
+    must.include = expected_invariants
   )
   if (!has_invariants) {
     cli::cli_abort(
-      "{.cls population} does not have the correct attributes"
+      "{.cls country} does not have the correct attributes"
     )
   }
 
