@@ -23,27 +23,60 @@ new_country <- function(name, parameters) {
 
 #' Represent countries and territories for DAEDALUS
 #'
-#' @description Helper function to create custom S3 class `<country>` objects
-#' for use with [daedalus()]. These objects store country parameters for reuse
-#' and have methods for easy parameter access and editing, as well as
-#' processing raw country characteristics for the DAEDALUS model.
+#' @name class_country
+#' @rdname class_country
+#'
+#' @description Helper functions to create and work with S3 class `<country>`
+#' objects for use with [daedalus()].
+#' These objects store country parameters for reuse and have methods for easy
+#' parameter access and editing, as well as processing raw country
+#' characteristics for the DAEDALUS model.
 #'
 #' @param name A string giving the country or territory name; must be from among
 #' [daedalus::country_names].
+#'
 #' @param parameters An optional named list of country parameters that are
 #' allowed to be modified. Currently, users may only pass their own contact
 #' matrix, workplace contacts, and consumer-worker contact matrix. If these are
 #' not passed, default values are accessed from stored package data.
 #'
 #' @export
-#' @return An object of the S3 class `<country>`.
+#' @return
+#'
+#' - `country()` returns an object of the S3 class `<country>`.
+#'
+#' - `is_country()` returns a logical for whether an object is a `<country>`.
+#'
+#' - Access operators `[` and `[[` return class members of a `<country>` with
+#' behaviour and return type identical to methods for a `<list>`.
+#'
+#' - Assignment operators `[[<-` and `$<-` modify class members of a `<country>`
+#' and will demote the `<country>` to a list if an assignment invalidates the
+#' class.
+#'
+#' - `print.country()` invisibly returns the `<country>` object `x`. Called for
+#' printing side-effects.
+#'
 #' @examples
-#' country("Canada")
+#' x <- country("Canada")
+#'
+#' x
 #'
 #' country(
 #'   "United Kingdom",
 #'   parameters = list(contact_matrix = matrix(1, 4, 4))
 #' )
+#'
+#' # check whether `x` is a <country> object
+#' is_country(x)
+#'
+#' # assign class members
+#' # using set_data()
+#' set_data(x, contact_matrix = matrix(99, 4, 4))
+#'
+#' # using assignment operators
+#' x$contact_matrix <- matrix(99, 4, 4)
+#' x
 country <- function(name,
                     parameters = list(
                       contact_matrix = NULL,
@@ -52,6 +85,10 @@ country <- function(name,
                     )) {
   # input checking
   name <- rlang::arg_match(name, daedalus::country_names)
+  # check list but allow missing and NULL
+  checkmate::assert_list(
+    parameters, c("numeric", "matrix", "NULL")
+  )
   # NOTE: not allowed to change demography, worker distribution, or
   # contacts between economic sectors (modelled as zero)
   allowed_params <- c(
@@ -227,13 +264,14 @@ validate_country <- function(x) {
         x$contacts_consumer_worker,
         lower = 0, finite = TRUE
       ),
-    "Country `contacts_between_sectrors` must be a 45x45 numeric matrix" =
+    "Country `contacts_between_sectors` must be a 45x45 numeric matrix" =
       checkmate::test_matrix(
         x$contacts_between_sectors, "numeric",
         any.missing = FALSE, nrows = N_ECON_SECTORS, ncols = N_ECON_SECTORS
       ) && checkmate::test_numeric(
         x$contacts_between_sectors,
         lower = 0, finite = TRUE
+      ),
     "Country `contacts_between_sectors` must have zero diagonal" =
       checkmate::test_matrix(
         x$contacts_between_sectors, "numeric",
@@ -247,23 +285,17 @@ validate_country <- function(x) {
 }
 
 #' Check if an object is a `<country>`
+#' @name class_country
 #'
-#' @param x An object to be checked as being of the `<country>` class.
-#'
-#' @return A single logical for whether `x` is a `<country>`.
 #' @export
-#' @examples
-#' is_country(country("Canada"))
 is_country <- function(x) {
   inherits(x, "country")
 }
 
 #' Print a `<country>` object
-#'
+#' @name class_country
 #' @param x An object of the `<country>` class.
 #' @param ... Other parameters passed to [print()].
-#' @return Invisibly returns the `<country>` object `x`.
-#' Called for printing side-effects.
 #' @export
 print.country <- function(x, ...) {
   format(x, ...)
