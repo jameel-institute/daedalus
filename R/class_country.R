@@ -234,6 +234,12 @@ validate_country <- function(x) {
       ) && checkmate::test_numeric(
         x$contacts_between_sectors,
         lower = 0, finite = TRUE
+    "Country `contacts_between_sectors` must have zero diagonal" =
+      checkmate::test_matrix(
+        x$contacts_between_sectors, "numeric",
+        any.missing = FALSE, nrows = N_ECON_SECTORS, ncols = N_ECON_SECTORS
+      ) && checkmate::test_subset(
+        x$contacts_between_sectors, 0
       )
   )
 
