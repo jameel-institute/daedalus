@@ -13,6 +13,10 @@ exclusions: list(
     "R/ode.R" = list(
       object_name_linter = Inf # prevent parameter names being linted
     ),
+    "R/class_country.R" = list(
+      duplicate_argument_linter = Inf, # due to cli_bullets
+      object_name_linter = Inf # due to S3 method
+    ),
     "tests/testthat.R" = list(
       unused_import_linter = Inf
     ),

@@ -1,6 +1,6 @@
 Package: daedalus
 Title: Optimise economic, social and health trade-offs in a pandemic
-Version: 0.0.4
+Version: 0.0.5
 Authors@R: c(
     person("Pratik", "Gupte", , "p.gupte24@imperial.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5294-7819")),
