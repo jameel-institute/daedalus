@@ -1,3 +1,19 @@
+# daedalus 0.0.5
+
+This patch adds the `<country>` class to represent country and territory data for `daedalus()`. Access, assignment, and print methods are also added, in addition to internal helpers such as `as_country()`. The class is tested with newly added tests.
+
+Other changes:
+
+1. Adds the generic functions `get_data()`, `set_data()` and `prepare_parameters()`, with methods for `<country>` objects. Methods for infection data are also anticipated.
+
+2. Removes `make_country_parameters()` in favour of `prepare_parameters.country()`.
+
+3. `daedalus()` expects its first argument to be a `<country>` and no longer accepts a `country_params_manual` argument; all changes to country parameters should be made via the class.
+
+4. `make_initial_state()` works on `<country>` objects instead of country names.
+
+5. Vignettes have been updated to use `<country>` objects.
+
 # daedalus 0.0.4
 
 This patch adds some basic pandemic response functionality (#15). This functionality is shown in a new vignette `thresholded_interventions.Rmd`.
