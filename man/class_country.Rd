@@ -41,6 +41,10 @@ not passed, default values are accessed from stored package data.}
 \item{x}{An object of the \verb{<country>} class.}
 
 \item{...}{Other parameters passed to \code{\link[=print]{print()}}.}
+
+\item{i}{The index or name to access.}
+
+\item{value}{The value to assign to index or name \code{i}.}
 }
 \value{
 \itemize{

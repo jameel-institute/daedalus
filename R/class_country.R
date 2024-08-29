@@ -399,6 +399,7 @@ as_country <- function(x) {
 }
 
 #' @name class_country
+#' @param i The index or name to access.
 #' @export
 `[.country` <- function(x, i) {
   x <- unclass(x)
@@ -417,6 +418,7 @@ as_country <- function(x) {
 #' Assignment methods for `<country>`
 #'
 #' @name class_country
+#' @param value The value to assign to index or name `i`.
 #' @export
 `[[<-.country` <- function(x, i, value) {
   x <- unclass(x)
