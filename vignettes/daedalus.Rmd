@@ -27,13 +27,23 @@ library(ggplot2)
 The model can be run for any country or territory included in package data simply by passing its name to `daedalus()`.
 The `country_names` vector holds a list of country and territory names for which data is available.
 
+Countries and territories are represented by the `<country>` class, which can be created by calling `country()` on a country name. This collects package data on the country into a single object, making it easier to work with.
+
+```{r make_country}
+# make a <country> representing Canada (chosen for its short name)
+country_canada <- country("Canada")
+
+# print to examine; only some essential information is shown
+country_canada
+```
+
 The package provides data from @walker2020 on country demography, country workforce per economic sector, and social contacts between age groups in `country_data`.
 The package also provides data from @jarvis2024 on workplace contacts in economic sectors.
 Both datasets are accessed by internal functions to reduce the need for user input.
 
 ```{r run_model}
 # simulate a Covid-19 wild type outbreak
-data <- daedalus("Canada", "sars_cov_2_pre_alpha")
+data <- daedalus(country_canada, "sars_cov_2_pre_alpha")
 ```
 
 Users can quickly model one of seven epidemics by passing a name from `daedalus::epidemic_names` to the `epidemic` argument, which is the second argument.
@@ -43,23 +53,26 @@ The package data object `daedalus::epidemic_names` gives the allowed epidemic id
 daedalus::epidemic_names
 ```
 
-
 The model runs for 300 timesteps by default; timesteps should be interpreted as days since model parameters are in terms of days.
 The `daedalus()` function documentation has more information on the infection parameter defaults in the **Details** section.
 
-Users can also override epidemic-specific infection parameter values as well as change the initial conditions by passing arguments to `daedalus()` in one of three lists: `country_params_manual`, `infect_params_manual`, and `initial_state_manual`, which override the country contact data, the infection parameters, and the initial state defaults respectively.
+Users can also override epidemic-specific infection parameter values as well as change the initial conditions by passing arguments to `daedalus()` as lists: `infect_params_manual` and `initial_state_manual`, which override the infection parameters and the initial state defaults respectively.
 The function documentation for `daedalus::daedalus()` details which parameters are accepted.
 
 ```r
 # not run
 # e.g. change the transmission rate by changing r0
-daedalus("Canada", "influenza_1918", infect_params_manual = list(r0 = 1.3))
+daedalus(
+  country("United Kingdom"), 
+  "influenza_1918", 
+  infect_params_manual = list(r0 = 1.3)
+)
 
 # e.g. change the hospitalisation risk profile to model
 # 1918 Influenza epidemic but with risk of severe disease
 # increasing with age
 daedalus(
-  "Canada", epidemic = "influenza_1918",
+  country("China"), "influenza_1918",
   infect_params_manual = list(eta = c(2.0, 3.0, 5.0, 15.0))
 )
 ```
