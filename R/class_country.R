@@ -348,6 +348,70 @@ set_data.country <- function(x, ...) {
   x
 }
 
+#' Convert a <list> to a <country>
+#'
+#' @description A convenience internal function to convert unclassed <country>
+#' back to <country>.
+#' @param x A list with elements expected in a <country>.
+#' @keywords internal
+#' @noRd
+as_country <- function(x) {
+  checkmate::assert_list(
+    x,
+    any.missing = FALSE, types = c("character", "numeric")
+  )
+  class(x) <- "country"
+  validate_country(x)
+
+  x
+}
+
+#' @name class_country
+#' @export
+`[.country` <- function(x, i) {
+  x <- unclass(x)
+  x[i]
+}
+
+#' @name class_country
+#' @export
+`[[.country` <- function(x, i) {
+  x <- unclass(x)
+  x[[i]]
+}
+
+# NOTE: not including a method for `[<-` as probably not useful
+
+#' Assignment methods for `<country>`
+#'
+#' @name class_country
+#' @export
+`[[<-.country` <- function(x, i, value) {
+  x <- unclass(x)
+  x[[i]] <- value
+  # attempt to reclass as country and return list on error
+  tryCatch(
+    {
+      as_country(x)
+    },
+    error = function(e) {
+      cli::cli_warn(
+        "Assignment creates an invalid {.cls country} object
+        and it is demoted to {.cls list}!",
+        call. = FALSE
+      )
+      x
+    }
+  )
+}
+
+#' @name class_country
+#' @export
+`$<-.country` <- function(x, i, value) {
+  x[[i]] <- value
+  x
+}
+
 #' Prepare country parameters for model
 #'
 #' @name prepare_parameters
