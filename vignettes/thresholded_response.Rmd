@@ -29,7 +29,7 @@ We run both models for 100 days as the epidemic peak occurs within this timefram
 
 ```{r}
 data_baseline <- daedalus(
-  "Canada",
+  country("Canada"),
   "influenza_1918",
   infect_params_manual = list(
     rho = 0.0
@@ -46,7 +46,7 @@ data_baseline$scenario <- "no_response"
 ```{r run_model}
 # run the model with a heavy elimination intervention
 data_intervention <- daedalus(
-  "Canada",
+  country("Canada"),
   "influenza_1918",
   infect_params_manual = list(
     rho = 0.0
