@@ -326,9 +326,20 @@ set_data.country <- function(x, ...) {
     "contact_matrix", "contacts_workplace",
     "contacts_consumer_worker"
   )
-  checkmate::assert_subset(
+
+  is_good_subs <- checkmate::test_subset(
     names(to_set), allowed_params
   )
+  if (!is_good_subs) {
+    cli::cli_abort(
+      c(
+        "Found a disallowed parameter substitution in `set_data()`.",
+        i = "Only the following country parameters can be set using
+        `set_data()`: {.str {allowed_params}}. To set other parameters
+        use standard assignment with `$<-` or `[[<-`."
+      )
+    )
+  }
 
   x[names(to_set)] <- to_set
 
