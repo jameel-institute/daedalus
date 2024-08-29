@@ -47,9 +47,6 @@
 #' has already been activated by the hospitalisation threshold being reached.
 #' Defaults to 30 days.
 #'
-#' @param country_params_manual An optional **named** list of country-specific
-#' contact data. See **Details** for allowed values.
-#'
 #' @param infect_params_manual An optional **named** list of infection
 #' parameters that can be passed to over-ride the default values for the chosen
 #' `epidemic`. See **Details** for allowed values.
@@ -94,32 +91,6 @@
 #' the proportion of initially infectious individuals who are considered to be
 #' asymptomatic. Defaults to 0.0.
 #'
-#' ## Country parameters
-#'
-#' `country_params_manual` may be a named list of one or more of the following:
-#'
-#' - `contact_matrix`: A square numeric matrix with `N_AGE_GROUPS` (4) rows and
-#' columns, giving the per-capita number of contacts between individuals of each
-#' age group. By default, this is taken from `daedalus::country_data` based on
-#' the user-specified `country`.
-#'
-#' - `contacts_workplace`: A numeric vector of length `N_ECON_SECTORS` (45),
-#' giving the per-capita number of worker-to-worker interactions within economic
-#' sectors. Defaults to a standard value provided by the package as
-#' `daedalus::economic_contacts`.
-#'
-#' - `contacts_consumer_worker`: A numeric matrix with `N_ECON_SECTORS` rows
-#' (45) and `N_AGE_GROUPS` columns (4) giving the per-capita contacts between
-#' individuals in each economic sector and consumers. Defaults to the
-#' sector-wise workplace contacts distributed in proportion to country
-#' demography.
-#'
-#' - `contacts_between_sectors`: A square numeric matrix with `N_ECON_SECTORS`
-#' (45) rows and columns and with a zero diagonal, giving the number of
-#' worker-to-worker contacts across economic sectors. Defaults to the package
-#' standard of a null matrix as between-sector-contacts are not currently
-#' modelled.
-#'
 #' ## Infection parameters
 #'
 #' `infect_params_manual` may be a named list of one or more of the following:
@@ -162,23 +133,22 @@
 #'
 #' @examples
 #' # with default infection parameters associated with an epidemic
-#' output <- daedalus(country = "United Kingdom", epidemic = "influenza_1918")
+#' output <- daedalus(
+#'   country = country("United Kingdom"),
+#'   epidemic = "influenza_1918"
+#' )
 #'
 #' # with some infection parameters over-ridden by the user
 #' output <- daedalus(
-#'   country = "United Kingdom", epidemic = "influenza_1918",
+#'   country = country("United Kingdom"),
+#'   epidemic = "influenza_1918",
 #'   infect_params_manual = list(r0 = 1.3)
-#' )
-#'
-#' # with some country parameters over-ridden by the user
-#' output <- daedalus(
-#'   country = "United Kingdom", epidemic = "influenza_1918",
-#'   country_params_manual = list(contact_matrix = matrix(1, 4, 4))
 #' )
 #'
 #' # with default initial conditions over-ridden by the user
 #' output <- daedalus(
-#'   country = "United Kingdom", epidemic = "influenza_1918",
+#'   country = country("United Kingdom"),
+#'   epidemic = "influenza_1918",
 #'   initial_state_manual = list(p_infectious = 1e-3)
 #' )
 #' @export
