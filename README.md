@@ -43,7 +43,7 @@ for more details).
 library(daedalus)
 
 # run model for Canada
-data <- daedalus("Canada", "influenza_1918")
+data <- daedalus(country("Canada"), infection("influenza_1918"))
 
 head(data)
 #>   time age_group compartment econ_sector   value
