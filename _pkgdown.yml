@@ -4,7 +4,28 @@ template:
 development:
   mode: auto
 reference:
-  - title: All package functions
-    desc: All DAEDALUS functions
+  - title: Model function
+    desc: Run the DAEDALUS integrated economic-epidemiological model
     contents:
-    - starts_with("*")
+    - daedalus
+  - title: Class `<country>`
+    desc: Represent and access country or territory characteristics
+    contents:
+    - class_country
+  - title: Class `<infection>`
+    desc: Represent and access infection characteristics
+    contents:
+    - class_infection
+  - title: Package generics
+    desc: Generics with methods for package S3 classes
+    contents:
+    - contains("get")
+    - contains("set")
+  - title: Package data
+    desc: Data included with the package
+    contents:
+    - contains("data")
+    - contains("contacts")
+    - country_names
+    - -get_data
+    - -set_data
