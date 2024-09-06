@@ -327,7 +327,6 @@ format.daedalus_country <- function(x, ...) {
   invisible(x)
 }
 
-#' @title Get `<daedalus_country>` parameters
 #' @name get_data
 #' @export
 get_data.daedalus_country <- function(x, ...) {
@@ -344,7 +343,6 @@ get_data.daedalus_country <- function(x, ...) {
   }
 }
 
-#' @title Set `<daedalus_country>` parameters
 #' @name set_data
 #' @export
 set_data.daedalus_country <- function(x, ...) {
