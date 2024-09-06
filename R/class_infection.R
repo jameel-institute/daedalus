@@ -1,0 +1,461 @@
+#' Constructor for the `<infection>` class
+#'
+#' @description Internal constructor function to make new objects of class
+#' `<infection>`. See [infection()] for the user-facing helper function which
+#' calls this function internally.
+#'
+#' @param name An epidemic name from among [daedalus::epidemic_names].
+#' @param parameters A named list of parameters for the infection.
+#'
+#' @return An object of the `<infection>` class, which inherits from a `<list>`.
+#' @keywords internal
+#' @noRd
+new_infection <- function(name, parameters) {
+  # all input checking at top level
+  x <- c(
+    list(name = name),
+    parameters
+  )
+  class(x) <- "infection"
+
+  x
+}
+
+#' Represent countries and territories for DAEDALUS
+#'
+#' @name class_infection
+#' @rdname class_infection
+#'
+#' @description Helper functions to create and work with S3 class `<infection>`
+#' objects for use with [daedalus()].
+#' These objects store infection parameters for reuse and have methods for easy
+#' parameter access and editing, as well as processing raw infection
+#' characteristics for the DAEDALUS model.
+#'
+#' @param name An epidemic name from among [daedalus::epidemic_names].
+#' Selecting an epidemic automatically pulls in infection parameters
+#' associated with the epidemic; these are stored as packaged data in
+#' `daedalus::infection_data`. Default infection parameters for epidemics can be
+#' over-ridden by passing them as a named list to `...`.
+#'
+#' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Manually specified values for
+#' any of the infection parameters. See **Details** for which infection
+#' parameters are supported.
+#'
+#' @export
+#' @return
+#'
+#' - `infection()` returns an object of the S3 class `<infection>`.
+#'
+#' - `is_infection()` returns a logical for whether an object is a
+#' `<infection>`.
+#'
+#' - Access operators `[` and `[[` return class members of a `<infection>` with
+#' behaviour and return type identical to methods for a `<list>`.
+#'
+#' - Assignment operators `[[<-` and `$<-` modify class members of a
+#' `<infection>` and will demote the `<infection>` to a list if an assignment
+#' invalidates the class.
+#'
+#' - `print.infection()` invisibly returns the `<infection>` object `x`.
+#' Called for printing side-effects.
+#'
+#' @details
+#'
+#' ## Included epidemics
+#'
+#' Epidemics for which data are available are given below (pathogen in
+#' parentheses). The string indicates the name that must be passed to the `name`
+#' argument.
+#'
+#' - `"sars_cov_1"`: SARS 2004 (SARS-CoV-1),
+#'
+#' - `"influenza_2009"`: influenza 2009 (influenza A H1N1),
+#'
+#' - `"influenza_1957"`: influenza 1957 (influenza A H2N2),
+#'
+#' - `"influenza_1918"`: influenza 1918 (influenza A H1N1),
+#'
+#' - `"sars_cov_2_pre_alpha"`: Covid-19 wild type (SARS-Cov-2 wild type),
+#'
+#' - `"sars_cov_2_omicron"`: Covid-19 Omicron (SARS-CoV-2 omicron),
+#'
+#' - `"sars_cov_2_pre_delta"`: (SARS-CoV-2 delta).
+#'
+#' ## Infection parameters
+#'
+#' All infections have the following parameters, which take default values
+#' stored in the package under [daedalus::infection_data]. Users can pass
+#' custom values for these parameters as arguments via `...`.
+#'
+#' - `r0`: A single numeric value for the basic reproduction value of the
+#' infection \eqn{R_0}.
+#'
+#' - `sigma`: A single numeric value > 0.0 for the rate of transition from the
+#' exposed compartment to one of two infectious compartments.
+#'
+#' - `p_sigma`: A single numeric value in the range \eqn{[0.0, 1.0]} for the
+#' proportion of infectious individuals who are also symptomatic. Asymptomatic
+#' individuals can have a different contribution to the force of infection from
+#' symptomatic individuals.
+#'
+#' - `epsilon`: A single numeric value for the relative contribution of
+#' asymptomatic infectious individuals to the force of infection (compared to
+#' symptomatic individuals).
+#'
+#' - `gamma_Is`: A single numeric value for the recovery rate of infectious
+#' individuals who are not hospitalised.
+#'
+#' - `gamma_Ia`: A single numeric value for the recovery rate from asymptomatic
+#' infection.
+#'
+#' - `gamma_H`: A numeric vector of length `N_AGE_GROUPS` (4) for the
+#' age-specific recovery rate for individuals who are hospitalised.
+#'
+#' - `eta`: A numeric vector of length `N_AGE_GROUPS` (4) for the age-specific
+#' hospitalisation rate for individuals who are infectious and symptomatic.
+#'
+#' - `omega`: A numeric vector of length `N_AGE_GROUPS` (4) for the age-specific
+#' mortality rate for individuals who are hospitalised.
+#'
+#' - `rho`: A single numeric value for the rate at which infection-derived
+#' immunity wanes, returning individuals in the 'recovered' compartment to the
+#' 'susceptible' compartment.
+#'
+#' @examples
+#' # make an <infection> object with default parameter values
+#' infection("sars_cov_1")
+#'
+#' # modify infection parameters R0 and immunity waning rate
+#' infection("influenza_1918", r0 = 2.5, rho = 0.01)
+infection <- function(name, ...) {
+  # input checking
+  name <- rlang::arg_match(name, daedalus::epidemic_names)
+  parameters <- rlang::list2(...)
+
+  is_empty_list <- checkmate::test_list(parameters, len = 0)
+
+  if (!is_empty_list) {
+    # check list
+    checkmate::assert_list(
+      parameters, "numeric",
+      min.len = 0,
+      max.len = length(daedalus::infection_parameter_names)
+    )
+
+    has_good_names <- checkmate::test_subset(
+      names(parameters), daedalus::infection_parameter_names,
+      empty.ok = TRUE
+    )
+    if (!has_good_names) {
+      cli::cli_abort(
+        "Found unexpected values in `...`; the only allowed parameters are:
+        {.str {daedalus::infection_parameter_names}}"
+      )
+    }
+
+    allowed_numerics_names <- c("eta", "gamma_H", "omega")
+    is_each_number <- all(
+      vapply(
+        parameters[!names(parameters) %in%
+          allowed_numerics_names],
+        checkmate::test_number,
+        logical(1L),
+        # NOTE: rate parameter limits allowed may need to be tweaked
+        lower = 0.0,
+        finite = TRUE
+      )
+    )
+
+    is_numeric_good <- all(
+      vapply(
+        parameters[allowed_numerics_names], checkmate::test_numeric,
+        logical(1L),
+        len = N_AGE_GROUPS, lower = 0.0,
+        finite = TRUE, null.ok = TRUE
+      )
+    )
+
+    if (!is_each_number) {
+      cli::cli_abort(
+        c(
+          "Expected the following parameters passed in `...`
+          to be a single positive and finite number:
+          {.str {
+            setdiff(daedalus::infection_parameter_names,
+            allowed_numerics_names)
+          }}",
+          i = "Only {.str {allowed_numerics_names}} may be numeric vectors.
+          See the Help page for {.help daedalus::daedalus} for parameters that
+          can be numerics."
+        )
+      )
+    }
+
+    if (!is_numeric_good) {
+      cli::cli_abort(
+        c(
+          "Expected the following parameters passed in `infect_params_manual`
+          to be numeric vectors of length {N_AGE_GROUPS} with positive and
+          finite values:
+          {.str {intersect(names(parameters), allowed_numerics_names)}}",
+          i = "See the Help page for {.help daedalus::daedalus} for parameters
+          that can be numerics."
+        )
+      )
+    }
+  }
+
+  # substitute defaults with non-NULL elements of parameters
+  params <- daedalus::infection_data[[name]]
+  params[names(parameters)] <- parameters
+
+  x <- new_infection(
+    name,
+    params
+  )
+
+  validate_infection(x)
+
+  x
+}
+
+#' Validator for the `<infection>` class
+#'
+#' @param x An object to be validated as a `<infection>` object.
+#'
+#' @keywords internal
+#' @noRd
+validate_infection <- function(x) {
+  if (!is_infection(x)) {
+    cli::cli_abort(
+      "Object should be of class {.cls {infection}}; check class assignment."
+    )
+  }
+
+  # check class members
+  expected_invariants <- c(
+    "name", daedalus::infection_parameter_names
+  )
+  has_invariants <- checkmate::test_names(
+    attributes(x)$names,
+    must.include = expected_invariants
+  )
+  if (!has_invariants) {
+    cli::cli_abort(
+      "`x` is class {.cls infection} but does not have the correct attributes"
+    )
+  }
+
+  # check class members
+  allowed_numerics_names <- c("eta", "gamma_H", "omega")
+  expected_number <- setdiff(
+    daedalus::infection_parameter_names, allowed_numerics_names
+  )
+
+  stopifnot(
+    "Infection `name` must be a string from `daedalus::epidemic_names`" =
+      checkmate::test_string(x$name) &&
+        checkmate::test_subset(
+          x$name, daedalus::epidemic_names
+        )
+  )
+  invisible(
+    lapply(expected_number, function(n) {
+      lgl <- checkmate::test_number(x[[n]], lower = 0.0, finite = TRUE)
+      if (!lgl) {
+        cli::cli_abort(
+          "<infection> member {.str n} must be a single finite
+                    positive number"
+        )
+      }
+    })
+  )
+  invisible(
+    lapply(allowed_numerics_names, function(n) {
+      lgl <- checkmate::test_numeric(
+        x[[n]],
+        lower = 0.0, finite = TRUE, len = N_AGE_GROUPS
+      )
+      if (!lgl) {
+        cli::cli_abort(
+          "<infection> member {.str n} must be a numeric vector of
+          length 4 (number of age groups)"
+        )
+      }
+    })
+  )
+
+  invisible(x)
+}
+
+#' Check if an object is a `<infection>`
+#' @name class_infection
+#'
+#' @export
+is_infection <- function(x) {
+  inherits(x, "infection")
+}
+
+#' Print a `<infection>` object
+#' @name class_infection
+#' @param x An object of the `<infection>` class.
+#' @param ... Other parameters passed to [print()].
+#' @export
+print.infection <- function(x, ...) {
+  format(x, ...)
+}
+
+#' Format a `<infection>` object
+#'
+#' @param x A `<infection>` object.
+#' @param ... Other arguments passed to [format()].
+#'
+#' @return Invisibly returns the `<infection>` object `x`. Called for printing
+#' side-effects.
+#' @keywords internal
+#' @noRd
+format.infection <- function(x, ...) {
+  chkDots(...)
+  validate_infection(x)
+
+  # NOTE: rough implementations, better scaling e.g. to millions could be added
+  cli::cli_text("{.cls {class(x)}}")
+  divid <- cli::cli_div(theme = list(.val = list(digits = 3)))
+  cli::cli_bullets(
+    class = divid,
+    c(
+      "*" = "Epidemic name: {cli::style_bold(x$name)}",
+      "*" = "R0: {cli::col_red(x$r0)}",
+      "*" = "sigma: {.val {x$sigma}}",
+      "*" = "p_sigma: {.val {x$p_sigma}}",
+      "*" = "epsilon: {.val {x$epsilon}}",
+      "*" = "rho: {.val {x$rho}}",
+      "*" = "eta: {.val {x$eta}}",
+      "*" = "omega: {.val {x$omega}}",
+      "*" = "gamma_Ia: {.val {x$gamma_Ia}}",
+      "*" = "gamma_Is: {.val {x$gamma_Is}}",
+      "*" = "gamma_H: {.val {x$gamma_H}}"
+    )
+  )
+  cli::cli_end(divid)
+
+  invisible(x)
+}
+
+#' @name get_data
+#' @export
+get_data.infection <- function(x, ...) {
+  validate_infection(x)
+
+  to_get <- unlist(rlang::list2(...))
+  checkmate::assert_character(to_get)
+  is_single_string <- checkmate::test_string(to_get)
+
+  if (is_single_string) {
+    x[[to_get]]
+  } else {
+    x[to_get]
+  }
+}
+
+#' @name set_data
+#' @export
+set_data.infection <- function(x, ...) {
+  to_set <- rlang::list2(...)
+  checkmate::assert_list(to_set, "numeric", any.missing = FALSE)
+
+  is_good_subs <- checkmate::test_subset(
+    names(to_set), daedalus::infection_parameter_names
+  )
+  if (!is_good_subs) {
+    cli::cli_abort(
+      "Found a disallowed parameter substitution in `set_data()`."
+    )
+  }
+
+  x[names(to_set)] <- to_set
+
+  validate_infection(x)
+
+  x
+}
+
+#' Convert a <list> to a <infection>
+#'
+#' @description A convenience internal function to convert unclassed <infection>
+#' back to <infection>.
+#' @param x A list with elements expected in a <infection>.
+#' @keywords internal
+#' @noRd
+as_infection <- function(x) {
+  checkmate::assert_list(
+    x,
+    any.missing = FALSE, types = c("character", "numeric")
+  )
+  class(x) <- "infection"
+  validate_infection(x)
+
+  x
+}
+
+#' @name class_infection
+#' @param i The index or name to access.
+#' @export
+`[.infection` <- function(x, i) {
+  x <- unclass(x)
+  x[i]
+}
+
+#' @name class_infection
+#' @export
+`[[.infection` <- function(x, i) {
+  x <- unclass(x)
+  x[[i]]
+}
+
+# NOTE: not including a method for `[<-` as probably not useful
+
+#' Assignment methods for `<infection>`
+#'
+#' @name class_infection
+#' @param value The value to assign to index or name `i`.
+#' @export
+`[[<-.infection` <- function(x, i, value) {
+  x <- unclass(x)
+  x[[i]] <- value
+  # attempt to reclass as infection and return list on error
+  tryCatch(
+    {
+      as_infection(x)
+    },
+    error = function(e) {
+      cli::cli_warn(
+        "Assignment creates an invalid {.cls infection} object
+        and it is demoted to {.cls list}!",
+        call. = FALSE
+      )
+      x
+    }
+  )
+}
+
+#' @name class_infection
+#' @export
+`$<-.infection` <- function(x, i, value) {
+  x[[i]] <- value
+  x
+}
+
+#' Prepare infection parameters for model
+#'
+#' @name prepare_parameters
+#'
+#' @keywords internal
+prepare_parameters.infection <- function(x, ...) {
+  chkDots(...)
+
+  validate_infection(x)
+  x <- unclass(x)
+  x[names(x) != "name"]
+}
