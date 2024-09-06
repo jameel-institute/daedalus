@@ -18,6 +18,10 @@ exclusions: list(
       object_name_linter = Inf, # due to S3 method
       object_length_linter = Inf # due to length of method name
     ),
+    "R/class_infection.R" = list(
+      duplicate_argument_linter = Inf, # due to cli_bullets
+      object_name_linter = Inf # due to S3 method
+    ),
     "tests/testthat.R" = list(
       unused_import_linter = Inf
     ),
