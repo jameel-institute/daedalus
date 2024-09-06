@@ -12,19 +12,9 @@
 #' To override package defaults for country characteristics, pass a
 #' `<daedalus_country>` object instead. See [daedalus_country()] for more.
 #'
-#' @param epidemic A string for the infection parameter set to use.
-#' Infection parameter sets may be known by the name of the outbreak or the
-#' causative pathogen;
-#' see **Details** for more on which epidemics are supported.
-#' See `epidemic_names` for allowed names, as the name must match exactly.
-#' Defaults to simulating an epidemic similar to Covid-19 outbreaks caused by
-#' the wild type of the SARS-CoV-2 virus.
-#'
-#' Selecting an epidemic automatically pulls in infection parameters
-#' associated with the epidemic; these are stored as packaged data in
-#' `infection_data`.
-#' Default infection parameters for epidemics can be over-ridden by passing them
-#' as a named list to `infection_params_manual`.
+#' @param infection An infection parameter object of the class `<infection>`,
+#' which gives the infection parameters associated with a historical epidemic
+#' or epidemic wave.
 #'
 #' @param response_strategy A string for the name of response strategy followed;
 #' defaults to "none". The response strategy determines the country-specific
@@ -49,10 +39,6 @@
 #' has already been activated by the hospitalisation threshold being reached.
 #' Defaults to 30 days.
 #'
-#' @param infect_params_manual An optional **named** list of infection
-#' parameters that can be passed to over-ride the default values for the chosen
-#' `epidemic`. See **Details** for allowed values.
-#'
 #' @param initial_state_manual An optional **named** list with the names
 #' `p_infectious` and `p_asymptomatic` for the proportion of infectious and
 #' symptomatic individuals in each age group and economic sector.
@@ -63,21 +49,6 @@
 #' returned for each day. Defaults to 300 days.
 #'
 #' @details
-#'
-#' ## Included epidemics
-#'
-#' Epidemics for which data are available are (pathogen in parentheses):
-#' SARS 2004 (SARS-CoV-1), influenza 2009 (influenza A H1N1),
-#' influenza 1957 (influenza A H2N2), influenza 1918 (influenza A H1N1),
-#' Covid-19 wild type (SARS-Cov-2 wild type),
-#' Covid-19 Omicron (SARS-CoV-2 omicron), Covid-19 Delta (SARS-CoV-2 delta).
-#'
-#' DAEDALUS allows users to substitute default model parameters with custom
-#' values by passing them in the appropriate argument (see examples).
-#' These arguments are passed on to the internal functions
-#' `make_country_parameters()` and `make_infection_parameters()` as
-#' appropriate. Any arguments that are passed and are not suitable for those
-#' functions will throw an error.
 #'
 #' ## Initial state
 #'
@@ -92,44 +63,6 @@
 #' - `p_asymptomatic`: A single numeric value in the range \eqn{[0.0, 1.0]} for
 #' the proportion of initially infectious individuals who are considered to be
 #' asymptomatic. Defaults to 0.0.
-#'
-#' ## Infection parameters
-#'
-#' `infect_params_manual` may be a named list of one or more of the following:
-#'
-#' - `r0`: A single numeric value for the basic reproduction value of the
-#' infection \eqn{R_0}.
-#'
-#' - `sigma`: A single numeric value > 0.0 for the rate of transition from the
-#' exposed compartment to one of two infectious compartments.
-#'
-#' - `p_sigma`: A single numeric value in the range \eqn{[0.0, 1.0]} for the
-#' proportion of infectious individuals who are also symptomatic. Asymptomatic
-#' individuals can have a different contribution to the force of infection from
-#' symptomatic individuals.
-#'
-#' - `epsilon`: A single numeric value for the relative contribution of
-#' asymptomatic infectious individuals to the force of infection (compared to
-#' symptomatic individuals).
-#'
-#' - `gamma_Is`: A single numeric value for the recovery rate of infectious
-#' individuals who are not hospitalised.
-#'
-#' - `gamma_Ia`: A single numeric value for the recovery rate from asymptomatic
-#' infection.
-#'
-#' - `gamma_H`: A numeric vector of length `N_AGE_GROUPS` (4) for the
-#' age-specific recovery rate for individuals who are hospitalised.
-#'
-#' - `eta`: A numeric vector of length `N_AGE_GROUPS` (4) for the age-specific
-#' hospitalisation rate for individuals who are infectious and symptomatic.
-#'
-#' - `omega`: A numeric vector of length `N_AGE_GROUPS` (4) for the age-specific
-#' mortality rate for individuals who are hospitalised.
-#'
-#' - `rho`: A single numeric value for the rate at which infection-derived
-#' immunity wanes, returning individuals in the 'recovered' compartment to the
-#' 'susceptible' compartment.
 #'
 #' @return A `<deSolve>` object.
 #'
@@ -150,25 +83,24 @@
 #' # with default infection parameters associated with an epidemic
 #' output <- daedalus(
 #'   country = "United Kingdom",
-#'   epidemic = "influenza_1918"
+#'   infection("influenza_1918")
 #' )
 #'
 #' # with some infection parameters over-ridden by the user
 #' output <- daedalus(
 #'   country = "United Kingdom",
-#'   epidemic = "influenza_1918",
-#'   infect_params_manual = list(r0 = 1.3)
+#'   infection("influenza_1918", r0 = 1.3)
 #' )
 #'
 #' # with default initial conditions over-ridden by the user
 #' output <- daedalus(
 #'   country = "United Kingdom",
-#'   epidemic = "influenza_1918",
+#'   infection("influenza_1918"),
 #'   initial_state_manual = list(p_infectious = 1e-3)
 #' )
 #' @export
 daedalus <- function(country,
-                     epidemic,
+                     infection,
                      response_strategy = c(
                        "none", "elimination", "economic_closures",
                        "school_closures"
@@ -176,7 +108,6 @@ daedalus <- function(country,
                      implementation_level = c("light", "heavy"),
                      response_time = 30,
                      response_threshold = 1000,
-                     infect_params_manual = list(),
                      initial_state_manual = list(),
                      time_end = 300) {
   # input checking
@@ -186,7 +117,7 @@ daedalus <- function(country,
     country <- rlang::arg_match(country, daedalus::country_names)
     country <- daedalus_country(country)
   }
-  epidemic <- rlang::arg_match(epidemic, daedalus::epidemic_names)
+  checkmate::assert_class(infection, "infection")
 
   response_strategy <- rlang::arg_match(response_strategy)
   implementation_level <- rlang::arg_match(implementation_level)
@@ -225,7 +156,7 @@ daedalus <- function(country,
 
   parameters <- c(
     prepare_parameters(country),
-    make_infection_parameters(epidemic, infect_params_manual)
+    prepare_parameters(infection)
   )
 
   # NOTE: using {rlang} for convenience
