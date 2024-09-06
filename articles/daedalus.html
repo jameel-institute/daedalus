@@ -78,38 +78,47 @@ groups in <code>country_data</code>. The package also provides data from
 economic sectors. Both datasets are accessed by internal functions to
 reduce the need for user input.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># simulates a Covid-19 wild type outbreak by default</span></span>
-<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># simulate a Covid-19 wild type outbreak</span></span>
+<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span></code></pre></div>
 <p>Users can quickly model one of seven epidemics by passing a name from
 <code><a href="../reference/epidemic_data.html">daedalus::epidemic_names</a></code> to the <code>epidemic</code>
-argument.</p>
+argument, which is the second argument. The package data object
+<code><a href="../reference/epidemic_data.html">daedalus::epidemic_names</a></code> gives the allowed epidemic
+identifiers.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">daedalus</span><span class="fu">::</span><span class="va"><a href="../reference/epidemic_data.html">epidemic_names</a></span></span>
+<span><span class="co">#&gt; [1] "sars_cov_1"           "influenza_2009"       "influenza_1957"      </span></span>
+<span><span class="co">#&gt; [4] "influenza_1918"       "sars_cov_2_pre_alpha" "sars_cov_2_omicron"  </span></span>
+<span><span class="co">#&gt; [7] "sars_cov_2_delta"</span></span></code></pre></div>
 <p>Users can also override epidemic-specific infection parameter values
 as well as change the initial conditions by passing arguments to
-<code><a href="../reference/daedalus.html">daedalus()</a></code> as <code>...</code>. The function documentation
-details which parameters are accepted.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code><a href="../reference/daedalus.html">daedalus()</a></code> in one of three lists:
+<code>country_params_manual</code>, <code>infect_params_manual</code>,
+and <code>initial_state_manual</code>, which override the country
+contact data, the infection parameters, and the initial state defaults
+respectively. The function documentation for
+<code><a href="../reference/daedalus.html">daedalus::daedalus()</a></code> details which parameters are
+accepted.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># not run</span></span>
 <span><span class="co"># e.g. change the transmission rate by changing r0</span></span>
-<span><span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, r0 <span class="op">=</span> <span class="fl">1.3</span><span class="op">)</span> <span class="co"># assume r0 of 1.5, 7 days infectious period</span></span>
+<span><span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"influenza_1918"</span>, infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>r0 <span class="op">=</span> <span class="fl">1.3</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># e.g. change the hospitalisation risk profile to model</span></span>
 <span><span class="co"># 1918 Influenza epidemic but with risk of severe disease</span></span>
 <span><span class="co"># increasing with age</span></span>
 <span><span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Canada"</span>, epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span>
-<span>  eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.0</span>, <span class="fl">3.0</span>, <span class="fl">5.0</span>, <span class="fl">15.0</span><span class="op">)</span></span>
+<span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.0</span>, <span class="fl">3.0</span>, <span class="fl">5.0</span>, <span class="fl">15.0</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The model runs for 300 timesteps by default; timesteps should be
 interpreted as days since model parameters are in terms of days. The
 <code><a href="../reference/daedalus.html">daedalus()</a></code> function documentation has more information on
 the infection parameter defaults in the <strong>Details</strong>
 section.</p>
-<p>Users can pass country data and infection parameters to override the
-package defaults by passing appropriately named arguments to
-<code><a href="../reference/daedalus.html">daedalus()</a></code> via R’s <code>...</code> system.</p>
 <p>Get the data in long or ‘tidy’ format using
 <code><a href="../reference/prepare_output.html">prepare_output()</a></code>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_output.html">prepare_output</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
@@ -121,7 +130,7 @@ package defaults by passing appropriately named arguments to
 <span><span class="co">#&gt; 5    5       0-4 susceptible    sector_0 1993121</span></span>
 <span><span class="co">#&gt; 6    6       0-4 susceptible    sector_0 1993117</span></span></code></pre></div>
 <p>Plot the data to view the epidemic curve.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">compartment</span> <span class="op">==</span> <span class="st">"infect_symp"</span> <span class="op">&amp;</span> <span class="va">data</span><span class="op">$</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"20-65"</span>, <span class="op">]</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>

@@ -40,7 +40,14 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus</span><span class="op">(</span><span class="va">country</span>, epidemic <span class="op">=</span> <span class="st">"sars_cov_2_pre_alpha"</span>, <span class="va">...</span>, time_end <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus</span><span class="op">(</span></span>
+<span>  <span class="va">country</span>,</span>
+<span>  <span class="va">epidemic</span>,</span>
+<span>  country_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  initial_state_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  time_end <span class="op">=</span> <span class="fl">300</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -48,7 +55,12 @@
 
 
 <dl><dt id="arg-country">country<a class="anchor" aria-label="anchor" href="#arg-country"></a></dt>
-<dd><p>A country or territory name from among <code>country_names</code>.</p></dd>
+<dd><p>A country or territory name from among <code>country_names</code>.
+Country-specific data such as the community and workplace contacts, the
+demography, and the distribution of the workforce into economic sectors is
+automatically accessed from package data for the relevant country name.
+Some contact data values can be over-ridden by the user by passing them as a
+named list to <code>country_params_manual</code>.</p></dd>
 
 
 <dt id="arg-epidemic">epidemic<a class="anchor" aria-label="anchor" href="#arg-epidemic"></a></dt>
@@ -63,12 +75,25 @@ the wild type of the SARS-CoV-2 virus.</p>
 associated with the epidemic; these are stored as packaged data in
 <code>infection_data</code>.
 Default infection parameters for epidemics can be over-ridden by passing them
-as named arguments via <code>...</code>.</p></dd>
+as a named list to <code>infection_params_manual</code>.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to <code><a href="make_parameters.html">make_parameters()</a></code> or
-<code><a href="make_initial_state.html">make_initial_state()</a></code>. See <strong>Details</strong> for permitted arguments.</p></dd>
+<dt id="arg-country-params-manual">country_params_manual<a class="anchor" aria-label="anchor" href="#arg-country-params-manual"></a></dt>
+<dd><p>An optional <strong>named</strong> list of country-specific
+contact data. See <strong>Details</strong> for allowed values.</p></dd>
+
+
+<dt id="arg-infect-params-manual">infect_params_manual<a class="anchor" aria-label="anchor" href="#arg-infect-params-manual"></a></dt>
+<dd><p>An optional <strong>named</strong> list of infection
+parameters that can be passed to over-ride the default values for the chosen
+<code>epidemic</code>. See <strong>Details</strong> for allowed values.</p></dd>
+
+
+<dt id="arg-initial-state-manual">initial_state_manual<a class="anchor" aria-label="anchor" href="#arg-initial-state-manual"></a></dt>
+<dd><p>An optional <strong>named</strong> list with the names
+<code>p_infectious</code> and <code>p_asymptomatic</code> for the proportion of infectious and
+symptomatic individuals in each age group and economic sector.
+Defaults to <code>1e-6</code> and <code>0.0</code> respectively.</p></dd>
 
 
 <dt id="arg-time-end">time_end<a class="anchor" aria-label="anchor" href="#arg-time-end"></a></dt>
@@ -94,18 +119,19 @@ influenza 1957 (influenza A H2N2), influenza 1918 (influenza A H1N1),
 Covid-19 wild type (SARS-Cov-2 wild type),
 Covid-19 Omicron (SARS-CoV-2 omicron), Covid-19 Delta (SARS-CoV-2 delta).</p>
 <p>DAEDALUS allows users to substitute default model parameters with custom
-values by passing them as <code>...</code> (see examples). These arguments are passed on
-to the internal functions <code><a href="make_parameters.html">make_parameters()</a></code> and <code><a href="make_initial_state.html">make_initial_state()</a></code> as
+values by passing them in the appropriate argument (see examples).
+These arguments are passed on to the internal functions
+<code><a href="make_model_parameters.html">make_country_parameters()</a></code> and <code><a href="make_model_parameters.html">make_infection_parameters()</a></code> as
 appropriate. Any arguments that are passed and are not suitable for those
-functions will throw a warning.</p>
+functions will throw an error.</p>
 </div>
 
 <div class="section">
 <h3 id="initial-state">Initial state<a class="anchor" aria-label="anchor" href="#initial-state"></a></h3>
 
 
-<p>Users can pass the following initial state parameters, which are handled
-internally by <code><a href="make_initial_state.html">make_initial_state()</a></code>:</p><ul><li><p><code>p_infectious</code>: A single numeric value in the range \([0.0, 1.0]\) giving
+<p>Users can pass the following initial state parameters to
+<code>initial_state_manual</code>:</p><ul><li><p><code>p_infectious</code>: A single numeric value in the range \([0.0, 1.0]\) giving
 the proportion of individuals in each age group and economic sector that are
 to be initialised as infectious. Defaults to <code>1e-6</code>, or one in every one
 million as infectious.</p></li>
@@ -115,11 +141,34 @@ asymptomatic. Defaults to 0.0.</p></li>
 </ul></div>
 
 <div class="section">
-<h3 id="model-parameters">Model parameters<a class="anchor" aria-label="anchor" href="#model-parameters"></a></h3>
+<h3 id="country-parameters">Country parameters<a class="anchor" aria-label="anchor" href="#country-parameters"></a></h3>
 
 
-<p>Users can pass the following infection and country parameters, which are
-handled internally by <code><a href="make_parameters.html">make_parameters()</a></code>:</p><ul><li><p><code>r0</code>: A single numeric value for the basic reproduction value of the
+<p><code>country_params_manual</code> may be a named list of one or more of the following:</p><ul><li><p><code>contact_matrix</code>: A square numeric matrix with <code>N_AGE_GROUPS</code> (4) rows and
+columns, giving the per-capita number of contacts between individuals of each
+age group. By default, this is taken from <code><a href="country_data.html">daedalus::country_data</a></code> based on
+the user-specified <code>country</code>.</p></li>
+<li><p><code>contacts_workplace</code>: A numeric vector of length <code>N_ECON_SECTORS</code> (45),
+giving the per-capita number of worker-to-worker interactions within economic
+sectors. Defaults to a standard value provided by the package as
+<code><a href="economic_contacts.html">daedalus::economic_contacts</a></code>.</p></li>
+<li><p><code>contacts_consumer_worker</code>: A numeric matrix with <code>N_ECON_SECTORS</code> rows
+(45) and <code>N_AGE_GROUPS</code> columns (4) giving the per-capita contacts between
+individuals in each economic sector and consumers. Defaults to the
+sector-wise workplace contacts distributed in proportion to country
+demography.</p></li>
+<li><p><code>contacts_between_sectors</code>: A square numeric matrix with <code>N_ECON_SECTORS</code>
+(45) rows and columns and with a zero diagonal, giving the number of
+worker-to-worker contacts across economic sectors. Defaults to the package
+standard of a null matrix as between-sector-contacts are not currently
+modelled.</p></li>
+</ul></div>
+
+<div class="section">
+<h3 id="infection-parameters">Infection parameters<a class="anchor" aria-label="anchor" href="#infection-parameters"></a></h3>
+
+
+<p><code>infect_params_manual</code> may be a named list of one or more of the following:</p><ul><li><p><code>r0</code>: A single numeric value for the basic reproduction value of the
 infection \(R_0\).</p></li>
 <li><p><code>sigma</code>: A single numeric value &gt; 0.0 for the rate of transition from the
 exposed compartment to one of two infectious compartments.</p></li>
@@ -143,27 +192,6 @@ mortality rate for individuals who are hospitalised.</p></li>
 <li><p><code>rho</code>: A single numeric value for the rate at which infection-derived
 immunity wanes, returning individuals in the 'recovered' compartment to the
 'susceptible' compartment.</p></li>
-<li><p><code>demography</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4), giving the
-number of individuals in each age group of interest. By default, this is
-taken from <code><a href="country_data.html">daedalus::country_data</a></code> based on the <code>country</code> selected.</p></li>
-<li><p><code>contact_matrix</code>: A square numeric matrix with <code>N_AGE_GROUPS</code> (4) rows and
-columns, giving the per-capita number of contacts between individuals of each
-age group. By default, this is taken from <code><a href="country_data.html">daedalus::country_data</a></code> based on
-the user-specified <code>country</code>.</p></li>
-<li><p><code>contacts_workplace</code>: A numeric vector of length <code>N_ECON_SECTORS</code> (45),
-giving the per-capita number of worker-to-worker interactions within economic
-sectors. Defaults to a standard value provided by the package as
-<code><a href="economic_contacts.html">daedalus::economic_contacts</a></code>.</p></li>
-<li><p><code>contacts_consumer_worker</code>: A numeric matrix with <code>N_ECON_SECTORS</code> rows
-(45) and <code>N_AGE_GROUPS</code> columns (4) giving the per-capita contacts between
-individuals in each economic sector and consumers. Defaults to the
-sector-wise workplace contacts distributed in proportion to country
-demography.</p></li>
-<li><p><code>contacts_between_sectors</code>: A square numeric matrix with <code>N_ECON_SECTORS</code>
-(45) rows and columns and with a zero diagonal, giving the number of
-worker-to-worker contacts across economic sectors. Defaults to the package
-standard of a null matrix as between-sector-contacts are not currently
-modelled.</p></li>
 </ul></div>
 
     </div>
@@ -176,7 +204,19 @@ modelled.</p></li>
 <span class="r-in"><span><span class="co"># with some infection parameters over-ridden by the user</span></span></span>
 <span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>, epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span></span>
-<span class="r-in"><span>  r0 <span class="op">=</span> <span class="fl">3.0</span></span></span>
+<span class="r-in"><span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>r0 <span class="op">=</span> <span class="fl">1.3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># with some country parameters over-ridden by the user</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>, epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span></span>
+<span class="r-in"><span>  country_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>contact_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># with default initial conditions over-ridden by the user</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>, epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span></span>
+<span class="r-in"><span>  initial_state_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>p_infectious <span class="op">=</span> <span class="fl">1e-3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
