@@ -6,12 +6,11 @@
 \usage{
 daedalus(
   country,
-  epidemic,
+  infection,
   response_strategy = c("none", "elimination", "economic_closures", "school_closures"),
   implementation_level = c("light", "heavy"),
   response_time = 30,
   response_threshold = 1000,
-  infect_params_manual = list(),
   initial_state_manual = list(),
   time_end = 300
 )
@@ -27,19 +26,9 @@ is passed as a string.
 To override package defaults for country characteristics, pass a
 \verb{<daedalus_country>} object instead. See \code{\link[=daedalus_country]{daedalus_country()}} for more.}
 
-\item{epidemic}{A string for the infection parameter set to use.
-Infection parameter sets may be known by the name of the outbreak or the
-causative pathogen;
-see \strong{Details} for more on which epidemics are supported.
-See \code{epidemic_names} for allowed names, as the name must match exactly.
-Defaults to simulating an epidemic similar to Covid-19 outbreaks caused by
-the wild type of the SARS-CoV-2 virus.
-
-Selecting an epidemic automatically pulls in infection parameters
-associated with the epidemic; these are stored as packaged data in
-\code{infection_data}.
-Default infection parameters for epidemics can be over-ridden by passing them
-as a named list to \code{infection_params_manual}.}
+\item{infection}{An infection parameter object of the class \verb{<infection>},
+which gives the infection parameters associated with a historical epidemic
+or epidemic wave.}
 
 \item{response_strategy}{A string for the name of response strategy followed;
 defaults to "none". The response strategy determines the country-specific
@@ -64,10 +53,6 @@ been triggered via \code{response_time}. Currently defaults to 1000, which
 overrides the default response- and country-specific threshold values held in
 \link{country_data}.}
 
-\item{infect_params_manual}{An optional \strong{named} list of infection
-parameters that can be passed to over-ride the default values for the chosen
-\code{epidemic}. See \strong{Details} for allowed values.}
-
 \item{initial_state_manual}{An optional \strong{named} list with the names
 \code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and
 symptomatic individuals in each age group and economic sector.
@@ -84,22 +69,6 @@ A \verb{<deSolve>} object.
 Run the DAEDALUS model from R. This is a work in progress.
 }
 \details{
-\subsection{Included epidemics}{
-
-Epidemics for which data are available are (pathogen in parentheses):
-SARS 2004 (SARS-CoV-1), influenza 2009 (influenza A H1N1),
-influenza 1957 (influenza A H2N2), influenza 1918 (influenza A H1N1),
-Covid-19 wild type (SARS-Cov-2 wild type),
-Covid-19 Omicron (SARS-CoV-2 omicron), Covid-19 Delta (SARS-CoV-2 delta).
-
-DAEDALUS allows users to substitute default model parameters with custom
-values by passing them in the appropriate argument (see examples).
-These arguments are passed on to the internal functions
-\code{make_country_parameters()} and \code{make_infection_parameters()} as
-appropriate. Any arguments that are passed and are not suitable for those
-functions will throw an error.
-}
-
 \subsection{Initial state}{
 
 Users can pass the following initial state parameters to
@@ -112,37 +81,6 @@ million as infectious.
 \item \code{p_asymptomatic}: A single numeric value in the range \eqn{[0.0, 1.0]} for
 the proportion of initially infectious individuals who are considered to be
 asymptomatic. Defaults to 0.0.
-}
-}
-
-\subsection{Infection parameters}{
-
-\code{infect_params_manual} may be a named list of one or more of the following:
-\itemize{
-\item \code{r0}: A single numeric value for the basic reproduction value of the
-infection \eqn{R_0}.
-\item \code{sigma}: A single numeric value > 0.0 for the rate of transition from the
-exposed compartment to one of two infectious compartments.
-\item \code{p_sigma}: A single numeric value in the range \eqn{[0.0, 1.0]} for the
-proportion of infectious individuals who are also symptomatic. Asymptomatic
-individuals can have a different contribution to the force of infection from
-symptomatic individuals.
-\item \code{epsilon}: A single numeric value for the relative contribution of
-asymptomatic infectious individuals to the force of infection (compared to
-symptomatic individuals).
-\item \code{gamma_Is}: A single numeric value for the recovery rate of infectious
-individuals who are not hospitalised.
-\item \code{gamma_Ia}: A single numeric value for the recovery rate from asymptomatic
-infection.
-\item \code{gamma_H}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the
-age-specific recovery rate for individuals who are hospitalised.
-\item \code{eta}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the age-specific
-hospitalisation rate for individuals who are infectious and symptomatic.
-\item \code{omega}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the age-specific
-mortality rate for individuals who are hospitalised.
-\item \code{rho}: A single numeric value for the rate at which infection-derived
-immunity wanes, returning individuals in the 'recovered' compartment to the
-'susceptible' compartment.
 }
 }
 }
@@ -163,20 +101,19 @@ output <- daedalus(country_x, "influenza_1918")
 # with default infection parameters associated with an epidemic
 output <- daedalus(
   country = "United Kingdom",
-  epidemic = "influenza_1918"
+  infection("influenza_1918")
 )
 
 # with some infection parameters over-ridden by the user
 output <- daedalus(
   country = "United Kingdom",
-  epidemic = "influenza_1918",
-  infect_params_manual = list(r0 = 1.3)
+  infection("influenza_1918", r0 = 1.3)
 )
 
 # with default initial conditions over-ridden by the user
 output <- daedalus(
   country = "United Kingdom",
-  epidemic = "influenza_1918",
+  infection("influenza_1918"),
   initial_state_manual = list(p_infectious = 1e-3)
 )
 }
