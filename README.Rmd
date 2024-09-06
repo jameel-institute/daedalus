@@ -44,7 +44,7 @@ This automatically pulls country-specific demographic and economic data, which i
 library(daedalus)
 
 # run model for Canada
-data <- daedalus("Canada", "influenza_1918")
+data <- daedalus(country("Canada"), infection("influenza_1918"))
 
 head(data)
 ```
