@@ -53,8 +53,8 @@ closure_data <- split(closure_data, by = "strategy") |>
 # might have non-zero values in future to represent spontaneous public
 # effects on openness
 closure_data[["none"]] <- list(
-  light = rep(1.0 - 1e-6, N_ECON_SECTORS),
-  heavy = rep(1.0 - 1e-6, N_ECON_SECTORS)
+  light = rep(1.0, N_ECON_SECTORS),
+  heavy = rep(1.0, N_ECON_SECTORS)
 )
 
 usethis::use_data(closure_data, overwrite = TRUE)
