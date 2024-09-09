@@ -8,7 +8,6 @@ make_response_threshold_event <- function(response_threshold) {
   # NOTE: input checking at top level
   ## event triggered when thresholds are crossed
   root_function <- function(time, state, parameters) {
-    state <- state[-length(state)]
     state <- array(
       state,
       c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
@@ -18,8 +17,10 @@ make_response_threshold_event <- function(response_threshold) {
   }
 
   event_function <- function(time, state, parameters) {
-    state["switch"] <- 1.0
-
+    # prevent flipping switch when checkEventFunc runs
+    if (time != parameters[["min_time"]]) {
+      rlang::env_poke(parameters[["mutables"]], "switch", 1.0)
+    }
     state
   }
 
@@ -48,8 +49,10 @@ make_rt_end_event <- function() {
   }
 
   event_function <- function(time, state, parameters) {
-    state["switch"] <- 0.0
-
+    # prevent flipping switch when checkEventFunc runs
+    if (time != parameters[["min_time"]]) {
+      rlang::env_poke(parameters[["mutables"]], "switch", 0.0)
+    }
     state
   }
 
