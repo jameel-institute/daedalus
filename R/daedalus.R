@@ -234,27 +234,34 @@ daedalus <- function(country,
 
   initial_state <- make_initial_state(country, initial_state_manual)
   initial_state <- c(initial_state)
-  # assign names for later subsetting
-  names(initial_state) <- as.character(seq_along(initial_state))
-  # add a switch for the intervention
-  initial_state <- c(initial_state, switch = 0.0)
 
   parameters <- c(
     make_country_parameters(country, country_params_manual),
     make_infection_parameters(epidemic, infect_params_manual)
   )
 
+  # NOTE: using {rlang} for convenience
+  mutables <- rlang::env(switch = 0.0)
+
   # add the appropriate economic openness vectors to parameters
   openness <- daedalus::closure_data[[
     response_strategy
   ]][[implementation_level]]
-  parameters <- c(parameters, list(openness = openness))
+
+  parameters <- c(
+    parameters,
+    list(
+      openness = openness,
+      mutables = mutables,
+      min_time = 1 # setting minimum time to prevent switch flipping
+    )
+  )
 
   # get activation and termination events
   activation_event <- make_response_threshold_event(response_threshold)
   termination_event <- make_rt_end_event() # NOTE: only type of end event as yet
 
-  # two-stage model run: run from 0:response_time with switch = 0.0, or off
+  # two-stage model run: run from 1:response_time with switch = 0.0, or off
   # from response_time:time_end run with switch = 1.0, or on
   # NOTE: state is carried over. This looks ugly and might not scale if
   # parameter uncertainty is needed in future.
@@ -264,23 +271,27 @@ daedalus <- function(country,
   data_stage_one <- deSolve::lsoda(
     y = initial_state, times = times_stage_one,
     func = daedalus_rhs, parms = parameters,
-    events = list(func = activation_event[["event_function"]], root = TRUE),
-    rootfunc = activation_event[["root_function"]]
+    rootfunc = activation_event[["root_function"]],
+    events = list(func = activation_event[["event_function"]], root = TRUE)
   )
 
   # carry over initial state; could be named more clearly?
   initial_state <- utils::tail(
-    data_stage_one[, !colnames(data_stage_one) %in% c("time", "switch")], 1L
+    data_stage_one[, colnames(data_stage_one) != "time"], 1L
   )
   initial_state <- c(initial_state)
-  names(initial_state) <- as.character(seq_along(initial_state))
-  initial_state <- c(initial_state, switch = 1.0)
+
+  # set switch parameter
+  rlang::env_poke(parameters[["mutables"]], "switch", 1.0)
+
+  # reset min time
+  parameters[["min_time"]] <- response_time
 
   data_stage_two <- deSolve::lsoda(
     initial_state, times_stage_two,
     daedalus_rhs, parameters,
-    events = list(func = termination_event[["event_function"]], root = TRUE),
-    rootfunc = termination_event[["root_function"]]
+    rootfunc = termination_event[["root_function"]],
+    events = list(func = termination_event[["event_function"]], root = TRUE)
   )
 
   data <- rbind(data_stage_one, data_stage_two)
