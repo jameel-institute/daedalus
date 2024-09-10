@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,6 +17,10 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/daedalus.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/thresholded_response.html">Modelling threshold-dependent economic closures</a></li>
+  </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -43,6 +47,10 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus</span><span class="op">(</span></span>
 <span>  <span class="va">country</span>,</span>
 <span>  <span class="va">epidemic</span>,</span>
+<span>  response_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"elimination"</span>, <span class="st">"economic_closures"</span>, <span class="st">"school_closures"</span><span class="op">)</span>,</span>
+<span>  implementation_level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"light"</span>, <span class="st">"heavy"</span><span class="op">)</span>,</span>
+<span>  response_time <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  response_threshold <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  country_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  initial_state_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -76,6 +84,36 @@ associated with the epidemic; these are stored as packaged data in
 <code>infection_data</code>.
 Default infection parameters for epidemics can be over-ridden by passing them
 as a named list to <code>infection_params_manual</code>.</p></dd>
+
+
+<dt id="arg-response-strategy">response_strategy<a class="anchor" aria-label="anchor" href="#arg-response-strategy"></a></dt>
+<dd><p>A string for the name of response strategy followed;
+defaults to "none". The response strategy determines the country-specific
+response threshold following which the response is activated. See
+<code>response_threshold</code>.</p>
+<p>While the response strategy is active, economic contacts are scaled using the
+package data object <code><a href="closure_data.html">daedalus::closure_data</a></code>.</p></dd>
+
+
+<dt id="arg-implementation-level">implementation_level<a class="anchor" aria-label="anchor" href="#arg-implementation-level"></a></dt>
+<dd><p>A string for the level at which the strategy is
+implemented; defaults to "light".</p></dd>
+
+
+<dt id="arg-response-time">response_time<a class="anchor" aria-label="anchor" href="#arg-response-time"></a></dt>
+<dd><p>A single numeric value for the time in days
+at which the selected response is activated. This is ignored if the response
+has already been activated by the hospitalisation threshold being reached.
+Defaults to 30 days.</p></dd>
+
+
+<dt id="arg-response-threshold">response_threshold<a class="anchor" aria-label="anchor" href="#arg-response-threshold"></a></dt>
+<dd><p>A single numeric value for the total number of
+hospitalisations that causes an epidemic response
+(specified by <code>response_strategy</code>) to be triggered, if it has not already
+been triggered via <code>response_time</code>. Currently defaults to 1000, which
+overrides the default response- and country-specific threshold values held in
+<a href="country_data.html">country_data</a>.</p></dd>
 
 
 <dt id="arg-country-params-manual">country_params_manual<a class="anchor" aria-label="anchor" href="#arg-country-params-manual"></a></dt>

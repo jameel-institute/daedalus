@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,12 @@
       <ul class="navbar-nav me-auto">
 <li class="active nav-item"><a class="nav-link" href="../articles/daedalus.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/thresholded_response.html">Modelling threshold-dependent economic closures</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -79,7 +85,7 @@ economic sectors. Both datasets are accessed by internal functions to
 reduce the need for user input.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># simulate a Covid-19 wild type outbreak</span></span>
-<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span></code></pre></div>
 <p>Users can quickly model one of seven epidemics by passing a name from
 <code><a href="../reference/epidemic_data.html">daedalus::epidemic_names</a></code> to the <code>epidemic</code>
 argument, which is the second argument. The package data object
@@ -90,6 +96,11 @@ identifiers.</p>
 <span><span class="co">#&gt; [1] "sars_cov_1"           "influenza_2009"       "influenza_1957"      </span></span>
 <span><span class="co">#&gt; [4] "influenza_1918"       "sars_cov_2_pre_alpha" "sars_cov_2_omicron"  </span></span>
 <span><span class="co">#&gt; [7] "sars_cov_2_delta"</span></span></code></pre></div>
+<p>The model runs for 300 timesteps by default; timesteps should be
+interpreted as days since model parameters are in terms of days. The
+<code><a href="../reference/daedalus.html">daedalus()</a></code> function documentation has more information on
+the infection parameter defaults in the <strong>Details</strong>
+section.</p>
 <p>Users can also override epidemic-specific infection parameter values
 as well as change the initial conditions by passing arguments to
 <code><a href="../reference/daedalus.html">daedalus()</a></code> in one of three lists:
@@ -111,26 +122,8 @@ accepted.</p>
 <span>  <span class="st">"Canada"</span>, epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span>
 <span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.0</span>, <span class="fl">3.0</span>, <span class="fl">5.0</span>, <span class="fl">15.0</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The model runs for 300 timesteps by default; timesteps should be
-interpreted as days since model parameters are in terms of days. The
-<code><a href="../reference/daedalus.html">daedalus()</a></code> function documentation has more information on
-the infection parameter defaults in the <strong>Details</strong>
-section.</p>
-<p>Get the data in long or ‘tidy’ format using
-<code><a href="../reference/prepare_output.html">prepare_output()</a></code>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_output.html">prepare_output</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   time age_group compartment econ_sector   value</span></span>
-<span><span class="co">#&gt; 1    1       0-4 susceptible    sector_0 1993130</span></span>
-<span><span class="co">#&gt; 2    2       0-4 susceptible    sector_0 1993128</span></span>
-<span><span class="co">#&gt; 3    3       0-4 susceptible    sector_0 1993126</span></span>
-<span><span class="co">#&gt; 4    4       0-4 susceptible    sector_0 1993124</span></span>
-<span><span class="co">#&gt; 5    5       0-4 susceptible    sector_0 1993121</span></span>
-<span><span class="co">#&gt; 6    6       0-4 susceptible    sector_0 1993117</span></span></code></pre></div>
 <p>Plot the data to view the epidemic curve.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">compartment</span> <span class="op">==</span> <span class="st">"infect_symp"</span> <span class="op">&amp;</span> <span class="va">data</span><span class="op">$</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"20-65"</span>, <span class="op">]</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>

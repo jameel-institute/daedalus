@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,12 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="articles/daedalus.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/thresholded_response.html">Modelling threshold-dependent economic closures</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -69,22 +75,19 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/j-idea/daedalus" class="external-link">daedalus</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># run model for Canada</span></span>
-<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"influenza_1918"</span><span class="op">)</span></span></code></pre></div>
-<p>Users can select infection parameters from among seven epidemics caused by directly-transmitted viral respiratory pathogens, which are stored in the package as <code><a href="reference/epidemic_data.html">daedalus::infection_data</a></code>: SARS 2004 (SARS-CoV-1), influenza 2009 (influenza A H1N1), influenza 1957 (influenza A H2N2), influenza 1918 (influenza A H1N1), Covid-19 wild type (SARS-Cov-2 wild type), Covid-19 Omicron (SARS-CoV-2 omicron), and Covid-19 Delta (SARS-CoV-2 delta).</p>
-<p>Epidemic identifiers are stored as <code><a href="reference/epidemic_data.html">daedalus::epidemic_names</a></code>.</p>
-<p>Users can override default country contact data and epidemic-specific infection arguments by passing named lists of parameters to <code><a href="reference/daedalus.html">daedalus()</a></code>; see the function documentation for more details.</p>
-<p>A helper function prepares the data in long or ‘tidy’ format using <code><a href="reference/prepare_output.html">prepare_output()</a></code>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prepare_output.html">prepare_output</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"influenza_1918"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   time age_group compartment econ_sector   value</span></span>
-<span><span class="co">#&gt; 1    1       0-4 susceptible    sector_0 1993130</span></span>
-<span><span class="co">#&gt; 2    2       0-4 susceptible    sector_0 1993128</span></span>
-<span><span class="co">#&gt; 3    3       0-4 susceptible    sector_0 1993126</span></span>
-<span><span class="co">#&gt; 4    4       0-4 susceptible    sector_0 1993123</span></span>
-<span><span class="co">#&gt; 5    5       0-4 susceptible    sector_0 1993118</span></span>
-<span><span class="co">#&gt; 6    6       0-4 susceptible    sector_0 1993109</span></span></code></pre></div>
+<span><span class="co">#&gt; 1    1       0-4 susceptible   sector_00 1993130</span></span>
+<span><span class="co">#&gt; 2    2       0-4 susceptible   sector_00 1993128</span></span>
+<span><span class="co">#&gt; 3    3       0-4 susceptible   sector_00 1993126</span></span>
+<span><span class="co">#&gt; 4    4       0-4 susceptible   sector_00 1993123</span></span>
+<span><span class="co">#&gt; 5    5       0-4 susceptible   sector_00 1993118</span></span>
+<span><span class="co">#&gt; 6    6       0-4 susceptible   sector_00 1993109</span></span></code></pre></div>
+<p>Users can select infection parameters from among seven epidemics caused by directly-transmitted viral respiratory pathogens, which are stored in the package as <code><a href="reference/epidemic_data.html">daedalus::infection_data</a></code>, with epidemic identifiers are stored as <code><a href="reference/epidemic_data.html">daedalus::epidemic_names</a></code>.</p>
+<p>Users can override default country contact data and epidemic-specific infection arguments by passing named lists of parameters to <code><a href="reference/daedalus.html">daedalus()</a></code>; see the function documentation for more details.</p>
+<p>Users can also model the implementation of pandemic response measures: for more on this see the documentation for the main model function <code><a href="reference/daedalus.html">daedalus()</a></code>, and the vignette on modelling interventions on the package website.</p>
 </div>
 <div class="section level2">
 <h2 id="related-projects">Related projects<a class="anchor" aria-label="anchor" href="#related-projects"></a>
