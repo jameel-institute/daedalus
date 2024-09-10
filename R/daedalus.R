@@ -232,8 +232,7 @@ daedalus <- function(country,
     )
   }
 
-  initial_state <- make_initial_state(country, initial_state_manual)
-  initial_state <- c(initial_state)
+  initial_state <- as.numeric(make_initial_state(country, initial_state_manual))
 
   parameters <- c(
     make_country_parameters(country, country_params_manual),
@@ -276,10 +275,10 @@ daedalus <- function(country,
   )
 
   # carry over initial state; could be named more clearly?
-  initial_state <- utils::tail(
-    data_stage_one[, colnames(data_stage_one) != "time"], 1L
-  )
-  initial_state <- c(initial_state)
+  initial_state <- data_stage_one[
+    nrow(data_stage_one), colnames(data_stage_one) != "time"
+  ]
+  initial_state <- as.numeric(initial_state)
 
   # set switch parameter
   rlang::env_poke(parameters[["mutables"]], "switch", 1.0)
@@ -294,9 +293,7 @@ daedalus <- function(country,
     events = list(func = termination_event[["event_function"]], root = TRUE)
   )
 
-  data <- rbind(data_stage_one, data_stage_two)
-
-  data <- data[!duplicated(data[, "time"]), ]
+  data <- rbind(data_stage_one, data_stage_two[-1, ])
 
   prepare_output(data)
 }

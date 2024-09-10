@@ -36,7 +36,7 @@ prepare_output <- function(output) {
   )
 
   # data values
-  values <- c(output[, setdiff(colnames(output), c("time", "switch"))])
+  values <- c(output[, setdiff(colnames(output), "time")])
 
   data <- data.frame(
     time = time,
