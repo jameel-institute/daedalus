@@ -214,6 +214,7 @@ daedalus <- function(country,
   )
 
   data <- rbind(data_stage_one, data_stage_two[-1, ])
+  data <- list(data = prepare_output(data))
 
-  prepare_output(data)
+  as_daedalus(data)
 }
