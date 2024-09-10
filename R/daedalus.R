@@ -160,7 +160,7 @@ daedalus <- function(country,
   )
 
   # NOTE: using {rlang} for convenience
-  mutables <- rlang::env(switch = 0.0)
+  mutables <- prepare_mutable_parameters()
 
   # add the appropriate economic openness vectors to parameters
   openness <- daedalus::closure_data[[
@@ -200,13 +200,23 @@ daedalus <- function(country,
   ]
   initial_state <- as.numeric(initial_state)
 
-  # set switch parameter
+  # set switch parameter and log closure start time if not 0.0
   rlang::env_poke(parameters[["mutables"]], "switch", 1.0)
+
+  is_response_active <- as.logical(
+    rlang::env_get(parameters[["mutables"]], "closure_time_start")
+  ) # coerce to logical; automatically FALSE as default value is 0.0
+
+  if (!is_response_active) {
+    rlang::env_poke(
+      parameters[["mutables"]], "closure_time_start", response_time
+    )
+  }
 
   # reset min time
   parameters[["min_time"]] <- response_time
 
-  data_stage_two <- deSolve::lsoda(
+  data_stage_two <- deSolve::lsodar(
     initial_state, times_stage_two,
     daedalus_rhs, parameters,
     rootfunc = termination_event[["root_function"]],
@@ -222,7 +232,8 @@ daedalus <- function(country,
     infection_parameters = unclass(infection),
     response_data = list(
       response_strategy = response_strategy,
-      implementation_level = implementation_level
+      implementation_level = implementation_level,
+      closure_info = get_closure_info(mutables)
     )
   )
 
