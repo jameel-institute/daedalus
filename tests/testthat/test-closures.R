@@ -34,7 +34,7 @@ test_that("Closures: no response leads to similar epidemic sizes", {
   levels <- c("light", "heavy")
   output_list <- lapply(levels, function(x) {
     daedalus(
-      country_canada, "sars_cov_1",
+      country_canada, infection("sars_cov_1"),
       response_strategy = "none", implementation_level = x
     )
   })
@@ -54,7 +54,7 @@ test_that("Closures: no response leads to similar epidemic sizes", {
   response_threshold <- 1e7 # artificially large
   output_list <- lapply(response_times, function(x) {
     daedalus(
-      country_canada, "sars_cov_1",
+      country_canada, infection("sars_cov_1"),
       response_strategy = "none", response_time = x,
       response_threshold = response_threshold
     )
@@ -77,7 +77,7 @@ test_that("Closures: no response leads to similar epidemic sizes", {
   response_time <- time_end - 2L # artificially long response time
   output_list <- lapply(response_thresholds, function(x) {
     daedalus(
-      country_canada, "sars_cov_1",
+      country_canada, infection("sars_cov_1"),
       response_strategy = "none", response_time = response_time,
       response_threshold = x
     )
