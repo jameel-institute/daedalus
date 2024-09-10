@@ -78,3 +78,44 @@ make_initial_state <- function(country, initial_state_manual) {
 
   initial_state
 }
+
+#' Prepare mutable parameters for the DAEDALUS model
+#'
+#' @return
+#' An environment with three mutable parameters:
+#'
+#' - `switch`: The switch parameter which controls whether closures are active
+#' or not.
+#'
+#' - `closures_time_start` and `closures_time_end`: The times at which closures
+#' start and end. Defaults to the end time of the simulation so as to
+#' give a default duration of 0.0.
+prepare_mutable_parameters <- function() {
+  env <- rlang::env(
+    switch = 0.0,
+
+    # set closure time start and time end to 0.0
+    # to later process duration as time_start - time_end
+    closure_time_start = 0.0,
+    closure_time_end = 0.0
+  )
+
+  env
+}
+
+#' Get closure time limits and calculate duration
+#'
+#' @param mutables An environment holding the mutable parameters.
+#' See [prepare_mutable_parameters()] for a template.
+#'
+#' @return
+#' A three-element list of the start time, end time, and duration for which
+#' closures are active.
+get_closure_info <- function(mutables) {
+  closure_times <- rlang::env_get_list(
+    mutables, c("closure_time_start", "closure_time_end")
+  )
+  closure_times[["closure_duration"]] <- unname(diff(unlist(closure_times)))
+
+  lapply(closure_times, floor)
+}

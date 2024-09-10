@@ -19,7 +19,11 @@ make_response_threshold_event <- function(response_threshold) {
   event_function <- function(time, state, parameters) {
     # prevent flipping switch when checkEventFunc runs
     if (time != parameters[["min_time"]]) {
-      rlang::env_poke(parameters[["mutables"]], "switch", 1.0)
+      rlang::env_bind(
+        parameters[["mutables"]],
+        switch = 1.0,
+        closure_time_start = time
+      )
     }
     state
   }
@@ -50,7 +54,11 @@ make_rt_end_event <- function() {
   event_function <- function(time, state, parameters) {
     # prevent flipping switch when checkEventFunc runs
     if (time != parameters[["min_time"]]) {
-      rlang::env_poke(parameters[["mutables"]], "switch", 0.0)
+      rlang::env_bind(
+        parameters[["mutables"]],
+        switch = 0.0,
+        closure_time_end = time
+      )
     }
     state
   }
