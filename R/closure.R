@@ -35,7 +35,6 @@ make_response_threshold_event <- function(response_threshold) {
 make_rt_end_event <- function() {
   # NOTE: state reconstruction could be sped up
   root_function <- function(time, state, parameters) {
-    state <- state[-length(state)]
     state <- array(
       state,
       c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)

@@ -75,9 +75,9 @@ daedalus_rhs <- function(t, state, parameters) {
   # scaling economic sector openness
   openness <- parameters[["openness"]]
 
-  switch <- rlang::env_get(parameters[["mutables"]], "switch")
+  switch <- as.logical(rlang::env_get(parameters[["mutables"]], "switch"))
 
-  scaling <- 1 - (1 - openness) * switch # clunky
+  scaling <- if (switch) openness else 1.0
   r0_econ <- r0 * scaling
   r0 <- r0 * mean(scaling) # as otherwise no scaling on r0
 
