@@ -1,5 +1,5 @@
 # Test that errors from initial state preparation are bubbled up
-country_canada <- country("Canada")
+country_canada <- daedalus_country("Canada")
 test_that("Initial state preparation:", {
   expect_error(
     daedalus(

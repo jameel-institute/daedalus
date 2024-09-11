@@ -1,9 +1,9 @@
-# class <country>: basic expectations
+# class <daedalus_country>: basic expectations
 
     Code
       country_x
     Message
-      <country>
+      <daedalus_country>
       * Name: Canada
       * Demography: 1993132, 5949109, 22966942, and 6832974
       * Community contact matrix:
