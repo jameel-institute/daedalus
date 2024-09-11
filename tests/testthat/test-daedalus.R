@@ -7,7 +7,7 @@ test_that("daedalus: basic expectations", {
   # expect no conditions
   expect_no_condition({
     data <- daedalus(
-      country_canada, infection("influenza_1918"),
+      country_canada, "influenza_1918",
       time_end = time_end
     )
   })
@@ -53,7 +53,7 @@ test_that("daedalus: basic expectations", {
 
 # test that daedalus runs for all epidemic infection parameter sets
 test_that("daedalus: Runs for all epidemics", {
-  epidemics <- lapply(daedalus::epidemic_names, infection)
+  epidemics <- lapply(daedalus::epidemic_names, daedalus_infection)
   # expect no conditions
   expect_no_condition({
     output_list <- lapply(
@@ -76,14 +76,14 @@ test_that("daedalus: Passing model parameters", {
   expect_no_condition(
     daedalus(
       country_canada,
-      infection("influenza_1918", r0 = 1.3, eta = c(0.1, 0.2, 0.3, 0.4))
+      daedalus_infection("influenza_1918", r0 = 1.3, eta = c(0.1, 0.2, 0.3, 0.4))
     )
   )
 })
 
 # test statistical correctness for only the covid wildtype infection param set
 test_that("daedalus: statistical correctness", {
-  output <- daedalus(country_canada, infection("influenza_1918"))
+  output <- daedalus(country_canada, "influenza_1918")
   # tests on single compartment without workers
   output <- output[output$age_group == "65+", ]
 
@@ -107,7 +107,7 @@ test_that("daedalus: statistical correctness", {
   # - monotonically decreasing susceptibles
   # - monotonically increasing recovered and deaths
   output <- daedalus(
-    country_canada, infection("influenza_1918", rho = 0.0)
+    country_canada, daedalus_infection("influenza_1918", rho = 0.0)
   )
   output <- output[output$age_group == "65+", ]
 
@@ -136,54 +136,54 @@ test_that("daedalus: errors and warnings", {
 
   # expect errors on poorly specified time_end
   expect_error(
-    daedalus(country_canada, infection("influenza_1918"), time_end = -1),
+    daedalus(country_canada, "influenza_1918", time_end = -1),
     regexp = "Expected `time_end` to be a single positive integer-like number."
   )
   expect_error(
-    daedalus(country_canada, infection("influenza_1918"), time_end = 100.5),
+    daedalus(country_canada, "influenza_1918", time_end = 100.5),
     regexp = "Expected `time_end` to be a single positive integer-like number."
   )
   expect_error(
-    daedalus(country_canada, infection("influenza_1918"), time_end = Inf),
+    daedalus(country_canada, "influenza_1918", time_end = Inf),
     regexp = "Expected `time_end` to be a single positive integer-like number."
   )
 
   expect_error(
-    daedalus(country_canada, infection("unfluenza_1920"))
+    daedalus(country_canada, daedalus_infection("unfluenza_1920"))
   )
 
   # expect errors on bad response thresholds
   expect_error(
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, daedalus_infection("sars_cov_1"),
       response_threshold = 0
     ),
     regexp = "Expected `response_threshold` to be a positive finite integer."
   )
   expect_error(
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, daedalus_infection("sars_cov_1"),
       response_threshold = -1
     ),
     regexp = "Expected `response_threshold` to be a positive finite integer."
   )
   expect_error(
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, daedalus_infection("sars_cov_1"),
       response_threshold = Inf
     ),
     regexp = "Expected `response_threshold` to be a positive finite integer."
   )
   expect_error(
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, daedalus_infection("sars_cov_1"),
       response_threshold = NA_real_
     ),
     regexp = "Expected `response_threshold` to be a positive finite integer."
   )
   expect_error(
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, daedalus_infection("sars_cov_1"),
       response_threshold = 10.5
     ),
     regexp = "Expected `response_threshold` to be a positive finite integer."
@@ -192,42 +192,42 @@ test_that("daedalus: errors and warnings", {
   # expect errors on bad response time
   expect_error(
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, daedalus_infection("sars_cov_1"),
       response_time = -1
     ),
     regexp = "Expected `response_time` to be between 2"
   )
   expect_error(
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, daedalus_infection("sars_cov_1"),
       response_time = 30, time_end = 30
     ),
     regexp = "Expected `response_time` to be between 2"
   )
   expect_error(
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, daedalus_infection("sars_cov_1"),
       response_time = 30, time_end = 10
     ),
     regexp = "Expected `response_time` to be between 2"
   )
   expect_error(
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, daedalus_infection("sars_cov_1"),
       response_time = Inf
     ),
     regexp = "Expected `response_time` to be between 2"
   )
   expect_error(
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, daedalus_infection("sars_cov_1"),
       response_time = NA_real_
     ),
     regexp = "Expected `response_time` to be between 2"
   )
   expect_error(
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, daedalus_infection("sars_cov_1"),
       response_time = 10.5
     ),
     regexp = "Expected `response_time` to be between 2"

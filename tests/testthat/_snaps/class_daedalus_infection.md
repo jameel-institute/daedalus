@@ -1,9 +1,9 @@
-# class <infection>: basic expectations
+# class <daedalus_infection>: basic expectations
 
     Code
       infection_x
     Message
-      <infection>
+      <daedalus_infection>
       * Epidemic name: sars_cov_1
       * R0: 1.75
       * sigma: 0.217
