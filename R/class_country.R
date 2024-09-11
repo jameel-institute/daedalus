@@ -1,22 +1,23 @@
-#' Constructor for the `<country>` class
+#' Constructor for the `<daedalus_country>` class
 #'
 #' @description Internal constructor function to make new objects of class
-#' `<country>`. See [country()] for the user-facing helper function which calls
-#' this function internally.
+#' `<daedalus_country>`. See [daedalus_country()] for the user-facing helper
+#' function which calls this function internally.
 #'
-#' @param name A country name as a string.
-#' @param parameters A named list of parameters for the country.
+#' @param name A daedalus_country name as a string.
+#' @param parameters A named list of parameters for the daedalus_country.
 #'
-#' @return An object of the `<country>` class, which inherits from a `<list>`.
+#' @return An object of the `<daedalus_country>` class, which inherits from a
+#' `<list>`.
 #' @keywords internal
 #' @noRd
-new_country <- function(name, parameters) {
+new_daedalus_country <- function(name, parameters) {
   # all input checking at top level
   x <- c(
     list(name = name),
     parameters
   )
-  class(x) <- "country"
+  class(x) <- "daedalus_country"
 
   x
 }
@@ -26,8 +27,8 @@ new_country <- function(name, parameters) {
 #' @name class_country
 #' @rdname class_country
 #'
-#' @description Helper functions to create and work with S3 class `<country>`
-#' objects for use with [daedalus()].
+#' @description Helper functions to create and work with S3 class
+#' `<daedalus_country>` objects for use with [daedalus()].
 #' These objects store country parameters for reuse and have methods for easy
 #' parameter access and editing, as well as processing raw country
 #' characteristics for the DAEDALUS model.
@@ -43,32 +44,26 @@ new_country <- function(name, parameters) {
 #' @export
 #' @return
 #'
-#' - `country()` returns an object of the S3 class `<country>`.
+#' - `daedalus_country()` returns an object of the S3 class `<daedalus_country>`.
 #'
-#' - `is_country()` returns a logical for whether an object is a `<country>`.
+#' - `is_daedalus_country()` returns a logical for whether an object is a
+#' `<daedalus_country>`.
 #'
-#' - Access operators `[` and `[[` return class members of a `<country>` with
-#' behaviour and return type identical to methods for a `<list>`.
-#'
-#' - Assignment operators `[[<-` and `$<-` modify class members of a `<country>`
-#' and will demote the `<country>` to a list if an assignment invalidates the
-#' class.
-#'
-#' - `print.country()` invisibly returns the `<country>` object `x`. Called for
-#' printing side-effects.
+#' - `print.daedalus_country()` invisibly returns the `<daedalus_country>`
+#' object `x`. Called for printing side-effects.
 #'
 #' @examples
-#' x <- country("Canada")
+#' x <- daedalus_country("Canada")
 #'
 #' x
 #'
-#' country(
+#' daedalus_country(
 #'   "United Kingdom",
 #'   parameters = list(contact_matrix = matrix(1, 4, 4))
 #' )
 #'
 #' # check whether `x` is a <country> object
-#' is_country(x)
+#' is_daedalus_country(x)
 #'
 #' # assign class members
 #' # using set_data()
@@ -77,12 +72,12 @@ new_country <- function(name, parameters) {
 #' # using assignment operators
 #' x$contact_matrix <- matrix(99, 4, 4)
 #' x
-country <- function(name,
-                    parameters = list(
-                      contact_matrix = NULL,
-                      contacts_workplace = NULL,
-                      contacts_consumer_worker = NULL
-                    )) {
+daedalus_country <- function(name,
+                             parameters = list(
+                               contact_matrix = NULL,
+                               contacts_workplace = NULL,
+                               contacts_consumer_worker = NULL
+                             )) {
   # input checking
   name <- rlang::arg_match(name, daedalus::country_names)
   # check list but allow missing and NULL
@@ -181,26 +176,27 @@ country <- function(name,
   parameters <- Filter(parameters, f = function(x) !is.null(x))
   params[names(parameters)] <- parameters
 
-  x <- new_country(
+  x <- new_daedalus_country(
     name,
     params
   )
 
-  validate_country(x)
+  validate_daedalus_country(x)
 
   x
 }
 
-#' Validator for the `<country>` class
+#' Validator for the `<daedalus_country>` class
 #'
-#' @param x An object to be validated as a `<country>` object.
+#' @param x An object to be validated as a `<daedalus_country>` object.
 #'
 #' @keywords internal
 #' @noRd
-validate_country <- function(x) {
-  if (!is_country(x)) {
+validate_daedalus_country <- function(x) {
+  if (!is_daedalus_country(x)) {
     cli::cli_abort(
-      "Object should be of class {.cls {country}}; check class assignment."
+      "Object should be of class {.cls {daedalus_country}}; check class
+      assignment."
     )
   }
 
@@ -284,38 +280,38 @@ validate_country <- function(x) {
   invisible(x)
 }
 
-#' Check if an object is a `<country>`
+#' Check if an object is a `<daedalus_country>`
 #' @name class_country
 #'
 #' @export
-is_country <- function(x) {
-  inherits(x, "country")
+is_daedalus_country <- function(x) {
+  inherits(x, "daedalus_country")
 }
 
-#' Print a `<country>` object
+#' Print a `<daedalus_country>` object
 #' @name class_country
-#' @param x An object of the `<country>` class.
+#' @param x An object of the `<daedalus_country>` class.
 #' @param ... Other parameters passed to [print()].
 #' @export
-print.country <- function(x, ...) {
+print.daedalus_country <- function(x, ...) {
+  validate_daedalus_country(x)
   format(x, ...)
 }
 
-#' Format a `<country>` object
+#' Format a `<daedalus_country>` object
 #'
-#' @param x A `<country>` object.
+#' @param x A `<daedalus_country>` object.
 #' @param ... Other arguments passed to [format()].
 #'
-#' @return Invisibly returns the `<country>` object `x`. Called for printing
-#' side-effects.
+#' @return Invisibly returns the `<daedalus_country>` object `x`.
+#' Called for printing side-effects.
 #' @keywords internal
 #' @noRd
-format.country <- function(x, ...) {
+format.daedalus_country <- function(x, ...) {
   chkDots(...)
-  validate_country(x)
 
   # NOTE: rough implementations, better scaling e.g. to millions could be added
-  cli::cli_text("{.cls country}")
+  cli::cli_text("{.cls {class(x)}}")
   cli::cli_bullets(
     c(
       "*" = "Name: {cli::col_red(x$name)}",
@@ -331,11 +327,11 @@ format.country <- function(x, ...) {
   invisible(x)
 }
 
-#' @title Get `<country>` parameters
+#' @title Get `<daedalus_country>` parameters
 #' @name get_data
 #' @export
-get_data.country <- function(x, ...) {
-  validate_country(x)
+get_data.daedalus_country <- function(x, ...) {
+  validate_daedalus_country(x)
 
   to_get <- unlist(rlang::list2(...))
   checkmate::assert_character(to_get)
@@ -348,10 +344,10 @@ get_data.country <- function(x, ...) {
   }
 }
 
-#' @title Set `<country>` parameters
+#' @title Set `<daedalus_country>` parameters
 #' @name set_data
 #' @export
-set_data.country <- function(x, ...) {
+set_data.daedalus_country <- function(x, ...) {
   to_set <- rlang::list2(...)
   checkmate::assert_list(to_set, "numeric", any.missing = FALSE)
   allowed_params <- c(
@@ -375,7 +371,7 @@ set_data.country <- function(x, ...) {
 
   x[names(to_set)] <- to_set
 
-  validate_country(x)
+  validate_daedalus_country(x)
 
   x
 }
@@ -387,62 +383,14 @@ set_data.country <- function(x, ...) {
 #' @param x A list with elements expected in a <country>.
 #' @keywords internal
 #' @noRd
-as_country <- function(x) {
+as_daedalus_country <- function(x) {
   checkmate::assert_list(
     x,
     any.missing = FALSE, types = c("character", "numeric")
   )
-  class(x) <- "country"
-  validate_country(x)
+  class(x) <- "daedalus_country"
+  validate_daedalus_country(x)
 
-  x
-}
-
-#' @name class_country
-#' @param i The index or name to access.
-#' @export
-`[.country` <- function(x, i) {
-  x <- unclass(x)
-  x[i]
-}
-
-#' @name class_country
-#' @export
-`[[.country` <- function(x, i) {
-  x <- unclass(x)
-  x[[i]]
-}
-
-# NOTE: not including a method for `[<-` as probably not useful
-
-#' Assignment methods for `<country>`
-#'
-#' @name class_country
-#' @param value The value to assign to index or name `i`.
-#' @export
-`[[<-.country` <- function(x, i, value) {
-  x <- unclass(x)
-  x[[i]] <- value
-  # attempt to reclass as country and return list on error
-  tryCatch(
-    {
-      as_country(x)
-    },
-    error = function(e) {
-      cli::cli_warn(
-        "Assignment creates an invalid {.cls country} object
-        and it is demoted to {.cls list}!",
-        call. = FALSE
-      )
-      x
-    }
-  )
-}
-
-#' @name class_country
-#' @export
-`$<-.country` <- function(x, i, value) {
-  x[[i]] <- value
   x
 }
 
@@ -450,8 +398,8 @@ as_country <- function(x) {
 #'
 #' @name prepare_parameters
 #' @keywords internal
-prepare_parameters.country <- function(x) {
-  validate_country(x)
+prepare_parameters.daedalus_country <- function(x) {
+  validate_daedalus_country(x)
 
   demography <- get_data(x, "demography")
 

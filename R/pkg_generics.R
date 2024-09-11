@@ -6,7 +6,7 @@
 #' @rdname get_data
 #'
 #' @param x An S3 class object from the \pkg{daedalus} package. Currently only
-#' `<country>` objects are supported.
+#' `<daedalus_country>` objects are supported.
 #' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Strings giving the names of
 #' elements to be accessed.
 #'
@@ -18,7 +18,7 @@
 #' @export
 #' @examples
 #' # simple example of getting data
-#' country_A <- country("United Kingdom")
+#' country_A <- daedalus_country("United Kingdom")
 #' get_data(country_A, "demography")
 #'
 #' get_data(country_A, "demography", "contact_matrix")
@@ -35,17 +35,17 @@ get_data <- function(x, ...) {
 #' @rdname set_data
 #'
 #' @param x An S3 class object from the \pkg{daedalus} package. Currently only
-#' `<country>` objects are supported.
+#' `<daedalus_country>` objects are supported.
 #' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Named optional arguments for
 #' parameters to be changed, with their new values. The only values allowed for
-#' `<country>` objects are "contact_matrix", "contacts_workplace", and
+#' `<daedalus_country>` objects are "contact_matrix", "contacts_workplace", and
 #' "contacts_consumer_worker".
 #'
 #' @return An S3 object of the same class as input `x`.
 #' @export
 #' @examples
 #' # simple example of setting all contacts to 1
-#' country_A <- country("United Kingdom")
+#' country_A <- daedalus_country("United Kingdom")
 #' country_A
 #'
 #' country_A <- set_data(country_A, contact_matrix = matrix(1, 4, 4))
@@ -65,8 +65,8 @@ set_data <- function(x, ...) {
 #' @param x An S3 object with an appropriate method.
 #' @param ... Not used; included for compatibility with methods.
 #' @return A list of parameters suitable for the DAEDALUS model.
-#' [prepare_parameters.country()] is the only method, and returns the country
-#' parameters.
+#' [prepare_parameters.daedalus_country()] is the only method, and returns the
+#' country parameters.
 #'
 #' @details
 #'

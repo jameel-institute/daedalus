@@ -2,20 +2,20 @@
 % Please edit documentation in R/class_country.R, R/pkg_generics.R
 \name{set_data}
 \alias{set_data}
-\alias{set_data.country}
-\title{Set \verb{<country>} parameters}
+\alias{set_data.daedalus_country}
+\title{Set \verb{<daedalus_country>} parameters}
 \usage{
-\method{set_data}{country}(x, ...)
+\method{set_data}{daedalus_country}(x, ...)
 
 set_data(x, ...)
 }
 \arguments{
 \item{x}{An S3 class object from the \pkg{daedalus} package. Currently only
-\verb{<country>} objects are supported.}
+\verb{<daedalus_country>} objects are supported.}
 
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Named optional arguments for
 parameters to be changed, with their new values. The only values allowed for
-\verb{<country>} objects are "contact_matrix", "contacts_workplace", and
+\verb{<daedalus_country>} objects are "contact_matrix", "contacts_workplace", and
 "contacts_consumer_worker".}
 }
 \value{
@@ -28,7 +28,7 @@ parameters. Only parameters considered safe to change -- mostly contact data
 }
 \examples{
 # simple example of setting all contacts to 1
-country_A <- country("United Kingdom")
+country_A <- daedalus_country("United Kingdom")
 country_A
 
 country_A <- set_data(country_A, contact_matrix = matrix(1, 4, 4))

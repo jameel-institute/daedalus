@@ -2,16 +2,16 @@
 % Please edit documentation in R/class_country.R, R/pkg_generics.R
 \name{get_data}
 \alias{get_data}
-\alias{get_data.country}
-\title{Get \verb{<country>} parameters}
+\alias{get_data.daedalus_country}
+\title{Get \verb{<daedalus_country>} parameters}
 \usage{
-\method{get_data}{country}(x, ...)
+\method{get_data}{daedalus_country}(x, ...)
 
 get_data(x, ...)
 }
 \arguments{
 \item{x}{An S3 class object from the \pkg{daedalus} package. Currently only
-\verb{<country>} objects are supported.}
+\verb{<daedalus_country>} objects are supported.}
 
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Strings giving the names of
 elements to be accessed.}
@@ -29,7 +29,7 @@ parameters.
 }
 \examples{
 # simple example of getting data
-country_A <- country("United Kingdom")
+country_A <- daedalus_country("United Kingdom")
 get_data(country_A, "demography")
 
 get_data(country_A, "demography", "contact_matrix")
