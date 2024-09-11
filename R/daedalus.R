@@ -214,12 +214,17 @@ daedalus <- function(country,
   )
 
   data <- rbind(data_stage_one, data_stage_two[-1, ])
-  # NOTE: all elements except model data are placeholders
+  # NOTE: some elements are placeholders
   data <- list(
     model_data = prepare_output(data),
-    country_parameters = NULL,
-    infection_parameters = NULL,
-    response_data = NULL
+    country_parameters = unclass(country),
+    infection_parameters = list(
+      name = epidemic
+    ),
+    response_data = list(
+      response_strategy = response_strategy,
+      implementation_level = implementation_level
+    )
   )
 
   as_daedalus_output(data)
