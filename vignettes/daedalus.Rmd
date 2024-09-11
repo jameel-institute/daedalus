@@ -27,11 +27,23 @@ library(ggplot2)
 The model can be run for any country or territory included in package data simply by passing its name to `daedalus()`.
 The `country_names` vector holds a list of country and territory names for which data is available.
 
-Countries and territories are represented by the `<country>` class, which can be created by calling `country()` on a country name. This collects package data on the country into a single object, making it easier to work with.
+Passing the country name directly leads to the model accessing country characteristics stored as package data.
+To modify country characteristics, for example to examine assumptions around changed contact patterns, users should instead create an object of the class `<daedalus_country>`, which allows setting certain country characteristics to custom values.
+
+The class also allows users to collect country data in one place more easily.
 
 ```{r make_country}
-# make a <country> representing Canada (chosen for its short name)
-country_canada <- country("Canada")
+# get default values for Canada (chosen for its short name)
+daedalus_country("Canada")
+
+# make a <daedalus_country> representing Canada
+# and modify contact patterns
+country_canada <- daedalus_country(
+  "Canada",
+  parameters = list(
+    contact_matrix = matrix(5, 4, 4) # uniform contacts across age groups
+  )
+)
 
 # print to examine; only some essential information is shown
 country_canada
@@ -42,8 +54,11 @@ The package also provides data from @jarvis2024 on workplace contacts in economi
 Both datasets are accessed by internal functions to reduce the need for user input.
 
 ```{r run_model}
-# simulate a Covid-19 wild type outbreak
+# simulate a Covid-19 wild type outbreak, passing the <daedalus_country> object
 data <- daedalus(country_canada, "sars_cov_2_pre_alpha")
+
+# alternatively, pass the country name directly to use default country values
+data <- daedalus("Canada", "sars_cov_2_pre_alpha")
 ```
 
 Users can quickly model one of seven epidemics by passing a name from `daedalus::epidemic_names` to the `epidemic` argument, which is the second argument.
@@ -63,7 +78,7 @@ The function documentation for `daedalus::daedalus()` details which parameters a
 # not run
 # e.g. change the transmission rate by changing r0
 daedalus(
-  country("United Kingdom"), 
+  "United Kingdom", 
   "influenza_1918", 
   infect_params_manual = list(r0 = 1.3)
 )
@@ -72,7 +87,7 @@ daedalus(
 # 1918 Influenza epidemic but with risk of severe disease
 # increasing with age
 daedalus(
-  country("China"), "influenza_1918",
+  "China", "influenza_1918",
   infect_params_manual = list(eta = c(2.0, 3.0, 5.0, 15.0))
 )
 ```
