@@ -17,13 +17,15 @@ daedalus(
 )
 }
 \arguments{
-\item{country}{A country or territory object of class \verb{<country>}.
-Available country and territory names are given in \link{country_names}.
+\item{country}{A country or territory object of class \verb{<daedalus_country>},
+\strong{or} a country or territory name from those included in the package;
+see \link{country_names}.
 Country-specific data such as the community and workplace contacts, the
 demography, and the distribution of the workforce into economic sectors is
-automatically accessed from package data for the relevant country name.
-To override package defaults for contact data values, use the \code{\link[=set_data]{set_data()}}
-method for the \verb{<country>} class. See \code{\link[=country]{country()}} for more.}
+automatically accessed from package data for the relevant country name if it
+is passed as a string.
+To override package defaults for country characteristics, pass a
+\verb{<daedalus_country>} object instead. See \code{\link[=daedalus_country]{daedalus_country()}} for more.}
 
 \item{epidemic}{A string for the infection parameter set to use.
 Infection parameter sets may be known by the name of the outbreak or the
@@ -145,22 +147,35 @@ immunity wanes, returning individuals in the 'recovered' compartment to the
 }
 }
 \examples{
+# country specified by a country name using default characteristics
+output <- daedalus(
+  country = "Canada",
+  epidemic = "influenza_1918"
+)
+
+# country passed as <daedalus_country> with some characteristics modified
+country_x <- daedalus_country(
+  "Canada",
+  parameters = list(contact_matrix = matrix(5, 4, 4)) # uniform contacts
+)
+output <- daedalus(country_x, "influenza_1918")
+
 # with default infection parameters associated with an epidemic
 output <- daedalus(
-  country = country("United Kingdom"),
+  country = "United Kingdom",
   epidemic = "influenza_1918"
 )
 
 # with some infection parameters over-ridden by the user
 output <- daedalus(
-  country = country("United Kingdom"),
+  country = "United Kingdom",
   epidemic = "influenza_1918",
   infect_params_manual = list(r0 = 1.3)
 )
 
 # with default initial conditions over-ridden by the user
 output <- daedalus(
-  country = country("United Kingdom"),
+  country = "United Kingdom",
   epidemic = "influenza_1918",
   initial_state_manual = list(p_infectious = 1e-3)
 )
