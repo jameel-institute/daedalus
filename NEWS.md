@@ -1,18 +1,18 @@
 # daedalus 0.0.5
 
-This patch adds the `<country>` class to represent country and territory data for `daedalus()`. Access, assignment, and print methods are also added, in addition to internal helpers such as `as_country()`. The class is tested with newly added tests.
+This patch adds the `<daedalus_country>` class to represent country and territory data for `daedalus()`. Access, assignment, and print methods are also added, in addition to internal helpers such as `as_daedalus_country()`. The class is tested with newly added tests.
 
 Other changes:
 
-1. Adds the generic functions `get_data()`, `set_data()` and `prepare_parameters()`, with methods for `<country>` objects. Methods for infection data are also anticipated.
+1. Adds the generic functions `get_data()`, `set_data()` and `prepare_parameters()`, with methods for `<daedalus_country>` objects. Methods for infection data are also anticipated.
 
-2. Removes `make_country_parameters()` in favour of `prepare_parameters.country()`.
+2. Removes `make_country_parameters()` in favour of `prepare_parameters.daedalus_country()`.
 
-3. `daedalus()` expects its first argument to be a `<country>` and no longer accepts a `country_params_manual` argument; all changes to country parameters should be made via the class.
+3. `daedalus()` accepts its first argument as either a country name or a `<daedalus_country>`, and no longer accepts a `country_params_manual` argument; all changes to country parameters should be made via the class.
 
-4. `make_initial_state()` works on `<country>` objects instead of country names.
+4. `make_initial_state()` works on `<daedalus_country>` objects instead of country names. Since this is an internal function it does not support passing a country string name.
 
-5. Vignettes have been updated to use `<country>` objects.
+5. Vignettes have been updated to show how to use `<daedalus_country>` objects.
 
 # daedalus 0.0.4
 

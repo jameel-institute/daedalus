@@ -44,7 +44,7 @@ new_daedalus_country <- function(name, parameters) {
 #' @export
 #' @return
 #'
-#' - `daedalus_country()` returns an object of the S3 class `<daedalus_country>`.
+#' - `daedalus_country()` returns an object of the S3 class `<daedalus_country>`
 #'
 #' - `is_daedalus_country()` returns a logical for whether an object is a
 #' `<daedalus_country>`.
