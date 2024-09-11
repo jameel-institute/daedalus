@@ -27,8 +27,12 @@ To override package defaults for country characteristics, pass a
 \verb{<daedalus_country>} object instead. See \code{\link[=daedalus_country]{daedalus_country()}} for more.}
 
 \item{infection}{An infection parameter object of the class \verb{<infection>},
-which gives the infection parameters associated with a historical epidemic
-or epidemic wave.}
+\strong{or} an epidemic name for which data are provided in the package; see
+\link{epidemic_names} for parameters from a historical epidemic
+or epidemic wave.
+Passing the name as a string automatically accesses the default parameters
+of an infection. Create an pass a \verb{<daedalus_infection>} to tweak infection
+parameters.}
 
 \item{response_strategy}{A string for the name of response strategy followed;
 defaults to "none". The response strategy determines the country-specific
@@ -85,10 +89,9 @@ asymptomatic. Defaults to 0.0.
 }
 }
 \examples{
-# country specified by a country name using default characteristics
+# country and infection specified by strings using default characteristics
 output <- daedalus(
-  country = "Canada",
-  epidemic = "influenza_1918"
+  "Canada", "influenza_1918"
 )
 
 # country passed as <daedalus_country> with some characteristics modified
@@ -98,22 +101,15 @@ country_x <- daedalus_country(
 )
 output <- daedalus(country_x, "influenza_1918")
 
-# with default infection parameters associated with an epidemic
-output <- daedalus(
-  country = "United Kingdom",
-  infection("influenza_1918")
-)
-
 # with some infection parameters over-ridden by the user
 output <- daedalus(
-  country = "United Kingdom",
-  infection("influenza_1918", r0 = 1.3)
+  "United Kingdom",
+  daedalus_infection("influenza_1918", r0 = 1.3)
 )
 
 # with default initial conditions over-ridden by the user
 output <- daedalus(
-  country = "United Kingdom",
-  infection("influenza_1918"),
+  "United Kingdom", "influenza_1918",
   initial_state_manual = list(p_infectious = 1e-3)
 )
 }

@@ -13,8 +13,12 @@
 #' `<daedalus_country>` object instead. See [daedalus_country()] for more.
 #'
 #' @param infection An infection parameter object of the class `<infection>`,
-#' which gives the infection parameters associated with a historical epidemic
+#' **or** an epidemic name for which data are provided in the package; see
+#' [daedalus::epidemic_names] for parameters from a historical epidemic
 #' or epidemic wave.
+#' Passing the name as a string automatically accesses the default parameters
+#' of an infection. Create an pass a `<daedalus_infection>` to tweak infection
+#' parameters.
 #'
 #' @param response_strategy A string for the name of response strategy followed;
 #' defaults to "none". The response strategy determines the country-specific
@@ -67,10 +71,9 @@
 #' @return A `<deSolve>` object.
 #'
 #' @examples
-#' # country specified by a country name using default characteristics
+#' # country and infection specified by strings using default characteristics
 #' output <- daedalus(
-#'   country = "Canada",
-#'   epidemic = "influenza_1918"
+#'   "Canada", "influenza_1918"
 #' )
 #'
 #' # country passed as <daedalus_country> with some characteristics modified
@@ -80,22 +83,15 @@
 #' )
 #' output <- daedalus(country_x, "influenza_1918")
 #'
-#' # with default infection parameters associated with an epidemic
-#' output <- daedalus(
-#'   country = "United Kingdom",
-#'   infection("influenza_1918")
-#' )
-#'
 #' # with some infection parameters over-ridden by the user
 #' output <- daedalus(
-#'   country = "United Kingdom",
-#'   infection("influenza_1918", r0 = 1.3)
+#'   "United Kingdom",
+#'   daedalus_infection("influenza_1918", r0 = 1.3)
 #' )
 #'
 #' # with default initial conditions over-ridden by the user
 #' output <- daedalus(
-#'   country = "United Kingdom",
-#'   infection("influenza_1918"),
+#'   "United Kingdom", "influenza_1918",
 #'   initial_state_manual = list(p_infectious = 1e-3)
 #' )
 #' @export
@@ -117,7 +113,11 @@ daedalus <- function(country,
     country <- rlang::arg_match(country, daedalus::country_names)
     country <- daedalus_country(country)
   }
-  checkmate::assert_class(infection, "infection")
+  checkmate::assert_multi_class(infection, c("daedalus_infection", "character"))
+  if (is.character(infection)) {
+    infection <- rlang::arg_match(infection, daedalus::epidemic_names)
+    infection <- daedalus_infection(infection)
+  }
 
   response_strategy <- rlang::arg_match(response_strategy)
   implementation_level <- rlang::arg_match(implementation_level)
