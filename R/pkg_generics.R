@@ -23,7 +23,7 @@
 #'
 #' get_data(country_A, "demography", "contact_matrix")
 #'
-#' disease_x <- infection("sars_cov_1", r0 = 1.9)
+#' disease_x <- daedalus_infection("sars_cov_1", r0 = 1.9)
 #' get_data(disease_x, "r0")
 get_data <- function(x, ...) {
   UseMethod("get_data")
@@ -55,7 +55,7 @@ get_data <- function(x, ...) {
 #' country_A <- set_data(country_A, contact_matrix = matrix(1, 4, 4))
 #' country_A
 #'
-#' disease_x <- infection("sars_cov_1")
+#' disease_x <- daedalus_infection("sars_cov_1")
 #' disease_x <- set_data(disease_x, r0 = 3.0)
 #' disease_x
 set_data <- function(x, ...) {
@@ -74,7 +74,7 @@ set_data <- function(x, ...) {
 #' @param ... Not used; included for compatibility with methods.
 #' @return A list of parameters suitable for the DAEDALUS model.
 #' [prepare_parameters.daedalus_country()] returns the country parameters, while
-#' [prepare_parameters.infection()] returns infection parameters.
+#' [prepare_parameters.daedalus_infection()] returns infection parameters.
 #'
 #' @details
 #'
@@ -104,8 +104,8 @@ set_data <- function(x, ...) {
 #'
 #' ## Infection parameters
 #'
-#' Infection parameters are returned from `<infection>` objects as is, with only
-#' the name removed.
+#' Infection parameters are returned from `<daedalusinfection>` objects without
+#' modification and only the name removed.
 #'
 prepare_parameters <- function(x, ...) {
   UseMethod("prepare_parameters")
