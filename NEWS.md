@@ -1,16 +1,18 @@
 # daedalus 0.0.6
 
-This patch adds the `<infection>` class to represent and hold infection parameter data for `daedalus()`. Access, assignment, and print methods are also added, in addition to internal helpers such as `as_country()`. The class is tested with newly added tests.
+This patch adds the `<daedalus_infection>` class to represent and hold infection parameter data for `daedalus()`. Access, assignment, and print methods are also added, in addition to internal helpers such as `as_country()`. The class is tested with newly added tests.
 
 Other changes:
 
-1. The `get_data()`, `set_data()` and `prepare_parameters()` generics now have methods for `<infection>`s.
+1. The `get_data()`, `set_data()` and `prepare_parameters()` generics now have methods for `<daedalus_infection>`s.
 
 2. Removes `make_infection_parameters()` in favour of `prepare_parameters.infection()`.
 
-3. `daedalus()` argument `epidemic` accepting epidemic name string is changed to argument `infection` accepting `<infection>` objects.
+3. `daedalus()` argument `epidemic` accepting epidemic name string is changed to argument `infection` accepting `<daedalus_infection>` objects or epidemic names.
 
-4. Vignettes have been updated to use `<infection>` objects.
+4. Vignettes have been updated to use `<daedalus_infection>` objects.
+
+5. Website reference page updated to have sections.
 
 # daedalus 0.0.5
 
