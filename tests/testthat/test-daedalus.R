@@ -6,14 +6,12 @@ test_that("daedalus: basic expectations", {
   time_end <- 100L
   # expect no conditions
   expect_no_condition({
-    data <- daedalus(
-      country_canada, "influenza_1918",
-      time_end = time_end
-    )
+    output <- daedalus(country_canada, "influenza_1918", time_end = time_end)
   })
 
   # expect type double and non-negative
-  expect_s3_class(data, "data.frame")
+  expect_s3_class(output, "daedalus_output")
+  data <- get_data(output)
   expect_length(data, N_OUTPUT_COLS)
 
   # as non-working groups do not have data per sector
@@ -63,9 +61,10 @@ test_that("daedalus: Runs for all epidemics", {
   })
 
   # expect classed output, type double, and non-negative
-  checkmate::expect_list(output_list, "data.frame")
+  checkmate::expect_list(output_list, "daedalus_output")
   expect_true(
     all(vapply(output_list, function(x) {
+      x <- get_data(x)
       all(x$value >= 0.0)
     }, FUN.VALUE = logical(1)))
   )
@@ -87,21 +86,22 @@ test_that("daedalus: Passing model parameters", {
 # test statistical correctness for only the covid wildtype infection param set
 test_that("daedalus: statistical correctness", {
   output <- daedalus(country_canada, "influenza_1918")
+  data <- get_data(output)
   # tests on single compartment without workers
-  output <- output[output$age_group == "65+", ]
+  data <- data[data$age_group == "65+", ]
 
   # expectations when immunity wanes allowing R -> S
   # no elegant way of programmatically accessing idx
-  deaths <- output[output$compartment == "dead", ]$value
+  deaths <- data[data$compartment == "dead", ]$value
   expect_true(
     all(diff(deaths) >= 0.0)
   )
-  susceptibles <- output[output$compartment == "susceptible", ]$value
+  susceptibles <- data[data$compartment == "susceptible", ]$value
   expect_false(
     all(diff(susceptibles) <= 0.0)
   )
 
-  recovered <- output[output$compartment == "recovered", ]$value
+  recovered <- data[data$compartment == "recovered", ]$value
   expect_false(
     all(diff(recovered) >= 0.0)
   )
@@ -112,19 +112,20 @@ test_that("daedalus: statistical correctness", {
   output <- daedalus(
     country_canada, daedalus_infection("influenza_1918", rho = 0.0)
   )
-  output <- output[output$age_group == "65+", ]
+  data <- get_data(output)
+  data <- data[data$age_group == "65+", ]
 
-  susceptibles <- output[output$compartment == "susceptible", ]$value
+  susceptibles <- data[data$compartment == "susceptible", ]$value
   expect_true(
     all(diff(susceptibles) <= 0.0)
   )
 
-  recovered <- output[output$compartment == "recovered", ]$value
+  recovered <- data[data$compartment == "recovered", ]$value
   expect_true(
     all(diff(recovered) >= 0.0)
   )
 
-  deaths <- output[output$compartment == "dead", ]$value
+  deaths <- data[data$compartment == "dead", ]$value
   expect_true(
     all(diff(deaths) >= 0.0)
   )
