@@ -57,28 +57,30 @@ Both datasets are accessed by internal functions to reduce the need for user inp
 
 ## Representing infection parameters
 
-_daedalus_ allows users to quickly model one of seven historical epidemics by accessing infection parameters associated with those epidemics via the `<infection>` class.
-
+_daedalus_ allows users to quickly model one of seven historical epidemics by accessing infection parameters associated with those epidemics, which are stored as package data.
 Epidemics with associated infection parameters are given in the package as `daedalus::epidemic_names`.
 
 ```{r epidemic_names}
 daedalus::epidemic_names
 ```
 
-```{r}
-# create an <infection> object to represent Covid-19 wild-type
-infection_covid <- infection("sars_cov_2_pre_alpha")
-```
-
-Users can also override epidemic-specific infection parameter values when creating the `<infection>` class object. The `infection()` class helper function has more details on which parameters are included.
+Users can pass the epidemic names directly to `daedalus()` to use the default infection parameters.
 
 ```r
 # not run
+output <- daedalus("Canada", "influenza_1918")
+```
+
+To modify infection parameters associated with an epidemic, users should create a `<daedalus_infection>` class
+
+Users can also override epidemic-specific infection parameter values when creating the `<infection>` class object. The `infection()` class helper function has more details on which parameters are included.
+
+```{r example_infection_class}
 # SARS-1 (2004) but with an R0 of 2.3
-infection("sars_cov_1", r0 = 2.3)
+daedalus_infection("sars_cov_1", r0 = 2.3)
 
 # Influenza 1918 but with mortality rising with age
-infection("influenza_1918", omega = c(0.01, 0.02, 0.03, 0.1))
+daedalus_infection("influenza_1918", omega = c(0.01, 0.02, 0.03, 0.1))
 ```
 
 ## Running the model
@@ -86,8 +88,8 @@ infection("influenza_1918", omega = c(0.01, 0.02, 0.03, 0.1))
 Run the model by passing the `country` and `infection` arguments to `daedalus()`.
 
 ```{r run_model}
-# simulate a Covid-19 wild type outbreak in Canada
-data <- daedalus("Canada", infection_covid)
+# simulate a Covid-19 wild type outbreak in Canada; using default parameters
+data <- daedalus("Canada", "sars_cov_2_pre_alpha")
 ```
 
 The model runs for 300 timesteps by default; timesteps should be interpreted as days since model parameters are in terms of days.

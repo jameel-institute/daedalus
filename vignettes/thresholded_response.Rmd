@@ -30,7 +30,7 @@ We run both models for 100 days as the epidemic peak occurs within this timefram
 ```{r}
 data_baseline <- daedalus(
   "Canada",
-  infection("influenza_1918", rho = 0.0), # prevent re-infection
+  daedalus_infection("influenza_1918", rho = 0.0), # prevent re-infection
   response_threshold = response_threshold,
   response_strategy = "none",
   time_end = 100
@@ -44,7 +44,7 @@ data_baseline$scenario <- "no_response"
 # run the model with a heavy elimination intervention
 data_intervention <- daedalus(
   "Canada",
-  infection("influenza_1918", rho = 0.0), # prevent re-infection
+  daedalus_infection("influenza_1918", rho = 0.0), # prevent re-infection
   response_threshold = response_threshold,
   response_strategy = "elimination",
   time_end = 100
