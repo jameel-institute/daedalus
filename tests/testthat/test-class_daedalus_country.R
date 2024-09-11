@@ -1,9 +1,9 @@
-# Tests for the <country> class
-test_that("class <country>: basic expectations", {
+# Tests for the <daedalus_country> class
+test_that("class <daedalus_country>: basic expectations", {
   expect_no_condition({
-    country_x <- country("Canada") # nolint saves extra assignment
+    country_x <- daedalus_country("Canada") # nolint saves extra assignment
   })
-  expect_s3_class(country_x, "country")
+  expect_s3_class(country_x, "daedalus_country")
   checkmate::expect_list(
     country_x, c("character", "numeric"),
     any.missing = FALSE
@@ -11,18 +11,24 @@ test_that("class <country>: basic expectations", {
   expect_snapshot(
     country_x
   )
+
+  # model function can handle either string or class input
+  expect_identical(
+    daedalus("Canada", "influenza_1918"),
+    daedalus(daedalus_country("Canada"), "influenza_1918")
+  )
 })
 
-test_that("class <country>`: works for all countries", {
+test_that("class <daedalus_country>`: works for all countries", {
   expect_no_condition({
-    countries <- lapply(daedalus::country_names, country) # nolint
+    countries <- lapply(daedalus::country_names, daedalus_country) # nolint
   })
-  checkmate::expect_list(countries, "country")
+  checkmate::expect_list(countries, "daedalus_country")
 })
 
-test_that("class <country>: access and assignment", {
+test_that("class <daedalus_country>: access and assignment", {
   name <- "Canada"
-  country_x <- country(name)
+  country_x <- daedalus_country(name)
 
   # expectations on `[`
   expect_no_condition({
@@ -41,42 +47,17 @@ test_that("class <country>: access and assignment", {
   expect_no_condition({
     country_x[["name"]] <- "China" # nolint
   })
-  expect_s3_class(country_x, "country")
+  expect_s3_class(country_x, "daedalus_country")
 
-  country_x <- country("Canada")
+  country_x <- daedalus_country("Canada")
   expect_no_condition({
     country_x$name <- "Ghana" # nolint
   })
-  expect_s3_class(country_x, "country")
-
-  # expect unclassing when the class is invalidated
-  country_x <- country(name)
-  expect_warning(
-    {
-      country_x[["name"]] <- "dummy" # nolint
-    },
-    regexp = "Assignment creates.*invalid.*demoted"
-  )
-  checkmate::expect_list(country_x)
-  expect_false(
-    is_country(country_x)
-  )
-
-  country_x <- country(name) # recreate from scratch
-  expect_warning(
-    {
-      country_x$name <- "dummy" # nolint
-    },
-    regexp = "Assignment creates.*invalid.*country.*demoted.*list"
-  )
-  checkmate::expect_list(country_x)
-  expect_false(
-    is_country(country_x)
-  )
+  expect_s3_class(country_x, "daedalus_country")
 })
 
-test_that("class <country>`: getting parameters", {
-  country_x <- country("China")
+test_that("class <daedalus_country>`: getting parameters", {
+  country_x <- daedalus_country("China")
   expect_no_condition({
     x <- get_data(country_x, "demography") # nolint
     y <- get_data(country_x, "contact_matrix") # nolint
@@ -90,8 +71,8 @@ test_that("class <country>`: getting parameters", {
   checkmate::expect_list(z, "numeric")
 })
 
-test_that("class <country>`: setting parameters", {
-  country_x <- country("China")
+test_that("class <daedalus_country>`: setting parameters", {
+  country_x <- daedalus_country("China")
   expect_no_condition({
     # nolint begin
     country_x <- set_data(
@@ -101,9 +82,9 @@ test_that("class <country>`: setting parameters", {
     )
     # nolint end
   })
-  expect_s3_class(country_x, "country")
+  expect_s3_class(country_x, "daedalus_country")
 
-  country_x <- country("China")
+  country_x <- daedalus_country("China")
   expect_error(
     set_data(country_x, demography = rep(1, N_AGE_GROUPS)),
     regexp = "Found a disallowed parameter substitution"
@@ -117,37 +98,37 @@ test_that("class <country>`: setting parameters", {
 })
 
 # tests for elements of the validator not caught elsewhere
-test_that("class <country>: validator", {
-  x <- country("China")
+test_that("class <daedalus_country>: validator", {
+  x <- daedalus_country("China")
   x <- unclass(x)
   expect_error(
-    validate_country(x)
+    validate_daedalus_country(x)
   )
 
   x <- list(name = "Ghana")
-  class(x) <- "country"
+  class(x) <- "daedalus_country"
   expect_error(
-    validate_country(x),
+    validate_daedalus_country(x),
     regexp = "does not have the correct attributes"
   )
 })
 
-test_that("class <country>`: errors", {
+test_that("class <daedalus_country>`: errors", {
   # invalid name
   expect_error(
-    country("dummy"),
+    daedalus_country("dummy"),
     regexp = "`name` must be one of"
   )
 
   # invalid `parameter` type
   expect_error(
-    country("Canada", parameters = c("dummy values")),
+    daedalus_country("Canada", parameters = c("dummy values")),
     regexp = "Must be of type 'list'"
   )
 
   # invalid parameter types
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(dummy_param = "dummy values")
     ),
     regexp = "May only contain.*numeric,matrix,NULL"
@@ -155,7 +136,7 @@ test_that("class <country>`: errors", {
 
   # invalid parameter names
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(dummy_param = matrix(1))
     ),
     regexp = "Found unexpected values in `parameters`"
@@ -163,25 +144,25 @@ test_that("class <country>`: errors", {
 
   # invalid parameter dims or values: contact matrix
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(contact_matrix = matrix(1))
     ),
     regexp = "Expected.*numeric matrix"
   )
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(contact_matrix = matrix("1"))
     ),
     regexp = "Expected.*numeric matrix"
   )
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(contact_matrix = matrix(-1, 4, 4)) # right dims, negatives
     ),
     regexp = "Expected.*numeric matrix"
   )
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(contact_matrix = matrix(NA_real_, 4, 4)) # right dims, NAs
     ),
     regexp = "Expected.*numeric matrix"
@@ -189,19 +170,19 @@ test_that("class <country>`: errors", {
 
   # invalid parameter dims or values: contacts workplace
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(contacts_workplace = rep(1, N_ECON_SECTORS - 1)) # wrong dims
     ),
     regexp = "Expected.*45-element numeric vector"
   )
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(contacts_workplace = rep(-1, N_ECON_SECTORS)) # negatives
     ),
     regexp = "Expected.*numeric vector.*positive"
   )
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(contacts_workplace = rep(NA_real_, N_ECON_SECTORS)) # NAs
     ),
     regexp = "Expected.*numeric vector.*positive"
@@ -209,25 +190,25 @@ test_that("class <country>`: errors", {
 
   # invalid parameter dims or values: contacts consumer-to-worker
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(contacts_consumer_worker = matrix(1))
     ),
     regexp = "Expected.*45x4 numeric matrix"
   )
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(contacts_consumer_worker = matrix("1"))
     ),
     regexp = "Expected.*numeric matrix"
   )
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(contacts_consumer_worker = matrix(-1, 4, 4))
     ),
     regexp = "Expected.*numeric matrix.*positive.*values"
   )
   expect_error(
-    country(
+    daedalus_country(
       "Canada", list(contacts_consumer_worker = matrix(NA_real_, 4, 4)) # NAs
     ),
     regexp = "Expected.*numeric matrix"

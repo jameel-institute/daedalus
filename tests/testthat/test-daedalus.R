@@ -1,6 +1,6 @@
 # Basic tests for DAEDALUS
 # select a test country
-country_canada <- country("Canada")
+country_canada <- "Canada"
 
 test_that("daedalus: basic expectations", {
   time_end <- 100L
@@ -128,8 +128,8 @@ test_that("daedalus: statistical correctness", {
 test_that("daedalus: errors and warnings", {
   # expect errors on country
   expect_error(
-    daedalus(country("U.K."), "influenza_1918"),
-    regexp = "`name` must be one of"
+    daedalus("U.K.", "influenza_1918"),
+    regexp = "`country` must be one of"
   )
 
   # expect errors on poorly specified time_end

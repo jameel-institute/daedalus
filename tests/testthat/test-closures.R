@@ -4,7 +4,7 @@ response_names <- c(
   "economic_closures", "school_closures"
 )
 response_level <- c("light", "heavy")
-country_canada <- country("Canada")
+country_canada <- daedalus_country("Canada")
 
 test_that("Closures: basic expectations: runs without errors", {
   # test all responses

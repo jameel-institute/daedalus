@@ -1,6 +1,6 @@
 # # Basic unit tests for the default model parameter expectations
 # NOTE: testing that parameter errors are bubbled up from `daedalus()`
-country_canada <- country("Canada")
+country_canada <- daedalus_country("Canada")
 test_that("Errors on model parameters passed to `daedalus()`:", {
   expect_error(
     daedalus(
