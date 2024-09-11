@@ -2,32 +2,20 @@
 % Please edit documentation in R/class_country.R
 \name{class_country}
 \alias{class_country}
-\alias{country}
-\alias{is_country}
-\alias{print.country}
-\alias{[.country}
-\alias{[[.country}
-\alias{[[<-.country}
-\alias{$<-.country}
+\alias{daedalus_country}
+\alias{is_daedalus_country}
+\alias{print.daedalus_country}
 \title{Represent countries and territories for DAEDALUS}
 \usage{
-country(
+daedalus_country(
   name,
   parameters = list(contact_matrix = NULL, contacts_workplace = NULL,
     contacts_consumer_worker = NULL)
 )
 
-is_country(x)
+is_daedalus_country(x)
 
-\method{print}{country}(x, ...)
-
-\method{[}{country}(x, i)
-
-\method{[[}{country}(x, i)
-
-\method{[[}{country}(x, i) <- value
-
-\method{$}{country}(x, i) <- value
+\method{print}{daedalus_country}(x, ...)
 }
 \arguments{
 \item{name}{A string giving the country or territory name; must be from among
@@ -38,46 +26,38 @@ allowed to be modified. Currently, users may only pass their own contact
 matrix, workplace contacts, and consumer-worker contact matrix. If these are
 not passed, default values are accessed from stored package data.}
 
-\item{x}{An object of the \verb{<country>} class.}
+\item{x}{An object of the \verb{<daedalus_country>} class.}
 
 \item{...}{Other parameters passed to \code{\link[=print]{print()}}.}
-
-\item{i}{The index or name to access.}
-
-\item{value}{The value to assign to index or name \code{i}.}
 }
 \value{
 \itemize{
-\item \code{country()} returns an object of the S3 class \verb{<country>}.
-\item \code{is_country()} returns a logical for whether an object is a \verb{<country>}.
-\item Access operators \code{[} and \code{[[} return class members of a \verb{<country>} with
-behaviour and return type identical to methods for a \verb{<list>}.
-\item Assignment operators \verb{[[<-} and \verb{$<-} modify class members of a \verb{<country>}
-and will demote the \verb{<country>} to a list if an assignment invalidates the
-class.
-\item \code{print.country()} invisibly returns the \verb{<country>} object \code{x}. Called for
-printing side-effects.
+\item \code{daedalus_country()} returns an object of the S3 class \verb{<daedalus_country>}.
+\item \code{is_daedalus_country()} returns a logical for whether an object is a
+\verb{<daedalus_country>}.
+\item \code{print.daedalus_country()} invisibly returns the \verb{<daedalus_country>}
+object \code{x}. Called for printing side-effects.
 }
 }
 \description{
-Helper functions to create and work with S3 class \verb{<country>}
-objects for use with \code{\link[=daedalus]{daedalus()}}.
+Helper functions to create and work with S3 class
+\verb{<daedalus_country>} objects for use with \code{\link[=daedalus]{daedalus()}}.
 These objects store country parameters for reuse and have methods for easy
 parameter access and editing, as well as processing raw country
 characteristics for the DAEDALUS model.
 }
 \examples{
-x <- country("Canada")
+x <- daedalus_country("Canada")
 
 x
 
-country(
+daedalus_country(
   "United Kingdom",
   parameters = list(contact_matrix = matrix(1, 4, 4))
 )
 
 # check whether `x` is a <country> object
-is_country(x)
+is_daedalus_country(x)
 
 # assign class members
 # using set_data()

@@ -2,10 +2,10 @@
 % Please edit documentation in R/class_country.R, R/pkg_generics.R
 \name{prepare_parameters}
 \alias{prepare_parameters}
-\alias{prepare_parameters.country}
+\alias{prepare_parameters.daedalus_country}
 \title{Prepare country parameters for model}
 \usage{
-\method{prepare_parameters}{country}(x)
+\method{prepare_parameters}{daedalus_country}(x)
 
 prepare_parameters(x, ...)
 }
@@ -16,8 +16,8 @@ prepare_parameters(x, ...)
 }
 \value{
 A list of parameters suitable for the DAEDALUS model.
-\code{\link[=prepare_parameters.country]{prepare_parameters.country()}} is the only method, and returns the country
-parameters.
+\code{\link[=prepare_parameters.daedalus_country]{prepare_parameters.daedalus_country()}} is the only method, and returns the
+country parameters.
 }
 \description{
 Generic for the \link{prepare_parameters} methods associated with
