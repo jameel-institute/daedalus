@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,12 +52,15 @@
 
 
 <dl><dt id="arg-country">country<a class="anchor" aria-label="anchor" href="#arg-country"></a></dt>
-<dd><p>A country or territory name from among <code>country_names</code>.
+<dd><p>A country or territory object of class <code>&lt;daedalus_country&gt;</code>,
+<strong>or</strong> a country or territory name from those included in the package;
+see <a href="country_names.html">country_names</a>.
 Country-specific data such as the community and workplace contacts, the
 demography, and the distribution of the workforce into economic sectors is
-automatically accessed from package data for the relevant country name.
-Some contact data values can be over-ridden by the user by passing them as a
-named list to <code>country_params_manual</code>.</p></dd>
+automatically accessed from package data for the relevant country name if it
+is passed as a string.
+To override package defaults for country characteristics, pass a
+<code>&lt;daedalus_country&gt;</code> object instead. See <code><a href="class_country.html">daedalus_country()</a></code> for more.</p></dd>
 
 
 <dt id="arg-initial-state-manual">initial_state_manual<a class="anchor" aria-label="anchor" href="#arg-initial-state-manual"></a></dt>

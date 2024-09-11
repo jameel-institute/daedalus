@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,6 +76,47 @@ adapted from <span class="citation">Haw et al. (<a href="#ref-haw2022">2022</a>)
 data simply by passing its name to <code><a href="../reference/daedalus.html">daedalus()</a></code>. The
 <code>country_names</code> vector holds a list of country and territory
 names for which data is available.</p>
+<p>Passing the country name directly leads to the model accessing
+country characteristics stored as package data. To modify country
+characteristics, for example to examine assumptions around changed
+contact patterns, users should instead create an object of the class
+<code>&lt;daedalus_country&gt;</code>, which allows setting certain
+country characteristics to custom values.</p>
+<p>The class also allows users to collect country data in one place more
+easily.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># get default values for Canada (chosen for its short name)</span></span>
+<span><span class="fu"><a href="../reference/class_country.html">daedalus_country</a></span><span class="op">(</span><span class="st">"Canada"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">&lt;daedalus_country&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">Canada</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Demography: 1993132, 5949109, 22966942, and 6832974</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Community contact matrix:</span></span>
+<span><span class="co">#&gt;             0-4      5-19    20-64       65+</span></span>
+<span><span class="co">#&gt; 0-4   1.9157895 1.5235823 5.014414 0.3169637</span></span>
+<span><span class="co">#&gt; 5-19  0.5104463 8.7459756 6.322175 0.7948344</span></span>
+<span><span class="co">#&gt; 20-64 0.4351641 1.6376280 7.821398 1.0350292</span></span>
+<span><span class="co">#&gt; 65+   0.1187166 0.7488765 3.639207 1.5142917</span></span>
+<span></span>
+<span><span class="co"># make a &lt;daedalus_country&gt; representing Canada</span></span>
+<span><span class="co"># and modify contact patterns</span></span>
+<span><span class="va">country_canada</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/class_country.html">daedalus_country</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Canada"</span>,</span>
+<span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    contact_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span> <span class="co"># uniform contacts across age groups</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># print to examine; only some essential information is shown</span></span>
+<span><span class="va">country_canada</span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">&lt;daedalus_country&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">Canada</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Demography: 1993132, 5949109, 22966942, and 6832974</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Community contact matrix:</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt; [1,]    5    5    5    5</span></span>
+<span><span class="co">#&gt; [2,]    5    5    5    5</span></span>
+<span><span class="co">#&gt; [3,]    5    5    5    5</span></span>
+<span><span class="co">#&gt; [4,]    5    5    5    5</span></span></code></pre></div>
 <p>The package provides data from <span class="citation">Walker et al.
 (<a href="#ref-walker2020">2020</a>)</span> on country demography,
 country workforce per economic sector, and social contacts between age
@@ -83,15 +124,18 @@ groups in <code>country_data</code>. The package also provides data from
 <span class="citation">Jarvis et al. (<a href="#ref-jarvis2024">2024</a>)</span> on workplace contacts in
 economic sectors. Both datasets are accessed by internal functions to
 reduce the need for user input.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># simulate a Covid-19 wild type outbreak</span></span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># simulate a Covid-19 wild type outbreak, passing the &lt;daedalus_country&gt; object</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="va">country_canada</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># alternatively, pass the country name directly to use default country values</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span></code></pre></div>
 <p>Users can quickly model one of seven epidemics by passing a name from
 <code><a href="../reference/epidemic_data.html">daedalus::epidemic_names</a></code> to the <code>epidemic</code>
 argument, which is the second argument. The package data object
 <code><a href="../reference/epidemic_data.html">daedalus::epidemic_names</a></code> gives the allowed epidemic
 identifiers.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">daedalus</span><span class="fu">::</span><span class="va"><a href="../reference/epidemic_data.html">epidemic_names</a></span></span>
 <span><span class="co">#&gt; [1] "sars_cov_1"           "influenza_2009"       "influenza_1957"      </span></span>
 <span><span class="co">#&gt; [4] "influenza_1918"       "sars_cov_2_pre_alpha" "sars_cov_2_omicron"  </span></span>
@@ -103,27 +147,29 @@ the infection parameter defaults in the <strong>Details</strong>
 section.</p>
 <p>Users can also override epidemic-specific infection parameter values
 as well as change the initial conditions by passing arguments to
-<code><a href="../reference/daedalus.html">daedalus()</a></code> in one of three lists:
-<code>country_params_manual</code>, <code>infect_params_manual</code>,
-and <code>initial_state_manual</code>, which override the country
-contact data, the infection parameters, and the initial state defaults
-respectively. The function documentation for
-<code><a href="../reference/daedalus.html">daedalus::daedalus()</a></code> details which parameters are
-accepted.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code><a href="../reference/daedalus.html">daedalus()</a></code> as lists: <code>infect_params_manual</code> and
+<code>initial_state_manual</code>, which override the infection
+parameters and the initial state defaults respectively. The function
+documentation for <code><a href="../reference/daedalus.html">daedalus::daedalus()</a></code> details which
+parameters are accepted.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># not run</span></span>
 <span><span class="co"># e.g. change the transmission rate by changing r0</span></span>
-<span><span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"influenza_1918"</span>, infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>r0 <span class="op">=</span> <span class="fl">1.3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span></span>
+<span>  <span class="st">"United Kingdom"</span>, </span>
+<span>  <span class="st">"influenza_1918"</span>, </span>
+<span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>r0 <span class="op">=</span> <span class="fl">1.3</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># e.g. change the hospitalisation risk profile to model</span></span>
 <span><span class="co"># 1918 Influenza epidemic but with risk of severe disease</span></span>
 <span><span class="co"># increasing with age</span></span>
 <span><span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span></span>
-<span>  <span class="st">"Canada"</span>, epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span>
+<span>  <span class="st">"China"</span>, <span class="st">"influenza_1918"</span>,</span>
 <span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.0</span>, <span class="fl">3.0</span>, <span class="fl">5.0</span>, <span class="fl">15.0</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Plot the data to view the epidemic curve.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">compartment</span> <span class="op">==</span> <span class="st">"infect_symp"</span> <span class="op">&amp;</span> <span class="va">data</span><span class="op">$</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"20-65"</span>, <span class="op">]</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>

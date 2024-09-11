@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,12 +38,22 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.5" id="daedalus-005">daedalus 0.0.5<a class="anchor" aria-label="anchor" href="#daedalus-005"></a></h2>
+<p>This patch adds the <code>&lt;daedalus_country&gt;</code> class to represent country and territory data for <code><a href="../reference/daedalus.html">daedalus()</a></code>. Access, assignment, and print methods are also added, in addition to internal helpers such as <code>as_daedalus_country()</code>. The class is tested with newly added tests.</p>
+<p>Other changes:</p>
+<ol style="list-style-type: decimal"><li><p>Adds the generic functions <code><a href="../reference/get_data.html">get_data()</a></code>, <code><a href="../reference/set_data.html">set_data()</a></code> and <code><a href="../reference/prepare_parameters.html">prepare_parameters()</a></code>, with methods for <code>&lt;daedalus_country&gt;</code> objects. Methods for infection data are also anticipated.</p></li>
+<li><p>Removes <code>make_country_parameters()</code> in favour of <code><a href="../reference/prepare_parameters.html">prepare_parameters.daedalus_country()</a></code>.</p></li>
+<li><p><code><a href="../reference/daedalus.html">daedalus()</a></code> accepts its first argument as either a country name or a <code>&lt;daedalus_country&gt;</code>, and no longer accepts a <code>country_params_manual</code> argument; all changes to country parameters should be made via the class.</p></li>
+<li><p><code><a href="../reference/make_initial_state.html">make_initial_state()</a></code> works on <code>&lt;daedalus_country&gt;</code> objects instead of country names. Since this is an internal function it does not support passing a country string name.</p></li>
+<li><p>Vignettes have been updated to show how to use <code>&lt;daedalus_country&gt;</code> objects.</p></li>
+</ol></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.4" id="daedalus-004">daedalus 0.0.4<a class="anchor" aria-label="anchor" href="#daedalus-004"></a></h2>
 <p>This patch adds some basic pandemic response functionality (<a href="https://github.com/j-idea/daedalus/issues/15" class="external-link">#15</a>). This functionality is shown in a new vignette <code>thresholded_interventions.Rmd</code>.</p>
 <ol style="list-style-type: decimal"><li><p>The function signature for <code><a href="../reference/daedalus.html">daedalus()</a></code> has been changed to accept <code>response_strategy</code>, <code>implementation_level</code>, <code>response_time</code>, and <code>response_threshold</code> arguments which specify these parameters. Sensible defaults for the strategy are “none”, and a “light” implementation level for other strategies.</p></li>
 <li><p>The model supports the “none”, “economic closures”, “school closures”, and “elimination” strategies, with economic sector openness coefficients for the “light” and “heavy” implementation of these strategies stored in the package data object <code>closure_data</code>. The <code>data-raw/closure_data.R</code> file shows how this data is generated from raw data files provided by EPPI and added in <code>inst/extdata</code>.</p></li>
 <li><p>Closures are triggered by the response time being reached, or the total hospitalisation reaching the response threshold. The state variable has been expanded by one to accommodate a switch that is initially zero, is changed to one (for on) when the response is activated, and back to zero when the response ends. Responses currently end on the same trigger of the effective R being less than 1.0.</p></li>
-<li><p>The <code>make_parameters()</code> function has been split into <code>make_infect_parameters()</code> and <code><a href="../reference/make_model_parameters.html">make_country_parameters()</a></code> to be clearer and more manageable. <code><a href="../reference/daedalus.html">daedalus()</a></code>-level override for parameters which was originally implemented as <code>...</code> has been replaced with three separate overrides: <code>country_params_manual</code>, <code>infect_params_manual</code>, and <code>initial_state_manual</code>, for users to pass custom values.</p></li>
+<li><p>The <code>make_parameters()</code> function has been split into <code>make_infect_parameters()</code> and <code>make_country_parameters()</code> to be clearer and more manageable. <code><a href="../reference/daedalus.html">daedalus()</a></code>-level override for parameters which was originally implemented as <code>...</code> has been replaced with three separate overrides: <code>country_params_manual</code>, <code>infect_params_manual</code>, and <code>initial_state_manual</code>, for users to pass custom values.</p></li>
 <li><p><code><a href="../reference/prepare_output.html">prepare_output()</a></code> has been made internal; it omits data for non-working age groups in economic sectors (as these are always 0), and pads all sector numbers to fit the format <code>sector_XX</code>.</p></li>
 <li><p>Internal functions for R effective calculations and getting the total hospitalisations, <code><a href="../reference/reff_calculation.html">r_eff()</a></code> and <code><a href="../reference/get_hospitalisations.html">get_hospitalisations()</a></code> have been added.</p></li>
 <li><p>Closures are implemented as <code><a href="https://rdrr.io/pkg/deSolve/man/events.html" class="external-link">deSolve::events</a></code> triggered by a rootfinding function, with separate functions for activation and termination, which are implemented as <code><a href="../reference/make_response_threshold_event.html">make_response_threshold_event()</a></code> and <code><a href="../reference/make_rt_end_event.html">make_rt_end_event()</a></code>.</p></li>

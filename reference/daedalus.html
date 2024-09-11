@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,7 +51,6 @@
 <span>  implementation_level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"light"</span>, <span class="st">"heavy"</span><span class="op">)</span>,</span>
 <span>  response_time <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  response_threshold <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  country_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  initial_state_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  time_end <span class="op">=</span> <span class="fl">300</span></span>
@@ -63,12 +62,15 @@
 
 
 <dl><dt id="arg-country">country<a class="anchor" aria-label="anchor" href="#arg-country"></a></dt>
-<dd><p>A country or territory name from among <code>country_names</code>.
+<dd><p>A country or territory object of class <code>&lt;daedalus_country&gt;</code>,
+<strong>or</strong> a country or territory name from those included in the package;
+see <a href="country_names.html">country_names</a>.
 Country-specific data such as the community and workplace contacts, the
 demography, and the distribution of the workforce into economic sectors is
-automatically accessed from package data for the relevant country name.
-Some contact data values can be over-ridden by the user by passing them as a
-named list to <code>country_params_manual</code>.</p></dd>
+automatically accessed from package data for the relevant country name if it
+is passed as a string.
+To override package defaults for country characteristics, pass a
+<code>&lt;daedalus_country&gt;</code> object instead. See <code><a href="class_country.html">daedalus_country()</a></code> for more.</p></dd>
 
 
 <dt id="arg-epidemic">epidemic<a class="anchor" aria-label="anchor" href="#arg-epidemic"></a></dt>
@@ -116,11 +118,6 @@ overrides the default response- and country-specific threshold values held in
 <a href="country_data.html">country_data</a>.</p></dd>
 
 
-<dt id="arg-country-params-manual">country_params_manual<a class="anchor" aria-label="anchor" href="#arg-country-params-manual"></a></dt>
-<dd><p>An optional <strong>named</strong> list of country-specific
-contact data. See <strong>Details</strong> for allowed values.</p></dd>
-
-
 <dt id="arg-infect-params-manual">infect_params_manual<a class="anchor" aria-label="anchor" href="#arg-infect-params-manual"></a></dt>
 <dd><p>An optional <strong>named</strong> list of infection
 parameters that can be passed to over-ride the default values for the chosen
@@ -159,7 +156,7 @@ Covid-19 Omicron (SARS-CoV-2 omicron), Covid-19 Delta (SARS-CoV-2 delta).</p>
 <p>DAEDALUS allows users to substitute default model parameters with custom
 values by passing them in the appropriate argument (see examples).
 These arguments are passed on to the internal functions
-<code><a href="make_model_parameters.html">make_country_parameters()</a></code> and <code><a href="make_model_parameters.html">make_infection_parameters()</a></code> as
+<code>make_country_parameters()</code> and <code><a href="make_model_parameters.html">make_infection_parameters()</a></code> as
 appropriate. Any arguments that are passed and are not suitable for those
 functions will throw an error.</p>
 </div>
@@ -176,30 +173,6 @@ million as infectious.</p></li>
 <li><p><code>p_asymptomatic</code>: A single numeric value in the range \([0.0, 1.0]\) for
 the proportion of initially infectious individuals who are considered to be
 asymptomatic. Defaults to 0.0.</p></li>
-</ul></div>
-
-<div class="section">
-<h3 id="country-parameters">Country parameters<a class="anchor" aria-label="anchor" href="#country-parameters"></a></h3>
-
-
-<p><code>country_params_manual</code> may be a named list of one or more of the following:</p><ul><li><p><code>contact_matrix</code>: A square numeric matrix with <code>N_AGE_GROUPS</code> (4) rows and
-columns, giving the per-capita number of contacts between individuals of each
-age group. By default, this is taken from <code><a href="country_data.html">daedalus::country_data</a></code> based on
-the user-specified <code>country</code>.</p></li>
-<li><p><code>contacts_workplace</code>: A numeric vector of length <code>N_ECON_SECTORS</code> (45),
-giving the per-capita number of worker-to-worker interactions within economic
-sectors. Defaults to a standard value provided by the package as
-<code><a href="economic_contacts.html">daedalus::economic_contacts</a></code>.</p></li>
-<li><p><code>contacts_consumer_worker</code>: A numeric matrix with <code>N_ECON_SECTORS</code> rows
-(45) and <code>N_AGE_GROUPS</code> columns (4) giving the per-capita contacts between
-individuals in each economic sector and consumers. Defaults to the
-sector-wise workplace contacts distributed in proportion to country
-demography.</p></li>
-<li><p><code>contacts_between_sectors</code>: A square numeric matrix with <code>N_ECON_SECTORS</code>
-(45) rows and columns and with a zero diagonal, giving the number of
-worker-to-worker contacts across economic sectors. Defaults to the package
-standard of a null matrix as between-sector-contacts are not currently
-modelled.</p></li>
 </ul></div>
 
 <div class="section">
@@ -236,24 +209,36 @@ immunity wanes, returning individuals in the 'recovered' compartment to the
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># with default infection parameters associated with an epidemic</span></span></span>
-<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span>country <span class="op">=</span> <span class="st">"United Kingdom"</span>, epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># country specified by a country name using default characteristics</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"Canada"</span>,</span></span>
+<span class="r-in"><span>  epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># country passed as &lt;daedalus_country&gt; with some characteristics modified</span></span></span>
+<span class="r-in"><span><span class="va">country_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="class_country.html">daedalus_country</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"Canada"</span>,</span></span>
+<span class="r-in"><span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>contact_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span> <span class="co"># uniform contacts</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span><span class="va">country_x</span>, <span class="st">"influenza_1918"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># with default infection parameters associated with an epidemic</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>,</span></span>
+<span class="r-in"><span>  epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># with some infection parameters over-ridden by the user</span></span></span>
 <span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>, epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span></span>
+<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>,</span></span>
+<span class="r-in"><span>  epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span></span>
 <span class="r-in"><span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>r0 <span class="op">=</span> <span class="fl">1.3</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># with some country parameters over-ridden by the user</span></span></span>
-<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>, epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span></span>
-<span class="r-in"><span>  country_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>contact_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># with default initial conditions over-ridden by the user</span></span></span>
 <span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>, epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span></span>
+<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>,</span></span>
+<span class="r-in"><span>  epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span></span>
 <span class="r-in"><span>  initial_state_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>p_infectious <span class="op">=</span> <span class="fl">1e-3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 </code></pre></div>
