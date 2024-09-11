@@ -41,6 +41,7 @@ test_that("Closures: no response leads to similar epidemic sizes", {
 
   epidemic_sizes <- vapply(
     output_list, function(x) {
+      x <- get_data(x)
       sum(x[x$compartment == "recovered" & x$time == max(x$time), ]$value)
     }, numeric(1)
   )
@@ -62,6 +63,7 @@ test_that("Closures: no response leads to similar epidemic sizes", {
 
   epidemic_sizes <- vapply(
     output_list, function(x) {
+      x <- get_data(x)
       sum(x[x$compartment == "recovered" & x$time == max(x$time), ]$value)
     }, numeric(1)
   )
@@ -85,6 +87,7 @@ test_that("Closures: no response leads to similar epidemic sizes", {
 
   epidemic_sizes <- vapply(
     output_list, function(x) {
+      x <- get_data(x)
       sum(x[x$compartment == "recovered" & x$time == max(x$time), ]$value)
     }, numeric(1)
   )
@@ -108,6 +111,7 @@ test_that("Closures: basic statistical correctness: reduces epidemic size", {
 
   epidemic_sizes <- vapply(
     output_list, function(x) {
+      x <- get_data(x)
       sum(x[x$compartment == "recovered" & x$time == max(x$time), ]$value)
     }, numeric(1)
   )
@@ -133,6 +137,7 @@ test_that("Closures: earlier closures reduce epidemic size", {
 
   epidemic_sizes <- vapply(
     output_list, function(x) {
+      x <- get_data(x)
       sum(x[x$compartment == "recovered" & x$time == max(x$time), ]$value)
     }, numeric(1)
   )
@@ -156,6 +161,7 @@ test_that("Closures: lower threshold reduces epidemic size", {
 
   epidemic_sizes <- vapply(
     output_list, function(x) {
+      x <- get_data(x)
       sum(x[x$compartment == "recovered" & x$time == max(x$time), ]$value)
     }, numeric(1)
   )
