@@ -10,7 +10,7 @@ test_that("Closures: basic expectations: runs without errors", {
   # test all responses
   expect_no_condition({
     output_list <- lapply(response_names, function(x) {
-      daedalus(country_canada, infection("sars_cov_1"), response_strategy = x)
+      daedalus(country_canada, "sars_cov_1", response_strategy = x)
     })
   })
 
@@ -20,7 +20,7 @@ test_that("Closures: basic expectations: runs without errors", {
       response_names, response_level,
       f = function(x, y) {
         daedalus(
-          country_canada, infection("sars_cov_1"),
+          country_canada, "sars_cov_1",
           response_strategy = x, implementation_level = y
         )
       }
@@ -34,7 +34,7 @@ test_that("Closures: no response leads to similar epidemic sizes", {
   levels <- c("light", "heavy")
   output_list <- lapply(levels, function(x) {
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, "sars_cov_1",
       response_strategy = "none", implementation_level = x
     )
   })
@@ -54,7 +54,7 @@ test_that("Closures: no response leads to similar epidemic sizes", {
   response_threshold <- 1e7 # artificially large
   output_list <- lapply(response_times, function(x) {
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, "sars_cov_1",
       response_strategy = "none", response_time = x,
       response_threshold = response_threshold
     )
@@ -77,7 +77,7 @@ test_that("Closures: no response leads to similar epidemic sizes", {
   response_time <- time_end - 2L # artificially long response time
   output_list <- lapply(response_thresholds, function(x) {
     daedalus(
-      country_canada, infection("sars_cov_1"),
+      country_canada, "sars_cov_1",
       response_strategy = "none", response_time = response_time,
       response_threshold = x
     )
@@ -100,7 +100,7 @@ test_that("Closures: no response leads to similar epidemic sizes", {
 test_that("Closures: basic statistical correctness: reduces epidemic size", {
   output_list <- lapply(response_names, function(x) {
     daedalus(
-      country_canada, infection("sars_cov_1", rho = 0.0),
+      country_canada, daedalus_infection("sars_cov_1", rho = 0.0),
       response_strategy = x,
       implementation_level = "light", # test on light as this differs b/w strats
     )
@@ -123,7 +123,7 @@ test_that("Closures: earlier closures reduce epidemic size", {
   response_threshold <- 1e9 # very high to prevent auto-activation
   output_list <- lapply(response_times, function(x) {
     daedalus(
-      country_canada, infection("sars_cov_1", rho = 0.0),
+      country_canada, daedalus_infection("sars_cov_1", rho = 0.0),
       response_strategy = "elimination",
       response_time = x,
       response_threshold = response_threshold,
@@ -147,7 +147,7 @@ test_that("Closures: lower threshold reduces epidemic size", {
   response_thresholds <- c(1000, 100)
   output_list <- lapply(response_thresholds, function(x) {
     daedalus(
-      country_canada, infection("sars_cov_1", rho = 0.0),
+      country_canada, daedalus_infection("sars_cov_1", rho = 0.0),
       response_strategy = "elimination",
       response_threshold = x,
       response_time = 200 # artificially high
