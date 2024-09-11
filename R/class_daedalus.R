@@ -8,7 +8,7 @@
 #' An object of the `<daedalus_output>` class.
 #' @keywords internal
 as_daedalus_output <- function(x) {
-  checkmate::assert_list(x, c("data.frame", "NULL"))
+  checkmate::assert_list(x, c("data.frame", "list"), any.missing = FALSE)
   class(x) <- "daedalus_output"
   validate_daedalus_output(x)
 
@@ -68,19 +68,26 @@ format.daedalus_output <- function(x, ...) {
   chkDots(...)
   validate_daedalus_output(x)
 
+  # NOTE: placeholder formatting
   cli::cli_text("{.cls daedalus_output}")
-  cli::cli_text("Model output and parameters with {nrow(x$data)} rows; head:")
-  print(
-    head(x[["model_data"]])
-  )
-  cli::cli_bullets(
-    c(
-      "*" = "Access model timeseries as `x$model_data`",
-      "*" = "Access country parameters as `x$country_parameters`",
-      "*" = "Access infection parameters as `x$infection_parameters`",
-      "*" = "Access response strategy information as `x$response_data`"
-    )
-  )
 
   invisible(x)
+}
+
+#' @name get_data
+#' @export
+get_data.daedalus_output <- function(x, ...) {
+  validate_daedalus_output(x)
+  to_get <- unlist(rlang::list2(...))
+  checkmate::assert_character(to_get, null.ok = TRUE)
+  is_single_string <- checkmate::test_string(to_get)
+
+  # Return model timeseries on get_data(x) to reduce friction to use
+  if (rlang::is_empty(to_get)) {
+    x[["model_data"]]
+  } else if (is_single_string) {
+    x[[to_get]]
+  } else {
+    x[to_get]
+  }
 }

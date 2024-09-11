@@ -2,11 +2,12 @@
 
 S3method(get_data,daedalus_country)
 S3method(get_data,daedalus_infection)
+S3method(get_data,daedalus_output)
 S3method(print,daedalus_country)
 S3method(print,daedalus_infection)
+S3method(print,daedalus_output)
 S3method(set_data,daedalus_country)
 S3method(set_data,daedalus_infection)
-S3method(print,daedalus)
 export(daedalus)
 export(daedalus_country)
 export(daedalus_infection)

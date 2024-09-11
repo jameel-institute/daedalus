@@ -14,17 +14,25 @@
 #' @return Returns a member of `x`, with the class preserved
 #' (e.g. numeric vector for a country `"demography"`).
 #'
+#' For `<daedalus_output>` objects, returns the model timeseries data when no
+#' element is specified.
 #' @export
 #' @examples
 #' # simple example of getting data
 #' country_A <- daedalus_country("United Kingdom")
 #' get_data(country_A, "demography")
 #'
-#' get_data(country_A, "contact_matrix")
+#' get_data(country_A, "demography", "contact_matrix")
 #'
 #' disease_x <- daedalus_infection("sars_cov_1", r0 = 1.9)
 #' get_data(disease_x, "r0")
-get_data <- function(x, to_get, ...) {
+#'
+#' # get model data
+#' output <- daedalus("Canada", "influenza_1918")
+#' head(
+#'   get_data(output)
+#' )
+get_data <- function(x, ...) {
   UseMethod("get_data")
 }
 
