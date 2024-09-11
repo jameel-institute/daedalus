@@ -32,7 +32,7 @@ not passed, default values are accessed from stored package data.}
 }
 \value{
 \itemize{
-\item \code{daedalus_country()} returns an object of the S3 class \verb{<daedalus_country>}.
+\item \code{daedalus_country()} returns an object of the S3 class \verb{<daedalus_country>}
 \item \code{is_daedalus_country()} returns a logical for whether an object is a
 \verb{<daedalus_country>}.
 \item \code{print.daedalus_country()} invisibly returns the \verb{<daedalus_country>}
