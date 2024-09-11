@@ -8,11 +8,11 @@ reference:
     desc: Run the DAEDALUS integrated economic-epidemiological model
     contents:
     - daedalus
-  - title: Class `<country>`
+  - title: Class `<daedalus_country>`
     desc: Represent and access country or territory characteristics
     contents:
     - class_country
-  - title: Class `<infection>`
+  - title: Class `<daedalus_infection>`
     desc: Represent and access infection characteristics
     contents:
     - class_infection
