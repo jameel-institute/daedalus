@@ -4,12 +4,12 @@
 \name{get_data}
 \alias{get_data}
 \alias{get_data.daedalus_country}
-\alias{get_data.infection}
+\alias{get_data.daedalus_infection}
 \title{Get parameters from DAEDALUS classes}
 \usage{
 \method{get_data}{daedalus_country}(x, ...)
 
-\method{get_data}{infection}(x, ...)
+\method{get_data}{daedalus_infection}(x, ...)
 
 get_data(x, ...)
 }
@@ -38,6 +38,6 @@ get_data(country_A, "demography")
 
 get_data(country_A, "demography", "contact_matrix")
 
-disease_x <- infection("sars_cov_1", r0 = 1.9)
+disease_x <- daedalus_infection("sars_cov_1", r0 = 1.9)
 get_data(disease_x, "r0")
 }

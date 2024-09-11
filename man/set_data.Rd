@@ -4,12 +4,12 @@
 \name{set_data}
 \alias{set_data}
 \alias{set_data.daedalus_country}
-\alias{set_data.infection}
+\alias{set_data.daedalus_infection}
 \title{Set parameters in DAEDALUS classes}
 \usage{
 \method{set_data}{daedalus_country}(x, ...)
 
-\method{set_data}{infection}(x, ...)
+\method{set_data}{daedalus_infection}(x, ...)
 
 set_data(x, ...)
 }
@@ -39,7 +39,7 @@ country_A
 country_A <- set_data(country_A, contact_matrix = matrix(1, 4, 4))
 country_A
 
-disease_x <- infection("sars_cov_1")
+disease_x <- daedalus_infection("sars_cov_1")
 disease_x <- set_data(disease_x, r0 = 3.0)
 disease_x
 }

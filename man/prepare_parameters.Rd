@@ -4,12 +4,12 @@
 \name{prepare_parameters}
 \alias{prepare_parameters}
 \alias{prepare_parameters.daedalus_country}
-\alias{prepare_parameters.infection}
+\alias{prepare_parameters.daedalus_infection}
 \title{Prepare country parameters for model}
 \usage{
 \method{prepare_parameters}{daedalus_country}(x)
 
-\method{prepare_parameters}{infection}(x, ...)
+\method{prepare_parameters}{daedalus_infection}(x, ...)
 
 prepare_parameters(x, ...)
 }
@@ -21,7 +21,7 @@ prepare_parameters(x, ...)
 \value{
 A list of parameters suitable for the DAEDALUS model.
 \code{\link[=prepare_parameters.daedalus_country]{prepare_parameters.daedalus_country()}} returns the country parameters, while
-\code{\link[=prepare_parameters.infection]{prepare_parameters.infection()}} returns infection parameters.
+\code{\link[=prepare_parameters.daedalus_infection]{prepare_parameters.daedalus_infection()}} returns infection parameters.
 }
 \description{
 Generic for the \link{prepare_parameters} methods associated with
@@ -53,8 +53,8 @@ value (similar to eigenvalue for non-square matrices).
 
 \subsection{Infection parameters}{
 
-Infection parameters are returned from \verb{<infection>} objects as is, with only
-the name removed.
+Infection parameters are returned from \verb{<daedalusinfection>} objects without
+modification and only the name removed.
 }
 }
 \keyword{internal}

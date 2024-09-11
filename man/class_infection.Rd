@@ -2,28 +2,16 @@
 % Please edit documentation in R/class_infection.R
 \name{class_infection}
 \alias{class_infection}
-\alias{infection}
-\alias{is_infection}
-\alias{print.infection}
-\alias{[.infection}
-\alias{[[.infection}
-\alias{[[<-.infection}
-\alias{$<-.infection}
+\alias{daedalus_infection}
+\alias{is_daedalus_infection}
+\alias{print.daedalus_infection}
 \title{Represent countries and territories for DAEDALUS}
 \usage{
-infection(name, ...)
+daedalus_infection(name, ...)
 
-is_infection(x)
+is_daedalus_infection(x)
 
-\method{print}{infection}(x, ...)
-
-\method{[}{infection}(x, i)
-
-\method{[[}{infection}(x, i)
-
-\method{[[}{infection}(x, i) <- value
-
-\method{$}{infection}(x, i) <- value
+\method{print}{daedalus_infection}(x, ...)
 }
 \arguments{
 \item{name}{An epidemic name from among \link{epidemic_names}.
@@ -34,29 +22,21 @@ over-ridden by passing them as a named list to \code{...}.}
 
 \item{...}{Other parameters passed to \code{\link[=print]{print()}}.}
 
-\item{x}{An object of the \verb{<infection>} class.}
-
-\item{i}{The index or name to access.}
-
-\item{value}{The value to assign to index or name \code{i}.}
+\item{x}{An object of the \verb{<daedalus_infection>} class.}
 }
 \value{
 \itemize{
-\item \code{infection()} returns an object of the S3 class \verb{<infection>}.
-\item \code{is_infection()} returns a logical for whether an object is a
-\verb{<infection>}.
-\item Access operators \code{[} and \code{[[} return class members of a \verb{<infection>} with
-behaviour and return type identical to methods for a \verb{<list>}.
-\item Assignment operators \verb{[[<-} and \verb{$<-} modify class members of a
-\verb{<infection>} and will demote the \verb{<infection>} to a list if an assignment
-invalidates the class.
-\item \code{print.infection()} invisibly returns the \verb{<infection>} object \code{x}.
-Called for printing side-effects.
+\item \code{daedalus_infection()} returns an object of the S3 class
+\verb{<daedalus_infection>}.
+\item \code{is_daedalus_infection()} returns a logical for whether an object is a
+\verb{<daedalus_infection>}.
+\item \code{print.daedalus_infection()} invisibly returns the \verb{<daedalus_infection>}
+object \code{x}. Called for printing side-effects.
 }
 }
 \description{
-Helper functions to create and work with S3 class \verb{<infection>}
-objects for use with \code{\link[=daedalus]{daedalus()}}.
+Helper functions to create and work with S3 class
+\verb{<daedalus_infection>} objects for use with \code{\link[=daedalus]{daedalus()}}.
 These objects store infection parameters for reuse and have methods for easy
 parameter access and editing, as well as processing raw infection
 characteristics for the DAEDALUS model.
@@ -112,9 +92,9 @@ immunity wanes, returning individuals in the 'recovered' compartment to the
 }
 }
 \examples{
-# make an <infection> object with default parameter values
-infection("sars_cov_1")
+# make a <daedalus_infection> object with default parameter values
+daedalus_infection("sars_cov_1")
 
 # modify infection parameters R0 and immunity waning rate
-infection("influenza_1918", r0 = 2.5, rho = 0.01)
+daedalus_infection("influenza_1918", r0 = 2.5, rho = 0.01)
 }

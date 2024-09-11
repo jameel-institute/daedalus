@@ -1,22 +1,23 @@
-#' Constructor for the `<infection>` class
+#' Constructor for the `<daedalus_infection>` class
 #'
 #' @description Internal constructor function to make new objects of class
-#' `<infection>`. See [infection()] for the user-facing helper function which
-#' calls this function internally.
+#' `<daedalus_infection>`. See [daedalus_infection()] for the user-facing helper
+#' function which calls this function internally.
 #'
 #' @param name An epidemic name from among [daedalus::epidemic_names].
 #' @param parameters A named list of parameters for the infection.
 #'
-#' @return An object of the `<infection>` class, which inherits from a `<list>`.
+#' @return An object of the `<daedalus_infection>` class, which inherits from a
+#' `<list>`.
 #' @keywords internal
 #' @noRd
-new_infection <- function(name, parameters) {
+new_daedalus_infection <- function(name, parameters) {
   # all input checking at top level
   x <- c(
     list(name = name),
     parameters
   )
-  class(x) <- "infection"
+  class(x) <- "daedalus_infection"
 
   x
 }
@@ -26,8 +27,8 @@ new_infection <- function(name, parameters) {
 #' @name class_infection
 #' @rdname class_infection
 #'
-#' @description Helper functions to create and work with S3 class `<infection>`
-#' objects for use with [daedalus()].
+#' @description Helper functions to create and work with S3 class
+#' `<daedalus_infection>` objects for use with [daedalus()].
 #' These objects store infection parameters for reuse and have methods for easy
 #' parameter access and editing, as well as processing raw infection
 #' characteristics for the DAEDALUS model.
@@ -45,20 +46,14 @@ new_infection <- function(name, parameters) {
 #' @export
 #' @return
 #'
-#' - `infection()` returns an object of the S3 class `<infection>`.
+#' - `daedalus_infection()` returns an object of the S3 class
+#' `<daedalus_infection>`.
 #'
-#' - `is_infection()` returns a logical for whether an object is a
-#' `<infection>`.
+#' - `is_daedalus_infection()` returns a logical for whether an object is a
+#' `<daedalus_infection>`.
 #'
-#' - Access operators `[` and `[[` return class members of a `<infection>` with
-#' behaviour and return type identical to methods for a `<list>`.
-#'
-#' - Assignment operators `[[<-` and `$<-` modify class members of a
-#' `<infection>` and will demote the `<infection>` to a list if an assignment
-#' invalidates the class.
-#'
-#' - `print.infection()` invisibly returns the `<infection>` object `x`.
-#' Called for printing side-effects.
+#' - `print.daedalus_infection()` invisibly returns the `<daedalus_infection>`
+#' object `x`. Called for printing side-effects.
 #'
 #' @details
 #'
@@ -123,12 +118,12 @@ new_infection <- function(name, parameters) {
 #' 'susceptible' compartment.
 #'
 #' @examples
-#' # make an <infection> object with default parameter values
-#' infection("sars_cov_1")
+#' # make a <daedalus_infection> object with default parameter values
+#' daedalus_infection("sars_cov_1")
 #'
 #' # modify infection parameters R0 and immunity waning rate
-#' infection("influenza_1918", r0 = 2.5, rho = 0.01)
-infection <- function(name, ...) {
+#' daedalus_infection("influenza_1918", r0 = 2.5, rho = 0.01)
+daedalus_infection <- function(name, ...) {
   # input checking
   name <- rlang::arg_match(name, daedalus::epidemic_names)
   parameters <- rlang::list2(...)
@@ -210,26 +205,27 @@ infection <- function(name, ...) {
   params <- daedalus::infection_data[[name]]
   params[names(parameters)] <- parameters
 
-  x <- new_infection(
+  x <- new_daedalus_infection(
     name,
     params
   )
 
-  validate_infection(x)
+  validate_daedalus_infection(x)
 
   x
 }
 
-#' Validator for the `<infection>` class
+#' Validator for the `<daedalus_infection>` class
 #'
-#' @param x An object to be validated as a `<infection>` object.
+#' @param x An object to be validated as a `<daedalus_infection>` object.
 #'
 #' @keywords internal
 #' @noRd
-validate_infection <- function(x) {
-  if (!is_infection(x)) {
+validate_daedalus_infection <- function(x) {
+  if (!is_daedalus_infection(x)) {
     cli::cli_abort(
-      "Object should be of class {.cls {infection}}; check class assignment."
+      "Object should be of class {.cls daedalus_infection};
+      check class assignment."
     )
   }
 
@@ -243,7 +239,8 @@ validate_infection <- function(x) {
   )
   if (!has_invariants) {
     cli::cli_abort(
-      "`x` is class {.cls infection} but does not have the correct attributes"
+      "`x` is class {.cls daedalus_infection} but does not have the correct
+      attributes"
     )
   }
 
@@ -265,8 +262,8 @@ validate_infection <- function(x) {
       lgl <- checkmate::test_number(x[[n]], lower = 0.0, finite = TRUE)
       if (!lgl) {
         cli::cli_abort(
-          "<infection> member {.str n} must be a single finite
-                    positive number"
+          "<daedalus_infection> member {.str n} must be a single finite
+          positive number"
         )
       }
     })
@@ -279,7 +276,7 @@ validate_infection <- function(x) {
       )
       if (!lgl) {
         cli::cli_abort(
-          "<infection> member {.str n} must be a numeric vector of
+          "<daedalus_infection> member {.str n} must be a numeric vector of
           length 4 (number of age groups)"
         )
       }
@@ -289,35 +286,35 @@ validate_infection <- function(x) {
   invisible(x)
 }
 
-#' Check if an object is a `<infection>`
+#' Check if an object is a `<daedalus_infection>`
 #' @name class_infection
 #'
 #' @export
-is_infection <- function(x) {
-  inherits(x, "infection")
+is_daedalus_infection <- function(x) {
+  inherits(x, "daedalus_infection")
 }
 
-#' Print a `<infection>` object
+#' Print a `<daedalus_infection>` object
 #' @name class_infection
-#' @param x An object of the `<infection>` class.
+#' @param x An object of the `<daedalus_infection>` class.
 #' @param ... Other parameters passed to [print()].
 #' @export
-print.infection <- function(x, ...) {
+print.daedalus_infection <- function(x, ...) {
+  validate_daedalus_infection(x)
   format(x, ...)
 }
 
-#' Format a `<infection>` object
+#' Format a `<daedalus_infection>` object
 #'
-#' @param x A `<infection>` object.
+#' @param x A `<daedalus_infection>` object.
 #' @param ... Other arguments passed to [format()].
 #'
-#' @return Invisibly returns the `<infection>` object `x`. Called for printing
-#' side-effects.
+#' @return Invisibly returns the `<daedalus_infection>` object `x`.
+#' Called for printing side-effects.
 #' @keywords internal
 #' @noRd
-format.infection <- function(x, ...) {
+format.daedalus_infection <- function(x, ...) {
   chkDots(...)
-  validate_infection(x)
 
   # NOTE: rough implementations, better scaling e.g. to millions could be added
   cli::cli_text("{.cls {class(x)}}")
@@ -345,8 +342,8 @@ format.infection <- function(x, ...) {
 
 #' @name get_data
 #' @export
-get_data.infection <- function(x, ...) {
-  validate_infection(x)
+get_data.daedalus_infection <- function(x, ...) {
+  validate_daedalus_infection(x)
 
   to_get <- unlist(rlang::list2(...))
   checkmate::assert_character(to_get)
@@ -361,7 +358,7 @@ get_data.infection <- function(x, ...) {
 
 #' @name set_data
 #' @export
-set_data.infection <- function(x, ...) {
+set_data.daedalus_infection <- function(x, ...) {
   to_set <- rlang::list2(...)
   checkmate::assert_list(to_set, "numeric", any.missing = FALSE)
 
@@ -370,80 +367,34 @@ set_data.infection <- function(x, ...) {
   )
   if (!is_good_subs) {
     cli::cli_abort(
-      "Found a disallowed parameter substitution in `set_data()`."
+      "Found a disallowed parameter substitution in `set_data()`: you are
+      trying to set an infection parameter that is not supported by the
+      DAEDALUS model."
     )
   }
 
   x[names(to_set)] <- to_set
 
-  validate_infection(x)
+  validate_daedalus_infection(x)
 
   x
 }
 
-#' Convert a <list> to a <infection>
+#' Convert a <list> to a <daedalus_infection>
 #'
-#' @description A convenience internal function to convert unclassed <infection>
-#' back to <infection>.
-#' @param x A list with elements expected in a <infection>.
+#' @description A convenience internal function to convert unclassed
+#' `<daedalus_infection>` back to `<daedalus_infection>`.
+#' @param x A list with elements expected in a `<daedalus_infection>`.
 #' @keywords internal
 #' @noRd
-as_infection <- function(x) {
+as_daedalus_infection <- function(x) {
   checkmate::assert_list(
     x,
     any.missing = FALSE, types = c("character", "numeric")
   )
-  class(x) <- "infection"
-  validate_infection(x)
+  class(x) <- "daedalus_infection"
+  validate_daedalus_infection(x)
 
-  x
-}
-
-#' @name class_infection
-#' @param i The index or name to access.
-#' @export
-`[.infection` <- function(x, i) {
-  x <- unclass(x)
-  x[i]
-}
-
-#' @name class_infection
-#' @export
-`[[.infection` <- function(x, i) {
-  x <- unclass(x)
-  x[[i]]
-}
-
-# NOTE: not including a method for `[<-` as probably not useful
-
-#' Assignment methods for `<infection>`
-#'
-#' @name class_infection
-#' @param value The value to assign to index or name `i`.
-#' @export
-`[[<-.infection` <- function(x, i, value) {
-  x <- unclass(x)
-  x[[i]] <- value
-  # attempt to reclass as infection and return list on error
-  tryCatch(
-    {
-      as_infection(x)
-    },
-    error = function(e) {
-      cli::cli_warn(
-        "Assignment creates an invalid {.cls infection} object
-        and it is demoted to {.cls list}!",
-        call. = FALSE
-      )
-      x
-    }
-  )
-}
-
-#' @name class_infection
-#' @export
-`$<-.infection` <- function(x, i, value) {
-  x[[i]] <- value
   x
 }
 
@@ -452,10 +403,10 @@ as_infection <- function(x) {
 #' @name prepare_parameters
 #'
 #' @keywords internal
-prepare_parameters.infection <- function(x, ...) {
+prepare_parameters.daedalus_infection <- function(x, ...) {
   chkDots(...)
 
-  validate_infection(x)
+  validate_daedalus_infection(x)
   x <- unclass(x)
   x[names(x) != "name"]
 }
