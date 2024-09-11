@@ -36,6 +36,8 @@ data_baseline <- daedalus(
   time_end = 100
 )
 
+# get the model timeseries
+data_baseline <- get_data(data_baseline)
 data_baseline$scenario <- "no_response"
 ```
 
@@ -50,6 +52,8 @@ data_intervention <- daedalus(
   time_end = 100
 )
 
+# get the model timeseries
+data_intervention <- get_data(data_intervention)
 data_intervention$scenario <- "elimination"
 ```
 

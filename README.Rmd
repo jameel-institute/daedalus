@@ -45,8 +45,6 @@ library(daedalus)
 
 # run model for Canada
 data <- daedalus("Canada", "influenza_1918")
-
-head(data)
 ```
 
 Users can select infection parameters from among seven epidemics caused by directly-transmitted viral respiratory pathogens, which are stored in the package as `daedalus::infection_data`, with epidemic identifiers are stored as `daedalus::epidemic_names`.

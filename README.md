@@ -44,15 +44,6 @@ library(daedalus)
 
 # run model for Canada
 data <- daedalus("Canada", "influenza_1918")
-
-head(data)
-#>   time age_group compartment econ_sector   value
-#> 1    1       0-4 susceptible   sector_00 1993130
-#> 2    2       0-4 susceptible   sector_00 1993128
-#> 3    3       0-4 susceptible   sector_00 1993126
-#> 4    4       0-4 susceptible   sector_00 1993123
-#> 5    5       0-4 susceptible   sector_00 1993118
-#> 6    6       0-4 susceptible   sector_00 1993109
 ```
 
 Users can select infection parameters from among seven epidemics caused

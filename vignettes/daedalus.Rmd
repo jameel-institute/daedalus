@@ -97,6 +97,7 @@ The model runs for 300 timesteps by default; timesteps should be interpreted as 
 Plot the data to view the epidemic curve.
 
 ```{r plot_epidemic}
+data <- get_data(data)
 ggplot(
   data[data$compartment == "infect_symp" & data$age_group == "20-65", ]
 ) +
