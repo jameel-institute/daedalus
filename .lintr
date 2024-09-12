@@ -1,7 +1,10 @@
 linters: all_linters(
     indentation_linter = NULL, # unstable as of lintr 3.1.0
     extraction_operator_linter = NULL, # lints auto-generated vignette setup chunks
-    implicit_integer_linter = NULL # turn off due to multiple integerish values used
+    implicit_integer_linter = NULL, # turn off due to multiple integerish values used
+    duplicate_argument_linter = NULL, # due to cli_bullets
+    object_name_linter = NULL, # due to S3 methods
+    object_length_linter = NULL # due to length of method names
     )
 exclusions: list(
     "R/parameters.R" = list(
@@ -12,16 +15,6 @@ exclusions: list(
     ),
     "R/ode.R" = list(
       object_name_linter = Inf # prevent parameter names being linted
-    ),
-    "R/class_country.R" = list(
-      duplicate_argument_linter = Inf, # due to cli_bullets
-      object_name_linter = Inf, # due to S3 method
-      object_length_linter = Inf # due to length of method name
-    ),
-    "R/class_infection.R" = list(
-      duplicate_argument_linter = Inf, # due to cli_bullets
-      object_name_linter = Inf, # due to S3 method
-      object_length_linter = Inf # due to length of method name
     ),
     "tests/testthat.R" = list(
       unused_import_linter = Inf
