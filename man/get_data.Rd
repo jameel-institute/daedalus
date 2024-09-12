@@ -10,7 +10,7 @@
 \usage{
 \method{get_data}{daedalus_country}(x, to_get, ...)
 
-\method{get_data}{daedalus_output}(x, ...)
+\method{get_data}{daedalus_output}(x, to_get = NULL, ...)
 
 \method{get_data}{daedalus_infection}(x, to_get, ...)
 

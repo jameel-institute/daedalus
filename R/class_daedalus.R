@@ -76,18 +76,25 @@ format.daedalus_output <- function(x, ...) {
 
 #' @name get_data
 #' @export
-get_data.daedalus_output <- function(x, ...) {
+get_data.daedalus_output <- function(x, to_get = NULL, ...) {
   validate_daedalus_output(x)
-  to_get <- unlist(rlang::list2(...))
-  checkmate::assert_character(to_get, null.ok = TRUE)
-  is_single_string <- checkmate::test_string(to_get)
+
+  good_to_get <- checkmate::test_string(to_get, null.ok = TRUE) &&
+    checkmate::test_subset(to_get, names(x))
+
+  if (!good_to_get) {
+    cli::cli_abort(
+      c(
+        "`to_get` must be a single string naming an element of `x`.",
+        i = "Allowed values are {.str {names(x)}}"
+      )
+    )
+  }
 
   # Return model timeseries on get_data(x) to reduce friction to use
-  if (rlang::is_empty(to_get)) {
+  if (is.null(to_get)) {
     x[["model_data"]]
-  } else if (is_single_string) {
-    x[[to_get]]
   } else {
-    x[to_get]
+    x[[to_get]]
   }
 }
