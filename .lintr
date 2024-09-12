@@ -19,8 +19,11 @@ exclusions: list(
     "tests/testthat.R" = list(
       unused_import_linter = Inf
     ),
-    "tests" = list(
+    "tests/testthat/setup-options.R" = list(
       undesirable_function_linter = Inf
+    ),
+    "tests/testthat/test-helpers.R" = list(
+      nonportable_path_linter = Inf # due to escaping in regex
     ),
     "vignettes" = list(
       undesirable_function_linter = Inf
