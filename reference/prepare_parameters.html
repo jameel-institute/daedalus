@@ -9,7 +9,7 @@ daedalus classes."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ daedalus classes."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Prepare country parameters for model</h1>
-      <small class="dont-index">Source: <a href="https://github.com/j-idea/daedalus/blob/main/R/class_country.R" class="external-link"><code>R/class_country.R</code></a>, <a href="https://github.com/j-idea/daedalus/blob/main/R/pkg_generics.R" class="external-link"><code>R/pkg_generics.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/j-idea/daedalus/blob/main/R/class_country.R" class="external-link"><code>R/class_country.R</code></a>, <a href="https://github.com/j-idea/daedalus/blob/main/R/class_infection.R" class="external-link"><code>R/class_infection.R</code></a>, <a href="https://github.com/j-idea/daedalus/blob/main/R/pkg_generics.R" class="external-link"><code>R/pkg_generics.R</code></a></small>
       <div class="d-none name"><code>prepare_parameters.Rd</code></div>
     </div>
 
@@ -49,6 +49,9 @@ daedalus classes."></head><body>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'daedalus_country'</span></span>
 <span><span class="fu">prepare_parameters</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for class 'daedalus_infection'</span></span>
+<span><span class="fu">prepare_parameters</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">prepare_parameters</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -68,8 +71,8 @@ daedalus classes."></head><body>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A list of parameters suitable for the DAEDALUS model.
-<code>prepare_parameters.daedalus_country()</code> is the only method, and returns the
-country parameters.</p>
+<code>prepare_parameters.daedalus_country()</code> returns the country parameters, while
+<code>prepare_parameters.daedalus_infection()</code> returns infection parameters.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -91,6 +94,14 @@ proportion to the demography distribution, and scaled by the largest singular
 value (similar to eigenvalue for non-square matrices).</p></li>
 <li><p><code>contacts_between_sectors</code>: dummy matrix of zeros for future use.</p></li>
 </ul></div>
+
+<div class="section">
+<h3 id="infection-parameters">Infection parameters<a class="anchor" aria-label="anchor" href="#infection-parameters"></a></h3>
+
+
+<p>Infection parameters are returned from <code>&lt;daedalusinfection&gt;</code> objects without
+modification and only the name removed.</p>
+</div>
 
     </div>
 

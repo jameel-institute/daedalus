@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,16 @@
       <small>Source: <a href="https://github.com/j-idea/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.6" id="daedalus-006">daedalus 0.0.6<a class="anchor" aria-label="anchor" href="#daedalus-006"></a></h2>
+<p>This patch adds the <code>&lt;daedalus_infection&gt;</code> class to represent and hold infection parameter data for <code><a href="../reference/daedalus.html">daedalus()</a></code>. Access, assignment, and print methods are also added, in addition to internal helpers such as <code>as_country()</code>. The class is tested with newly added tests.</p>
+<p>Other changes:</p>
+<ol style="list-style-type: decimal"><li><p>The <code><a href="../reference/get_data.html">get_data()</a></code>, <code><a href="../reference/set_data.html">set_data()</a></code> and <code><a href="../reference/prepare_parameters.html">prepare_parameters()</a></code> generics now have methods for <code>&lt;daedalus_infection&gt;</code>s.</p></li>
+<li><p>Removes <code>make_infection_parameters()</code> in favour of <code>prepare_parameters.infection()</code>.</p></li>
+<li><p><code><a href="../reference/daedalus.html">daedalus()</a></code> argument <code>epidemic</code> accepting epidemic name string is changed to argument <code>infection</code> accepting <code>&lt;daedalus_infection&gt;</code> objects or epidemic names.</p></li>
+<li><p>Vignettes have been updated to use <code>&lt;daedalus_infection&gt;</code> objects.</p></li>
+<li><p>Website reference page updated to have sections.</p></li>
+</ol></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.5" id="daedalus-005">daedalus 0.0.5<a class="anchor" aria-label="anchor" href="#daedalus-005"></a></h2>
 <p>This patch adds the <code>&lt;daedalus_country&gt;</code> class to represent country and territory data for <code><a href="../reference/daedalus.html">daedalus()</a></code>. Access, assignment, and print methods are also added, in addition to internal helpers such as <code>as_daedalus_country()</code>. The class is tested with newly added tests.</p>

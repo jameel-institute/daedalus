@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,12 +46,11 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus</span><span class="op">(</span></span>
 <span>  <span class="va">country</span>,</span>
-<span>  <span class="va">epidemic</span>,</span>
+<span>  <span class="va">infection</span>,</span>
 <span>  response_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"elimination"</span>, <span class="st">"economic_closures"</span>, <span class="st">"school_closures"</span><span class="op">)</span>,</span>
 <span>  implementation_level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"light"</span>, <span class="st">"heavy"</span><span class="op">)</span>,</span>
 <span>  response_time <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  response_threshold <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  initial_state_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  time_end <span class="op">=</span> <span class="fl">300</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -73,19 +72,14 @@ To override package defaults for country characteristics, pass a
 <code>&lt;daedalus_country&gt;</code> object instead. See <code><a href="class_country.html">daedalus_country()</a></code> for more.</p></dd>
 
 
-<dt id="arg-epidemic">epidemic<a class="anchor" aria-label="anchor" href="#arg-epidemic"></a></dt>
-<dd><p>A string for the infection parameter set to use.
-Infection parameter sets may be known by the name of the outbreak or the
-causative pathogen;
-see <strong>Details</strong> for more on which epidemics are supported.
-See <code>epidemic_names</code> for allowed names, as the name must match exactly.
-Defaults to simulating an epidemic similar to Covid-19 outbreaks caused by
-the wild type of the SARS-CoV-2 virus.</p>
-<p>Selecting an epidemic automatically pulls in infection parameters
-associated with the epidemic; these are stored as packaged data in
-<code>infection_data</code>.
-Default infection parameters for epidemics can be over-ridden by passing them
-as a named list to <code>infection_params_manual</code>.</p></dd>
+<dt id="arg-infection">infection<a class="anchor" aria-label="anchor" href="#arg-infection"></a></dt>
+<dd><p>An infection parameter object of the class <code>&lt;infection&gt;</code>,
+<strong>or</strong> an epidemic name for which data are provided in the package; see
+<a href="epidemic_data.html">epidemic_names</a> for parameters from a historical epidemic
+or epidemic wave.
+Passing the name as a string automatically accesses the default parameters
+of an infection. Create an pass a <code>&lt;daedalus_infection&gt;</code> to tweak infection
+parameters.</p></dd>
 
 
 <dt id="arg-response-strategy">response_strategy<a class="anchor" aria-label="anchor" href="#arg-response-strategy"></a></dt>
@@ -118,12 +112,6 @@ overrides the default response- and country-specific threshold values held in
 <a href="country_data.html">country_data</a>.</p></dd>
 
 
-<dt id="arg-infect-params-manual">infect_params_manual<a class="anchor" aria-label="anchor" href="#arg-infect-params-manual"></a></dt>
-<dd><p>An optional <strong>named</strong> list of infection
-parameters that can be passed to over-ride the default values for the chosen
-<code>epidemic</code>. See <strong>Details</strong> for allowed values.</p></dd>
-
-
 <dt id="arg-initial-state-manual">initial_state_manual<a class="anchor" aria-label="anchor" href="#arg-initial-state-manual"></a></dt>
 <dd><p>An optional <strong>named</strong> list with the names
 <code>p_infectious</code> and <code>p_asymptomatic</code> for the proportion of infectious and
@@ -145,23 +133,6 @@ returned for each day. Defaults to 300 days.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
 
 <div class="section">
-<h3 id="included-epidemics">Included epidemics<a class="anchor" aria-label="anchor" href="#included-epidemics"></a></h3>
-
-
-<p>Epidemics for which data are available are (pathogen in parentheses):
-SARS 2004 (SARS-CoV-1), influenza 2009 (influenza A H1N1),
-influenza 1957 (influenza A H2N2), influenza 1918 (influenza A H1N1),
-Covid-19 wild type (SARS-Cov-2 wild type),
-Covid-19 Omicron (SARS-CoV-2 omicron), Covid-19 Delta (SARS-CoV-2 delta).</p>
-<p>DAEDALUS allows users to substitute default model parameters with custom
-values by passing them in the appropriate argument (see examples).
-These arguments are passed on to the internal functions
-<code>make_country_parameters()</code> and <code><a href="make_model_parameters.html">make_infection_parameters()</a></code> as
-appropriate. Any arguments that are passed and are not suitable for those
-functions will throw an error.</p>
-</div>
-
-<div class="section">
 <h3 id="initial-state">Initial state<a class="anchor" aria-label="anchor" href="#initial-state"></a></h3>
 
 
@@ -175,44 +146,13 @@ the proportion of initially infectious individuals who are considered to be
 asymptomatic. Defaults to 0.0.</p></li>
 </ul></div>
 
-<div class="section">
-<h3 id="infection-parameters">Infection parameters<a class="anchor" aria-label="anchor" href="#infection-parameters"></a></h3>
-
-
-<p><code>infect_params_manual</code> may be a named list of one or more of the following:</p><ul><li><p><code>r0</code>: A single numeric value for the basic reproduction value of the
-infection \(R_0\).</p></li>
-<li><p><code>sigma</code>: A single numeric value &gt; 0.0 for the rate of transition from the
-exposed compartment to one of two infectious compartments.</p></li>
-<li><p><code>p_sigma</code>: A single numeric value in the range \([0.0, 1.0]\) for the
-proportion of infectious individuals who are also symptomatic. Asymptomatic
-individuals can have a different contribution to the force of infection from
-symptomatic individuals.</p></li>
-<li><p><code>epsilon</code>: A single numeric value for the relative contribution of
-asymptomatic infectious individuals to the force of infection (compared to
-symptomatic individuals).</p></li>
-<li><p><code>gamma_Is</code>: A single numeric value for the recovery rate of infectious
-individuals who are not hospitalised.</p></li>
-<li><p><code>gamma_Ia</code>: A single numeric value for the recovery rate from asymptomatic
-infection.</p></li>
-<li><p><code>gamma_H</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4) for the
-age-specific recovery rate for individuals who are hospitalised.</p></li>
-<li><p><code>eta</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4) for the age-specific
-hospitalisation rate for individuals who are infectious and symptomatic.</p></li>
-<li><p><code>omega</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4) for the age-specific
-mortality rate for individuals who are hospitalised.</p></li>
-<li><p><code>rho</code>: A single numeric value for the rate at which infection-derived
-immunity wanes, returning individuals in the 'recovered' compartment to the
-'susceptible' compartment.</p></li>
-</ul></div>
-
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># country specified by a country name using default characteristics</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># country and infection specified by strings using default characteristics</span></span></span>
 <span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"Canada"</span>,</span></span>
-<span class="r-in"><span>  epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span></span></span>
+<span class="r-in"><span>  <span class="st">"Canada"</span>, <span class="st">"influenza_1918"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># country passed as &lt;daedalus_country&gt; with some characteristics modified</span></span></span>
@@ -222,23 +162,15 @@ immunity wanes, returning individuals in the 'recovered' compartment to the
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span><span class="va">country_x</span>, <span class="st">"influenza_1918"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># with default infection parameters associated with an epidemic</span></span></span>
-<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>,</span></span>
-<span class="r-in"><span>  epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># with some infection parameters over-ridden by the user</span></span></span>
 <span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>,</span></span>
-<span class="r-in"><span>  epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span></span>
-<span class="r-in"><span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>r0 <span class="op">=</span> <span class="fl">1.3</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="st">"United Kingdom"</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="class_infection.html">daedalus_infection</a></span><span class="op">(</span><span class="st">"influenza_1918"</span>, r0 <span class="op">=</span> <span class="fl">1.3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># with default initial conditions over-ridden by the user</span></span></span>
 <span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"United Kingdom"</span>,</span></span>
-<span class="r-in"><span>  epidemic <span class="op">=</span> <span class="st">"influenza_1918"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"United Kingdom"</span>, <span class="st">"influenza_1918"</span>,</span></span>
 <span class="r-in"><span>  initial_state_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>p_infectious <span class="op">=</span> <span class="fl">1e-3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 </code></pre></div>

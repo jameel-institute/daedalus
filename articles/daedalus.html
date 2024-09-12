@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,6 +72,9 @@ adapted from <span class="citation">Haw et al. (<a href="#ref-haw2022">2022</a>)
 <code class="sourceCode R"><span><span class="co"># load the package</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/j-idea/daedalus" class="external-link">daedalus</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="representing-countries-and-territories">Representing countries and territories<a class="anchor" aria-label="anchor" href="#representing-countries-and-territories"></a>
+</h2>
 <p>The model can be run for any country or territory included in package
 data simply by passing its name to <code><a href="../reference/daedalus.html">daedalus()</a></code>. The
 <code>country_names</code> vector holds a list of country and territory
@@ -124,52 +127,74 @@ groups in <code>country_data</code>. The package also provides data from
 <span class="citation">Jarvis et al. (<a href="#ref-jarvis2024">2024</a>)</span> on workplace contacts in
 economic sectors. Both datasets are accessed by internal functions to
 reduce the need for user input.</p>
+</div>
+<div class="section level2">
+<h2 id="representing-infection-parameters">Representing infection parameters<a class="anchor" aria-label="anchor" href="#representing-infection-parameters"></a>
+</h2>
+<p><em>daedalus</em> allows users to quickly model one of seven
+historical epidemics by accessing infection parameters associated with
+those epidemics, which are stored as package data. Epidemics with
+associated infection parameters are given in the package as
+<code><a href="../reference/epidemic_data.html">daedalus::epidemic_names</a></code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># simulate a Covid-19 wild type outbreak, passing the &lt;daedalus_country&gt; object</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="va">country_canada</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># alternatively, pass the country name directly to use default country values</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span></code></pre></div>
-<p>Users can quickly model one of seven epidemics by passing a name from
-<code><a href="../reference/epidemic_data.html">daedalus::epidemic_names</a></code> to the <code>epidemic</code>
-argument, which is the second argument. The package data object
-<code><a href="../reference/epidemic_data.html">daedalus::epidemic_names</a></code> gives the allowed epidemic
-identifiers.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">daedalus</span><span class="fu">::</span><span class="va"><a href="../reference/epidemic_data.html">epidemic_names</a></span></span>
 <span><span class="co">#&gt; [1] "sars_cov_1"           "influenza_2009"       "influenza_1957"      </span></span>
 <span><span class="co">#&gt; [4] "influenza_1918"       "sars_cov_2_pre_alpha" "sars_cov_2_omicron"  </span></span>
 <span><span class="co">#&gt; [7] "sars_cov_2_delta"</span></span></code></pre></div>
-<p>The model runs for 300 timesteps by default; timesteps should be
-interpreted as days since model parameters are in terms of days. The
-<code><a href="../reference/daedalus.html">daedalus()</a></code> function documentation has more information on
-the infection parameter defaults in the <strong>Details</strong>
-section.</p>
-<p>Users can also override epidemic-specific infection parameter values
-as well as change the initial conditions by passing arguments to
-<code><a href="../reference/daedalus.html">daedalus()</a></code> as lists: <code>infect_params_manual</code> and
-<code>initial_state_manual</code>, which override the infection
-parameters and the initial state defaults respectively. The function
-documentation for <code><a href="../reference/daedalus.html">daedalus::daedalus()</a></code> details which
-parameters are accepted.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>Users can pass the epidemic names directly to <code><a href="../reference/daedalus.html">daedalus()</a></code>
+to use the default infection parameters.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># not run</span></span>
-<span><span class="co"># e.g. change the transmission rate by changing r0</span></span>
-<span><span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span></span>
-<span>  <span class="st">"United Kingdom"</span>, </span>
-<span>  <span class="st">"influenza_1918"</span>, </span>
-<span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>r0 <span class="op">=</span> <span class="fl">1.3</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"influenza_1918"</span><span class="op">)</span></span></code></pre></div>
+<p>To modify infection parameters associated with an epidemic, users
+should create a <code>&lt;daedalus_infection&gt;</code> class</p>
+<p>Users can also override epidemic-specific infection parameter values
+when creating the <code>&lt;infection&gt;</code> class object. The
+<code>infection()</code> class helper function has more details on which
+parameters are included.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># SARS-1 (2004) but with an R0 of 2.3</span></span>
+<span><span class="fu"><a href="../reference/class_infection.html">daedalus_infection</a></span><span class="op">(</span><span class="st">"sars_cov_1"</span>, r0 <span class="op">=</span> <span class="fl">2.3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">&lt;daedalus_infection&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Epidemic name: <span style="font-weight: bold;">sars_cov_1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> R0: <span style="color: #BB0000;">2.3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> sigma: <span style="color: #0000BB;">0.217</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> p_sigma: <span style="color: #0000BB;">0.867</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> epsilon: <span style="color: #0000BB;">0.58</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> rho: <span style="color: #0000BB;">0.003</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> eta: <span style="color: #0000BB;">0.018</span>, <span style="color: #0000BB;">0.082</span>, <span style="color: #0000BB;">0.018</span>, and <span style="color: #0000BB;">0.246</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> omega: <span style="color: #0000BB;">0.012</span>, <span style="color: #0000BB;">0.012</span>, <span style="color: #0000BB;">0.012</span>, and <span style="color: #0000BB;">0.012</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> gamma_Ia: <span style="color: #0000BB;">0.476</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> gamma_Is: <span style="color: #0000BB;">0.25</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> gamma_H: <span style="color: #0000BB;">0.034</span>, <span style="color: #0000BB;">0.034</span>, <span style="color: #0000BB;">0.034</span>, and <span style="color: #0000BB;">0.034</span></span></span>
 <span></span>
-<span><span class="co"># e.g. change the hospitalisation risk profile to model</span></span>
-<span><span class="co"># 1918 Influenza epidemic but with risk of severe disease</span></span>
-<span><span class="co"># increasing with age</span></span>
-<span><span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span></span>
-<span>  <span class="st">"China"</span>, <span class="st">"influenza_1918"</span>,</span>
-<span>  infect_params_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.0</span>, <span class="fl">3.0</span>, <span class="fl">5.0</span>, <span class="fl">15.0</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Plot the data to view the epidemic curve.</p>
+<span><span class="co"># Influenza 1918 but with mortality rising with age</span></span>
+<span><span class="fu"><a href="../reference/class_infection.html">daedalus_infection</a></span><span class="op">(</span><span class="st">"influenza_1918"</span>, omega <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">0.02</span>, <span class="fl">0.03</span>, <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">&lt;daedalus_infection&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Epidemic name: <span style="font-weight: bold;">influenza_1918</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> R0: <span style="color: #BB0000;">2.5</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> sigma: <span style="color: #0000BB;">0.909</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> p_sigma: <span style="color: #0000BB;">0.669</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> epsilon: <span style="color: #0000BB;">0.58</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> rho: <span style="color: #0000BB;">0.003</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> eta: <span style="color: #0000BB;">0.073</span>, <span style="color: #0000BB;">0.064</span>, <span style="color: #0000BB;">0.02</span>, and <span style="color: #0000BB;">0.152</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> omega: <span style="color: #0000BB;">0.01</span>, <span style="color: #0000BB;">0.02</span>, <span style="color: #0000BB;">0.03</span>, and <span style="color: #0000BB;">0.1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> gamma_Ia: <span style="color: #0000BB;">0.4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> gamma_Is: <span style="color: #0000BB;">0.4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> gamma_H: <span style="color: #0000BB;">0.175</span>, <span style="color: #0000BB;">0.175</span>, <span style="color: #0000BB;">0.175</span>, and <span style="color: #0000BB;">0.175</span></span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="running-the-model">Running the model<a class="anchor" aria-label="anchor" href="#running-the-model"></a>
+</h2>
+<p>Run the model by passing the <code>country</code> and
+<code>infection</code> arguments to <code><a href="../reference/daedalus.html">daedalus()</a></code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># simulate a Covid-19 wild type outbreak in Canada; using default parameters</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span></code></pre></div>
+<p>The model runs for 300 timesteps by default; timesteps should be
+interpreted as days since model parameters are in terms of days.</p>
+<p>Plot the data to view the epidemic curve.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">compartment</span> <span class="op">==</span> <span class="st">"infect_symp"</span> <span class="op">&amp;</span> <span class="va">data</span><span class="op">$</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"20-65"</span>, <span class="op">]</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
@@ -181,6 +206,7 @@ parameters are accepted.</p>
 <span>    facets <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="daedalus_files/figure-html/plot_epidemic-1.png" width="700"></p>
+</div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
@@ -208,7 +234,8 @@ Suppression in Low- and Middle-Income Countries.”</span>
 </div>
 </div>
 </div>
-  </main>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
