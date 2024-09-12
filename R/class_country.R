@@ -374,24 +374,6 @@ set_data.daedalus_country <- function(x, ...) {
   x
 }
 
-#' Convert a <list> to a <country>
-#'
-#' @description A convenience internal function to convert unclassed <country>
-#' back to <country>.
-#' @param x A list with elements expected in a <country>.
-#' @keywords internal
-#' @noRd
-as_daedalus_country <- function(x) {
-  checkmate::assert_list(
-    x,
-    any.missing = FALSE, types = c("character", "numeric")
-  )
-  class(x) <- "daedalus_country"
-  validate_daedalus_country(x)
-
-  x
-}
-
 #' Prepare country parameters for model
 #'
 #' @name prepare_parameters
