@@ -61,14 +61,17 @@ test_that("class <daedalus_infection>: getting parameters", {
   expect_no_condition({
     x <- get_data(infection_x, "r0") # nolint
     y <- get_data(infection_x, "omega") # nolint
-    z <- get_data(infection_x, "r0", "sigma") # nolint
   })
   checkmate::expect_number(x, lower = 0, finite = TRUE)
   checkmate::expect_numeric(
     y,
     len = N_AGE_GROUPS, lower = 0, finite = TRUE
   )
-  checkmate::expect_list(z, "numeric")
+
+  expect_error(
+    get_data(infection_x, c("r0", "omega")),
+    regexp = "must be a string"
+  )
 })
 
 test_that("class <daedalus_infection>: setting parameters", {

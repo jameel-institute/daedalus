@@ -7,25 +7,24 @@
 \alias{get_data.daedalus_infection}
 \title{Get parameters from DAEDALUS classes}
 \usage{
-\method{get_data}{daedalus_country}(x, ...)
+\method{get_data}{daedalus_country}(x, to_get, ...)
 
-\method{get_data}{daedalus_infection}(x, ...)
+\method{get_data}{daedalus_infection}(x, to_get, ...)
 
-get_data(x, ...)
+get_data(x, to_get, ...)
 }
 \arguments{
 \item{x}{An S3 class object from the \pkg{daedalus} package of the
 \verb{<daedalus_country>} or \verb{<infection>} class.}
 
-\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Strings giving the names of
-elements to be accessed.}
+\item{to_get}{A string giving the name of the element of \code{x} to return.}
+
+\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Other arguments to class
+methods. Class methods do not currently support any other arguments.}
 }
 \value{
-If only a single parameter name is passed in \code{...}, returns an object
-of the appropriate class (e.g. numeric vector for \code{"demography"}).
-
-If multiple parameters are accessed at once, returns a named list of the
-requested parameters.
+Returns a member of \code{x}, with the class preserved
+(e.g. numeric vector for a country \code{"demography"}).
 }
 \description{
 Generic and methods for S3 classes for safely getting class
@@ -36,7 +35,7 @@ parameters.
 country_A <- daedalus_country("United Kingdom")
 get_data(country_A, "demography")
 
-get_data(country_A, "demography", "contact_matrix")
+get_data(country_A, "contact_matrix")
 
 disease_x <- daedalus_infection("sars_cov_1", r0 = 1.9)
 get_data(disease_x, "r0")
