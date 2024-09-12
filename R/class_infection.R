@@ -380,24 +380,6 @@ set_data.daedalus_infection <- function(x, ...) {
   x
 }
 
-#' Convert a <list> to a <daedalus_infection>
-#'
-#' @description A convenience internal function to convert unclassed
-#' `<daedalus_infection>` back to `<daedalus_infection>`.
-#' @param x A list with elements expected in a `<daedalus_infection>`.
-#' @keywords internal
-#' @noRd
-as_daedalus_infection <- function(x) {
-  checkmate::assert_list(
-    x,
-    any.missing = FALSE, types = c("character", "numeric")
-  )
-  class(x) <- "daedalus_infection"
-  validate_daedalus_infection(x)
-
-  x
-}
-
 #' Prepare infection parameters for model
 #'
 #' @name prepare_parameters
