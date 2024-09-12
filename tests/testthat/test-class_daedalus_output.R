@@ -11,4 +11,15 @@ test_that("class <daedalus_output>: basic expectations", {
   expect_snapshot(
     output
   )
+
+  checkmate::expect_data_frame(
+    get_data(output), ncols = 5L
+  )
+  checkmate::expect_list(
+    get_data(output, "response_data")
+  )
+  expect_error(
+    get_data(output, c("model_data", "response_data")),
+    regexp = "must be a single string"
+  )
 })
