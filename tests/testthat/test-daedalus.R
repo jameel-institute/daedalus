@@ -76,7 +76,10 @@ test_that("daedalus: Passing model parameters", {
   expect_no_condition(
     daedalus(
       country_canada,
-      daedalus_infection("influenza_1918", r0 = 1.3, eta = c(0.1, 0.2, 0.3, 0.4))
+      daedalus_infection(
+        "influenza_1918",
+        r0 = 1.3, eta = c(0.1, 0.2, 0.3, 0.4)
+      )
     )
   )
 })

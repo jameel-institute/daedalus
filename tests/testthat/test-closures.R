@@ -102,7 +102,7 @@ test_that("Closures: basic statistical correctness: reduces epidemic size", {
     daedalus(
       country_canada, daedalus_infection("sars_cov_1", rho = 0.0),
       response_strategy = x,
-      implementation_level = "light", # test on light as this differs b/w strats
+      implementation_level = "light" # test on light as this differs b/w strats
     )
   })
 
@@ -137,8 +137,8 @@ test_that("Closures: earlier closures reduce epidemic size", {
     }, numeric(1)
   )
 
-  expect_true(
-    epidemic_sizes[2] < epidemic_sizes[1]
+  expect_lt(
+    epidemic_sizes[2], epidemic_sizes[1]
   )
 })
 
@@ -160,7 +160,7 @@ test_that("Closures: lower threshold reduces epidemic size", {
     }, numeric(1)
   )
 
-  expect_true(
-    epidemic_sizes[2] < epidemic_sizes[1]
+  expect_lt(
+    epidemic_sizes[2], epidemic_sizes[1]
   )
 })

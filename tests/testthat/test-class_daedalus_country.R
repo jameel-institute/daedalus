@@ -122,7 +122,7 @@ test_that("class <daedalus_country>`: errors", {
 
   # invalid `parameter` type
   expect_error(
-    daedalus_country("Canada", parameters = c("dummy values")),
+    daedalus_country("Canada", parameters = "dummy values"),
     regexp = "Must be of type 'list'"
   )
 
@@ -171,7 +171,8 @@ test_that("class <daedalus_country>`: errors", {
   # invalid parameter dims or values: contacts workplace
   expect_error(
     daedalus_country(
-      "Canada", list(contacts_workplace = rep(1, N_ECON_SECTORS - 1)) # wrong dims
+      "Canada",
+      list(contacts_workplace = rep(1, N_ECON_SECTORS - 1)) # wrong dims
     ),
     regexp = "Expected.*45-element numeric vector"
   )
