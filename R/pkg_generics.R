@@ -7,25 +7,24 @@
 #'
 #' @param x An S3 class object from the \pkg{daedalus} package of the
 #' `<daedalus_country>` or `<infection>` class.
-#' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Strings giving the names of
-#' elements to be accessed.
+#' @param to_get A string giving the name of the element of `x` to return.
+#' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Other arguments to class
+#' methods. Class methods do not currently support any other arguments.
 #'
-#' @return If only a single parameter name is passed in `...`, returns an object
-#' of the appropriate class (e.g. numeric vector for `"demography"`).
+#' @return Returns a member of `x`, with the class preserved
+#' (e.g. numeric vector for a country `"demography"`).
 #'
-#' If multiple parameters are accessed at once, returns a named list of the
-#' requested parameters.
 #' @export
 #' @examples
 #' # simple example of getting data
 #' country_A <- daedalus_country("United Kingdom")
 #' get_data(country_A, "demography")
 #'
-#' get_data(country_A, "demography", "contact_matrix")
+#' get_data(country_A, "contact_matrix")
 #'
 #' disease_x <- daedalus_infection("sars_cov_1", r0 = 1.9)
 #' get_data(disease_x, "r0")
-get_data <- function(x, ...) {
+get_data <- function(x, to_get, ...) {
   UseMethod("get_data")
 }
 

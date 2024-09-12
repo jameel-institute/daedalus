@@ -342,18 +342,23 @@ format.daedalus_infection <- function(x, ...) {
 
 #' @name get_data
 #' @export
-get_data.daedalus_infection <- function(x, ...) {
+get_data.daedalus_infection <- function(x, to_get, ...) {
+  chkDots(...)
   validate_daedalus_infection(x)
 
-  to_get <- unlist(rlang::list2(...))
-  checkmate::assert_character(to_get)
-  is_single_string <- checkmate::test_string(to_get)
+  good_to_get <- checkmate::test_string(to_get) &&
+    checkmate::test_subset(to_get, names(x))
 
-  if (is_single_string) {
-    x[[to_get]]
-  } else {
-    x[to_get]
+  if (!good_to_get) {
+    cli::cli_abort(
+      c(
+        "`to_get` must be a string available in the {.cls class(x)}",
+        i = "Allowed values are {.str {names(x)}}"
+      )
+    )
   }
+
+  x[[to_get]]
 }
 
 #' @name set_data

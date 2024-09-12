@@ -61,14 +61,17 @@ test_that("class <daedalus_country>`: getting parameters", {
   expect_no_condition({
     x <- get_data(country_x, "demography") # nolint
     y <- get_data(country_x, "contact_matrix") # nolint
-    z <- get_data(country_x, "demography", "contact_matrix") # nolint
   })
   checkmate::expect_numeric(x, len = N_AGE_GROUPS)
   checkmate::expect_matrix(
     y, "numeric",
     nrows = N_AGE_GROUPS, ncols = N_AGE_GROUPS
   )
-  checkmate::expect_list(z, "numeric")
+
+  expect_error(
+    get_data(country_x, c("demography", "contact_matrix")),
+    regexp = "must be a string"
+  )
 })
 
 test_that("class <daedalus_country>`: setting parameters", {
