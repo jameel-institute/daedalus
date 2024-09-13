@@ -222,11 +222,47 @@ assert_true(
   )
 )
 
+#### process economic sector gross value added data ####
+
+# NOTE: all GVA values are in millions of dollars per day
+# reading row 1 as colnames not working
+gva_data <- readxl::read_xlsx(
+  "inst/extdata/sector_gva_data.xlsx",
+  sheet = "Daily"
+)
+# set colnames manually
+colnames(gva_data) <- gva_data[1, ]
+
+# remove first row
+gva_data <- gva_data[-1L, ]
+
+# convert GVA gva_data to numerics
+setDT(gva_data)
+gva_data[, setdiff(colnames(gva_data), "Country") := lapply(.SD, as.numeric),
+  .SDcols = setdiff(colnames(gva_data), "Country")
+]
+setnames(gva_data, "Country", "country")
+
+# some sanity checks
+expected_n_cols <- 46L
+stopifnot(
+  "GVA data should have 46 columns (45 econ sectors + country name)" =
+    ncol(gva_data) == expected_n_cols,
+  "gva_data columns should be numeric" =
+    all(vapply(gva_data[, -1L], is.numeric, logical(1)))
+)
+
+# melt data and split into a list of vector
+gva_data <- melt(gva_data, id.vars = "country")
+
+daedalus_gva_data <- split(gva_data, by = "country")
+daedalus_gva_data <- lapply(daedalus_gva_data, `[[`, "value")
+
 ### combine and save country-wise data ####
 # NOTE: names are provisional
 country_names <- names(daedalus_demography)
 names(country_names) <- country_names
-assert_set_equal(
+check_set_equal(
   names(daedalus_demography), names(daedalus_contacts),
   ordered = TRUE
 )
@@ -234,16 +270,21 @@ assert_set_equal(
   names(daedalus_demography), names(daedalus_workers),
   ordered = TRUE
 )
-country_data_tmp <- lapply(country_names, function(n) {
+
+# get names of countries with GVA data
+countries_with_gva <- names(daedalus_gva_data)
+names(countries_with_gva) <- countries_with_gva
+country_data_tmp <- lapply(countries_with_gva, function(n) {
   l <- list(
     demography = daedalus_demography[[n]],
     contact_matrix = daedalus_contacts[[n]],
-    workers = daedalus_workers[[n]]
+    workers = daedalus_workers[[n]],
+    gva = daedalus_gva_data[[n]]
   )
   l
 })
 assert_set_equal(
-  names(country_data_tmp), country_names,
+  names(country_data_tmp), countries_with_gva,
   ordered = TRUE
 )
 
