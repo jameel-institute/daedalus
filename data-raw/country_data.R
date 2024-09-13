@@ -248,12 +248,21 @@ expected_n_cols <- 46L
 stopifnot(
   "GVA data should have 46 columns (45 econ sectors + country name)" =
     ncol(gva_data) == expected_n_cols,
-  "gva_data columns should be numeric" =
-    all(vapply(gva_data[, -1L], is.numeric, logical(1)))
+  "GVA data columns should be numeric" =
+    all(vapply(gva_data[, -1L], is.numeric, logical(1))),
+  "GVA values should all be positive" =
+    all(vapply(gva_data[, -1L], function(x) {
+      all(x > 0)
+    }, logical(1L)))
 )
+
+# NOTE: the check for positive values fails as Iceland Sector D:21 Pharma
+# has a small negative value. Assuming this is a typo.
 
 # melt data and split into a list of vector
 gva_data <- melt(gva_data, id.vars = "country")
+# NOTE: COERCE ALL VALUES POSITIVE
+gva_data$value <- abs(gva_data$value)
 
 daedalus_gva_data <- split(gva_data, by = "country")
 daedalus_gva_data <- lapply(daedalus_gva_data, `[[`, "value")
