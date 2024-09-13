@@ -204,11 +204,11 @@ validate_daedalus_country <- function(x) {
   expected_invariants <- c(
     "name", "demography", "contact_matrix",
     "contacts_workplace", "contacts_consumer_worker",
-    "contacts_between_sectors", "workers"
+    "contacts_between_sectors", "workers", "gva"
   )
   has_invariants <- checkmate::test_names(
     attributes(x)$names,
-    must.include = expected_invariants
+    permutation.of = expected_invariants
   )
   if (!has_invariants) {
     cli::cli_abort(
@@ -237,6 +237,12 @@ validate_daedalus_country <- function(x) {
         lower = 0,
         any.missing = FALSE, len = N_ECON_SECTORS,
         upper = 1e10 # large upper limit to prevent infinite values
+      ),
+    "Country `gva` must be a numeric vector of 45 positive values" =
+      checkmate::test_numeric(
+        x$gva,
+        lower = 0,
+        any.missing = FALSE, len = N_ECON_SECTORS, finite = TRUE
       ),
     "Country `contact_matrix` must be a 4x4 numeric matrix of positive values" =
       checkmate::test_matrix(
@@ -339,7 +345,7 @@ get_data.daedalus_country <- function(x, to_get, ...) {
   if (!good_to_get) {
     cli::cli_abort(
       c(
-        "`to_get` must be a string available in the {.cls class(x)}",
+        "`to_get` must be a string naming an element of {.cls {class(x)}}",
         i = "Allowed values are {.str {names(x)}}"
       )
     )
