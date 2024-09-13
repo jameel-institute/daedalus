@@ -20,6 +20,7 @@
 <url><loc>/reference/economic_contacts.html</loc></url>
 <url><loc>/reference/epi_constants.html</loc></url>
 <url><loc>/reference/epidemic_data.html</loc></url>
+<url><loc>/reference/get_closure_info.html</loc></url>
 <url><loc>/reference/get_data.html</loc></url>
 <url><loc>/reference/get_hospitalisations.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
@@ -27,6 +28,7 @@
 <url><loc>/reference/make_response_threshold_event.html</loc></url>
 <url><loc>/reference/make_rt_end_event.html</loc></url>
 <url><loc>/reference/model_constants.html</loc></url>
+<url><loc>/reference/prepare_mutable_parameters.html</loc></url>
 <url><loc>/reference/prepare_output.html</loc></url>
 <url><loc>/reference/prepare_parameters.html</loc></url>
 <url><loc>/reference/reff_calculation.html</loc></url>
