@@ -17,5 +17,6 @@ give a default duration of 0.0.
 }
 }
 \description{
-Prepare mutable parameters for the DAEDALUS model
+Prepares closure start and end times for model output.
 }
+\keyword{internal}

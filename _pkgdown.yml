@@ -29,3 +29,7 @@ reference:
     - country_names
     - -get_data
     - -set_data
+  - title: Internal functions
+    desc: Functions used internally
+    contents:
+    - prepare_mutable_parameters

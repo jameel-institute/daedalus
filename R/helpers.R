@@ -80,6 +80,8 @@ make_initial_state <- function(country, initial_state_manual) {
 }
 
 #' Prepare mutable parameters for the DAEDALUS model
+#' 
+#' @description Prepares closure start and end times for model output.
 #'
 #' @return
 #' An environment with three mutable parameters:
@@ -90,6 +92,7 @@ make_initial_state <- function(country, initial_state_manual) {
 #' - `closures_time_start` and `closures_time_end`: The times at which closures
 #' start and end. Defaults to the end time of the simulation so as to
 #' give a default duration of 0.0.
+#' @keywords internal
 prepare_mutable_parameters <- function() {
   env <- rlang::env(
     switch = 0.0,
