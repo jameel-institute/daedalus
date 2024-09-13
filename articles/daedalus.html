@@ -195,7 +195,8 @@ parameters are included.</p>
 interpreted as days since model parameters are in terms of days.</p>
 <p>Plot the data to view the epidemic curve.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data.html">get_data</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">compartment</span> <span class="op">==</span> <span class="st">"infect_symp"</span> <span class="op">&amp;</span> <span class="va">data</span><span class="op">$</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"20-65"</span>, <span class="op">]</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>

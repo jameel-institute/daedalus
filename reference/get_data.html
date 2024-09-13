@@ -36,7 +36,7 @@ parameters."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Get parameters from DAEDALUS classes</h1>
-      <small class="dont-index">Source: <a href="https://github.com/j-idea/daedalus/blob/main/R/class_country.R" class="external-link"><code>R/class_country.R</code></a>, <a href="https://github.com/j-idea/daedalus/blob/main/R/class_infection.R" class="external-link"><code>R/class_infection.R</code></a>, <a href="https://github.com/j-idea/daedalus/blob/main/R/pkg_generics.R" class="external-link"><code>R/pkg_generics.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/j-idea/daedalus/blob/main/R/class_country.R" class="external-link"><code>R/class_country.R</code></a>, <a href="https://github.com/j-idea/daedalus/blob/main/R/class_infection.R" class="external-link"><code>R/class_infection.R</code></a>, <a href="https://github.com/j-idea/daedalus/blob/main/R/class_output.R" class="external-link"><code>R/class_output.R</code></a>, and 1 more</small>
       <div class="d-none name"><code>get_data.Rd</code></div>
     </div>
 
@@ -53,7 +53,10 @@ parameters.</p>
 <span><span class="co"># S3 method for class 'daedalus_infection'</span></span>
 <span><span class="fu">get_data</span><span class="op">(</span><span class="va">x</span>, <span class="va">to_get</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">get_data</span><span class="op">(</span><span class="va">x</span>, <span class="va">to_get</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># S3 method for class 'daedalus_output'</span></span>
+<span><span class="fu">get_data</span><span class="op">(</span><span class="va">x</span>, to_get <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_data</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -78,6 +81,8 @@ methods. Class methods do not currently support any other arguments.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Returns a member of <code>x</code>, with the class preserved
 (e.g. numeric vector for a country <code>"demography"</code>).</p>
+<p>For <code>&lt;daedalus_output&gt;</code> objects, returns the model timeseries data when no
+element is specified.</p>
     </div>
 
     <div class="section level2">
@@ -88,16 +93,28 @@ methods. Class methods do not currently support any other arguments.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      0-4     5-19    20-64      65+ </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3924490 11762039 39536463 12663012 </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">get_data</span><span class="op">(</span><span class="va">country_A</span>, <span class="st">"contact_matrix"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             0-4      5-19    20-64       65+</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 0-4   1.9157895 1.5379290 4.704999 0.2863619</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5-19  0.5131412 8.7339228 5.874591 0.7418483</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20-64 0.4670302 1.7476822 7.830182 1.0685802</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65+   0.1180517 0.7548304 3.531487 1.5212437</span>
+<span class="r-in"><span><span class="fu">get_data</span><span class="op">(</span><span class="va">country_A</span>, <span class="st">"demography"</span>, <span class="st">"contact_matrix"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In get_data.daedalus_country(country_A, "demography", "contact_matrix") :</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>  extra argument  will be disregarded</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      0-4     5-19    20-64      65+ </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3924490 11762039 39536463 12663012 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">disease_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="class_infection.html">daedalus_infection</a></span><span class="op">(</span><span class="st">"sars_cov_1"</span>, r0 <span class="op">=</span> <span class="fl">1.9</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">get_data</span><span class="op">(</span><span class="va">disease_x</span>, <span class="st">"r0"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.9</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># get model data</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"influenza_1918"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu">get_data</span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   time age_group compartment econ_sector   value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    1       0-4 susceptible   sector_00 1993130</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    2       0-4 susceptible   sector_00 1993128</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    3       0-4 susceptible   sector_00 1993126</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4    4       0-4 susceptible   sector_00 1993123</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5    5       0-4 susceptible   sector_00 1993118</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6    6       0-4 susceptible   sector_00 1993109</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -85,6 +85,8 @@ the epidemic peak occurs within this timeframe.</p>
 <span>  time_end <span class="op">=</span> <span class="fl">100</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># get the model timeseries</span></span>
+<span><span class="va">data_baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data.html">get_data</a></span><span class="op">(</span><span class="va">data_baseline</span><span class="op">)</span></span>
 <span><span class="va">data_baseline</span><span class="op">$</span><span class="va">scenario</span> <span class="op">&lt;-</span> <span class="st">"no_response"</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># run the model with a heavy elimination intervention</span></span>
@@ -96,6 +98,8 @@ the epidemic peak occurs within this timeframe.</p>
 <span>  time_end <span class="op">=</span> <span class="fl">100</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># get the model timeseries</span></span>
+<span><span class="va">data_intervention</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data.html">get_data</a></span><span class="op">(</span><span class="va">data_intervention</span><span class="op">)</span></span>
 <span><span class="va">data_intervention</span><span class="op">$</span><span class="va">scenario</span> <span class="op">&lt;-</span> <span class="st">"elimination"</span></span></code></pre></div>
 <p>Plot the total hospital occupancy for both scenarios to view the
 effect of interventions.</p>
