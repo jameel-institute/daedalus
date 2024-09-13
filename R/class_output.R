@@ -77,6 +77,7 @@ format.daedalus_output <- function(x, ...) {
 #' @name get_data
 #' @export
 get_data.daedalus_output <- function(x, to_get = NULL, ...) {
+  chkDots(...)
   validate_daedalus_output(x)
 
   good_to_get <- checkmate::test_string(to_get, null.ok = TRUE) &&
