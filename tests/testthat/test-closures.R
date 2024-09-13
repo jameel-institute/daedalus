@@ -170,3 +170,30 @@ test_that("Closures: lower threshold reduces epidemic size", {
     epidemic_sizes[2], epidemic_sizes[1]
   )
 })
+
+# check that closures are logged correctly
+# NOTE: we can only really test closure start times, as closures either
+# end reactively or do not end at all
+test_that("Closures: correct logging of time limits", {
+  response_threshold <- 1e9 # artificially large
+  response_time <- 23 # arbitrary value
+  time_end <- 25 # low to prematurely end simulation
+  output <- daedalus(
+    "Canada", daedalus_infection("influenza_1918", r0 = 1.1),
+    response_strategy = "elimination",
+    response_threshold = response_threshold,
+    response_time = response_time,
+    time_end = time_end
+  )
+
+  response_data <- get_data(output, "response_data")
+
+  expect_identical(
+    response_data[["closure_info"]][["closure_time_start"]],
+    response_time
+  )
+  expect_identical(
+    response_data[["closure_info"]][["closure_time_end"]],
+    time_end
+  )
+})
