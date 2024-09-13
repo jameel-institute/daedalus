@@ -223,6 +223,16 @@ daedalus <- function(country,
     events = list(func = termination_event[["event_function"]], root = TRUE)
   )
 
+  # log simulation end time as closure end time if not already ended
+  is_response_ended <- as.logical(
+    rlang::env_get(parameters[["mutables"]], "closure_time_end")
+  ) # coerce to logical; automatically FALSE as default value is 0.0
+  if (!is_response_ended) {
+    rlang::env_poke(
+      parameters[["mutables"]], "closure_time_end", time_end
+    )
+  }
+
   data <- rbind(data_stage_one, data_stage_two[-1, ])
 
   # NOTE: unclassing country and infection returns lists
