@@ -80,7 +80,7 @@ make_initial_state <- function(country, initial_state_manual) {
 }
 
 #' Prepare mutable parameters for the DAEDALUS model
-#' 
+#'
 #' @description Prepares closure start and end times for model output.
 #'
 #' @return
