@@ -1,0 +1,88 @@
+---
+title: "Evaluating the costs of pandemic scenarios"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Evaluating the costs of pandemic scenarios}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette show how to use _daedalus_ to calculate and compare the health, social, and economic costs of a pandemic for different response scenarios.
+
+```{r setup}
+library(daedalus)
+library(data.table)
+library(ggplot2)
+```
+
+We can run the DAEDALUS model for different response scenarios and quickly extract the costs for each scenario.
+
+For this example, we choose to model an outbreak of 1918 influenza in the United Kingdom.
+
+```{r}
+# get response scenario names
+response_scenarios <- c(
+  "none", "elimination", "economic_closures", "school_closures"
+)
+names(response_scenarios) <- response_scenarios
+
+# model the epiemic with different response strategies
+output_list <- lapply(
+  response_scenarios, daedalus,
+  country = "United Kingdom",
+  infection = "influenza_1918"
+)
+```
+
+Obtaining the health, economic, and social (here, educational) costs, all converted to cost measures that can be expressed in dollars, only requires output to be passed to the function `get_costs()`.
+
+```{r}
+# calculate costs
+cost_list <- lapply(output_list, get_costs, summarise_as = "domain")
+```
+
+We can transform the data into a wide data.frame and plot the costs for each response strategy.
+
+```{r}
+costs <- as.data.frame(cost_list)
+setDT(costs, keep.rownames = "domain")
+
+costs <- melt(
+  costs,
+  id.vars = "domain",
+  variable.name = "response_strategy",
+  value.name = "cost"
+)
+```
+
+```{r echo=FALSE}
+ggplot(costs) +
+  geom_col(
+    aes(response_strategy, cost, fill = domain),
+    position = "stack"
+  ) +
+  scale_fill_discrete(
+    labels = c("Economic costs", "Education costs", "Life years lost")
+  ) +
+  scale_x_discrete(
+    labels = c(
+      "No response", "Elimination",
+      "Economic closures", "School closures"
+    )
+  ) +
+  labs(
+    x = "Response strategy",
+    y = "Cost (million dollars)",
+    fill = "Domain"
+  ) +
+  theme(
+    legend.position = "top"
+  )
+```
