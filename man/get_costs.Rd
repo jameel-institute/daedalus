@@ -4,10 +4,16 @@
 \alias{get_costs}
 \title{Get epidemic costs from a DAEDALUS model run}
 \usage{
-get_costs(x)
+get_costs(x, summarise_as = c("none", "total", "domain"))
 }
 \arguments{
 \item{x}{A \verb{<daedalus_output>} object from a call to \code{\link[=daedalus]{daedalus()}}.}
+
+\item{summarise_as}{A string from among "none", "total", or "domain", for how
+the costs should be returned. Select "none", the default, for the raw costs
+along with overall and domain-specific totals; "total" for the overall cost,
+and "domain" for the total costs per domain; the domains are 'economic',
+'education', and 'life years'.}
 }
 \value{
 A list of different cost values, including the total cost. See

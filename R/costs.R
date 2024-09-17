@@ -1,6 +1,11 @@
 #' Get epidemic costs from a DAEDALUS model run
 #'
 #' @param x A `<daedalus_output>` object from a call to [daedalus()].
+#' @param summarise_as A string from among "none", "total", or "domain", for how
+#' the costs should be returned. Select "none", the default, for the raw costs
+#' along with overall and domain-specific totals; "total" for the overall cost,
+#' and "domain" for the total costs per domain; the domains are 'economic',
+#' 'education', and 'life years'.
 #' @return A list of different cost values, including the total cost. See
 #' **Details** for more information.
 #'
@@ -36,7 +41,7 @@
 #'
 #' get_costs(output)
 #' @export
-get_costs <- function(x) {
+get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   checkmate::assert_class(x, "daedalus_output")
 
   compartment <- NULL
@@ -78,7 +83,10 @@ get_costs <- function(x) {
 
   worker_absences[, prop_absent := total_absent / workforce, by = "time"]
   worker_absences[, gva_loss := gva * prop_absent, by = "time"]
-  worker_absences[data.table::between(time, closure_start, closure_end),
+  worker_absences[
+    data.table::between(
+      worker_absences$time, closure_start, closure_end
+    ),
     gva_loss := gva_loss * openness,
     by = "time"
   ]
@@ -101,7 +109,9 @@ get_costs <- function(x) {
   ]$gva_loss
 
   # calculate total deaths and multiply by VSL
-  total_deaths <- model_data[compartment == "dead" & time == max(time),
+  total_deaths <- model_data[
+    model_data$compartment == "dead" &
+      model_data$time == max(model_data$time),
     list(deaths = sum(value)),
     by = "age_group"
   ]$deaths
@@ -121,10 +131,31 @@ get_costs <- function(x) {
       education_cost_closures = education_cost_closures,
       education_cost_absences = education_cost_absences
     ),
-    life_years_lost = life_years_lost
+    life_years_lost = list(
+      life_years_lost_total = sum(life_years_lost),
+      life_years_lost_age = life_years_lost
+    )
   )
 
-  cost_list$total_cost <- sum(rapply(cost_list, sum), na.rm = TRUE)
+  # probably a neater way of doing this
+  cost_list$total_cost <- economic_cost_closures + economic_cost_absences +
+    education_cost_closures + education_cost_absences +
+    sum(life_years_lost)
 
-  cost_list
+  # return summary if requested, defaults to no summary
+  summarise_as <- rlang::arg_match(summarise_as)
+
+  costs <- switch(summarise_as,
+    none = cost_list,
+    total = cost_list[["total_cost"]],
+    domain = {
+      cost_list[["total_cost"]] <- NULL
+      vec_costs <- vapply(cost_list, `[[`, 1L, FUN.VALUE = numeric(1))
+      names(vec_costs) <- c("economic", "education", "life_years")
+
+      vec_costs
+    }
+  )
+
+  costs
 }
