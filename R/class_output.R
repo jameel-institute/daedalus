@@ -8,7 +8,10 @@
 #' An object of the `<daedalus_output>` class.
 #' @keywords internal
 as_daedalus_output <- function(x) {
-  checkmate::assert_list(x, c("data.frame", "list"), any.missing = FALSE)
+  checkmate::assert_list(
+    x, c("data.frame", "list", "numeric"),
+    any.missing = FALSE
+  )
   class(x) <- "daedalus_output"
   validate_daedalus_output(x)
 
