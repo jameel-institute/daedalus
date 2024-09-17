@@ -52,3 +52,4 @@ head(
   get_data(output)
 )
 }
+\keyword{generics}

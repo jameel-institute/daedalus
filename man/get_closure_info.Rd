@@ -17,3 +17,4 @@ closures are active.
 \description{
 Get closure time limits and calculate duration
 }
+\keyword{internal}

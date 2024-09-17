@@ -16,6 +16,7 @@
 #'
 #' For `<daedalus_output>` objects, returns the model timeseries data when no
 #' element is specified.
+#' @keywords generics
 #' @export
 #' @examples
 #' # simple example of getting data
@@ -53,6 +54,7 @@ get_data <- function(x, ...) {
 #' "contacts_consumer_worker".
 #'
 #' @return An S3 object of the same class as input `x`.
+#' @keywords generics
 #' @export
 #' @examples
 #' # simple example of setting all contacts to 1
@@ -113,7 +115,7 @@ set_data <- function(x, ...) {
 #'
 #' Infection parameters are returned from `<daedalusinfection>` objects without
 #' modification and only the name removed.
-#'
+#' @keywords internal
 prepare_parameters <- function(x, ...) {
   UseMethod("prepare_parameters")
 }

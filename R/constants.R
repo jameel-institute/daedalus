@@ -4,6 +4,7 @@
 #' specific to the epidemiological model.
 #'
 #' @name model_constants
+#' @keywords model_constant
 #' @rdname model_constants
 #'
 #' @return Values for the model constants.
@@ -35,40 +36,51 @@
 #'
 #' - Array dimension of economic sectors: 3
 #'
-#' @keywords internal constant
+#' @keywords model_constant
 N_AGE_GROUPS <- 4L
 
 #' @name model_constants
+#' @keywords model_constant
 N_VACCINE_STRATA <- 1L
 
 #' @name model_constants
+#' @keywords model_constant
 AGE_GROUPS <- c("0-4", "5-19", "20-65", "65+")
 
 #' @name model_constants
+#' @keywords model_constant
 i_WORKING_AGE <- 3L
 
 #' @name model_constants
+#' @keywords model_constant
 N_ECON_SECTORS <- 45L
 
 #' @name model_constants
+#' @keywords model_constant
 i_EDUCATION_SECTOR <- 41L
 
 #' @name model_constants
+#' @keywords model_constant
 N_ECON_STRATA <- N_ECON_SECTORS + 1L
 
 #' @name model_constants
+#' @keywords model_constant
 i_NOT_WORKING <- 1L
 
 #' @name model_constants
+#' @keywords model_constant
 DIM_AGE_GROUPS <- 1L
 
 #' @name model_constants
+#' @keywords model_constant
 DIM_EPI_COMPARTMENTS <- 2L
 
 #' @name model_constants
+#' @keywords model_constant
 DIM_ECON_SECTORS <- 3L
 
 #' @name model_constants
+#' @keywords model_constant
 N_OUTPUT_COLS <- 5L
 
 #' @title Epidemiological compartments and indices
@@ -90,32 +102,40 @@ N_OUTPUT_COLS <- 5L
 #' @name epi_constants
 #' @rdname epi_constants
 #'
-#' @keywords internal constant
+#' @keywords epi_constant
 COMPARTMENTS <- c(
   "susceptible", "exposed", "infect_symp", "infect_asymp",
   "hospitalised", "recovered", "dead"
 )
 
 #' @name epi_constants
+#' @keywords epi_constant
 i_S <- 1L
 
 #' @name epi_constants
+#' @keywords epi_constant
 i_E <- 2L
 
 #' @name epi_constants
+#' @keywords epi_constant
 i_Is <- 3L
 
 #' @name epi_constants
+#' @keywords epi_constant
 i_Ia <- 4L
 
 #' @name epi_constants
+#' @keywords epi_constant
 i_H <- 5L
 
 #' @name epi_constants
+#' @keywords epi_constant
 i_R <- 6L
 
 #' @name epi_constants
+#' @keywords epi_constant
 i_D <- 7L
 
 #' @name epi_constants
+#' @keywords epi_constant
 N_EPI_COMPARTMENTS <- 7L

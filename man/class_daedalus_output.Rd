@@ -18,6 +18,8 @@ is_daedalus_output(x)
 }
 \arguments{
 \item{x}{An object of the \verb{<daedalus_output>} class.}
+
+\item{...}{Not used; added for compatibility with the generic.}
 }
 \value{
 An object of the \verb{<daedalus_output>} class.
@@ -39,4 +41,3 @@ Check if an object is of the \verb{<daedalus_output>} class
 
 Print \verb{<daedalus_output>} class objects
 }
-\keyword{internal}

@@ -92,6 +92,4 @@ working age individuals.
 \item Array dimension of economic sectors: 3
 }
 }
-\keyword{constant}
-\keyword{datasets}
-\keyword{internal}
+\keyword{model_constant}

@@ -16,20 +16,32 @@ reference:
     desc: Represent and access infection characteristics
     contents:
     - class_infection
+  - title: Class `<daedalus_output>`
+    desc: Class to store model output for further processing
+    contents:
+    - class_daedalus_output
+  - title: Model output post-processing
+    desc: Functions to process model output to calculate pandemic costs and other characteristics
+    contents:
+    - get_costs
   - title: Package generics
     desc: Generics with methods for package S3 classes
     contents:
-    - contains("get")
-    - contains("set")
+    - has_keyword("generics")
   - title: Package data
     desc: Data included with the package
     contents:
     - contains("data")
     - contains("contacts")
     - country_names
-    - -get_data
-    - -set_data
+    - life_value
+    - -has_keyword("generics")
+  - title: Model constants
+    desc: Useful constant used internally
+    contents:
+    - has_keyword("model_constant")
+    - has_keyword("epi_constant")
   - title: Internal functions
     desc: Functions used internally
     contents:
-    - prepare_mutable_parameters
+    - has_keyword("internal")

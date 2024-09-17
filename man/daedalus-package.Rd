@@ -5,7 +5,7 @@
 \alias{daedalus-package}
 \title{daedalus: Model health, social, and economic costs of a pandemic using _DAEDALUS_}
 \description{
-Model the health, social, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of pro-active preparedness and reactive interventions, using the _DAEDALUS_ integrated health-economics model adapted from Haw et al. (2022) <doi.org/10.1038/s43588-022-00233-0>.
+Model the health, social, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of preparedness and reactive interventions, using the _DAEDALUS_ integrated health-economics model adapted from Haw et al. (2022) <doi.org/10.1038/s43588-022-00233-0>.
 }
 \seealso{
 Useful links:
