@@ -1,13 +1,16 @@
 Package: daedalus
-Title: Optimise economic, social and health trade-offs in a pandemic
-Version: 0.0.6
+Title: Model health, social, and economic costs of a pandemic using
+    _DAEDALUS_
+Version: 0.0.7
 Authors@R: c(
     person("Pratik", "Gupte", , "p.gupte24@imperial.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5294-7819")),
     person("Imperial College of Science, Technology and Medicine", role = "cph")
   )
-Description: Model and optimise the trade-offs between social and economic
-    activity while containing a pandemic, as presented in Haw et al.
+Description: Model the health, social, and economic costs of directly
+    transmitted respiratory virus pandemics, under different scenarios of
+    preparedness and reactive interventions, using the
+    _DAEDALUS_ integrated health-economics model adapted from Haw et al.
     (2022) <doi.org/10.1038/s43588-022-00233-0>.
 License: MIT + file LICENSE
 URL: https://github.com/j-idea/daedalus
