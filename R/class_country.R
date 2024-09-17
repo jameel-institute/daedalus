@@ -159,6 +159,9 @@ daedalus_country <- function(name,
   params <- daedalus::country_data[[name]]
   # add one worker to each sector to avoid division by zero
   params$workers <- params$workers + 1
+
+  # add value of statistical life (VSL)
+  vsl <- daedalus::life_value[[name]]
   # calculate consumer-worker contacts
   contacts_consumer_worker <- matrix(
     daedalus::economic_contacts[["contacts_workplace"]],
@@ -172,7 +175,8 @@ daedalus_country <- function(name,
         daedalus::economic_contacts[["contacts_workplace"]],
       contacts_consumer_worker = contacts_consumer_worker,
       contacts_between_sectors =
-        daedalus::economic_contacts[["contacts_between_sectors"]]
+        daedalus::economic_contacts[["contacts_between_sectors"]],
+      vsl = vsl
     )
   )
   parameters <- Filter(parameters, f = function(x) !is.null(x))
@@ -203,10 +207,12 @@ validate_daedalus_country <- function(x) {
   }
 
   # check class members
+  # NOTE: gva = gross value added; vsl = value of statistical life
   expected_invariants <- c(
     "name", "demography", "contact_matrix",
     "contacts_workplace", "contacts_consumer_worker",
-    "contacts_between_sectors", "workers", "gva"
+    "contacts_between_sectors", "workers", "gva",
+    "vsl"
   )
   has_invariants <- checkmate::test_names(
     attributes(x)$names,
@@ -282,6 +288,12 @@ validate_daedalus_country <- function(x) {
         any.missing = FALSE, nrows = N_ECON_SECTORS, ncols = N_ECON_SECTORS
       ) && checkmate::test_subset(
         x$contacts_between_sectors, 0
+      ),
+    "Country `vsl` must be a 4-element vector of positive values" =
+      checkmate::test_numeric(
+        x$vsl,
+        len = N_AGE_GROUPS, any.missing = FALSE,
+        lower = 0, upper = 1e7 # reasonable upper limit
       )
   )
 
