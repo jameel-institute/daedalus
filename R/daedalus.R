@@ -243,12 +243,14 @@ daedalus <- function(country,
 
   # NOTE: unclassing country and infection returns lists
   data <- list(
+    total_time = time_end,
     model_data = prepare_output(data),
     country_parameters = unclass(country),
     infection_parameters = unclass(infection),
     response_data = list(
       response_strategy = response_strategy,
       implementation_level = implementation_level,
+      openness = openness, # easier to include here
       closure_info = get_closure_info(mutables)
     )
   )
