@@ -1,3 +1,22 @@
+# daedalus 0.0.7
+
+This patch adds functionality to calculate pandemic costs using the newly added function `get_costs()`.
+This patch also adds `life_value`, a list of country-wise, age-specific values of statistical life lost as package data.
+
+Other changes:
+
+1. Data preparation scripts and raw data that are used to generate the `life_value` data. Subsetting the countries to those for which this data is available leaves 67 countries; Taiwan and Hong Kong are removed due to lack of life value data.
+
+2. `<daedalus_output>` now includes a measure of the total simulation time which could be useful for future calculations of percentage GDP loss.
+
+3. `<daedalus_output>` also returns the openness coefficient vector associated with the model response strategy.
+
+4. Tests and documentation for all changes in the form of function docs and vignette updates.
+
+5. Package _data.table_ now imported for use in cost calculations.
+
+6. Package DESCRIPTION updated to reflect scenario modelling rather than optimisation.
+
 # daedalus 0.0.6
 
 This patch adds the `<daedalus_infection>` class to represent and hold infection parameter data for `daedalus()`. Access, assignment, and print methods are also added, in addition to internal helpers such as `as_country()`. The class is tested with newly added tests.

@@ -44,6 +44,15 @@ library(daedalus)
 
 # run model for Canada
 data <- daedalus("Canada", "influenza_1918")
+
+# get pandemic costs as a total in million dollars
+get_costs(data, "total")
+#> [1] 739498.3
+
+# disaggregate total for economic, education, and health costs
+get_costs(data, "domain")
+#>   economic  education life_years 
+#>  18528.338   1235.451 719734.519
 ```
 
 Users can select infection parameters from among seven epidemics caused
@@ -52,8 +61,8 @@ the package as `daedalus::infection_data`, with epidemic identifiers are
 stored as `daedalus::epidemic_names`.
 
 Users can override default country contact data and epidemic-specific
-infection arguments by passing named lists of parameters to
-`daedalus()`; see the function documentation for more details.
+infection arguments by passing custom classes to `daedalus()`; see the
+package website for more details.
 
 Users can also model the implementation of pandemic response measures:
 for more on this see the documentation for the main model function
