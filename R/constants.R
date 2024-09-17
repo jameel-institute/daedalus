@@ -51,6 +51,9 @@ i_WORKING_AGE <- 3L
 N_ECON_SECTORS <- 45L
 
 #' @name model_constants
+i_EDUCATION_SECTOR <- 41L
+
+#' @name model_constants
 N_ECON_STRATA <- N_ECON_SECTORS + 1L
 
 #' @name model_constants
