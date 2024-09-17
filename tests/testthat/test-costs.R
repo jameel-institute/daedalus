@@ -1,13 +1,16 @@
 # Tests on model cost function
 test_that("Costs: basic expectations", {
   output <- daedalus("Canada", "influenza_1918")
-  expect_no_condition(
-    {
-      costs <- get_costs(output)
-      costs_total <- get_costs(output, "total")
-      costs_domain <- get_costs(output, "domain")
-    }
-  )
+  expect_no_condition({
+    costs <- get_costs(output)
+  })
+  expect_no_condition({
+    costs_total <- get_costs(output, "total")
+  })
+  expect_no_condition({
+    costs_domain <- get_costs(output, "domain")
+  })
+
   checkmate::expect_list(costs, c("numeric", "list"), any.missing = FALSE)
   checkmate::expect_number(costs_total, lower = 0, finite = TRUE)
   checkmate::expect_numeric(
