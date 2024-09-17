@@ -3,9 +3,9 @@
 \docType{package}
 \name{daedalus-package}
 \alias{daedalus-package}
-\title{daedalus: Optimise economic, social and health trade-offs in a pandemic}
+\title{daedalus: Model health, social, and economic costs of a pandemic using _DAEDALUS_}
 \description{
-Model and optimise the trade-offs between social and economic activity while containing a pandemic, as presented in Haw et al. (2022) <doi.org/10.1038/s43588-022-00233-0>.
+Model the health, social, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of pro-active preparedness and reactive interventions, using the _DAEDALUS_ integrated health-economics model adapted from Haw et al. (2022) <doi.org/10.1038/s43588-022-00233-0>.
 }
 \seealso{
 Useful links:
