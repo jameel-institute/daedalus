@@ -6,7 +6,7 @@ test_that("Costs: basic expectations", {
       costs <- get_costs(output)
       costs_total <- get_costs(output, "total")
       costs_domain <- get_costs(output, "domain")
-    } # nolint allow assignment
+    }
   )
   checkmate::expect_list(costs, c("numeric", "list"), any.missing = FALSE)
   checkmate::expect_number(costs_total, lower = 0, finite = TRUE)
