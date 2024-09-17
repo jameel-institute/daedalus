@@ -5,7 +5,7 @@ test_that("class <daedalus_output>: basic expectations", {
   })
   expect_s3_class(output, "daedalus_output")
   checkmate::expect_list(
-    output, c("data.frame", "list"),
+    output, c("data.frame", "list", "numeric"),
     any.missing = FALSE
   )
   expect_snapshot(
