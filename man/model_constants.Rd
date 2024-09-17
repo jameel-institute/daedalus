@@ -8,6 +8,7 @@
 \alias{AGE_GROUPS}
 \alias{i_WORKING_AGE}
 \alias{N_ECON_SECTORS}
+\alias{i_EDUCATION_SECTOR}
 \alias{N_ECON_STRATA}
 \alias{i_NOT_WORKING}
 \alias{DIM_AGE_GROUPS}
@@ -37,6 +38,8 @@ An object of class \code{integer} of length 1.
 An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 1.
 }
 \usage{
 N_AGE_GROUPS
@@ -48,6 +51,8 @@ AGE_GROUPS
 i_WORKING_AGE
 
 N_ECON_SECTORS
+
+i_EDUCATION_SECTOR
 
 N_ECON_STRATA
 
