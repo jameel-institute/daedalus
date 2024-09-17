@@ -43,3 +43,4 @@ disease_x <- daedalus_infection("sars_cov_1")
 disease_x <- set_data(disease_x, r0 = 3.0)
 disease_x
 }
+\keyword{generics}

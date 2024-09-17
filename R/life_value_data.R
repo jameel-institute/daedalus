@@ -1,4 +1,4 @@
-#' @title Values of a statistical lives lost
+#' @title Values of statistical lives lost
 #'
 #' @description Values in dollars (scaled by purchasing power parity) of a
 #' statistical life lost in each of the four DAEDALUS age groups, accounting

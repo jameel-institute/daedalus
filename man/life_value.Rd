@@ -3,7 +3,7 @@
 \docType{data}
 \name{life_value}
 \alias{life_value}
-\title{Values of a statistical lives lost}
+\title{Values of statistical lives lost}
 \format{
 \subsection{\code{life_value}}{
 

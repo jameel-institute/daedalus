@@ -66,6 +66,4 @@ DAEDALUS has 7 epidemiological compartments: susceptible, exposed, infectious
 and symptomatic ("infect_symp"), infectious and asymptomatic ("infect_asymp")
 , hospitalised, recovered, and dead.
 }
-\keyword{constant}
-\keyword{datasets}
-\keyword{internal}
+\keyword{epi_constant}

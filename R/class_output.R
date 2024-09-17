@@ -6,7 +6,6 @@
 #' @param x A `<list>` to convert to the `<daedalus_output>` class.
 #' @return
 #' An object of the `<daedalus_output>` class.
-#' @keywords internal
 as_daedalus_output <- function(x) {
   checkmate::assert_list(
     x, c("data.frame", "list", "numeric"),
@@ -24,7 +23,6 @@ as_daedalus_output <- function(x) {
 #' @return Invisibly returns `x`; called primarily for its side effects of
 #' erroring when the object does not satisfy the `<daedalus_output>` class
 #' requirements.
-#' @keywords internal
 validate_daedalus_output <- function(x) {
   expected_invariants <- c(
     "model_data",
@@ -51,7 +49,6 @@ validate_daedalus_output <- function(x) {
 #' @param x An object to be checked as inheriting from the `<daedalus_output>`
 #' class.
 #' @return A logical for whether `x` is of the `<daedalus_output>` class.
-#' @keywords internal
 is_daedalus_output <- function(x) {
   inherits(x, "daedalus_output")
 }
@@ -59,13 +56,13 @@ is_daedalus_output <- function(x) {
 #' Print `<daedalus_output>` class objects
 #' @name class_daedalus_output
 #' @param x An object of the `<daedalus_output>` class.
+#' @param ... Not used; added for compatibility with the generic.
 #' @return None; called for its printing side effects.
 #' @export
 print.daedalus_output <- function(x, ...) {
   format(x, ...)
 }
 
-#' @keywords internal
 #' @noRd
 format.daedalus_output <- function(x, ...) {
   chkDots(...)

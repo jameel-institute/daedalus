@@ -114,6 +114,7 @@ prepare_mutable_parameters <- function() {
 #' @return
 #' A three-element list of the start time, end time, and duration for which
 #' closures are active.
+#' @keywords internal
 get_closure_info <- function(mutables) {
   closure_times <- rlang::env_get_list(
     mutables, c("closure_time_start", "closure_time_end")
