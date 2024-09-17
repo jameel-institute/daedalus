@@ -300,6 +300,12 @@ assert_set_equal(
 # order alphabetically and overwrite original data read in
 country_data <- copy(country_data_tmp[sort(names(country_data_tmp))])
 
+# NOTE: removing Hong Kong and Taiwan as there is no corresponding
+# data on life expectancy and/or value
+to_remove <- c("Hong Kong", "Taiwan")
+
+country_data <- country_data[!names(country_data) %in% to_remove]
+
 # allow overwriting as this will probably change often
 usethis::use_data(country_data, overwrite = TRUE)
 
