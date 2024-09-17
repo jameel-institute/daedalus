@@ -4,9 +4,16 @@ test_that("Costs: basic expectations", {
   expect_no_condition(
     {
       costs <- get_costs(output)
+      costs_total <- get_costs(output, "total")
+      costs_domain <- get_costs(output, "domain")
     } # nolint allow assignment
   )
   checkmate::expect_list(costs, c("numeric", "list"), any.missing = FALSE)
+  checkmate::expect_number(costs_total, lower = 0, finite = TRUE)
+  checkmate::expect_numeric(
+    costs_domain,
+    lower = 0, finite = TRUE, any.missing = FALSE
+  )
 
   expected_names <- c(
     "total_cost", "economic_cost", "education_cost", "life_years_lost"
@@ -29,7 +36,7 @@ test_that("Costs: scenario expectations", {
     costs$education_costs$education_cost_closures, 0
   )
   # store life years lost for later use
-  life_value_lost_noresp <- costs$life_years_lost
+  life_value_lost_noresp <- costs$life_years_lost$life_years_lost_total
 
   ## when there is a response
   response_names <- c("elimination", "economic_closures", "school_closures")
@@ -55,8 +62,8 @@ test_that("Costs: scenario expectations", {
 
       # expect lives lost cost is lower
       expect_lt(
-        sum(costs$life_years_lost),
-        sum(life_value_lost_noresp)
+        costs$life_years_lost$life_years_lost_total,
+        life_value_lost_noresp
       )
     })
   })
