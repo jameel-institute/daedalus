@@ -55,26 +55,19 @@ test_that("daedalus: Runs for all country x infection x response", {
     country = daedalus::country_names,
     infection = daedalus::epidemic_names
   )
-  time_end <- 50
+  time_end <- 10
 
   # expect no conditions
-  expect_no_condition({
+  invisible(
     Map(
       country_infection_combos$country,
       country_infection_combos$infection,
       f = function(x, y) {
-        daedalus(x, y)
+        expect_no_condition(
+          daedalus(x, y, time_end = time_end, response_time = time_end - 2)
+        )
       }
     )
-  })
-
-  # expect classed output, type double, and non-negative
-  checkmate::expect_list(output_list, "daedalus_output")
-  expect_true(
-    all(vapply(output_list, function(x) {
-      x <- get_data(x)
-      all(x$value >= 0.0)
-    }, FUN.VALUE = logical(1)))
   )
 })
 

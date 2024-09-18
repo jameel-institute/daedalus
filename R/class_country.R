@@ -157,6 +157,8 @@ daedalus_country <- function(name,
 
   # substitute defaults with non-NULL elements of parameters
   params <- daedalus::country_data[[name]]
+  # add one worker to each sector to avoid division by zero
+  params$workers <- params$workers + 1
   # calculate consumer-worker contacts
   contacts_consumer_worker <- matrix(
     daedalus::economic_contacts[["contacts_workplace"]],
