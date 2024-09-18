@@ -12,7 +12,8 @@ daedalus(
   response_time = 30,
   response_threshold = 1000,
   initial_state_manual = list(),
-  time_end = 300
+  time_end = 300,
+  ...
 )
 }
 \arguments{
@@ -65,6 +66,9 @@ Defaults to \code{1e-6} and \code{0.0} respectively.}
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
 returned for each day. Defaults to 300 days.}
+
+\item{...}{Other arguments to be passed to the ODE solver; these are passed
+to \code{\link[deSolve:ode]{deSolve::ode()}}.}
 }
 \value{
 A \verb{<deSolve>} object.

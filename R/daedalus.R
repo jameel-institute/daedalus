@@ -52,6 +52,9 @@
 #' at which to return data. This is treated as the number of days with data
 #' returned for each day. Defaults to 300 days.
 #'
+#' @param ... Other arguments to be passed to the ODE solver; these are passed
+#' to [deSolve::ode()].
+#'
 #' @details
 #'
 #' ## Initial state
@@ -105,7 +108,8 @@ daedalus <- function(country,
                      response_time = 30,
                      response_threshold = 1000,
                      initial_state_manual = list(),
-                     time_end = 300) {
+                     time_end = 300,
+                     ...) {
   # input checking
   # NOTE: names are case sensitive
   checkmate::assert_multi_class(country, c("daedalus_country", "character"))
@@ -187,11 +191,12 @@ daedalus <- function(country,
   times_stage_one <- seq(1, response_time)
   times_stage_two <- seq(response_time, time_end)
 
-  data_stage_one <- deSolve::lsoda(
+  data_stage_one <- deSolve::ode(
     y = initial_state, times = times_stage_one,
     func = daedalus_rhs, parms = parameters,
     rootfunc = activation_event[["root_function"]],
-    events = list(func = activation_event[["event_function"]], root = TRUE)
+    events = list(func = activation_event[["event_function"]], root = TRUE),
+    ...
   )
 
   # carry over initial state; could be named more clearly?
@@ -216,11 +221,12 @@ daedalus <- function(country,
   # reset min time
   parameters[["min_time"]] <- response_time
 
-  data_stage_two <- deSolve::lsodar(
+  data_stage_two <- deSolve::ode(
     initial_state, times_stage_two,
     daedalus_rhs, parameters,
     rootfunc = termination_event[["root_function"]],
-    events = list(func = termination_event[["event_function"]], root = TRUE)
+    events = list(func = termination_event[["event_function"]], root = TRUE),
+    ...
   )
 
   # log simulation end time as closure end time if not already ended
