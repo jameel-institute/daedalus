@@ -9,9 +9,9 @@ Authors@R: c(
   )
 Description: Model the health, social, and economic costs of directly
     transmitted respiratory virus pandemics, under different scenarios of
-    preparedness and reactive interventions, using the
-    _DAEDALUS_ integrated health-economics model adapted from Haw et al.
-    (2022) <doi.org/10.1038/s43588-022-00233-0>.
+    preparedness and reactive interventions, using the _DAEDALUS_
+    integrated health-economics model adapted from Haw et al.  (2022)
+    <doi.org/10.1038/s43588-022-00233-0>.
 License: MIT + file LICENSE
 URL: https://github.com/j-idea/daedalus
 BugReports: https://github.com/j-idea/daedalus/issues
@@ -20,10 +20,10 @@ Depends:
 Imports: 
     checkmate,
     cli,
-    data.table,
     deSolve,
     rlang
 Suggests:
+    data.table,
     ggplot2,
     glue,
     knitr,
