@@ -50,13 +50,21 @@ test_that("daedalus: basic expectations", {
 })
 
 # test that daedalus runs for all epidemic infection parameter sets
-test_that("daedalus: Runs for all epidemics", {
-  epidemics <- lapply(daedalus::epidemic_names, daedalus_infection)
+test_that("daedalus: Runs for all country x infection x response", {
+  country_infection_combos <- data.table::CJ(
+    country = daedalus::country_names,
+    infection = daedalus::epidemic_names
+  )
+  time_end <- 50
+
   # expect no conditions
   expect_no_condition({
-    output_list <- lapply(
-      epidemics, daedalus,
-      country = country_canada, time_end = 50
+    Map(
+      country_infection_combos$country,
+      country_infection_combos$infection,
+      f = function(x, y) {
+        daedalus(x, y)
+      }
     )
   })
 
