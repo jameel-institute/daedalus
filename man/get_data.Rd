@@ -41,7 +41,7 @@ parameters.
 country_A <- daedalus_country("United Kingdom")
 get_data(country_A, "demography")
 
-get_data(country_A, "demography", "contact_matrix")
+get_data(country_A, "contact_matrix")
 
 disease_x <- daedalus_infection("sars_cov_1", r0 = 1.9)
 get_data(disease_x, "r0")
