@@ -44,13 +44,6 @@
 get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   checkmate::assert_class(x, "daedalus_output")
 
-  compartment <- NULL
-  prop_absent <- NULL
-  gva_loss <- NULL
-  total_absent <- NULL
-  econ_sector <- NULL
-  value <- NULL
-
   closure_duration <- x$response_data$closure_info$closure_duration
   closure_start <- x$response_data$closure_info$closure_time_start
   closure_end <- x$response_data$closure_info$closure_time_end
@@ -71,50 +64,51 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
 
   # absences due to infection, hospitalisation, death
   model_data <- x$model_data
-  data.table::setDT(model_data)
   worker_absences <- model_data[
-    grepl("infect|dead|hosp", compartment) &
-      econ_sector != "sector_00",
-    list(total_absent = sum(value)),
-    by = c("time", "econ_sector")
+    grepl("infect|dead|hosp", model_data$compartment) &
+      model_data$econ_sector != "sector_00",
   ]
+  worker_absences <- stats::aggregate(
+    value ~ time + econ_sector, worker_absences, sum
+  )
+  worker_absences <- split(
+    worker_absences,
+    f = worker_absences$time
+  )
 
   workforce <- x$country_parameters$workers
+  gva_loss <- lapply(worker_absences, function(df) {
+    prop_absent <- df$value / workforce
 
-  worker_absences[, prop_absent := total_absent / workforce, by = "time"]
-  worker_absences[, gva_loss := gva * prop_absent, by = "time"]
-  worker_absences[
-    data.table::between(
-      worker_absences$time, closure_start, closure_end
-    ),
-    gva_loss := gva_loss * openness,
-    by = "time"
-  ]
+    gva * prop_absent
+  })
 
-  worker_absences <- worker_absences[, list(gva_loss = sum(gva_loss)),
-    by = {
-      sector <- data.table::fcase(
-        econ_sector == sprintf("sector_%02i", i_EDUCATION_SECTOR), "education",
-        default = "non_edu"
-      )
-      sector
-    }
-  ]
+  # scale by openness coefficient when closures are active
+  gva_loss[seq(closure_start, closure_end)] <- lapply(
+    gva_loss[seq(closure_start, closure_end)],
+    `*`, openness
+  )
+  gva_loss <- Reduce(`+`, gva_loss)
 
-  education_cost_absences <- worker_absences[
-    worker_absences$sector == "education",
-  ]$gva_loss
-  economic_cost_absences <- worker_absences[
-    worker_absences$sector == "non_edu",
-  ]$gva_loss
+  education_cost_absences <- gva_loss[i_EDUCATION_SECTOR]
+  economic_cost_absences <- sum(
+    gva_loss[-i_EDUCATION_SECTOR]
+  )
 
   # calculate total deaths and multiply by VSL
   total_deaths <- model_data[
     model_data$compartment == "dead" &
       model_data$time == max(model_data$time),
-    list(deaths = sum(value)),
-    by = "age_group"
-  ]$deaths
+  ]
+
+  # set factor levels to keep order
+  total_deaths$age_group <- factor(
+    total_deaths$age_group,
+    levels = unique(total_deaths$age_group)
+  )
+  total_deaths <- stats::aggregate(
+    value ~ age_group, total_deaths, sum
+  )$value
 
   # NOTE: in million $s
   life_years_lost <- x$country_parameters$vsl * total_deaths / 1e6
