@@ -10,9 +10,10 @@ make_response_threshold_event(response_threshold)
 \item{response_threshold}{A single numeric value for the total number of
 hospitalisations that causes an epidemic response
 (specified by \code{response_strategy}) to be triggered, if it has not already
-been triggered via \code{response_time}. Currently defaults to 1000, which
-overrides the default response- and country-specific threshold values held in
-\link{country_data}.}
+been triggered via \code{response_time}. Currently defaults to \code{NULL}, and a
+\code{country}-specific spare hospital capacity value is used from
+\link{country_data}.
+Pass a number to override the default country-specific threshold value.}
 }
 \description{
 Prepare functions that can be passed to \code{\link[deSolve:lsoda]{deSolve::lsoda()}} as
