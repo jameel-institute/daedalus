@@ -306,6 +306,50 @@ to_remove <- c("Hong Kong", "Taiwan")
 
 country_data <- country_data[!names(country_data) %in% to_remove]
 
+#### adding hospital capacity data ####
+hospital_capacity <- fread("inst/extdata/hospital_capacity.csv")
+
+country_data <- country_data[
+  names(country_data) %in% hospital_capacity$country
+]
+
+hospital_capacity <- split(
+  hospital_capacity,
+  by = "country"
+)
+hospital_capacity <- lapply(
+  hospital_capacity, `[[`, "spare_capacity"
+)
+hospital_capacity <- hospital_capacity[
+  names(hospital_capacity) %in% names(country_data)
+]
+
+# check names match
+stopifnot(
+  "Country data and hospital capacity names must match" =
+    identical(names(country_data), names(hospital_capacity))
+)
+
+country_data <- Map(country_data, hospital_capacity,
+  f = function(x, y) {
+    x[["hospital_capacity"]] <- y * sum(x[["demography"]]) / 1000
+
+    x
+  }
+)
+
+country_data <- lapply(names(country_data), function(n) {
+  country_pop <- sum(country_data[[n]][["demography"]])
+
+  hosp_cap <- hospital_capacity[[n]]
+  hosp_cap <- (1 - (as.numeric(hosp_cap["bor"]) / 100)) *
+    as.numeric(hosp_cap["capacity"]) * country_pop / 1000
+
+  country_data[[n]][["hospital_capacity"]] <- hosp_cap
+
+  country_data[[n]]
+})
+
 # allow overwriting as this will probably change often
 usethis::use_data(country_data, overwrite = TRUE)
 
