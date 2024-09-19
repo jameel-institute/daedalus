@@ -31,17 +31,18 @@
 #' @param implementation_level A string for the level at which the strategy is
 #' implemented; defaults to "light".
 #'
-#' @param response_threshold A single numeric value for the total number of
-#' hospitalisations that causes an epidemic response
-#' (specified by `response_strategy`) to be triggered, if it has not already
-#' been triggered via `response_time`. Currently defaults to 1000, which
-#' overrides the default response- and country-specific threshold values held in
-#' [daedalus::country_data].
-#'
 #' @param response_time A single numeric value for the time in days
 #' at which the selected response is activated. This is ignored if the response
 #' has already been activated by the hospitalisation threshold being reached.
 #' Defaults to 30 days.
+#'
+#' @param response_threshold A single numeric value for the total number of
+#' hospitalisations that causes an epidemic response
+#' (specified by `response_strategy`) to be triggered, if it has not already
+#' been triggered via `response_time`. Currently defaults to `NULL`, and a
+#' `country`-specific spare hospital capacity value is used from
+#' [daedalus::country_data].
+#' Pass a number to override the default country-specific threshold value.
 #'
 #' @param initial_state_manual An optional **named** list with the names
 #' `p_infectious` and `p_asymptomatic` for the proportion of infectious and
@@ -106,7 +107,7 @@ daedalus <- function(country,
                      ),
                      implementation_level = c("light", "heavy"),
                      response_time = 30,
-                     response_threshold = 1000,
+                     response_threshold = NULL,
                      initial_state_manual = list(),
                      time_end = 300,
                      ...) {
@@ -146,14 +147,19 @@ daedalus <- function(country,
     )
   }
 
-  is_good_threshold <- checkmate::test_count(
-    response_threshold,
-    positive = TRUE
-  )
-  if (!is_good_threshold) {
-    cli::cli_abort(
-      "Expected `response_threshold` to be a positive finite integer."
+  # response threhsold is determined by country data or user-input
+  if (is.null(response_threshold)) {
+    response_threshold <- get_data(country, "hospital_capacity")
+  } else {
+    is_good_threshold <- checkmate::test_count(
+      response_threshold,
+      positive = TRUE
     )
+    if (!is_good_threshold) {
+      cli::cli_abort(
+        "Expected `response_threshold` to be a positive finite integer."
+      )
+    }
   }
 
   initial_state <- as.numeric(make_initial_state(country, initial_state_manual))
@@ -174,6 +180,7 @@ daedalus <- function(country,
   parameters <- c(
     parameters,
     list(
+      hospital_capacity = response_threshold, # to increase HFR if crossed
       openness = openness,
       mutables = mutables,
       min_time = 1 # setting minimum time to prevent switch flipping

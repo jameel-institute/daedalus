@@ -10,7 +10,7 @@ daedalus(
   response_strategy = c("none", "elimination", "economic_closures", "school_closures"),
   implementation_level = c("light", "heavy"),
   response_time = 30,
-  response_threshold = 1000,
+  response_threshold = NULL,
   initial_state_manual = list(),
   time_end = 300,
   ...
@@ -54,9 +54,10 @@ Defaults to 30 days.}
 \item{response_threshold}{A single numeric value for the total number of
 hospitalisations that causes an epidemic response
 (specified by \code{response_strategy}) to be triggered, if it has not already
-been triggered via \code{response_time}. Currently defaults to 1000, which
-overrides the default response- and country-specific threshold values held in
-\link{country_data}.}
+been triggered via \code{response_time}. Currently defaults to \code{NULL}, and a
+\code{country}-specific spare hospital capacity value is used from
+\link{country_data}.
+Pass a number to override the default country-specific threshold value.}
 
 \item{initial_state_manual}{An optional \strong{named} list with the names
 \code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and
