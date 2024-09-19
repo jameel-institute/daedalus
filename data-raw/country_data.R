@@ -332,23 +332,11 @@ stopifnot(
 
 country_data <- Map(country_data, hospital_capacity,
   f = function(x, y) {
-    x[["hospital_capacity"]] <- y * sum(x[["demography"]]) / 1000
+    x[["hospital_capacity"]] <- round(y * sum(x[["demography"]]) / 1000)
 
     x
   }
 )
-
-country_data <- lapply(names(country_data), function(n) {
-  country_pop <- sum(country_data[[n]][["demography"]])
-
-  hosp_cap <- hospital_capacity[[n]]
-  hosp_cap <- (1 - (as.numeric(hosp_cap["bor"]) / 100)) *
-    as.numeric(hosp_cap["capacity"]) * country_pop / 1000
-
-  country_data[[n]][["hospital_capacity"]] <- hosp_cap
-
-  country_data[[n]]
-})
 
 # allow overwriting as this will probably change often
 usethis::use_data(country_data, overwrite = TRUE)
