@@ -18,10 +18,11 @@ make_response_threshold_event <- function(response_threshold) {
 
   event_function <- function(time, state, parameters) {
     # prevent flipping switch when checkEventFunc runs
+    # turn closure and excess hospitalisation switch on
     if (time != parameters[["min_time"]]) {
       rlang::env_bind(
         parameters[["mutables"]],
-        switch = 1.0,
+        switch = 1.0, hosp_switch = 1.0,
         closure_time_start = time
       )
     }
@@ -59,6 +60,23 @@ make_rt_end_event <- function() {
         switch = 0.0,
         closure_time_end = time
       )
+
+      # check if hospitalisations are greater than threshold
+      state <- array(
+        state,
+        c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
+      )
+      total_hosp <- get_hospitalisations(state)
+
+      if (total_hosp > parameters[["hospital_capacity"]]) {
+        rlang::env_poke(
+          parameters[["mutables"]], "hosp_switch", 1.0
+        )
+      } else {
+        rlang::env_poke(
+          parameters[["mutables"]], "hosp_switch", 0.0
+        )
+      }
     }
     state
   }
