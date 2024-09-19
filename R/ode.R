@@ -55,7 +55,10 @@ daedalus_rhs <- function(t, state, parameters) {
   # NOTE: these params are vectors of length `N_AGE_GROUPS`
   gamma_H <- parameters[["gamma_H"]] # recovery rate for H
   eta <- parameters[["eta"]] # hospitalisation rate for symptomatics
-  omega <- parameters[["omega"]] # mortality rate for Hosp.
+
+  # increase mortality rate to 1.6x if hospitals are over capacity
+  hosp_switch <- rlang::env_get(parameters[["mutables"]], "hosp_switch")
+  omega <- parameters[["omega"]] * 1.0 + (hosp_switch * 0.6)
 
   cm <- parameters[["contact_matrix"]]
   cmw <- parameters[["contacts_workplace"]]
