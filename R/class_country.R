@@ -212,7 +212,7 @@ validate_daedalus_country <- function(x) {
     "name", "demography", "contact_matrix",
     "contacts_workplace", "contacts_consumer_worker",
     "contacts_between_sectors", "workers", "gva",
-    "vsl"
+    "vsl", "hospital_capacity"
   )
   has_invariants <- checkmate::test_names(
     attributes(x)$names,
@@ -294,6 +294,11 @@ validate_daedalus_country <- function(x) {
         x$vsl,
         len = N_AGE_GROUPS, any.missing = FALSE,
         lower = 0, upper = 1e7 # reasonable upper limit
+      ),
+    "Country `hospital_capacity` must be a single positive number" =
+      checkmate::test_count(
+        x$hospital_capacity,
+        positive = TRUE
       )
   )
 
@@ -343,6 +348,7 @@ format.daedalus_country <- function(x, ...) {
   print(
     get_data(x, "contact_matrix")
   )
+  cli::cli_text("Hospital capacity: {cli::col_red(x$hospital_capacity)}")
 
   invisible(x)
 }
