@@ -4,6 +4,7 @@
 <url><loc>/LICENSE.html</loc></url>
 <url><loc>/articles/daedalus.html</loc></url>
 <url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/pandemic_costs.html</loc></url>
 <url><loc>/articles/thresholded_response.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
@@ -21,9 +22,11 @@
 <url><loc>/reference/epi_constants.html</loc></url>
 <url><loc>/reference/epidemic_data.html</loc></url>
 <url><loc>/reference/get_closure_info.html</loc></url>
+<url><loc>/reference/get_costs.html</loc></url>
 <url><loc>/reference/get_data.html</loc></url>
 <url><loc>/reference/get_hospitalisations.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/life_value.html</loc></url>
 <url><loc>/reference/make_initial_state.html</loc></url>
 <url><loc>/reference/make_response_threshold_event.html</loc></url>
 <url><loc>/reference/make_rt_end_event.html</loc></url>
