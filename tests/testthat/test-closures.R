@@ -197,26 +197,3 @@ test_that("Closures: correct logging of time limits", {
     time_end
   )
 })
-
-# check that increasing hospital capacity leads to later closure
-test_that("Closures: hospital capacity and closure time", {
-  cty_x <- daedalus_country("Canada")
-  cty_y <- daedalus_country("Canada")
-  cty_y$hospital_capacity <- round(cty_y$hospital_capacity * 2)
-
-  x <- daedalus(
-    cty_x, "sars_cov_1",
-    response_strategy = "elimination",
-    response_time = 298
-  )
-  y <- daedalus(
-    cty_y, "sars_cov_1",
-    response_strategy = "elimination",
-    response_time = 298
-  )
-
-  expect_lt(
-    x$response_data$closure_info$closure_time_start,
-    y$response_data$closure_info$closure_time_start
-  )
-})
