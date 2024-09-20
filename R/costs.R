@@ -68,27 +68,21 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
     grepl("infect|dead|hosp", model_data$compartment) &
       model_data$econ_sector != "sector_00",
   ]
-  worker_absences <- stats::aggregate(
-    value ~ time + econ_sector, worker_absences, sum
+  worker_absences <- tapply(
+    worker_absences$value,
+    list(worker_absences$time, worker_absences$econ_sector),
+    sum
   )
-  worker_absences <- split(
-    worker_absences,
-    f = worker_absences$time
-  )
-
   workforce <- x$country_parameters$workers
-  gva_loss <- lapply(worker_absences, function(df) {
-    prop_absent <- df$value / workforce
 
-    gva * prop_absent
-  })
+  # calculate daily GVA loss; scale GVA loss by openness when closures are
+  # active
+  gva_loss <- worker_absences %*% diag(gva / workforce)
 
-  # scale by openness coefficient when closures are active
-  gva_loss[seq(closure_start, closure_end)] <- lapply(
-    gva_loss[seq(closure_start, closure_end)],
-    `*`, openness
-  )
-  gva_loss <- Reduce(`+`, gva_loss)
+  gva_loss[seq(closure_start, closure_end), ] <-
+    gva_loss[seq(closure_start, closure_end), ] %*% diag(openness)
+
+  gva_loss <- colSums(gva_loss)
 
   education_cost_absences <- gva_loss[i_EDUCATION_SECTOR]
   economic_cost_absences <- sum(
@@ -106,9 +100,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
     total_deaths$age_group,
     levels = unique(total_deaths$age_group)
   )
-  total_deaths <- stats::aggregate(
-    value ~ age_group, total_deaths, sum
-  )$value
+  total_deaths <- tapply(total_deaths$value, total_deaths$age_group, sum)
 
   # NOTE: in million $s
   life_years_lost <- x$country_parameters$vsl * total_deaths / 1e6
