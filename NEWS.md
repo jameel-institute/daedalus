@@ -1,3 +1,17 @@
+# daedalus 0.0.8
+
+This patch adds hospital capacity data and two downstream effects.
+
+1. Spare hospital capacity data raw data file has been added to `inst/extdata`. A processing script to generate an intermediate dataset has been added to `data-raw/`. The number of countries with available data has been reduced to 41.
+
+2. `<daedalus_country>` class objects now provide spare capacity data.
+
+3. A call to `daedalus()` now takes the `response_threshold` from the `country`-specific hospital capacity by default. Users can still pass a custom value to override the package data.
+
+4. The model's mortality rate `omega` is increased by `1.6x` when the total number of hospitalisations exceed the spare hospital capacity. This is implemented using a switch `hosp_switch` mutable parameter, and the switch activation and termination is rolled into the event functions that control closures.
+
+5. Added tests to check that hospital capacity has expected effect.
+
 # daedalus 0.0.7
 
 This patch adds functionality to calculate pandemic costs using the newly added function `get_costs()`.
