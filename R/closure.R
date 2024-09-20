@@ -19,14 +19,17 @@ make_response_threshold_event <- function(response_threshold) {
   event_function <- function(time, state, parameters) {
     # prevent flipping switch when checkEventFunc runs
     # turn closure and excess hospitalisation switch on
-    if (time != parameters[["min_time"]]) {
+    is_hosp_switch_on <- as.logical(
+      rlang::env_get(parameters[["mutables"]], "hosp_switch")
+    )
+    if (time != parameters[["min_time"]] && !is_hosp_switch_on) {
       rlang::env_bind(
         parameters[["mutables"]],
         switch = 1.0, hosp_switch = 1.0,
         closure_time_start = time
       )
     }
-    state
+    as.numeric(state)
   }
 
   list(root_function = root_function, event_function = event_function)
@@ -78,7 +81,7 @@ make_rt_end_event <- function() {
         )
       }
     }
-    state
+    as.numeric(state)
   }
 
   list(root_function = root_function, event_function = event_function)
