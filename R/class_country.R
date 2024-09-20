@@ -403,7 +403,8 @@ set_data.daedalus_country <- function(x, ...) {
 #'
 #' @name prepare_parameters
 #' @keywords internal
-prepare_parameters.daedalus_country <- function(x) {
+prepare_parameters.daedalus_country <- function(x, ...) {
+  chkDots(...)
   validate_daedalus_country(x)
 
   demography <- get_data(x, "demography")

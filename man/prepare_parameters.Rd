@@ -7,7 +7,7 @@
 \alias{prepare_parameters.daedalus_infection}
 \title{Prepare country parameters for model}
 \usage{
-\method{prepare_parameters}{daedalus_country}(x)
+\method{prepare_parameters}{daedalus_country}(x, ...)
 
 \method{prepare_parameters}{daedalus_infection}(x, ...)
 
