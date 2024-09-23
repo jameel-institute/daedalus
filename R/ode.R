@@ -86,10 +86,11 @@ daedalus_rhs <- function(t, state, parameters) {
   # create empty array of the dimensions of state
   d_state <- array(0.0, dim(state_))
 
-  # get new deaths
+  # get new deaths and implement social distancing only when closures are active
+  # as described in https://github.com/robj411/p2_drivers
   d_state[, i_D, ] <- omega * state_[, i_H, ]
   new_deaths <- sum(d_state[, i_D, ])
-  r0 <- r0 * get_distancing_coefficient(new_deaths)
+  r0 <- r0 * ifelse(switch, get_distancing_coefficient(new_deaths), 1.0)
 
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
   new_community_infections <- r0 * state_[, i_S, ] *

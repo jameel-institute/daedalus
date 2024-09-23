@@ -26,6 +26,7 @@ The social distancing coefficient is a value between 1.0 and an
 arbitrary lower limit, which is used to scale the transmission rate and
 represents public concern around the pandemic. The coefficient is 1.0 when
 there are no deaths, and reduces asymptotically to the lower limit as deaths
-increase.
+increase. Social distancing begins when closures begin, and ends when
+vaccination is complete (\emph{not yet implemented}).
 }
 \keyword{internal}
