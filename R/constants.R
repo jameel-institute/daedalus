@@ -41,7 +41,7 @@ N_AGE_GROUPS <- 4L
 
 #' @name model_constants
 #' @keywords model_constant
-N_VACCINE_STRATA <- 1L
+N_VACCINE_STRATA <- 2L
 
 #' @name model_constants
 #' @keywords model_constant
@@ -78,6 +78,13 @@ DIM_EPI_COMPARTMENTS <- 2L
 #' @name model_constants
 #' @keywords model_constant
 DIM_ECON_SECTORS <- 3L
+
+#' @name model_constants
+#' @keywords model_constant
+DIM_VACCINE_STRATA <- 4L
+i_UNVACCINATED_STRATUM <- 1L
+i_VACCINATED_STRATUM <- 2L
+
 
 #' @name model_constants
 #' @keywords model_constant

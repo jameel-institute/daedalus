@@ -14,6 +14,7 @@
 \alias{DIM_AGE_GROUPS}
 \alias{DIM_EPI_COMPARTMENTS}
 \alias{DIM_ECON_SECTORS}
+\alias{DIM_VACCINE_STRATA}
 \alias{N_OUTPUT_COLS}
 \title{DAEDALUS model constants}
 \format{
@@ -22,6 +23,8 @@ An object of class \code{integer} of length 1.
 An object of class \code{integer} of length 1.
 
 An object of class \code{character} of length 4.
+
+An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
 
@@ -63,6 +66,8 @@ DIM_AGE_GROUPS
 DIM_EPI_COMPARTMENTS
 
 DIM_ECON_SECTORS
+
+DIM_VACCINE_STRATA
 
 N_OUTPUT_COLS
 }
