@@ -95,13 +95,13 @@ make_initial_state <- function(country, initial_state_manual) {
 #' @keywords internal
 prepare_mutable_parameters <- function() {
   env <- rlang::env(
-    switch = 0.0,
+    switch = FALSE,
 
     # set closure time start and time end to 0.0
     # to later process duration as time_start - time_end
     closure_time_start = 0.0,
     closure_time_end = 0.0,
-    hosp_switch = 0.0
+    hosp_switch = FALSE
   )
 
   env

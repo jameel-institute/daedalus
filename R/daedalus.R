@@ -212,8 +212,8 @@ daedalus <- function(country,
   ]
   initial_state <- as.numeric(initial_state)
 
-  # set switch parameter and log closure start time if not 0.0
-  rlang::env_poke(parameters[["mutables"]], "switch", 1.0)
+  # set switch parameter and log closure start time if not 0.0/FALSE
+  rlang::env_poke(parameters[["mutables"]], "switch", TRUE)
 
   is_response_active <- as.logical(
     rlang::env_get(parameters[["mutables"]], "closure_time_start")
@@ -246,7 +246,7 @@ daedalus <- function(country,
     )
   }
 
-  data <- rbind(data_stage_one, data_stage_two[-1, ])
+  data <- rbind(data_stage_one, data_stage_two[-1L, ])
 
   # NOTE: unclassing country and infection returns lists
   data <- list(

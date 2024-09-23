@@ -58,7 +58,7 @@ daedalus_rhs <- function(t, state, parameters) {
 
   # increase mortality rate to 1.6x if hospitals are over capacity
   hosp_switch <- rlang::env_get(parameters[["mutables"]], "hosp_switch")
-  omega <- parameters[["omega"]] * 1.0 + (hosp_switch * 0.6)
+  omega <- parameters[["omega"]] * ifelse(hosp_switch, 1.6, 1.0)
 
   cm <- parameters[["contact_matrix"]]
   cmw <- parameters[["contacts_workplace"]]
@@ -78,7 +78,7 @@ daedalus_rhs <- function(t, state, parameters) {
   # scaling economic sector openness
   openness <- parameters[["openness"]]
 
-  switch <- as.logical(rlang::env_get(parameters[["mutables"]], "switch"))
+  switch <- rlang::env_get(parameters[["mutables"]], "switch")
 
   scaling <- if (switch) openness else 1.0
   r0_econ <- r0 * scaling
