@@ -82,7 +82,14 @@ daedalus_rhs <- function(t, state, parameters) {
 
   scaling <- if (switch) openness else 1.0
   r0_econ <- r0 * scaling
-  r0 <- r0 * mean(scaling) # as otherwise no scaling on r0
+
+  # create empty array of the dimensions of state
+  d_state <- array(0.0, dim(state_))
+
+  # get new deaths
+  d_state[, i_D, ] <- omega * state_[, i_H, ]
+  new_deaths <- sum(d_state[, i_D, ])
+  r0 <- r0 * get_distancing_coefficient(new_deaths)
 
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
   new_community_infections <- r0 * state_[, i_S, ] *
@@ -106,9 +113,6 @@ daedalus_rhs <- function(t, state, parameters) {
 
   new_comm_work_infections <- state_[i_WORKING_AGE, i_S, -i_NOT_WORKING] *
     foi_cw
-
-  # create empty array of the dimensions of state
-  d_state <- array(0.0, dim(state_))
 
   # change in susceptibles
   d_state[, i_S, ] <- -new_community_infections + (rho * state_[, i_R, ])
@@ -139,9 +143,6 @@ daedalus_rhs <- function(t, state, parameters) {
     gamma_Ia * state_[, i_Ia, ] +
     gamma_H * state_[, i_H, ] -
     rho * state_[, i_R, ]
-
-  # change in dead
-  d_state[, i_D, ] <- omega * state_[, i_H, ]
 
   # return in the same order as state
   list(c(d_state))
