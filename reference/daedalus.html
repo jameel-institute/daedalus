@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,7 +51,7 @@
 <span>  response_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"elimination"</span>, <span class="st">"economic_closures"</span>, <span class="st">"school_closures"</span><span class="op">)</span>,</span>
 <span>  implementation_level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"light"</span>, <span class="st">"heavy"</span><span class="op">)</span>,</span>
 <span>  response_time <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  response_threshold <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  response_threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  initial_state_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  time_end <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -109,9 +109,10 @@ Defaults to 30 days.</p></dd>
 <dd><p>A single numeric value for the total number of
 hospitalisations that causes an epidemic response
 (specified by <code>response_strategy</code>) to be triggered, if it has not already
-been triggered via <code>response_time</code>. Currently defaults to 1000, which
-overrides the default response- and country-specific threshold values held in
-<a href="country_data.html">country_data</a>.</p></dd>
+been triggered via <code>response_time</code>. Currently defaults to <code>NULL</code>, and a
+<code>country</code>-specific spare hospital capacity value is used from
+<a href="country_data.html">country_data</a>.
+Pass a number to override the default country-specific threshold value.</p></dd>
 
 
 <dt id="arg-initial-state-manual">initial_state_manual<a class="anchor" aria-label="anchor" href="#arg-initial-state-manual"></a></dt>

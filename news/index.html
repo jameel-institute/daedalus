@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,15 @@
       <small>Source: <a href="https://github.com/j-idea/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.8" id="daedalus-008">daedalus 0.0.8<a class="anchor" aria-label="anchor" href="#daedalus-008"></a></h2>
+<p>This patch adds hospital capacity data and two downstream effects.</p>
+<ol style="list-style-type: decimal"><li><p>Spare hospital capacity data raw data file has been added to <code>inst/extdata</code>. A processing script to generate an intermediate dataset has been added to <code>data-raw/</code>. The number of countries with available data has been reduced to 41.</p></li>
+<li><p><code>&lt;daedalus_country&gt;</code> class objects now provide spare capacity data.</p></li>
+<li><p>A call to <code><a href="../reference/daedalus.html">daedalus()</a></code> now takes the <code>response_threshold</code> from the <code>country</code>-specific hospital capacity by default. Users can still pass a custom value to override the package data.</p></li>
+<li><p>The model’s mortality rate <code>omega</code> is increased by <code>1.6x</code> when the total number of hospitalisations exceed the spare hospital capacity. This is implemented using a switch <code>hosp_switch</code> mutable parameter, and the switch activation and termination is rolled into the event functions that control closures.</p></li>
+<li><p>Added tests to check that hospital capacity has expected effect.</p></li>
+</ol></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.7" id="daedalus-007">daedalus 0.0.7<a class="anchor" aria-label="anchor" href="#daedalus-007"></a></h2>
 <p>This patch adds functionality to calculate pandemic costs using the newly added function <code><a href="../reference/get_costs.html">get_costs()</a></code>. This patch also adds <code>life_value</code>, a list of country-wise, age-specific values of statistical life lost as package data.</p>
