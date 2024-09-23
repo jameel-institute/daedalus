@@ -1,3 +1,12 @@
+# daedalus 0.0.9
+
+This patch version adds a spontaneous social distancing mechanism to the model in the internal function `get_distancing_coefficient()`, which modifies the infection transmission rate based on the number of new deaths. The intention is to model public concern that leads to a spontaneous reduction in community social contacts.
+
+- Social distancing is independent of the specific response strategy chosen, but is active while a response strategy is active. In future, social distancing will be conditioned on vaccination regime completion.
+- Social distancing is active in the 'no response' scenario.
+- Workplace contacts are not affected.
+- Social distancing scales the transmission rate by a value between 1.0 (no distancing) and the `lower_limit` (arbitrary value of 0.2) using an exponential decay function.
+
 # daedalus 0.0.8
 
 This patch adds hospital capacity data and two downstream effects.
