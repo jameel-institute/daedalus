@@ -4,7 +4,8 @@
 #' arbitrary lower limit, which is used to scale the transmission rate and
 #' represents public concern around the pandemic. The coefficient is 1.0 when
 #' there are no deaths, and reduces asymptotically to the lower limit as deaths
-#' increase.
+#' increase. Social distancing begins when closures begin, and ends when
+#' vaccination is complete (*not yet implemented*).
 #'
 #' @param new_deaths The number of new deaths at time `t`.
 #' @param rate The proportional reduction of social contacts due to each
