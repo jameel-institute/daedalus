@@ -84,11 +84,11 @@ DIM_ECON_SECTORS <- 3L
 DIM_VACCINE_STRATA <- 4L
 i_UNVACCINATED_STRATUM <- 1L
 i_VACCINATED_STRATUM <- 2L
-
+VACCINE_GROUPS <- c("unvaccinated", "vaccinated")
 
 #' @name model_constants
 #' @keywords model_constant
-N_OUTPUT_COLS <- 5L
+N_OUTPUT_COLS <- 6L
 
 #' @title Epidemiological compartments and indices
 #' @description Names and indices for the epidemiological compartments used in
