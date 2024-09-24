@@ -51,8 +51,10 @@ make_initial_state <- function(country, initial_state_manual) {
   # build for all age groups
   initial_state <- array(
     rep(initial_state, each = N_AGE_GROUPS),
-    c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
+    c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
   )
+  # set vaccinated to zero
+  initial_state[, , , i_VACCINATED_STRATUM] <- 0.0
 
   # get demography and sector workforce
   demography <- get_data(country, "demography")
@@ -62,19 +64,21 @@ make_initial_state <- function(country, initial_state_manual) {
   # for distribution of working age into economic sectors
   inactive_workers <- demography[i_WORKING_AGE] - sum(sector_workforce)
 
-  initial_state[-i_WORKING_AGE, , i_NOT_WORKING] <-
-    initial_state[-i_WORKING_AGE, , i_NOT_WORKING] *
+  initial_state[-i_WORKING_AGE, , i_NOT_WORKING, i_UNVACCINATED_STRATUM] <-
+    initial_state[-i_WORKING_AGE, , i_NOT_WORKING, i_UNVACCINATED_STRATUM] *
       demography[-i_WORKING_AGE]
 
-  initial_state[i_WORKING_AGE, , i_NOT_WORKING] <-
-    initial_state[i_WORKING_AGE, , i_NOT_WORKING] * inactive_workers
+  initial_state[i_WORKING_AGE, , i_NOT_WORKING, i_UNVACCINATED_STRATUM] <-
+    initial_state[i_WORKING_AGE, , i_NOT_WORKING, i_UNVACCINATED_STRATUM] *
+      inactive_workers
 
   # explicit col-wise multiplication as R tries to guess interpretation of `*`
-  initial_state[i_WORKING_AGE, , -i_NOT_WORKING] <-
-    initial_state[i_WORKING_AGE, , -i_NOT_WORKING] %*% diag(sector_workforce)
+  initial_state[i_WORKING_AGE, , -i_NOT_WORKING, i_UNVACCINATED_STRATUM] <-
+    initial_state[i_WORKING_AGE, , -i_NOT_WORKING, i_UNVACCINATED_STRATUM] %*%
+    diag(sector_workforce)
 
   # set all economic sector non-working age values to 0
-  initial_state[-i_WORKING_AGE, , -i_NOT_WORKING] <- 0.0
+  initial_state[-i_WORKING_AGE, , -i_NOT_WORKING, ] <- 0.0
 
   initial_state
 }
