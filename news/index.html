@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,14 @@
       <small>Source: <a href="https://github.com/j-idea/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9" id="daedalus-009">daedalus 0.0.9<a class="anchor" aria-label="anchor" href="#daedalus-009"></a></h2>
+<p>This patch version adds a spontaneous social distancing mechanism to the model in the internal function <code><a href="../reference/get_distancing_coefficient.html">get_distancing_coefficient()</a></code>, which modifies the infection transmission rate based on the number of new deaths. The intention is to model public concern that leads to a spontaneous reduction in community social contacts.</p>
+<ul><li>Social distancing is independent of the specific response strategy chosen, but is active while a response strategy is active. In future, social distancing will be conditioned on vaccination regime completion.</li>
+<li>Social distancing is active in the ‘no response’ scenario.</li>
+<li>Workplace contacts are not affected.</li>
+<li>Social distancing scales the transmission rate by a value between 1.0 (no distancing) and the <code>lower_limit</code> (arbitrary value of 0.2) using an exponential decay function.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.8" id="daedalus-008">daedalus 0.0.8<a class="anchor" aria-label="anchor" href="#daedalus-008"></a></h2>
 <p>This patch adds hospital capacity data and two downstream effects.</p>
