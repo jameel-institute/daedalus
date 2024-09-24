@@ -41,7 +41,7 @@ daedalus_rhs <- function(t, state, parameters) {
   # and these are represented by the third dimension of the tensor
   state_ <- array(
     state,
-    c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
+    c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
   )
 
   r0 <- parameters[["r0"]]
@@ -51,6 +51,8 @@ daedalus_rhs <- function(t, state, parameters) {
   gamma_Is <- parameters[["gamma_Is"]] # single recovery rate for Is
   gamma_Ia <- parameters[["gamma_Ia"]] # recovery rate for Ia
   rho <- parameters[["rho"]] # waning rate for infection-derived immunity
+  nu <- parameters[["nu"]] # vaccination rate as a proportion of the total pop
+  psi <- parameters[["psi"]] # waning rate of vaccination derived immunity
 
   # NOTE: these params are vectors of length `N_AGE_GROUPS`
   gamma_H <- parameters[["gamma_H"]] # recovery rate for H
@@ -93,57 +95,82 @@ daedalus_rhs <- function(t, state, parameters) {
   r0 <- r0 * if (switch) get_distancing_coefficient(new_deaths) else 1.0
 
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
-  new_community_infections <- r0 * state_[, i_S, ] *
-    cm %*% (state_[, i_Is, ] + state_[, i_Ia, ] * epsilon)
+  community_infectious <- state_[, i_Is, , ] + state_[, i_Ia, , ] * epsilon
+  cm_inf <- array(
+    apply(community_infectious, 3L, function(x) cm %*% x),
+    c(N_AGE_GROUPS, N_ECON_STRATA, N_VACCINE_STRATA)
+  )
+  new_community_infections <- r0 * state_[, i_S, , ] * cm_inf # element-wise
 
-  workplace_infected <- state_[i_WORKING_AGE, i_Is, -i_NOT_WORKING] +
-    state_[i_WORKING_AGE, i_Ia, -i_NOT_WORKING] * epsilon
+  workplace_infected <- state_[i_WORKING_AGE, i_Is, -i_NOT_WORKING, ] +
+    state_[i_WORKING_AGE, i_Ia, -i_NOT_WORKING, ] * epsilon
+  # NOTE: re-assigning `workplace_infected`
+  workplace_infected <- (cmw * workplace_infected +
+    cm_ww %*% workplace_infected) /
+    colSums(state_[i_WORKING_AGE, , -i_NOT_WORKING, ])
+  # reset any NaNs to 0; NaNs come from zero division as vaxxed are initially 0s
+  workplace_infected[is.nan(workplace_infected)] <- 0.0
 
   # NOTE: original DAEDALUS model lumped economic sectors with age strata, here
   # we use a 3D tensor instead, where the first layer represents the non-working
   new_workplace_infections <- r0_econ *
-    state_[i_WORKING_AGE, i_S, -i_NOT_WORKING] *
-    ((cmw * workplace_infected) + c(workplace_infected %*% cm_ww)) /
-    colSums(state_[i_WORKING_AGE, , -i_NOT_WORKING])
+    state_[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] * workplace_infected
 
   # NOTE: only consumer to worker infections are currently allowed
   # NOTE: calculate FOI as β * Σ_{j=1}^{j=N} M_{ij} I_j / N_j
-  infected_consumers <- (state_[, i_Is, i_NOT_WORKING] +
-    state_[, i_Ia, i_NOT_WORKING] * epsilon) / demography
+  infected_consumers <- (state_[, i_Is, i_NOT_WORKING, ] +
+    state_[, i_Ia, i_NOT_WORKING, ] * epsilon) / demography
   foi_cw <- r0_econ * cw %*% infected_consumers
 
-  new_comm_work_infections <- state_[i_WORKING_AGE, i_S, -i_NOT_WORKING] *
+  new_comm_work_infections <- state_[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] *
     foi_cw
 
   # change in susceptibles
-  d_state[, i_S, ] <- -new_community_infections + (rho * state_[, i_R, ])
-  d_state[i_WORKING_AGE, i_S, -i_NOT_WORKING] <-
-    d_state[i_WORKING_AGE, i_S, -i_NOT_WORKING] -
+  d_state[, i_S, , ] <- -new_community_infections + (rho * state_[, i_R, , ])
+  d_state[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] <-
+    d_state[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] -
     new_workplace_infections - new_comm_work_infections
 
   # change in exposed
-  d_state[, i_E, ] <- new_community_infections - sigma * state_[, i_E, ]
-  d_state[i_WORKING_AGE, i_E, -i_NOT_WORKING] <-
-    d_state[i_WORKING_AGE, i_E, -i_NOT_WORKING] +
+  d_state[, i_E, , ] <- new_community_infections - (sigma * state_[, i_E, , ])
+  d_state[i_WORKING_AGE, i_E, -i_NOT_WORKING, ] <-
+    d_state[i_WORKING_AGE, i_E, -i_NOT_WORKING, ] +
     new_workplace_infections + new_comm_work_infections
 
   # change in infectious symptomatic
-  d_state[, i_Is, ] <- p_sigma * sigma * state_[, i_E, ] -
-    (gamma_Is + eta) * state_[, i_Is, ]
+  d_state[, i_Is, , ] <- p_sigma * sigma * state_[, i_E, , ] -
+    (gamma_Is + eta) * state_[, i_Is, , ]
 
   # change in infectious asymptomatic
-  d_state[, i_Ia, ] <- sigma * (1.0 - p_sigma) * state_[, i_E, ] -
-    gamma_Ia * state_[, i_Ia, ]
+  d_state[, i_Ia, , ] <- sigma * (1.0 - p_sigma) * state_[, i_E, , ] -
+    gamma_Ia * state_[, i_Ia, , ]
 
   # change in hospitalised
-  d_state[, i_H, ] <- eta * state_[, i_Is, ] -
-    (gamma_H + omega) * state_[, i_H, ]
+  d_state[, i_H, , ] <- eta * state_[, i_Is, , ] -
+    (gamma_H + omega) * state_[, i_H, , ]
 
   # change in recovered - NOTE: different recovery rates for each compartment
-  d_state[, i_R, ] <- gamma_Is * state_[, i_Is, ] +
-    gamma_Ia * state_[, i_Ia, ] +
-    gamma_H * state_[, i_H, ] -
-    rho * state_[, i_R, ]
+  d_state[, i_R, , ] <- gamma_Is * state_[, i_Is, , ] +
+    gamma_Ia * state_[, i_Ia, , ] +
+    gamma_H * state_[, i_H, , ] -
+    rho * state_[, i_R, , ]
+
+  # change in vaccinated: only susceptible and recovered are vaccinated
+  d_state[, c(i_S, i_R), , i_VACCINATED_STRATUM] <-
+    d_state[, c(i_S, i_R), , i_VACCINATED_STRATUM] +
+    state_[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] * nu -
+    state_[, c(i_S, i_R), , i_VACCINATED_STRATUM] * psi
+
+  # change in unvaccinated: assume waning only affects susceptible and recovered
+  d_state[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] <-
+    d_state[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] -
+    (state_[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] * nu) +
+    state_[, c(i_S, i_R), , i_VACCINATED_STRATUM] * psi
+  # TODO: scale by proportion of eligible individuals remaining to maintain
+  # TODO: nu relative to total population as eligibles decrease
+
+  # change in dead
+  d_state[, i_D, , ] <- omega * state_[, i_H, , ]
 
   # return in the same order as state
   list(c(d_state))
