@@ -90,7 +90,7 @@ daedalus_rhs <- function(t, state, parameters) {
   # as described in https://github.com/robj411/p2_drivers
   d_state[, i_D, ] <- omega * state_[, i_H, ]
   new_deaths <- sum(d_state[, i_D, ])
-  r0 <- r0 * ifelse(switch, get_distancing_coefficient(new_deaths), 1.0)
+  r0 <- r0 * if (switch) get_distancing_coefficient(new_deaths) else 1.0
 
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
   new_community_infections <- r0 * state_[, i_S, ] *
