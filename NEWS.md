@@ -1,3 +1,23 @@
+# daedalus 0.0.10
+
+This patch version adds a basic vaccination functionality, which is controlled by the newly added `vaccination_rate` parameter to `daedalus()`
+
+- Vaccination starts when a response is triggered, and is active even in the 'no closures' scenario;
+
+- Vaccination rate and start time is uniform across age groups;
+
+- Vaccine-derived protection (reduced susceptibility) is represented by hard-coded parameter `tau`, and the waning of this protection is also hard-coded and represented by parameter `psi`. Default values are 0.5 and 1 / 270, respectively.
+
+Internal changes include:
+
+- The system state is now represented as a 4-dimensional array, with the vaccination groups/strata on the 4th dimension (see package constant `DIM_VACCINE_STRATA`);
+
+- ODE system has been updated to include reduced susceptibility and movements between vaccination strata;
+
+- Vaccination rate `nu` is represented in terms of the proportion of the total population, and the internal function `scale_nu()` increases `nu` as the number of individuals eligible for vaccination decreases.
+
+- Added tests for vaccination functionality.
+
 # daedalus 0.0.9
 
 This patch version adds a spontaneous social distancing mechanism to the model in the internal function `get_distancing_coefficient()`, which modifies the infection transmission rate based on the number of new deaths. The intention is to model public concern that leads to a spontaneous reduction in community social contacts.
