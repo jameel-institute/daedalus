@@ -44,6 +44,7 @@ daedalus_rhs <- function(t, state, parameters) {
     c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
   )
 
+  #### Parameter preparation ####
   r0 <- parameters[["r0"]]
   sigma <- parameters[["sigma"]] # exposed to infectious
   p_sigma <- parameters[["p_sigma"]] # proportion symptomatic
@@ -53,6 +54,7 @@ daedalus_rhs <- function(t, state, parameters) {
   rho <- parameters[["rho"]] # waning rate for infection-derived immunity
   nu <- parameters[["nu"]] # vaccination rate as a proportion of the total pop
   psi <- parameters[["psi"]] # waning rate of vaccination derived immunity
+  tau <- parameters[["tau"]]
 
   # NOTE: these params are vectors of length `N_AGE_GROUPS`
   gamma_H <- parameters[["gamma_H"]] # recovery rate for H
@@ -88,19 +90,30 @@ daedalus_rhs <- function(t, state, parameters) {
   # create empty array of the dimensions of state
   d_state <- array(0.0, dim(state_))
 
+  #### Social distancing ####
   # get new deaths and implement social distancing only when closures are active
   # as described in https://github.com/robj411/p2_drivers
-  d_state[, i_D, ] <- omega * state_[, i_H, ]
-  new_deaths <- sum(d_state[, i_D, ])
+  d_state[, i_D, , ] <- omega * state_[, i_H, , ]
+  new_deaths <- sum(d_state[, i_D, , ])
   r0 <- r0 * if (switch) get_distancing_coefficient(new_deaths) else 1.0
 
+  #### Force of infection calculations ####
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
   community_infectious <- state_[, i_Is, , ] + state_[, i_Ia, , ] * epsilon
-  cm_inf <- array(
-    apply(community_infectious, 3L, function(x) cm %*% x),
+  # NOTE: dims 1 and 2 are age group and econ sector; reducing along vax grp
+  community_infectious <- apply(community_infectious, c(1, 2), sum)
+  cm_inf <- cm %*% community_infectious
+
+  # Infections in vaccinated groups - with reduced susceptibility
+  new_community_infections <- r0 * array(
+    apply(state_[, i_S, , ], DIM_ECON_SECTORS, `*`, cm_inf),
     c(N_AGE_GROUPS, N_ECON_STRATA, N_VACCINE_STRATA)
   )
-  new_community_infections <- r0 * state_[, i_S, , ] * cm_inf # element-wise
+
+  # not keen on loops - consider better solution
+  for (i in seq(N_VACCINE_STRATA)) {
+    new_community_infections[, , i] <- new_community_infections[, , i] * tau[i]
+  }
 
   workplace_infected <- state_[i_WORKING_AGE, i_Is, -i_NOT_WORKING, ] +
     state_[i_WORKING_AGE, i_Ia, -i_NOT_WORKING, ] * epsilon
@@ -111,20 +124,22 @@ daedalus_rhs <- function(t, state, parameters) {
   # reset any NaNs to 0; NaNs come from zero division as vaxxed are initially 0s
   workplace_infected[is.nan(workplace_infected)] <- 0.0
 
-  # NOTE: original DAEDALUS model lumped economic sectors with age strata, here
-  # we use a 3D tensor instead, where the first layer represents the non-working
+  # workplace infections from other workers w/ reduced susceptibility of vaxxed
+  # NOTE: explicit col-wise multiplication of workplace infected * tau
   new_workplace_infections <- r0_econ *
-    state_[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] * workplace_infected
+    state_[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] *
+    workplace_infected %*% diag(tau)
 
   # NOTE: only consumer to worker infections are currently allowed
-  # NOTE: calculate FOI as β * Σ_{j=1}^{j=N} M_{ij} I_j / N_j
   infected_consumers <- (state_[, i_Is, i_NOT_WORKING, ] +
     state_[, i_Ia, i_NOT_WORKING, ] * epsilon) / demography
   foi_cw <- r0_econ * cw %*% infected_consumers
 
-  new_comm_work_infections <- state_[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] *
-    foi_cw
+  # force col-wise multiplication of vax-derived reduction in susceptibility
+  new_comm_work_infections <- state_[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] %*%
+    diag(tau) * foi_cw
 
+  #### State change equations ####
   # change in susceptibles
   d_state[, i_S, , ] <- -new_community_infections + (rho * state_[, i_R, , ])
   d_state[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] <-
@@ -155,6 +170,7 @@ daedalus_rhs <- function(t, state, parameters) {
     gamma_H * state_[, i_H, , ] -
     rho * state_[, i_R, , ]
 
+  #### Vaccination and vaccine waning ####
   # change in vaccinated: only susceptible and recovered are vaccinated
   d_state[, c(i_S, i_R), , i_VACCINATED_STRATUM] <-
     d_state[, c(i_S, i_R), , i_VACCINATED_STRATUM] +
@@ -166,11 +182,6 @@ daedalus_rhs <- function(t, state, parameters) {
     d_state[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] -
     (state_[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] * nu) +
     state_[, c(i_S, i_R), , i_VACCINATED_STRATUM] * psi
-  # TODO: scale by proportion of eligible individuals remaining to maintain
-  # TODO: nu relative to total population as eligibles decrease
-
-  # change in dead
-  d_state[, i_D, , ] <- omega * state_[, i_H, , ]
 
   # return in the same order as state
   list(c(d_state))
