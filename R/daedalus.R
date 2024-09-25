@@ -44,6 +44,13 @@
 #' [daedalus::country_data].
 #' Pass a number to override the default country-specific threshold value.
 #'
+#' @param vaccination_rate A single number in the range [0, 1] for the rate at
+#' which individuals in all age groups are vaccinated. Defaults to 0.0 for no
+#' vaccination active. A good value for an active vaccination strategy is
+#' 0.0025, or 0.25% of each age group vaccinated per day, which corresponds to
+#' average vaccination rates achieved during the Covid-19 pandemic.
+#' This parameter will be heavily refactored in future package versions.
+#'
 #' @param initial_state_manual An optional **named** list with the names
 #' `p_infectious` and `p_asymptomatic` for the proportion of infectious and
 #' symptomatic individuals in each age group and economic sector.
@@ -108,6 +115,7 @@ daedalus <- function(country,
                      implementation_level = c("light", "heavy"),
                      response_time = 30,
                      response_threshold = NULL,
+                     vaccination_rate = 0.0,
                      initial_state_manual = list(),
                      time_end = 300,
                      ...) {
@@ -162,6 +170,18 @@ daedalus <- function(country,
     }
   }
 
+  # vaccination rate checks
+  is_good_nu <- checkmate::test_number(
+    vaccination_rate,
+    upper = 1.0, lower = 0,
+    finite = TRUE
+  )
+  if (!is_good_nu) {
+    cli::cli_abort(
+      "`vaccination_rate` must be a positive number between 0 and 1."
+    )
+  }
+
   initial_state <- as.numeric(make_initial_state(country, initial_state_manual))
 
   parameters <- c(
@@ -177,10 +197,15 @@ daedalus <- function(country,
     response_strategy
   ]][[implementation_level]]
 
+  # NOTE: psi (vax waning rate), tau (vax reduction in suscept.), and dims of nu
+  # are hard-coded until vaccination scenarios are decided
   parameters <- c(
     parameters,
     list(
       hospital_capacity = response_threshold, # to increase HFR if crossed
+      nu = vaccination_rate,
+      psi = 1 / 270,
+      tau = c(1.0, 0.5),
       openness = openness,
       mutables = mutables,
       min_time = 1 # setting minimum time to prevent switch flipping

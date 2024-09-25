@@ -11,6 +11,7 @@ daedalus(
   implementation_level = c("light", "heavy"),
   response_time = 30,
   response_threshold = NULL,
+  vaccination_rate = 0,
   initial_state_manual = list(),
   time_end = 300,
   ...
@@ -58,6 +59,13 @@ been triggered via \code{response_time}. Currently defaults to \code{NULL}, and 
 \code{country}-specific spare hospital capacity value is used from
 \link{country_data}.
 Pass a number to override the default country-specific threshold value.}
+
+\item{vaccination_rate}{A single number in the range \link{0, 1} for the rate at
+which individuals in all age groups are vaccinated. Defaults to 0.0 for no
+vaccination active. A good value for an active vaccination strategy is
+0.0025, or 0.25\% of each age group vaccinated per day, which corresponds to
+average vaccination rates achieved during the Covid-19 pandemic.
+This parameter will be heavily refactored in future package versions.}
 
 \item{initial_state_manual}{An optional \strong{named} list with the names
 \code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and
