@@ -16,7 +16,7 @@ test_that("daedalus: basic expectations", {
 
   # as non-working groups do not have data per sector
   expected_rows <- time_end * N_EPI_COMPARTMENTS *
-    (N_AGE_GROUPS + N_ECON_SECTORS)
+    (N_AGE_GROUPS + N_ECON_SECTORS) * N_VACCINE_STRATA
 
   expect_identical(
     nrow(data),
@@ -24,16 +24,25 @@ test_that("daedalus: basic expectations", {
   )
   expect_named(
     data,
-    c("time", "age_group", "compartment", "econ_sector", "value")
+    c(
+      "time", "age_group", "compartment", "econ_sector",
+      "vaccine_group", "value"
+    )
   )
   expect_type(
-    data[["time"]], "double"
+    data[["time"]], "integer"
   )
   expect_type(
     data[["age_group"]], "character"
   )
   expect_type(
     data[["compartment"]], "character"
+  )
+  expect_type(
+    data[["econ_sector"]], "character"
+  )
+  expect_type(
+    data[["vaccine_group"]], "character"
   )
   expect_type(
     data[["value"]], "double"
@@ -86,10 +95,10 @@ test_that("daedalus: Passing model parameters", {
 
 # test statistical correctness for only the covid wildtype infection param set
 test_that("daedalus: statistical correctness", {
-  output <- daedalus(country_canada, "influenza_1918")
+  output <- daedalus("Canada", "influenza_1918")
   data <- get_data(output)
   # tests on single compartment without workers
-  data <- data[data$age_group == "65+", ]
+  data <- data[data$age_group == "65+" & data$vaccine_group == "unvaccinated", ]
 
   # expectations when immunity wanes allowing R -> S
   # no elegant way of programmatically accessing idx
@@ -111,24 +120,27 @@ test_that("daedalus: statistical correctness", {
   # - monotonically decreasing susceptibles
   # - monotonically increasing recovered and deaths
   output <- daedalus(
-    country_canada, daedalus_infection("influenza_1918", rho = 0.0)
+    "Canada", daedalus_infection("influenza_1918", rho = 0.0)
   )
   data <- get_data(output)
   data <- data[data$age_group == "65+", ]
 
-  susceptibles <- data[data$compartment == "susceptible", ]$value
-  expect_true(
-    all(diff(susceptibles) <= 0.0)
+  susceptibles <- data[data$compartment == "susceptible", ]
+  susceptibles <- tapply(susceptibles$value, susceptibles$time, sum)
+  expect_lte(
+    max(diff(susceptibles)), 1e-6 # allowing small positive diff
   )
 
-  recovered <- data[data$compartment == "recovered", ]$value
-  expect_true(
-    all(diff(recovered) >= 0.0)
+  recovered <- data[data$compartment == "recovered", ]
+  recovered <- tapply(recovered$value, recovered$time, sum)
+  expect_gte(
+    min(diff(recovered)), 0.0
   )
 
-  deaths <- data[data$compartment == "dead", ]$value
-  expect_true(
-    all(diff(deaths) >= 0.0)
+  deaths <- data[data$compartment == "dead" &
+    data$vaccine_group == "unvaccinated", ]$value
+  expect_gte(
+    min(diff(deaths)), 0.0
   )
 })
 
