@@ -4,6 +4,7 @@
 #' @param nu The vaccination rate.
 #'
 #' @return The scaled vaccination rate.
+#' @keywords internal
 scale_nu <- function(state, nu) {
   total <- sum(state)
   eligible <- state[, c(i_S, i_R), , i_UNVACCINATED_STRATUM]
