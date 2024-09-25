@@ -60,7 +60,7 @@ been triggered via \code{response_time}. Currently defaults to \code{NULL}, and 
 \link{country_data}.
 Pass a number to override the default country-specific threshold value.}
 
-\item{vaccination_rate}{A single number in the range \link{0, 1} for the rate at
+\item{vaccination_rate}{A single number in the range \verb{[0, 1]} for the rate at
 which individuals in all age groups are vaccinated. Defaults to 0.0 for no
 vaccination active. A good value for an active vaccination strategy is
 0.0025, or 0.25\% of each age group vaccinated per day, which corresponds to
