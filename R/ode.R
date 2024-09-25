@@ -87,6 +87,10 @@ daedalus_rhs <- function(t, state, parameters) {
   scaling <- if (switch) openness else 1.0
   r0_econ <- r0 * scaling
 
+  # NOTE: scale vax rate by proportion of eligible individuals remaining
+  # to maintain rate relative to total population as eligibles decrease
+  nu <- if (switch) scale_nu(state_, nu) else 0.0
+
   # create empty array of the dimensions of state
   d_state <- array(0.0, dim(state_))
 
