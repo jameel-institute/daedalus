@@ -14,7 +14,7 @@ test_that("class <daedalus_output>: basic expectations", {
 
   checkmate::expect_data_frame(
     get_data(output),
-    ncols = 5L
+    ncols = N_OUTPUT_COLS
   )
   checkmate::expect_list(
     get_data(output, "response_data")
