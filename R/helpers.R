@@ -46,7 +46,7 @@ make_initial_state <- function(country, initial_state_manual) {
     Is = p_infectious * (1.0 - p_asymptomatic),
     Ia = p_infectious * p_asymptomatic,
     H = 0.0, R = 0.0, D = 0.0,
-    dE = 0.0, dH = 0.0, dD = 0.0
+    dE = 0.0, dH = 0.0
   )
 
   # build for all age groups
