@@ -8,7 +8,7 @@
 \alias{i_S}
 \title{Epidemiological compartments and indices}
 \format{
-An object of class \code{character} of length 10.
+An object of class \code{character} of length 9.
 
 An object of class \code{integer} of length 1.
 

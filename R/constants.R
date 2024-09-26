@@ -118,16 +118,16 @@ N_OUTPUT_COLS <- 6L
 COMPARTMENTS <- c(
   "susceptible", "exposed", "infect_symp", "infect_asymp",
   "hospitalised", "recovered", "dead",
-  "new_infections", "new_hosp", "new_deaths"
+  "new_infections", "new_hosp"
 )
 
 #' @name epi_constants
 #' @keywords epi_constant
-N_MODEL_COMPARTMENTS <- 10L
+N_MODEL_COMPARTMENTS <- 9L
 N_EPI_COMPARTMENTS <- 7L
-N_DATA_COMPARTMENTS <- 3L
+N_DATA_COMPARTMENTS <- 2L
 i_EPI_COMPARTMENTS <- seq.int(N_EPI_COMPARTMENTS)
-i_DATA_COMPARTMENTS <- c(8L, 9L, 10L)
+i_DATA_COMPARTMENTS <- c(8L, 9L)
 
 #' @name epi_constants
 #' @keywords epi_constant
