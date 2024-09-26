@@ -15,7 +15,7 @@
 #'
 #' - Number of age groups: 4
 #'
-#' - Number of vaccination strata: 1
+#' - Number of vaccination strata: 2
 #'
 #' - Age group bins: 0-4 years, 5-19 years, 20-65 years (working age), 65+ years
 #'
@@ -35,6 +35,8 @@
 #' - Array dimension of epidemiological compartments: 2
 #'
 #' - Array dimension of economic sectors: 3
+#'
+#' - Array dimension of vaccination strata: 4
 #'
 #' @keywords model_constant
 N_AGE_GROUPS <- 4L
@@ -106,43 +108,36 @@ N_OUTPUT_COLS <- 6L
 #' and symptomatic ("infect_symp"), infectious and asymptomatic ("infect_asymp")
 #' , hospitalised, recovered, and dead.
 #'
+#' There are 3 additional compartments that track the number of new infections,
+#' new hospitalisations, and new deaths (`i_dE`, `i_dH`, and `i_dD`).
+#'
 #' @name epi_constants
 #' @rdname epi_constants
 #'
 #' @keywords epi_constant
 COMPARTMENTS <- c(
   "susceptible", "exposed", "infect_symp", "infect_asymp",
-  "hospitalised", "recovered", "dead"
+  "hospitalised", "recovered", "dead",
+  "new_infections", "new_hosp", "new_deaths"
 )
 
 #' @name epi_constants
 #' @keywords epi_constant
-i_S <- 1L
-
-#' @name epi_constants
-#' @keywords epi_constant
-i_E <- 2L
-
-#' @name epi_constants
-#' @keywords epi_constant
-i_Is <- 3L
-
-#' @name epi_constants
-#' @keywords epi_constant
-i_Ia <- 4L
-
-#' @name epi_constants
-#' @keywords epi_constant
-i_H <- 5L
-
-#' @name epi_constants
-#' @keywords epi_constant
-i_R <- 6L
-
-#' @name epi_constants
-#' @keywords epi_constant
-i_D <- 7L
-
-#' @name epi_constants
-#' @keywords epi_constant
+N_MODEL_COMPARTMENTS <- 10L
 N_EPI_COMPARTMENTS <- 7L
+N_DATA_COMPARTMENTS <- 3L
+i_EPI_COMPARTMENTS <- seq.int(N_EPI_COMPARTMENTS)
+i_DATA_COMPARTMENTS <- c(8L, 9L, 10L)
+
+#' @name epi_constants
+#' @keywords epi_constant
+i_S <- 1L
+i_E <- 2L
+i_Is <- 3L
+i_Ia <- 4L
+i_H <- 5L
+i_R <- 6L
+i_D <- 7L
+i_dE <- 8L # new infections
+i_dH <- 9L # new hospitalisations
+i_dD <- 10L # new deaths

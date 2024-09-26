@@ -4,29 +4,11 @@
 \name{epi_constants}
 \alias{epi_constants}
 \alias{COMPARTMENTS}
+\alias{N_MODEL_COMPARTMENTS}
 \alias{i_S}
-\alias{i_E}
-\alias{i_Is}
-\alias{i_Ia}
-\alias{i_H}
-\alias{i_R}
-\alias{i_D}
-\alias{N_EPI_COMPARTMENTS}
 \title{Epidemiological compartments and indices}
 \format{
-An object of class \code{character} of length 7.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
+An object of class \code{character} of length 10.
 
 An object of class \code{integer} of length 1.
 
@@ -35,21 +17,9 @@ An object of class \code{integer} of length 1.
 \usage{
 COMPARTMENTS
 
+N_MODEL_COMPARTMENTS
+
 i_S
-
-i_E
-
-i_Is
-
-i_Ia
-
-i_H
-
-i_R
-
-i_D
-
-N_EPI_COMPARTMENTS
 }
 \value{
 \code{COMPARTMENTS} returns a character vector of the epidemiological
@@ -65,5 +35,8 @@ DAEDALUS, for reuse in model code.
 DAEDALUS has 7 epidemiological compartments: susceptible, exposed, infectious
 and symptomatic ("infect_symp"), infectious and asymptomatic ("infect_asymp")
 , hospitalised, recovered, and dead.
+
+There are 3 additional compartments that track the number of new infections,
+new hospitalisations, and new deaths (\code{i_dE}, \code{i_dH}, and \code{i_dD}).
 }
 \keyword{epi_constant}

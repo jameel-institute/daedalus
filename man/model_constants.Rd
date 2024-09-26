@@ -83,7 +83,7 @@ specific to the epidemiological model.
 The DAEDALUS model requires the following values to be fixed.
 \itemize{
 \item Number of age groups: 4
-\item Number of vaccination strata: 1
+\item Number of vaccination strata: 2
 \item Age group bins: 0-4 years, 5-19 years, 20-65 years (working age), 65+ years
 \item Index of the working-age age groups: 3; see \code{AGE_GROUPS}
 \item Number of economic sectors: 45
@@ -95,6 +95,7 @@ working age individuals.
 \item Array dimension of age groups: 1
 \item Array dimension of epidemiological compartments: 2
 \item Array dimension of economic sectors: 3
+\item Array dimension of vaccination strata: 4
 }
 }
 \keyword{model_constant}
