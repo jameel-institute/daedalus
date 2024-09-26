@@ -115,7 +115,7 @@ daedalus_rhs <- function(t, state, parameters) {
   )
 
   # not keen on loops - consider better solution
-  for (i in seq(N_VACCINE_STRATA)) {
+  for (i in seq_len(N_VACCINE_STRATA)) {
     new_community_infections[, , i] <- new_community_infections[, , i] * tau[i]
   }
 
