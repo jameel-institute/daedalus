@@ -23,7 +23,7 @@ prepare_output <- function(output) {
   data <- array(
     output[, setdiff(colnames(output), "time")],
     c(
-      n_times, N_AGE_GROUPS, N_EPI_COMPARTMENTS,
+      n_times, N_AGE_GROUPS, N_MODEL_COMPARTMENTS,
       N_ECON_STRATA, N_VACCINE_STRATA
     )
   )
@@ -32,18 +32,18 @@ prepare_output <- function(output) {
   # time labels
   data$Var1 <- rep(
     seq(n_times),
-    N_AGE_GROUPS * N_EPI_COMPARTMENTS * N_ECON_STRATA * N_VACCINE_STRATA
+    N_AGE_GROUPS * N_MODEL_COMPARTMENTS * N_ECON_STRATA * N_VACCINE_STRATA
   )
 
   # age group labels
   age_groups <- rep(AGE_GROUPS, each = n_times)
   age_groups <- rep(
     age_groups,
-    N_EPI_COMPARTMENTS * N_ECON_STRATA * N_VACCINE_STRATA
+    N_MODEL_COMPARTMENTS * N_ECON_STRATA * N_VACCINE_STRATA
   )
   data$Var2 <- age_groups
 
-  # epi compartment labels
+  # model compartment labels
   compartments <- rep(COMPARTMENTS, each = N_AGE_GROUPS * n_times)
   compartments <- rep(compartments, N_ECON_STRATA * N_VACCINE_STRATA)
   data$Var3 <- compartments
@@ -53,7 +53,7 @@ prepare_output <- function(output) {
   # padding sectors with zeros
   econ_sector <- rep(
     sprintf("sector_%02i", seq.int(0L, N_ECON_SECTORS)),
-    each = N_AGE_GROUPS * N_EPI_COMPARTMENTS * n_times
+    each = N_AGE_GROUPS * N_MODEL_COMPARTMENTS * n_times
   )
   econ_sector <- rep(
     econ_sector, N_VACCINE_STRATA
@@ -63,7 +63,7 @@ prepare_output <- function(output) {
   # vaccine group labels
   data$Var5 <- rep(
     VACCINE_GROUPS,
-    each = n_times * N_EPI_COMPARTMENTS * N_AGE_GROUPS * N_ECON_STRATA
+    each = n_times * N_MODEL_COMPARTMENTS * N_AGE_GROUPS * N_ECON_STRATA
   )
 
   # set column names

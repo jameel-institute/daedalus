@@ -41,7 +41,7 @@ daedalus_rhs <- function(t, state, parameters) {
   # and these are represented by the third dimension of the tensor
   state_ <- array(
     state,
-    c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
+    c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
   )
 
   #### Parameter preparation ####
@@ -98,8 +98,10 @@ daedalus_rhs <- function(t, state, parameters) {
   # get new deaths and implement social distancing only when closures are active
   # as described in https://github.com/robj411/p2_drivers
   d_state[, i_D, , ] <- omega * state_[, i_H, , ]
-  new_deaths <- sum(d_state[, i_D, , ])
-  r0 <- r0 * if (switch) get_distancing_coefficient(new_deaths) else 1.0
+  new_deaths <- d_state[, i_D, , ]
+  new_deaths_total <- sum(new_deaths)
+
+  r0 <- r0 * if (switch) get_distancing_coefficient(new_deaths_total) else 1.0
 
   #### Force of infection calculations ####
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
@@ -124,7 +126,7 @@ daedalus_rhs <- function(t, state, parameters) {
   # NOTE: re-assigning `workplace_infected`
   workplace_infected <- (cmw * workplace_infected +
     cm_ww %*% workplace_infected) /
-    colSums(state_[i_WORKING_AGE, , -i_NOT_WORKING, ])
+    colSums(state_[i_WORKING_AGE, i_EPI_COMPARTMENTS, -i_NOT_WORKING, ])
   # reset any NaNs to 0; NaNs come from zero division as vaxxed are initially 0s
   workplace_infected[is.nan(workplace_infected)] <- 0.0
 
