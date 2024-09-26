@@ -65,7 +65,8 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   # absences due to infection, hospitalisation, death
   model_data <- x$model_data
   worker_absences <- model_data[
-    grepl("infect|dead|hosp", model_data$compartment) &
+    model_data$compartment %in%
+      c("infect_symp", "infect_asymp", "hospitalised", "dead") &
       model_data$econ_sector != "sector_00",
   ]
   worker_absences <- tapply(
