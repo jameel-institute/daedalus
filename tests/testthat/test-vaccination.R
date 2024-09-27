@@ -9,6 +9,15 @@ test_that("Vaccination: basic expectations", {
   expect_gt(
     max(data_vaccinated$value), 0
   )
+
+  # expect that vaccination does not affect population size
+  data_start <- data[data$time == min(data$time), ]
+  data_end <- data[data$time == max(data$time), ]
+
+  expect_identical(
+    sum(data_end$value),
+    sum(data_start$value)
+  )
 })
 
 test_that("Vaccination: basic statistical correctness", {
@@ -17,7 +26,8 @@ test_that("Vaccination: basic statistical correctness", {
   data_low_vax <- get_data(
     daedalus(
       "Canada", "sars_cov_1",
-      vaccination_rate = 0.0025,
+      response_time = 10,
+      vaccination_rate = 0.00,
       time_end = time_end
     )
   )
@@ -25,7 +35,8 @@ test_that("Vaccination: basic statistical correctness", {
   data_high_vax <- get_data(
     daedalus(
       "Canada", "sars_cov_1",
-      vaccination_rate = 0.01,
+      response_time = 10,
+      vaccination_rate = 0.001,
       time_end = time_end
     )
   )
