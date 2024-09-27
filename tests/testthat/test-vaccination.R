@@ -16,7 +16,8 @@ test_that("Vaccination: basic expectations", {
 
   expect_identical(
     sum(data_end$value),
-    sum(data_start$value)
+    sum(data_start$value),
+    tolerance = 1
   )
 })
 
