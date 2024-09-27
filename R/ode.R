@@ -152,11 +152,14 @@ daedalus_rhs <- function(t, state, parameters) {
     d_state[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] -
     new_workplace_infections - new_comm_work_infections
 
-  # change in exposed
-  d_state[, i_E, , ] <- new_community_infections - (sigma * state_[, i_E, , ])
-  d_state[i_WORKING_AGE, i_E, -i_NOT_WORKING, ] <-
-    d_state[i_WORKING_AGE, i_E, -i_NOT_WORKING, ] +
+  # log new infections
+  d_state[, i_dE, , ] <- new_community_infections
+  d_state[i_WORKING_AGE, i_dE, -i_NOT_WORKING, ] <-
+    d_state[i_WORKING_AGE, i_dE, -i_NOT_WORKING, ] +
     new_workplace_infections + new_comm_work_infections
+
+  # change in exposed
+  d_state[, i_E, , ] <- d_state[, i_dE, , ] - (sigma * state_[, i_E, , ])
 
   # change in infectious symptomatic
   d_state[, i_Is, , ] <- p_sigma * sigma * state_[, i_E, , ] -
@@ -166,8 +169,11 @@ daedalus_rhs <- function(t, state, parameters) {
   d_state[, i_Ia, , ] <- sigma * (1.0 - p_sigma) * state_[, i_E, , ] -
     gamma_Ia * state_[, i_Ia, , ]
 
+  # log new hospitalisations
+  d_state[, i_dH, , ] <- eta * state_[, i_Is, , ]
+
   # change in hospitalised
-  d_state[, i_H, , ] <- eta * state_[, i_Is, , ] -
+  d_state[, i_H, , ] <- d_state[, i_dH, , ] -
     (gamma_H + omega) * state_[, i_H, , ]
 
   # change in recovered - NOTE: different recovery rates for each compartment
