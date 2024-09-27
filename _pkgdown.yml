@@ -24,6 +24,7 @@ reference:
     desc: Functions to process model output to calculate pandemic costs and other characteristics
     contents:
     - get_costs
+    - epi_output_helpers
   - title: Package generics
     desc: Generics with methods for package S3 classes
     contents:
