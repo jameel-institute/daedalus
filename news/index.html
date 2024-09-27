@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,19 @@
       <small>Source: <a href="https://github.com/j-idea/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.10" id="daedalus-0010">daedalus 0.0.10<a class="anchor" aria-label="anchor" href="#daedalus-0010"></a></h2>
+<p>This patch version adds a basic vaccination functionality, which is controlled by the newly added <code>vaccination_rate</code> parameter to <code><a href="../reference/daedalus.html">daedalus()</a></code></p>
+<ul><li><p>Vaccination starts when a response is triggered, and is active even in the ‘no closures’ scenario;</p></li>
+<li><p>Vaccination rate and start time is uniform across age groups;</p></li>
+<li><p>Vaccine-derived protection (reduced susceptibility) is represented by hard-coded parameter <code>tau</code>, and the waning of this protection is also hard-coded and represented by parameter <code>psi</code>. Default values are 0.5 and 1 / 270, respectively;</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mi>t</mi></msub><annotation encoding="application/x-tex">R_t</annotation></semantics></math> calculation in <code><a href="../reference/reff_calculation.html">r_eff()</a></code> includes reduced susceptibility for vaccinated individuals.</p></li>
+</ul><p>Internal changes include:</p>
+<ul><li><p>The system state is now represented as a 4-dimensional array, with the vaccination groups/strata on the 4th dimension (see package constant <code>DIM_VACCINE_STRATA</code>);</p></li>
+<li><p>ODE system has been updated to include reduced susceptibility and movements between vaccination strata;</p></li>
+<li><p>Vaccination rate <code>nu</code> is represented in terms of the proportion of the total population, and the internal function <code><a href="../reference/scale_nu.html">scale_nu()</a></code> increases <code>nu</code> as the number of individuals eligible for vaccination decreases.</p></li>
+<li><p>Added tests for vaccination functionality.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9" id="daedalus-009">daedalus 0.0.9<a class="anchor" aria-label="anchor" href="#daedalus-009"></a></h2>
 <p>This patch version adds a spontaneous social distancing mechanism to the model in the internal function <code><a href="../reference/get_distancing_coefficient.html">get_distancing_coefficient()</a></code>, which modifies the infection transmission rate based on the number of new deaths. The intention is to model public concern that leads to a spontaneous reduction in community social contacts.</p>

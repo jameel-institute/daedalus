@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,6 +52,7 @@
 <span>  implementation_level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"light"</span>, <span class="st">"heavy"</span><span class="op">)</span>,</span>
 <span>  response_time <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  response_threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  vaccination_rate <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  initial_state_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  time_end <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -113,6 +114,15 @@ been triggered via <code>response_time</code>. Currently defaults to <code>NULL<
 <code>country</code>-specific spare hospital capacity value is used from
 <a href="country_data.html">country_data</a>.
 Pass a number to override the default country-specific threshold value.</p></dd>
+
+
+<dt id="arg-vaccination-rate">vaccination_rate<a class="anchor" aria-label="anchor" href="#arg-vaccination-rate"></a></dt>
+<dd><p>A single number in the range <code>[0, 1]</code> for the rate at
+which individuals in all age groups are vaccinated. Defaults to 0.0 for no
+vaccination active. A good value for an active vaccination strategy is
+0.0025, or 0.25% of each age group vaccinated per day, which corresponds to
+average vaccination rates achieved during the Covid-19 pandemic.
+This parameter will be heavily refactored in future package versions.</p></dd>
 
 
 <dt id="arg-initial-state-manual">initial_state_manual<a class="anchor" aria-label="anchor" href="#arg-initial-state-manual"></a></dt>
