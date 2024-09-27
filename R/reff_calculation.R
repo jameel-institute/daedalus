@@ -18,9 +18,13 @@
 #'
 #' @keywords internal
 r_eff <- function(r0, state, cm) {
-  # NOTE: assumes state is a 3D array, and
+  # NOTE: assumes state is a 4D array, and
   # cm is a 2D contact matrix with eigenvalue = 1.0
-  p_susc <- rowSums(state[, i_S, ]) / rowSums(state)
+  # NOTE: reduced susceptibility for vaccinated!
+  p_susc <- rowSums(
+    state[, i_S, , i_UNVACCINATED_STRATUM] +
+      0.5 * state[, i_S, , i_VACCINATED_STRATUM]
+  ) / rowSums(state)
   cm_eff <- cm %*% diag(p_susc)
 
   r0 * max(Re(eigen(cm_eff)$values))
@@ -33,5 +37,5 @@ r_eff <- function(r0, state, cm) {
 #' @keywords internal
 get_hospitalisations <- function(state) {
   # NOTE: assumes state is a 3D array; not checked as this is internal
-  sum(state[, i_H, ])
+  sum(state[, i_H, , ])
 }
