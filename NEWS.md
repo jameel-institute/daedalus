@@ -6,7 +6,9 @@ This patch version adds a basic vaccination functionality, which is controlled b
 
 - Vaccination rate and start time is uniform across age groups;
 
-- Vaccine-derived protection (reduced susceptibility) is represented by hard-coded parameter `tau`, and the waning of this protection is also hard-coded and represented by parameter `psi`. Default values are 0.5 and 1 / 270, respectively.
+- Vaccine-derived protection (reduced susceptibility) is represented by hard-coded parameter `tau`, and the waning of this protection is also hard-coded and represented by parameter `psi`. Default values are 0.5 and 1 / 270, respectively;
+
+- $R_t$ calculation in `r_eff()` includes reduced susceptibility for vaccinated individuals.
 
 Internal changes include:
 
