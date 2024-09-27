@@ -20,10 +20,10 @@ Depends:
 Imports: 
     checkmate,
     cli,
+    data.table,
     deSolve,
     rlang
 Suggests:
-    data.table,
     ggplot2,
     knitr,
     rmarkdown,
