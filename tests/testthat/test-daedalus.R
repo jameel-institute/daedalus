@@ -15,7 +15,7 @@ test_that("daedalus: basic expectations", {
   expect_length(data, N_OUTPUT_COLS)
 
   # as non-working groups do not have data per sector
-  expected_rows <- time_end * N_EPI_COMPARTMENTS *
+  expected_rows <- time_end * N_MODEL_COMPARTMENTS *
     (N_AGE_GROUPS + N_ECON_SECTORS) * N_VACCINE_STRATA
 
   expect_identical(
@@ -52,8 +52,16 @@ test_that("daedalus: basic expectations", {
   # NOTE: disregard first column holding time
   # NOTE: set tolerance to a reasonable value
   expect_identical(
-    sum(data[data$time == max(data$time), ]$value),
-    sum(data[data$time == min(data$time), ]$value),
+    sum(
+      data[data$time == max(data$time) &
+        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], 
+      ]$value
+    ),
+    sum(
+      data[data$time == min(data$time) &
+        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], 
+      ]$value
+    ),
     tolerance = 1e-12
   )
 })

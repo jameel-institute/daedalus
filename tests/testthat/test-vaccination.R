@@ -15,8 +15,16 @@ test_that("Vaccination: basic expectations", {
   data_end <- data[data$time == max(data$time), ]
 
   expect_identical(
-    sum(data_end$value),
-    sum(data_start$value),
+    sum(
+      data[data$time == max(data$time) &
+             data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], 
+      ]$value
+    ),
+    sum(
+      data[data$time == min(data$time) &
+             data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], 
+      ]$value
+    ),
     tolerance = 1
   )
 })
