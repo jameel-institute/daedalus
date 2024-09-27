@@ -10,7 +10,7 @@ make_response_threshold_event <- function(response_threshold) {
   root_function <- function(time, state, parameters) {
     state <- array(
       state,
-      c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
+      c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
     )
 
     get_hospitalisations(state) - response_threshold
@@ -43,7 +43,7 @@ make_rt_end_event <- function() {
   root_function <- function(time, state, parameters) {
     state <- array(
       state,
-      c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
+      c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
     )
 
     # because contacts are divided by demography during parameter prep
@@ -65,7 +65,7 @@ make_rt_end_event <- function() {
       # check if hospitalisations are greater than threshold
       state <- array(
         state,
-        c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA)
+        c(N_AGE_GROUPS, N_EPI_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
       )
       total_hosp <- get_hospitalisations(state)
 
