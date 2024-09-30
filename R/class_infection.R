@@ -22,7 +22,7 @@ new_daedalus_infection <- function(name, parameters) {
   x
 }
 
-#' Represent countries and territories for DAEDALUS
+#' Represent infection parameters for DAEDALUS
 #'
 #' @name class_infection
 #' @rdname class_infection

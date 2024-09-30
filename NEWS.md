@@ -1,6 +1,6 @@
 # daedalus 0.0.12
 
-This patch version adds functions to summarise model outputs:
+This patch version adds functions to summarise model outputs (#30):
 
 1. `get_incidence()` provides per-timestep (daily) values of one or more of infections (symptomatic and asymptomatic), hospitalisations (or the demand), and deaths, disaggregated by one or more of the following groups: age group, economic sector, and vaccination status.
 

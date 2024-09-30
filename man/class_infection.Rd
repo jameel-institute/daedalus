@@ -5,7 +5,7 @@
 \alias{daedalus_infection}
 \alias{is_daedalus_infection}
 \alias{print.daedalus_infection}
-\title{Represent countries and territories for DAEDALUS}
+\title{Represent infection parameters for DAEDALUS}
 \usage{
 daedalus_infection(name, ...)
 

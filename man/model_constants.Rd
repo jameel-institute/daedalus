@@ -15,6 +15,9 @@
 \alias{DIM_EPI_COMPARTMENTS}
 \alias{DIM_ECON_SECTORS}
 \alias{DIM_VACCINE_STRATA}
+\alias{i_UNVACCINATED_STRATUM}
+\alias{i_VACCINATED_STRATUM}
+\alias{VACCINE_GROUPS}
 \alias{N_OUTPUT_COLS}
 \title{DAEDALUS model constants}
 \format{
@@ -43,6 +46,12 @@ An object of class \code{integer} of length 1.
 An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 1.
+
+An object of class \code{character} of length 2.
+
+An object of class \code{integer} of length 1.
 }
 \usage{
 N_AGE_GROUPS
@@ -68,6 +77,12 @@ DIM_EPI_COMPARTMENTS
 DIM_ECON_SECTORS
 
 DIM_VACCINE_STRATA
+
+i_UNVACCINATED_STRATUM
+
+i_VACCINATED_STRATUM
+
+VACCINE_GROUPS
 
 N_OUTPUT_COLS
 }
@@ -98,4 +113,5 @@ working age individuals.
 \item Array dimension of vaccination strata: 4
 }
 }
+\keyword{datasets}
 \keyword{model_constant}

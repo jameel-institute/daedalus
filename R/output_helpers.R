@@ -66,12 +66,10 @@ get_incidence <- function(data,
   }
 
   # check measures and groups
-  allowed_measures <- c("infections", "hospitalisations", "deaths")
-  measures <- rlang::arg_match(measures, allowed_measures, multiple = TRUE)
+  measures <- rlang::arg_match(measures, SUMMARY_MEASURES, multiple = TRUE)
 
-  allowed_groups <- c("age_group", "vaccine_group", "econ_sector")
   is_good_groups <- checkmate::test_subset(
-    groups, allowed_groups
+    groups, SUMMARY_GROUPS
   )
   if (!is_good_groups) {
     cli::cli_abort(
@@ -87,7 +85,7 @@ get_incidence <- function(data,
   compartments_needed <- c("new_infections", "new_hosp", "dead")
   df_measures <- data.frame(
     compartment = compartments_needed,
-    measure = allowed_measures
+    measure = SUMMARY_MEASURES
   )
   df_measures <- df_measures[df_measures$measure %in% measures, ]
 
@@ -143,12 +141,10 @@ get_epidemic_summary <- function(data,
   }
 
   # check measures and groups
-  allowed_measures <- c("infections", "hospitalisations", "deaths")
-  measures <- rlang::arg_match(measures, allowed_measures, multiple = TRUE)
+  measures <- rlang::arg_match(measures, SUMMARY_MEASURES, multiple = TRUE)
 
-  allowed_groups <- c("age_group", "vaccine_group", "econ_sector")
   is_good_groups <- checkmate::test_subset(
-    groups, allowed_groups
+    groups, SUMMARY_GROUPS
   )
   if (!is_good_groups) {
     cli::cli_abort(
@@ -164,7 +160,7 @@ get_epidemic_summary <- function(data,
   compartments_needed <- c("new_infections", "new_hosp", "dead")
   df_measures <- data.frame(
     compartment = compartments_needed,
-    measure = allowed_measures
+    measure = SUMMARY_MEASURES
   )
   df_measures <- df_measures[df_measures$measure %in% measures, ]
 

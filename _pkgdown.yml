@@ -42,6 +42,7 @@ reference:
     contents:
     - has_keyword("model_constant")
     - has_keyword("epi_constant")
+    - has_keyword("summary_constants")
   - title: Internal functions
     desc: Functions used internally
     contents:

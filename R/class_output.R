@@ -1,4 +1,4 @@
-#' Convert a list to `<daedalus_output>`
+#' Create and work with `<daedalus_output>` objects
 #'
 #' @name class_daedalus_output
 #' @rdname class_daedalus_output

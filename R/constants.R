@@ -84,8 +84,14 @@ DIM_ECON_SECTORS <- 3L
 #' @name model_constants
 #' @keywords model_constant
 DIM_VACCINE_STRATA <- 4L
+
+#' @name model_constants
 i_UNVACCINATED_STRATUM <- 1L
+
+#' @name model_constants
 i_VACCINATED_STRATUM <- 2L
+
+#' @name model_constants
 VACCINE_GROUPS <- c("unvaccinated", "vaccinated")
 
 #' @name model_constants
@@ -124,20 +130,57 @@ COMPARTMENTS <- c(
 #' @name epi_constants
 #' @keywords epi_constant
 N_MODEL_COMPARTMENTS <- 9L
+
+#' @name epi_constants
 N_EPI_COMPARTMENTS <- 7L
+
+#' @name epi_constants
 N_DATA_COMPARTMENTS <- 2L
+
+#' @name epi_constants
 i_EPI_COMPARTMENTS <- seq.int(N_EPI_COMPARTMENTS)
+
+#' @name epi_constants
 i_DATA_COMPARTMENTS <- c(8L, 9L)
 
 #' @name epi_constants
 #' @keywords epi_constant
 i_S <- 1L
+
+#' @name epi_constants
 i_E <- 2L
+
+#' @name epi_constants
 i_Is <- 3L
+
+#' @name epi_constants
 i_Ia <- 4L
+
+#' @name epi_constants
 i_H <- 5L
+
+#' @name epi_constants
 i_R <- 6L
+
+#' @name epi_constants
 i_D <- 7L
+
+#' @name epi_constants
 i_dE <- 8L # new infections
+
+#' @name epi_constants
 i_dH <- 9L # new hospitalisations
+
+#' @name epi_constants
 i_dD <- 10L # new deaths
+
+#' Model output measures and groups for summaries and derived time-series
+#'
+#' @name summary_constants
+#' @rdname summary_constants
+#'
+#' @keywords summary_constants
+SUMMARY_MEASURES <- c("infections", "hospitalisations", "deaths")
+
+#' @name summary_constants
+SUMMARY_GROUPS <- c("age_group", "vaccine_group", "econ_sector")

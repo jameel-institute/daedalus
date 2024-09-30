@@ -6,7 +6,7 @@
 \alias{validate_daedalus_output}
 \alias{is_daedalus_output}
 \alias{print.daedalus_output}
-\title{Convert a list to \verb{<daedalus_output>}}
+\title{Create and work with \verb{<daedalus_output>} objects}
 \usage{
 as_daedalus_output(x)
 
@@ -33,7 +33,7 @@ A logical for whether \code{x} is of the \verb{<daedalus_output>} class.
 None; called for its printing side effects.
 }
 \description{
-Convert a list to \verb{<daedalus_output>}
+Create and work with \verb{<daedalus_output>} objects
 
 Validate a potential \verb{<daedalus_output>} class object
 
