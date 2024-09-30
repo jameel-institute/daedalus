@@ -1,59 +1,200 @@
 "country","capacity","bor","spare_capacity"
+"Afghanistan",0.39,85,0.0585
+"Albania",2.89,85,0.4335
+"Algeria",1.9,85,0.285
 "Andorra",2.5,81,0.475
+"Angola",0.8,85,0.12
+"Antigua and Barbuda",2.89,85,0.4335
+"Argentina",4.99,85,0.7485
 "Armenia",4.2,69.3,1.2894
+"Australia",3.84,85,0.576
 "Austria",7.19,72.9,1.94849
 "Azerbaijan",4.82,36.3,3.07034
+"Bahamas",2.96,85,0.444
+"Bahrain",1.74,85,0.261
+"Bangladesh",0.79,85,0.1185
+"Barbados",5.97,85,0.8955
 "Belarus",10.83,88.7,1.22379
 "Belgium",5.58,81,1.0602
+"Belize",1.04,85,0.156
+"Benin",0.5,85,0.075
+"Bermuda",6.3,85,0.945
+"Bhutan",1.74,85,0.261
+"Bolivia",1.29,85,0.1935
 "Bosnia and Herzegovina",3.49,62.6,1.30526
+"Botswana",1.8,85,0.27
+"Brazil",2.09,85,0.3135
+"Brunei",2.85,85,0.4275
+"Bulgaria",7.57,85,1.1355
+"Burkina Faso",0.4,85,0.06
+"Burundi",0.79,85,0.1185
+"Cabo Verde",2.1,85,0.315
+"Cambodia",0.9,85,0.135
+"Cameroon",1.3,85,0.195
 "Canada",2.52,91.6,0.21168
+"Cayman Islands",3,85,0.45
+"Central African Republic",1,85,0.15
+"Chad",0.4,85,0.06
+"Channel Islands",10.595,85,1.58925
 "Chile",2.03,80.3,0.39991
 "China",4.79,83.6,0.78556
+"Colombia",1.74,85,0.261
+"Comoros",2.16,85,0.324
+"Congo",1.6,85,0.24
 "Costa Rica",1.1,88.7,0.1243
+"Cote d'Ivoire",0.4,85,0.06
 "Croatia",5.61,74.7,1.41933
+"Cuba",5.33,85,0.7995
 "Cyprus",3.3,60.6,1.3002
 "Czechia",6.58,68.6,2.06612
+"Democratic Republic of Congo",0.8,85,0.12
 "Denmark",2.6,84,0.416
+"Djibouti",1.4,85,0.21
+"Dominica",3.8,85,0.57
+"Dominican Republic",1.56,85,0.234
+"Ecuador",1.39,85,0.2085
+"Egypt",1.43,85,0.2145
+"El Salvador",1.2,85,0.18
+"Equatorial Guinea",2.1,85,0.315
+"Eritrea",0.7,85,0.105
 "Estonia",4.53,73.8,1.18686
+"Eswatini",2.1,85,0.315
+"Ethiopia",0.33,85,0.0495
+"Fiji",2,85,0.3
 "Finland",3.35,74,0.871
 "France",5.84,78.9,1.23224
+"Gabon",6.3,85,0.945
+"Gambia",1.1,85,0.165
 "Georgia",2.89,48.5,1.48835
 "Germany",7.91,79.1,1.65319
+"Ghana",0.9,85,0.135
 "Greece",4.18,58.2,1.74724
+"Grenada",3.57,85,0.5355
+"Guinea",0.3,85,0.045
+"Guinea-Bissau",1,85,0.15
+"Guyana",1.71,85,0.2565
+"Haiti",0.71,85,0.1065
+"Honduras",0.64,85,0.096
+"Hong Kong",4.891,85,0.73365
 "Hungary",6.91,63.8,2.50142
+"Iceland",2.83,85,0.4245
 "India",0.53,57,0.2279
 "Indonesia",1.04,75,0.26
+"Iran",1.56,85,0.234
+"Iraq",1.32,85,0.198
 "Ireland",2.88,89.9,0.29088
+"Isle of Man",1.584,85,0.2376
 "Israel",2.96,90.7,0.27528
 "Italy",3.16,78.1,0.69204
+"Jamaica",1.72,85,0.258
 "Japan",12.84,76.1,3.06876
+"Jordan",1.47,85,0.2205
 "Kazakhstan",6.06,87.2,0.77568
+"Kenya",1.4,85,0.21
+"Kiribati",1.86,85,0.279
 "Korea",12.44,64.4,4.42864
+"Kuwait",2.04,85,0.306
 "Kyrgyzstan",4.41,87.3,0.56007
+"Laos",1.5,85,0.225
 "Latvia",5.42,73.2,1.45256
+"Lebanon",2.73,85,0.4095
+"Lesotho",1.3,85,0.195
+"Liberia",0.8,85,0.12
+"Libya",3.2,85,0.48
 "Lithuania",6.35,72.8,1.7272
 "Luxembourg",4.26,78.2,0.92868
+"Madagascar",0.2,85,0.03
+"Malawi",1.3,85,0.195
+"Malaysia",1.88,85,0.282
+"Maldives",4.3,85,0.645
+"Mali",0.1,85,0.015
 "Malta",4.31,81.2,0.81028
+"Marshall Islands",2.7,85,0.405
+"Mauritania",0.4,85,0.06
+"Mauritius",3.4,85,0.51
 "Mexico",0.97,74,0.2522
+"Micronesia",3.2,85,0.48
 "Moldova",5.66,71.8,1.59612
+"Monaco",13.8,85,2.07
+"Mongolia",8,85,1.2
 "Montenegro",3.91,72.2,1.08698
+"Morocco",1,85,0.15
+"Mozambique",0.7,85,0.105
+"Myanmar",1.04,85,0.156
+"Namibia",2.7,85,0.405
+"Nauru",5,85,0.75
+"Nepal",0.3,85,0.045
 "Netherlands",3.08,63.4,1.12728
+"New Zealand",2.57,85,0.3855
+"Nicaragua",0.93,85,0.1395
+"Niger",0.39,85,0.0585
+"Nigeria",0.5,85,0.075
+"North Korea",13.2,85,1.98
 "North Macedonia",4.28,59.7,1.72484
 "Norway",3.47,79.9,0.69747
+"Oman",1.47,85,0.2205
+"Pakistan",0.63,85,0.0945
+"Palau",4.8,85,0.72
+"Palestine",1.2,85,0.18
+"Panama",2.25,85,0.3375
+"Papua New Guinea",4.024,85,0.6036
+"Paraguay",0.83,85,0.1245
+"Peru",1.59,85,0.2385
+"Philippines",0.99,85,0.1485
+"Poland",6.17,85,0.9255
 "Portugal",3.51,81.4,0.65286
+"Puerto Rico",3.32,85,0.498
+"Qatar",1.25,85,0.1875
+"Romania",6.97,85,1.0455
 "Russia",8,73.6,2.112
+"Rwanda",1.6,85,0.24
+"Samoa",1,85,0.15
 "San Marino",3.8,61,1.482
+"Sao Tome and Principe",2.9,85,0.435
+"Saudi Arabia",2.24,85,0.336
+"Senegal",0.3,85,0.045
 "Serbia",5.64,65.3,1.95708
+"Seychelles",3.6,85,0.54
+"Sierra Leone",0.4,85,0.06
+"Singapore",2.49,85,0.3735
 "Slovakia",5.76,65.9,1.96416
 "Slovenia",4.43,68.9,1.37773
+"Solomon Islands",1.4,85,0.21
+"Somalia",0.87,85,0.1305
 "South Africa",2.32,68.6,0.72848
+"South Korea",12.43,85,1.8645
 "Spain",2.95,75.9,0.71095
+"Sri Lanka",4.15,85,0.6225
+"St Kitts and Nevis",2.3,85,0.345
+"St Lucia",1.3,85,0.195
+"St Vincent and the Grenadines",4.32,85,0.648
+"Sudan",0.74,85,0.111
+"Suriname",3,85,0.45
 "Sweden",2.07,77.5,0.46575
 "Switzerland",4.59,81.3,0.85833
+"Syria",1.4,85,0.21
 "Tajikistan",4.67,66.9,1.54577
+"Tanzania",0.7,85,0.105
+"Thailand",2.1,85,0.315
+"Timor-Leste",5.9,85,0.885
+"Togo",0.7,85,0.105
+"Tonga",2.6,85,0.39
+"Trinidad and Tobago",3.02,85,0.453
+"Tunisia",2.18,85,0.327
 "Turkey",2.88,65.5,0.9936
 "Turkmenistan",4.03,84,0.6448
+"Tuvalu",5.6,85,0.84
+"Uganda",0.5,85,0.075
 "Ukraine",7.46,83,1.2682
+"United Arab Emirates",1.38,85,0.207
 "United Kingdom",2.46,84.3,0.38622
 "United States",2.83,64.3,1.01031
+"Uruguay",2.43,85,0.3645
 "Uzbekistan",3.98,86.5,0.5373
+"Vanuatu",1.7,85,0.255
+"Venezuela",0.87,85,0.1305
+"Vietnam",2.6,85,0.39
+"Virgin Islands US",18.68,85,2.802
+"Yemen",0.71,85,0.1065
+"Zambia",2,85,0.3
+"Zimbabwe",1.7,85,0.255
