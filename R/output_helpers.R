@@ -34,7 +34,8 @@
 #'
 #' # epidemic summary
 #' get_epidemic_summary(
-#'   data, groups = "age_group"
+#'   data,
+#'   groups = "age_group"
 #' )
 #'
 #' @export
