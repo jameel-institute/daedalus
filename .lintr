@@ -22,7 +22,7 @@ exclusions: list(
     "tests/testthat/setup-options.R" = list(
       undesirable_function_linter = Inf
     ),
-    "tests/testthat/test-helpers.R" = list(
+    "tests/testthat/test-model_helpers.R" = list(
       nonportable_path_linter = Inf # due to escaping in regex
     ),
     "vignettes" = list(
