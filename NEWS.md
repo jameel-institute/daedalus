@@ -1,3 +1,9 @@
+# daedalus 0.0.11
+
+This patch version corrects spare hospital capacity data by using corrected versions of the raw hospital capacity data (#31).
+
+The `country_data` and `country_names` package data has also been updated. Thailand is now available as a country.
+
 # daedalus 0.0.10
 
 This patch version adds a basic vaccination functionality, which is controlled by the newly added `vaccination_rate` parameter to `daedalus()`
