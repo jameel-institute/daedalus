@@ -5,10 +5,49 @@
 \alias{epi_constants}
 \alias{COMPARTMENTS}
 \alias{N_MODEL_COMPARTMENTS}
+\alias{N_EPI_COMPARTMENTS}
+\alias{N_DATA_COMPARTMENTS}
+\alias{i_EPI_COMPARTMENTS}
+\alias{i_DATA_COMPARTMENTS}
 \alias{i_S}
+\alias{i_E}
+\alias{i_Is}
+\alias{i_Ia}
+\alias{i_H}
+\alias{i_R}
+\alias{i_D}
+\alias{i_dE}
+\alias{i_dH}
+\alias{i_dD}
 \title{Epidemiological compartments and indices}
 \format{
 An object of class \code{character} of length 9.
+
+An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 7.
+
+An object of class \code{integer} of length 2.
+
+An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
 
@@ -19,7 +58,33 @@ COMPARTMENTS
 
 N_MODEL_COMPARTMENTS
 
+N_EPI_COMPARTMENTS
+
+N_DATA_COMPARTMENTS
+
+i_EPI_COMPARTMENTS
+
+i_DATA_COMPARTMENTS
+
 i_S
+
+i_E
+
+i_Is
+
+i_Ia
+
+i_H
+
+i_R
+
+i_D
+
+i_dE
+
+i_dH
+
+i_dD
 }
 \value{
 \code{COMPARTMENTS} returns a character vector of the epidemiological
@@ -39,4 +104,5 @@ and symptomatic ("infect_symp"), infectious and asymptomatic ("infect_asymp")
 There are 3 additional compartments that track the number of new infections,
 new hospitalisations, and new deaths (\code{i_dE}, \code{i_dH}, and \code{i_dD}).
 }
+\keyword{datasets}
 \keyword{epi_constant}

@@ -54,7 +54,8 @@ new_infections <- get_incidence(data, "infections")
 
 # epidemic summary
 get_epidemic_summary(
-  data, groups = "age_group"
+  data,
+  groups = "age_group"
 )
 
 }
