@@ -17,13 +17,11 @@ test_that("Vaccination: basic expectations", {
   expect_identical(
     sum(
       data[data$time == max(data$time) &
-             data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], 
-      ]$value
+        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], ]$value
     ),
     sum(
       data[data$time == min(data$time) &
-             data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], 
-      ]$value
+        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], ]$value
     ),
     tolerance = 1
   )
