@@ -1,3 +1,17 @@
+# daedalus 0.0.12
+
+This patch version adds functions to summarise model outputs:
+
+1. `get_incidence()` provides per-timestep (daily) values of one or more of infections (symptomatic and asymptomatic), hospitalisations (or the demand), and deaths, disaggregated by one or more of the following groups: age group, economic sector, and vaccination status.
+
+2. `get_epidemic_summary()` provides the total number of individuals infected, hospitalised, and dead, in one or more groups, while defaulting to providing an overall summary.
+
+- The model state variable now includes values tracking daily infections (susceptible to exposed) and daily hospitalisations.
+
+- Basic tests added for these functions.
+
+- Package _data.table_ imported to help with model data output processing.
+
 # daedalus 0.0.11
 
 This patch version corrects spare hospital capacity data by using corrected versions of the raw hospital capacity data (#31).
