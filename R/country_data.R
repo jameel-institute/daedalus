@@ -30,10 +30,38 @@
 #' `data-raw/country_data.R
 "country_data"
 
-#' @title Country names for DAEDALUS
+#' @title Country names and ISO codes for DAEDALUS
 #'
-#' @description Names for countries and territories included with the package.
+#' @name country_names_codes
+#' @rdname country_names_codes
+#' @description Names and character codes for countries provided with the
+#' package. Note that country names are commonly used names and may not be
+#' official names.
 #'
-#' @format ## `country_names`
-#' A character vector of recognised country or territory names.
+#' - `country_names`: Country names;
+#'
+#' - `country_codes_iso3c`: ISO 3166 alpha 3 (3 character) codes;
+#'
+#' - `country_codes_iso2c`: ISO 3166 alpha 2 (2 character) codes;
+#'
+#' @format
+#' Character vectors of recognised country names, and 3-character or 2-character
+#' codes.
+#'
+#' @source Country codes are taken from the
+#' [ISO 3166 specification](https://www.iso.org/iso-3166-country-codes.html) and
+#' generated from country names using [countrycode::countrycode()].
+#'
+#' @examples
+#' country_names
+#'
+#' country_codes_iso3c
+#'
+#' country_codes_iso2c
 "country_names"
+
+#' @name country_names_codes
+"country_codes_iso3c"
+
+#' @name country_names_codes
+"country_codes_iso2c"
