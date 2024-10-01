@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,7 +87,7 @@
           <code><a href="class_infection.html">daedalus_infection()</a></code> <code><a href="class_infection.html">is_daedalus_infection()</a></code> <code><a href="class_infection.html">print(<i>&lt;daedalus_infection&gt;</i>)</a></code>
 
         </dt>
-        <dd>Represent countries and territories for DAEDALUS</dd>
+        <dd>Represent infection parameters for DAEDALUS</dd>
       </dl></div><div class="section level2">
       <h2 id="class--2">Class <code>&lt;daedalus_output&gt;</code><a class="anchor" aria-label="anchor" href="#class--2"></a></h2>
 
@@ -104,7 +104,7 @@
           <code><a href="class_daedalus_output.html">as_daedalus_output()</a></code> <code><a href="class_daedalus_output.html">validate_daedalus_output()</a></code> <code><a href="class_daedalus_output.html">is_daedalus_output()</a></code> <code><a href="class_daedalus_output.html">print(<i>&lt;daedalus_output&gt;</i>)</a></code>
 
         </dt>
-        <dd>Convert a list to <code>&lt;daedalus_output&gt;</code></dd>
+        <dd>Create and work with <code>&lt;daedalus_output&gt;</code> objects</dd>
       </dl></div><div class="section level2">
       <h2 id="model-output-post-processing">Model output post-processing<a class="anchor" aria-label="anchor" href="#model-output-post-processing"></a></h2>
 
@@ -122,6 +122,12 @@
 
         </dt>
         <dd>Get epidemic costs from a DAEDALUS model run</dd>
+      </dl><dl><dt>
+
+          <code><a href="epi_output_helpers.html">get_incidence()</a></code> <code><a href="epi_output_helpers.html">get_epidemic_summary()</a></code>
+
+        </dt>
+        <dd>Calculate daily incidences and summarise epidemic measures</dd>
       </dl></div><div class="section level2">
       <h2 id="package-generics">Package generics<a class="anchor" aria-label="anchor" href="#package-generics"></a></h2>
 
@@ -205,16 +211,22 @@
 
       <dl><dt>
 
-          <code><a href="model_constants.html">N_AGE_GROUPS</a></code> <code><a href="model_constants.html">N_VACCINE_STRATA</a></code> <code><a href="model_constants.html">AGE_GROUPS</a></code> <code><a href="model_constants.html">i_WORKING_AGE</a></code> <code><a href="model_constants.html">N_ECON_SECTORS</a></code> <code><a href="model_constants.html">i_EDUCATION_SECTOR</a></code> <code><a href="model_constants.html">N_ECON_STRATA</a></code> <code><a href="model_constants.html">i_NOT_WORKING</a></code> <code><a href="model_constants.html">DIM_AGE_GROUPS</a></code> <code><a href="model_constants.html">DIM_EPI_COMPARTMENTS</a></code> <code><a href="model_constants.html">DIM_ECON_SECTORS</a></code> <code><a href="model_constants.html">DIM_VACCINE_STRATA</a></code> <code><a href="model_constants.html">N_OUTPUT_COLS</a></code>
+          <code><a href="model_constants.html">N_AGE_GROUPS</a></code> <code><a href="model_constants.html">N_VACCINE_STRATA</a></code> <code><a href="model_constants.html">AGE_GROUPS</a></code> <code><a href="model_constants.html">i_WORKING_AGE</a></code> <code><a href="model_constants.html">N_ECON_SECTORS</a></code> <code><a href="model_constants.html">i_EDUCATION_SECTOR</a></code> <code><a href="model_constants.html">N_ECON_STRATA</a></code> <code><a href="model_constants.html">i_NOT_WORKING</a></code> <code><a href="model_constants.html">DIM_AGE_GROUPS</a></code> <code><a href="model_constants.html">DIM_EPI_COMPARTMENTS</a></code> <code><a href="model_constants.html">DIM_ECON_SECTORS</a></code> <code><a href="model_constants.html">DIM_VACCINE_STRATA</a></code> <code><a href="model_constants.html">i_UNVACCINATED_STRATUM</a></code> <code><a href="model_constants.html">i_VACCINATED_STRATUM</a></code> <code><a href="model_constants.html">VACCINE_GROUPS</a></code> <code><a href="model_constants.html">N_OUTPUT_COLS</a></code>
 
         </dt>
         <dd>DAEDALUS model constants</dd>
       </dl><dl><dt>
 
-          <code><a href="epi_constants.html">COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_S</a></code> <code><a href="epi_constants.html">i_E</a></code> <code><a href="epi_constants.html">i_Is</a></code> <code><a href="epi_constants.html">i_Ia</a></code> <code><a href="epi_constants.html">i_H</a></code> <code><a href="epi_constants.html">i_R</a></code> <code><a href="epi_constants.html">i_D</a></code> <code><a href="epi_constants.html">N_EPI_COMPARTMENTS</a></code>
+          <code><a href="epi_constants.html">COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_MODEL_COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_EPI_COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_DATA_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_EPI_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_DATA_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_S</a></code> <code><a href="epi_constants.html">i_E</a></code> <code><a href="epi_constants.html">i_Is</a></code> <code><a href="epi_constants.html">i_Ia</a></code> <code><a href="epi_constants.html">i_H</a></code> <code><a href="epi_constants.html">i_R</a></code> <code><a href="epi_constants.html">i_D</a></code> <code><a href="epi_constants.html">i_dE</a></code> <code><a href="epi_constants.html">i_dH</a></code> <code><a href="epi_constants.html">i_dD</a></code>
 
         </dt>
         <dd>Epidemiological compartments and indices</dd>
+      </dl><dl><dt>
+
+          <code><a href="summary_constants.html">SUMMARY_MEASURES</a></code> <code><a href="summary_constants.html">SUMMARY_GROUPS</a></code>
+
+        </dt>
+        <dd>Model output measures and groups for summaries and derived time-series</dd>
       </dl></div><div class="section level2">
       <h2 id="internal-functions">Internal functions<a class="anchor" aria-label="anchor" href="#internal-functions"></a></h2>
 

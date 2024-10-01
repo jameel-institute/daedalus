@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,15 @@
       <small>Source: <a href="https://github.com/j-idea/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.12" id="daedalus-0012">daedalus 0.0.12<a class="anchor" aria-label="anchor" href="#daedalus-0012"></a></h2>
+<p>This patch version adds functions to summarise model outputs (<a href="https://github.com/j-idea/daedalus/issues/30" class="external-link">#30</a>):</p>
+<ol style="list-style-type: decimal"><li><p><code><a href="../reference/epi_output_helpers.html">get_incidence()</a></code> provides per-timestep (daily) values of one or more of infections (symptomatic and asymptomatic), hospitalisations (or the demand), and deaths, disaggregated by one or more of the following groups: age group, economic sector, and vaccination status.</p></li>
+<li><p><code><a href="../reference/epi_output_helpers.html">get_epidemic_summary()</a></code> provides the total number of individuals infected, hospitalised, and dead, in one or more groups, while defaulting to providing an overall summary.</p></li>
+</ol><ul><li><p>The model state variable now includes values tracking daily infections (susceptible to exposed) and daily hospitalisations.</p></li>
+<li><p>Basic tests added for these functions.</p></li>
+<li><p>Package <em>data.table</em> imported to help with model data output processing.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.11" id="daedalus-0011">daedalus 0.0.11<a class="anchor" aria-label="anchor" href="#daedalus-0011"></a></h2>
 <p>This patch version corrects spare hospital capacity data by using corrected versions of the raw hospital capacity data (<a href="https://github.com/j-idea/daedalus/issues/31" class="external-link">#31</a>).</p>

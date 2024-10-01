@@ -11,7 +11,7 @@ specific to the epidemiological model."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,6 +75,12 @@ specific to the epidemiological model.</p>
 <span></span>
 <span><span class="va">DIM_VACCINE_STRATA</span></span>
 <span></span>
+<span><span class="va">i_UNVACCINATED_STRATUM</span></span>
+<span></span>
+<span><span class="va">i_VACCINATED_STRATUM</span></span>
+<span></span>
+<span><span class="va">VACCINE_GROUPS</span></span>
+<span></span>
 <span><span class="va">N_OUTPUT_COLS</span></span></code></pre></div>
     </div>
 
@@ -93,6 +99,9 @@ specific to the epidemiological model.</p>
 <p>An object of class <code>integer</code> of length 1.</p>
 <p>An object of class <code>integer</code> of length 1.</p>
 <p>An object of class <code>integer</code> of length 1.</p>
+<p>An object of class <code>integer</code> of length 1.</p>
+<p>An object of class <code>character</code> of length 2.</p>
+<p>An object of class <code>integer</code> of length 1.</p>
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -101,7 +110,7 @@ specific to the epidemiological model.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The DAEDALUS model requires the following values to be fixed.</p><ul><li><p>Number of age groups: 4</p></li>
-<li><p>Number of vaccination strata: 1</p></li>
+<li><p>Number of vaccination strata: 2</p></li>
 <li><p>Age group bins: 0-4 years, 5-19 years, 20-65 years (working age), 65+ years</p></li>
 <li><p>Index of the working-age age groups: 3; see <code>AGE_GROUPS</code></p></li>
 <li><p>Number of economic sectors: 45</p></li>
@@ -113,6 +122,7 @@ working age individuals.</p></li>
 <li><p>Array dimension of age groups: 1</p></li>
 <li><p>Array dimension of epidemiological compartments: 2</p></li>
 <li><p>Array dimension of economic sectors: 3</p></li>
+<li><p>Array dimension of vaccination strata: 4</p></li>
 </ul></div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

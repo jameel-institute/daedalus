@@ -20,6 +20,7 @@
 <url><loc>/reference/daedalus_rhs.html</loc></url>
 <url><loc>/reference/economic_contacts.html</loc></url>
 <url><loc>/reference/epi_constants.html</loc></url>
+<url><loc>/reference/epi_output_helpers.html</loc></url>
 <url><loc>/reference/epidemic_data.html</loc></url>
 <url><loc>/reference/get_closure_info.html</loc></url>
 <url><loc>/reference/get_costs.html</loc></url>
@@ -38,5 +39,6 @@
 <url><loc>/reference/reff_calculation.html</loc></url>
 <url><loc>/reference/scale_nu.html</loc></url>
 <url><loc>/reference/set_data.html</loc></url>
+<url><loc>/reference/summary_constants.html</loc></url>
 </urlset>
 
