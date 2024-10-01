@@ -6,6 +6,9 @@ library(stringr)
 library(usethis)
 library(checkmate)
 
+# to convert names to ISO codes
+library(countrycode)
+
 # column names
 # Npop: individuals in each age group
 # NNs: working age (?) individuals in each economic sector
@@ -344,3 +347,14 @@ usethis::use_data(country_data, overwrite = TRUE)
 #### save country names ####
 country_names <- names(country_data)
 usethis::use_data(country_names, overwrite = TRUE)
+
+#### save country codes ####
+country_codes_iso3c <- countrycode(
+  country_names, "country.name", "iso3c"
+)
+country_codes_iso2c <- countrycode(
+  country_names, "country.name", "iso2c"
+)
+
+usethis::use_data(country_codes_iso3c, overwrite = TRUE)
+usethis::use_data(country_codes_iso2c, overwrite = TRUE)

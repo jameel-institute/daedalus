@@ -1,3 +1,7 @@
+# daedalus 0.0.13
+
+This patch version adds ISO 3166 2- and 3- character country codes for the countries in `country_names`, as the package data `country_codes_iso2c` and `country_codes_iso3c`.
+
 # daedalus 0.0.12
 
 This patch version adds functions to summarise model outputs (#30):
