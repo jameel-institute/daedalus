@@ -211,3 +211,31 @@ prepare_parameters.daedalus_vaccination <- function(x, ...) {
 
   x[names(x) != "name"]
 }
+
+#' Scale vaccination rate by remaining eligibles
+#'
+#' @param state The system state as a 4-dimensional array.
+#' @param nu The vaccination rate.
+#'
+#' @return The scaled vaccination rate.
+#' @keywords internal
+scale_nu <- function(state, nu, uptake_limit) {
+  total <- sum(state)
+  eligible <- state[, c(i_S, i_R), , i_UNVACCINATED_STRATUM]
+
+  total_vaccinated <- sum(state[, , , i_VACCINATED_STRATUM])
+  prop_vaccinated <- total_vaccinated / total
+
+  # NOTE: simplified scaling works only for uniform rates and start times
+  # across age groups
+  # NOTE: scale vaccination rate using a sigmoid function around the uptake
+  # limit for a smoother transition
+  scaling <- (total / sum(eligible)) *
+    (1.0 / (1.0 + exp(prop_vaccinated - uptake_limit)))
+
+  # handle zero division if there are no eligibles
+  scaling <- if (is.finite(scaling)) scaling else 0.0
+
+  # prevent more vaccinations than available individuals
+  min(1.0, scaling * nu)
+}
