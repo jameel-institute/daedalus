@@ -54,7 +54,8 @@ daedalus_rhs <- function(t, state, parameters) {
   rho <- parameters[["rho"]] # waning rate for infection-derived immunity
   nu <- parameters[["nu"]] # vaccination rate as a proportion of the total pop
   psi <- parameters[["psi"]] # waning rate of vaccination derived immunity
-  tau <- parameters[["tau"]]
+  tau <- parameters[["tau"]] # susceptibility of vaccination strata; length 2L
+  vax_uptake_limit <- parameters[["vax_uptake_limit"]]
 
   # NOTE: these params are vectors of length `N_AGE_GROUPS`
   gamma_H <- parameters[["gamma_H"]] # recovery rate for H
@@ -89,7 +90,7 @@ daedalus_rhs <- function(t, state, parameters) {
 
   # NOTE: scale vax rate by proportion of eligible individuals remaining
   # to maintain rate relative to total population as eligibles decrease
-  nu <- if (switch) scale_nu(state_, nu) else 0.0
+  nu <- if (switch) scale_nu(state_, nu, vax_uptake_limit) else 0.0
 
   # create empty array of the dimensions of state
   d_state <- array(0.0, dim(state_))
