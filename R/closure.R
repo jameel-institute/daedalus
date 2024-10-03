@@ -54,14 +54,19 @@ make_rt_end_event <- function() {
   }
 
   event_function <- function(time, state, parameters) {
+    # NOTE: log the FIRST time Rt < 1.0 as closure time end
+    is_switch_on <- rlang::env_get(parameters[["mutables"]], "switch")
     # prevent flipping switch when checkEventFunc runs
-    if (time != parameters[["min_time"]]) {
+    if (time != parameters[["min_time"]] && is_switch_on) {
       rlang::env_bind(
         parameters[["mutables"]],
         switch = FALSE,
         closure_time_end = time
       )
+    }
 
+    # switch execess mortality on or off independent of closure status
+    if (time != parameters[["min_time"]]) {
       # check if hospitalisations are greater than threshold
       state <- array(
         state,
@@ -79,6 +84,7 @@ make_rt_end_event <- function() {
         )
       }
     }
+
     as.numeric(state)
   }
 
