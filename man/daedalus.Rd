@@ -9,11 +9,11 @@ daedalus(
   infection,
   response_strategy = c("none", "elimination", "economic_closures", "school_closures"),
   implementation_level = c("light", "heavy"),
+  vaccine_investment = c("none", "low", "medium", "high"),
   response_time = 30,
   response_threshold = NULL,
-  vaccination_rate = 0,
   initial_state_manual = list(),
-  time_end = 300,
+  time_end = 600,
   ...
 )
 }
@@ -47,6 +47,14 @@ package data object \code{daedalus::closure_data}.}
 \item{implementation_level}{A string for the level at which the strategy is
 implemented; defaults to "light".}
 
+\item{vaccine_investment}{Either a single string or a
+\verb{<daedalus_vaccination>} object specifying the vaccination parameters
+associated with an advance vaccine-investment scenario. Defaults to \code{"none"},
+for no advance vaccine investment. In this case, vaccination begins 365 days
+(1 year) after the simulation begins, at a low rate across all age groups.
+Other accepted values are \code{"low"}, \code{"medium"} and \code{"high"}. See
+\code{\link[=daedalus_vaccination]{daedalus_vaccination()}} for more information.}
+
 \item{response_time}{A single numeric value for the time in days
 at which the selected response is activated. This is ignored if the response
 has already been activated by the hospitalisation threshold being reached.
@@ -59,13 +67,6 @@ been triggered via \code{response_time}. Currently defaults to \code{NULL}, and 
 \code{country}-specific spare hospital capacity value is used from
 \link{country_data}.
 Pass a number to override the default country-specific threshold value.}
-
-\item{vaccination_rate}{A single number in the range \verb{[0, 1]} for the rate at
-which individuals in all age groups are vaccinated. Defaults to 0.0 for no
-vaccination active. A good value for an active vaccination strategy is
-0.0025, or 0.25\% of each age group vaccinated per day, which corresponds to
-average vaccination rates achieved during the Covid-19 pandemic.
-This parameter will be heavily refactored in future package versions.}
 
 \item{initial_state_manual}{An optional \strong{named} list with the names
 \code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and

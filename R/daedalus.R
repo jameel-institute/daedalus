@@ -44,12 +44,13 @@
 #' [daedalus::country_data].
 #' Pass a number to override the default country-specific threshold value.
 #'
-#' @param vaccination_rate A single number in the range `[0, 1]` for the rate at
-#' which individuals in all age groups are vaccinated. Defaults to 0.0 for no
-#' vaccination active. A good value for an active vaccination strategy is
-#' 0.0025, or 0.25% of each age group vaccinated per day, which corresponds to
-#' average vaccination rates achieved during the Covid-19 pandemic.
-#' This parameter will be heavily refactored in future package versions.
+#' @param vaccine_investment Either a single string or a
+#' `<daedalus_vaccination>` object specifying the vaccination parameters
+#' associated with an advance vaccine-investment scenario. Defaults to `"none"`,
+#' for no advance vaccine investment. In this case, vaccination begins 365 days
+#' (1 year) after the simulation begins, at a low rate across all age groups.
+#' Other accepted values are `"low"`, `"medium"` and `"high"`. See
+#' [daedalus_vaccination()] for more information.
 #'
 #' @param initial_state_manual An optional **named** list with the names
 #' `p_infectious` and `p_asymptomatic` for the proportion of infectious and
@@ -113,11 +114,13 @@ daedalus <- function(country,
                        "school_closures"
                      ),
                      implementation_level = c("light", "heavy"),
+                     vaccine_investment = c(
+                       "none", "low", "medium", "high"
+                     ),
                      response_time = 30,
                      response_threshold = NULL,
-                     vaccination_rate = 0.0,
                      initial_state_manual = list(),
-                     time_end = 300,
+                     time_end = 600,
                      ...) {
   # input checking
   # NOTE: names are case sensitive
@@ -170,23 +173,42 @@ daedalus <- function(country,
     }
   }
 
-  # vaccination rate checks
-  is_good_nu <- checkmate::test_number(
-    vaccination_rate,
-    upper = 1.0, lower = 0,
-    finite = TRUE
+  #### Vaccination parameters ####
+  checkmate::assert_multi_class(
+    vaccine_investment, c("daedalus_vaccination", "character")
   )
-  if (!is_good_nu) {
+  if (is.character(vaccine_investment)) {
+    vaccine_investment <- rlang::arg_match(
+      vaccine_investment, daedalus::vaccination_scenario_names
+    )
+    vaccine_investment <- daedalus_vaccination(vaccine_investment)
+  }
+
+  # check that `response_time` <= vaccination_start <= `time_end` or NULL
+  is_good_vax_time <- checkmate::test_integerish(
+    get_data(vaccine_investment, "vax_start_time"),
+    lower = response_time + 2L,
+    upper = time_end - 2L, null.ok = TRUE
+  )
+  if (!is_good_vax_time) {
     cli::cli_abort(
-      "`vaccination_rate` must be a positive number between 0 and 1."
+      c(
+        "Vaccination start time can only take an integer-like value between
+        {response_time + 2L} and {time_end - 2L}",
+        i = "Vaccination must start after the overall pandemic response,
+        and before the model end time. Set the `vax_start_time` parameter in
+        the {.cls daedalus_vaccination} passsed to `vaccine_investment`."
+      )
     )
   }
 
+  #### Prepare initial state and parameters ####
   initial_state <- as.numeric(make_initial_state(country, initial_state_manual))
 
   parameters <- c(
     prepare_parameters(country),
-    prepare_parameters(infection)
+    prepare_parameters(infection),
+    prepare_parameters(vaccine_investment)
   )
 
   # NOTE: using {rlang} for convenience
@@ -203,7 +225,6 @@ daedalus <- function(country,
     parameters,
     list(
       hospital_capacity = response_threshold, # to increase HFR if crossed
-      nu = vaccination_rate,
       psi = 1 / 270,
       tau = c(1.0, 0.5),
       openness = openness,
@@ -220,22 +241,19 @@ daedalus <- function(country,
   # from response_time:time_end run with switch = 1.0, or on
   # NOTE: state is carried over. This looks ugly and might not scale if
   # parameter uncertainty is needed in future.
-  times_stage_one <- seq(1, response_time)
-  times_stage_two <- seq(response_time, time_end)
+  vaccination_start <- get_data(vaccine_investment, "vax_start_time")
+  times_stage_01 <- seq(1, response_time)
+  times_stage_02 <- seq(response_time, vaccination_start)
+  times_stage_03 <- seq(vaccination_start, time_end)
 
-  data_stage_one <- deSolve::ode(
-    y = initial_state, times = times_stage_one,
+  #### Stage 1 - day one to response time ####
+  data_stage_01 <- deSolve::ode(
+    y = initial_state, times = times_stage_01,
     func = daedalus_rhs, parms = parameters,
     rootfunc = activation_event[["root_function"]],
     events = list(func = activation_event[["event_function"]], root = TRUE),
     ...
   )
-
-  # carry over initial state; could be named more clearly?
-  initial_state <- data_stage_one[
-    nrow(data_stage_one), colnames(data_stage_one) != "time"
-  ]
-  initial_state <- as.numeric(initial_state)
 
   # set switch parameter and log closure start time if not 0.0/FALSE
   rlang::env_poke(parameters[["mutables"]], "switch", TRUE)
@@ -250,11 +268,39 @@ daedalus <- function(country,
     )
   }
 
+  #### Stage 2 - response time to vaccination start time ####
+  # carry over initial state; could be named more clearly?
+  initial_state <- data_stage_01[
+    nrow(data_stage_01), colnames(data_stage_01) != "time"
+  ]
+  initial_state <- as.numeric(initial_state)
+
   # reset min time
   parameters[["min_time"]] <- response_time
 
-  data_stage_two <- deSolve::ode(
-    initial_state, times_stage_two,
+  data_stage_02 <- deSolve::ode(
+    initial_state, times_stage_02,
+    daedalus_rhs, parameters,
+    rootfunc = termination_event[["root_function"]],
+    events = list(func = termination_event[["event_function"]], root = TRUE),
+    ...
+  )
+
+  #### Stage 3 - vaccination start time to sim end time ####
+  # carry over initial state
+  initial_state <- data_stage_02[
+    nrow(data_stage_02), colnames(data_stage_02) != "time"
+  ]
+  initial_state <- as.numeric(initial_state)
+
+  # set switch parameter and log closure start time if not 0.0/FALSE
+  rlang::env_poke(parameters[["mutables"]], "vax_switch", TRUE)
+
+  # reset min time
+  parameters[["min_time"]] <- vaccination_start
+
+  data_stage_03 <- deSolve::ode(
+    initial_state, times_stage_03,
     daedalus_rhs, parameters,
     rootfunc = termination_event[["root_function"]],
     events = list(func = termination_event[["event_function"]], root = TRUE),
@@ -271,7 +317,7 @@ daedalus <- function(country,
     )
   }
 
-  data <- rbind(data_stage_one, data_stage_two[-1L, ])
+  data <- rbind(data_stage_01, data_stage_02[-1L, ], data_stage_03[-1L, ])
 
   # NOTE: unclassing country and infection returns lists
   data <- list(
