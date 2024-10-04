@@ -1,7 +1,7 @@
 # Tests for daedalus() with vaccination active
 test_that("Vaccination: basic expectations", {
   expect_no_condition({
-    output <- daedalus("Canada", "sars_cov_1", vaccination_rate = 0.0025)
+    output <- daedalus("Canada", "sars_cov_1", vaccine_investment = "medium")
   })
   data <- get_data(output)
 
@@ -34,7 +34,7 @@ test_that("Vaccination: basic statistical correctness", {
     daedalus(
       "Canada", "sars_cov_1",
       response_time = 10,
-      vaccination_rate = 0.00,
+      vaccine_investment = "medium",
       time_end = time_end
     )
   )
@@ -43,7 +43,7 @@ test_that("Vaccination: basic statistical correctness", {
     daedalus(
       "Canada", "sars_cov_1",
       response_time = 10,
-      vaccination_rate = 0.001,
+      vaccine_investment = "high",
       time_end = time_end
     )
   )
@@ -62,20 +62,5 @@ test_that("Vaccination: basic statistical correctness", {
   )
   expect_gt(
     deaths_low_vax, deaths_high_vax
-  )
-})
-
-test_that("Vaccination: errors", {
-  expect_error(
-    daedalus("Canada", "sars_cov_1", vaccination_rate = 1.01),
-    regexp = "must be a positive number between 0 and 1"
-  )
-  expect_error(
-    daedalus("Canada", "sars_cov_1", vaccination_rate = -0.01),
-    regexp = "must be a positive number between 0 and 1"
-  )
-  expect_error(
-    daedalus("Canada", "sars_cov_1", vaccination_rate = c(0.1, 0.1)),
-    regexp = "must be a positive number between 0 and 1"
   )
 })

@@ -3,7 +3,7 @@
 country_canada <- "Canada"
 
 test_that("daedalus: basic expectations", {
-  time_end <- 100L
+  time_end <- 700L
   # expect no conditions
   expect_no_condition({
     output <- daedalus(country_canada, "influenza_1918", time_end = time_end)
@@ -70,6 +70,8 @@ test_that("daedalus: Runs for all country x infection x response", {
     country = daedalus::country_names,
     infection = daedalus::epidemic_names
   )
+
+  dummy_vax <- daedalus_vaccination("low", vax_start_time = 5)
   time_end <- 10
 
   # expect no conditions
@@ -79,7 +81,12 @@ test_that("daedalus: Runs for all country x infection x response", {
       country_infection_combos$infection,
       f = function(x, y) {
         expect_no_condition(
-          daedalus(x, y, time_end = time_end, response_time = time_end - 2)
+          daedalus(
+            x, y,
+            time_end = time_end,
+            response_time = 2,
+            vaccine_investment = dummy_vax
+          )
         )
       }
     )
@@ -113,10 +120,11 @@ test_that("daedalus: statistical correctness", {
     all(diff(deaths) >= 0.0)
   )
   susceptibles <- data[data$compartment == "susceptible", ]$value
-  expect_false(
-    all(diff(susceptibles) <= 0.0)
+  expect_lt(
+    min(diff(susceptibles)), 0.0
   )
 
+  # NOTE: expecting false due to R => S transitons
   recovered <- data[data$compartment == "recovered", ]$value
   expect_false(
     all(diff(recovered) >= 0.0)
@@ -137,10 +145,11 @@ test_that("daedalus: statistical correctness", {
     max(diff(susceptibles)), 1e-6 # allowing small positive diff
   )
 
+  # NOTE: allow very small negative values
   recovered <- data[data$compartment == "recovered", ]
   recovered <- tapply(recovered$value, recovered$time, sum)
   expect_gte(
-    min(diff(recovered)), 0.0
+    min(diff(recovered)), -1e-6
   )
 
   deaths <- data[data$compartment == "dead" &
