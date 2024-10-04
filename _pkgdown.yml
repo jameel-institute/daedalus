@@ -16,6 +16,10 @@ reference:
     desc: Represent and access infection characteristics
     contents:
     - class_infection
+  - title: Class `<daedalus_vaccination>`
+    desc: Represent and access vaccine investment scenarios
+    contents:
+    - class_vaccination
   - title: Class `<daedalus_output>`
     desc: Class to store model output for further processing
     contents:
