@@ -262,7 +262,7 @@ validate_daedalus_infection <- function(x) {
       lgl <- checkmate::test_number(x[[n]], lower = 0.0, finite = TRUE)
       if (!lgl) {
         cli::cli_abort(
-          "<daedalus_infection> member {.str n} must be a single finite
+          "<daedalus_infection> member {.str {n}} must be a single finite
           positive number"
         )
       }
@@ -276,7 +276,7 @@ validate_daedalus_infection <- function(x) {
       )
       if (!lgl) {
         cli::cli_abort(
-          "<daedalus_infection> member {.str n} must be a numeric vector of
+          "<daedalus_infection> member {.str {n}} must be a numeric vector of
           length 4 (number of age groups)"
         )
       }
