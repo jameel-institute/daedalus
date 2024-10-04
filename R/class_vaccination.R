@@ -69,7 +69,6 @@ daedalus_vaccination <- function(name, ...) {
   is_empty_list <- checkmate::test_list(parameters, len = 0)
 
   if (!is_empty_list) {
-    # TODO: CHECK ALL PARAMETERS PASSED BY USER
     has_good_names <- checkmate::test_subset(
       names(parameters), daedalus::vaccination_parameter_names,
       empty.ok = TRUE
@@ -78,6 +77,21 @@ daedalus_vaccination <- function(name, ...) {
       cli::cli_abort(
         "Found unexpected values in `...`; the only allowed parameters are:
         {.str {daedalus::vaccination_parameter_names}}"
+      )
+    }
+
+    # check list
+    is_each_number <- all(
+      vapply(
+        parameters, checkmate::test_number, logical(1L),
+        lower = 0.0, finite = TRUE
+      )
+    )
+
+    if (!is_each_number) {
+      cli::cli_abort(
+        "Expected each parameters passed in `...` to be a single positive and
+        finite number."
       )
     }
   }
@@ -89,10 +103,17 @@ daedalus_vaccination <- function(name, ...) {
     name, params
   )
 
-  # TODO: validate class
+  validate_daedalus_vaccination(x)
+
   x
 }
 
+#' Validator for the `<daedalus_vaccination>` class
+#'
+#' @param x An object to be validated as a `<daedalus_vaccination>` object.
+#'
+#' @keywords internal
+#' @noRd
 validate_daedalus_vaccination <- function(x) {
   if (!is_daedalus_vaccination(x)) {
     cli::cli_abort(
@@ -101,9 +122,48 @@ validate_daedalus_vaccination <- function(x) {
     )
   }
 
-  # TODO: add checjs
+  # check class members
+  expected_invariants <- c(
+    "name", daedalus::vaccination_parameter_names
+  )
+  has_invariants <- checkmate::test_names(
+    attributes(x)$names,
+    permutation.of = expected_invariants
+  )
+  if (!has_invariants) {
+    cli::cli_abort(
+      "`x` is class {.cls daedalus_vaccination} but does not have the correct
+      attributes"
+    )
+  }
+
+  stopifnot(
+    "Vaccination `name` must be among `daedalus::vaccination_scenario_names`" =
+      checkmate::test_string(x$name) &&
+        checkmate::test_subset(
+          x$name, daedalus::vaccination_scenario_names
+        )
+  )
+
+  invisible(
+    lapply(daedalus::vaccination_parameter_names, function(n) {
+      lgl <- checkmate::test_number(x[[n]], lower = 0.0, finite = TRUE)
+      if (!lgl) {
+        cli::cli_abort(
+          "<daedalus_vaccination> member {.str {n}} must be a single finite
+          positive number"
+        )
+      }
+    })
+  )
+
+  invisible(x)
 }
 
+#' Check if an object is a `<daedalus_vaccination>`
+#' @name class_vaccination
+#'
+#' @export
 is_daedalus_vaccination <- function(x) {
   inherits(x, "daedalus_vaccination")
 }
