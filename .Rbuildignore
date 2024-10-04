@@ -27,3 +27,5 @@
 ^codecov\.yml$
 ^scratch.R
 ^data-raw$
+^doc$
+^Meta$
