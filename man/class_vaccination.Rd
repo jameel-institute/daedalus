@@ -3,10 +3,13 @@
 \name{class_vaccination}
 \alias{class_vaccination}
 \alias{daedalus_vaccination}
+\alias{is_daedalus_vaccination}
 \alias{print.daedalus_vaccination}
 \title{Represent vaccine investment scenarios for DAEDALUS}
 \usage{
 daedalus_vaccination(name, ...)
+
+is_daedalus_vaccination(x)
 
 \method{print}{daedalus_vaccination}(x, ...)
 }
