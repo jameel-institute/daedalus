@@ -179,13 +179,15 @@ test_that("Closures: lower threshold reduces epidemic size", {
 # end reactively or do not end at all
 test_that("Closures: correct logging of time limits", {
   response_threshold <- 1e9 # artificially large
-  response_time <- 23 # arbitrary value
+  response_time <- 10 # arbitrary value
   time_end <- 25 # low to prematurely end simulation
+  dummy_vax <- daedalus_vaccination("none", vax_start_time = 15)
   output <- daedalus(
     "Thailand", daedalus_infection("influenza_1918", r0 = 1.1),
     response_strategy = "elimination",
     response_threshold = response_threshold,
     response_time = response_time,
+    vaccine_investment = dummy_vax,
     time_end = time_end
   )
 
