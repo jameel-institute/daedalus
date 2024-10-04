@@ -83,9 +83,25 @@ daedalus_infection("sars_cov_1", r0 = 2.3)
 daedalus_infection("influenza_1918", omega = c(0.01, 0.02, 0.03, 0.1))
 ```
 
+## Representing vaccine investment for pandemic preparedness
+
+_daedalus_ includes a vaccination response in the model. The default response assumes no advance, pre-pandemic investment in a vaccine specific to the pandemic-causing pathogen.
+
+This scenario (`vaccine_investment = "none"`) is intended to represent the Covid-19 pandemic, and assumes that a vaccine only becomes available 1 year after the pandemic begins, that it is slow to roll out, and that uptake is low.
+
+These parameters are contained in the package data `daedalus::vaccine_scenario_data`, for a total of four scenarios of advance vaccine investment ("none", "low", "medium", and "high").
+
+Vaccine investment scenarios can be passed a string to `daedalus()` to use the default parameters for each scenario, or as a `<daedalus_vaccination>` object using `daedalus_vaccination(name, <PARAMETERS>)` to modify vaccination parameters.
+
+```{r}
+# the default vaccine investment scenario
+daedalus_vaccination("none")
+```
+
 ## Running the model
 
 Run the model by passing the `country` and `infection` arguments to `daedalus()`.
+The vaccine investment scenarios is automatically assumed to be "none".
 
 ```{r run_model}
 # simulate a Covid-19 wild type outbreak in Canada; using default parameters
