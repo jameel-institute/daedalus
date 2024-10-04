@@ -293,9 +293,6 @@ daedalus <- function(country,
   ]
   initial_state <- as.numeric(initial_state)
 
-  # set switch parameter and log closure start time if not 0.0/FALSE
-  rlang::env_poke(parameters[["mutables"]], "vax_switch", TRUE)
-
   # reset min time
   parameters[["min_time"]] <- vaccination_start
 
