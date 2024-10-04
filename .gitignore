@@ -16,3 +16,5 @@ docs
 inst/doc
 pkgdown
 scratch.R
+/doc/
+/Meta/
