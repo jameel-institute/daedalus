@@ -25,15 +25,13 @@ response_threshold <- 1000
 ```
 
 Initially run the model with no response, and then with an elimination response activated when total hospitalisations reach 1000 or after 30 days, whichever is sooner.
-We run both models for 100 days as the epidemic peak occurs within this timeframe.
 
 ```{r}
 data_baseline <- daedalus(
   "Canada",
   daedalus_infection("influenza_1918", rho = 0.0), # prevent re-infection
   response_threshold = response_threshold,
-  response_strategy = "none",
-  time_end = 100
+  response_strategy = "none"
 )
 
 # get the model timeseries
@@ -48,8 +46,7 @@ data_intervention <- daedalus(
   "Canada",
   daedalus_infection("influenza_1918", rho = 0.0), # prevent re-infection
   response_threshold = response_threshold,
-  response_strategy = "elimination",
-  time_end = 100
+  response_strategy = "elimination"
 )
 
 # get the model timeseries
