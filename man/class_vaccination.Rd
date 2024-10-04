@@ -15,10 +15,10 @@ is_daedalus_vaccination(x)
 }
 \arguments{
 \item{name}{A vaccination investment scenario name from among
-\link{vaccine_scenario_names}.
+\link{vaccination_scenario_names}.
 Selecting an epidemic automatically pulls in vaccination parameters
 associated with the epidemic; these are stored as packaged data in
-\code{daedalus::vaccine_scenario_data}. Default vaccination parameters can be
+\code{daedalus::vaccination_scenario_data}. Default vaccination parameters can be
 over-ridden by passing them as a named list to \code{...}.}
 
 \item{...}{Other parameters passed to \code{\link[=print]{print()}}.}

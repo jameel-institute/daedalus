@@ -6,7 +6,7 @@
 #' @description Vaccination parameters for four main pre-pandemic scenarios of
 #' pre-pandemic investments in vaccine development and delivery.
 #'
-#' `vaccine_scenario_names` provides the names by which the advance vaccine
+#' `vaccination_scenario_names` provides the names by which the advance vaccine
 #' investment scenarios are known.
 #'
 #' @details

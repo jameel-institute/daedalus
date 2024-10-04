@@ -50,7 +50,7 @@ vaccination_parameter_names
 Vaccination parameters for four main pre-pandemic scenarios of
 pre-pandemic investments in vaccine development and delivery.
 
-\code{vaccine_scenario_names} provides the names by which the advance vaccine
+\code{vaccination_scenario_names} provides the names by which the advance vaccine
 investment scenarios are known.
 }
 \details{

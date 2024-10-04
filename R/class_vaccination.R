@@ -35,10 +35,10 @@ new_daedalus_vaccination <- function(name, parameters) {
 #' characteristics for the DAEDALUS model.
 #'
 #' @param name A vaccination investment scenario name from among
-#' [daedalus::vaccine_scenario_names].
+#' [daedalus::vaccination_scenario_names].
 #' Selecting an epidemic automatically pulls in vaccination parameters
 #' associated with the epidemic; these are stored as packaged data in
-#' `daedalus::vaccine_scenario_data`. Default vaccination parameters can be
+#' `daedalus::vaccination_scenario_data`. Default vaccination parameters can be
 #' over-ridden by passing them as a named list to `...`.
 #'
 #' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Manually specified values for
