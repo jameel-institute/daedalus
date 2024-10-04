@@ -1,3 +1,15 @@
+# daedalus 0.0.14
+
+This patch adds vaccine investment scenarios to _daedalus_. All model runs must now include an assumption about the level of advance vaccine investment, defaulting to "none".
+
+1. Added vaccine investment scenario related data: `vaccination_scenario_data` for vaccination parameters, `vaccination_scenario_names`, and `vaccination_parameter_names`.
+
+2. Added the `<daedalus_vaccination>` S3 class to hold vaccination parameters, along with class infrastructure (print, get/set, and `prepare_parameters()` methods).
+
+3. Added helper function `daedalus_vaccination()` to return vaccination object corresponding to four vaccine investment scenarios.
+
+4. Added tests for vaccination class, model runs with vaccination, and updated documentation.
+
 # daedalus 0.0.13
 
 This patch version adds ISO 3166 2- and 3- character country codes for the countries in `country_names`, as the package data `country_codes_iso2c` and `country_codes_iso3c`.
