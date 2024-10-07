@@ -275,6 +275,28 @@ daedalus <- function(country,
   ]
   initial_state <- as.numeric(initial_state)
 
+  ### cancel closures if epidemic is not growing ###
+  state_temp <- array(
+    initial_state,
+    c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
+  )
+  # close intervention IFF epidemic is not growing
+  # NOTE: this step placed here as a conditional on r_eff < 1.0 is not
+  # practical in a root-finding function (Error: 'root too near initial point')
+  is_epidemic_growing <- r_eff(
+    parameters[["r0"]],
+    state_temp,
+    parameters[["contact_matrix"]] %*% diag(parameters[["demography"]])
+  ) >= 1.0
+
+  if (!is_epidemic_growing) {
+    rlang::env_bind(
+      parameters[["mutables"]],
+      switch = FALSE,
+      closure_time_end = response_time
+    )
+  }
+
   # reset min time
   parameters[["min_time"]] <- response_time
 
