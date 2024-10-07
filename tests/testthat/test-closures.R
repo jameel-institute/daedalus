@@ -201,4 +201,43 @@ test_that("Closures: correct logging of time limits", {
     response_data[["closure_info"]][["closure_time_end"]],
     time_end
   )
+
+  # Check that closures are terminated at the start time when
+  # the epidemic is not growing
+  dvx <- daedalus_vaccination("low", vax_start_time = 90)
+  tend <- 100
+  response_time <- seq(10, 80, 10)
+
+  # run scenario with very few susceptibles
+  invisible(
+    lapply(
+      response_time, function(x) {
+        data <- daedalus(
+          "United States", "influenza_1957",
+          initial_state_manual = list(
+            p_infectious = 0.9
+          ),
+          response_strategy = "elimination",
+          response_time = x,
+          vaccine_investment = dvx,
+          time_end = tend
+        )
+
+        closure_info <- data$response_data$closure_info
+
+        expect_identical(
+          closure_info$closure_time_end,
+          closure_info$closure_time_start
+        )
+        expect_identical(
+          closure_info$closure_time_end,
+          x
+        )
+        expect_identical(
+          closure_info$closure_duration,
+          0.0
+        )
+      }
+    )
+  )
 })
