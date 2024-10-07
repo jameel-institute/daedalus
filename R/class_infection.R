@@ -316,7 +316,6 @@ print.daedalus_infection <- function(x, ...) {
 format.daedalus_infection <- function(x, ...) {
   chkDots(...)
 
-  # NOTE: rough implementations, better scaling e.g. to millions could be added
   cli::cli_text("{.cls {class(x)}}")
   divid <- cli::cli_div(theme = list(.val = list(digits = 3)))
   cli::cli_bullets(
