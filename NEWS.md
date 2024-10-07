@@ -1,3 +1,17 @@
+# daedalus 0.0.15
+
+This patch fixes an issue where closures were not ended in model runs where the closure began after the epidemic had stopped growing. This mostly affected edge cases of countries with large spare hospital capacity, and relatively late `response_time`s. In such cases the closure end time was assigned as the simulation end time, inflating costs related to closures. The fix:
+
+- Prevents closures from being activated by the `hospital_capacity` trigger if the epidemic is not growing, even if the hospital capacity threshold is crossed;
+
+- Prevents closures from being activated by the `response_time` trigger if the epidemic is not growing between stage 01 and stage 02. Closures are manually turned off if the epidemic is not growing ($R_t < 1.0$).
+
+Tests for different response times check that the model behaves as expected.
+
+## Miscellaneous changes
+
+- The package now requires a minimum R version >= v4.3 due to the use of the new function `array2DF()`.
+
 # daedalus 0.0.14
 
 This patch adds vaccine investment scenarios to _daedalus_. All model runs must now include an assumption about the level of advance vaccine investment, defaulting to "none".
