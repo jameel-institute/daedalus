@@ -177,7 +177,7 @@ daedalus <- function(country,
   checkmate::assert_multi_class(
     vaccine_investment, c("daedalus_vaccination", "character")
   )
-  if (is.character(vaccine_investment)) {
+  if (!is_daedalus_vaccination(vaccine_investment)) {
     vaccine_investment <- rlang::arg_match(
       vaccine_investment, daedalus::vaccination_scenario_names
     )

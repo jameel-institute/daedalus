@@ -94,7 +94,7 @@ make_initial_state <- function(country, initial_state_manual) {
 #' - `switch`: The switch parameter which controls whether closures are active
 #' or not.
 #'
-#' - `hosp_swith`: The switch for excess mortality due to more hospitalisations
+#' - `hosp_switch`: The switch for excess mortality due to more hospitalisations
 #' required than hospital places are available.
 #'
 #' - `closures_time_start` and `closures_time_end`: The times at which closures
