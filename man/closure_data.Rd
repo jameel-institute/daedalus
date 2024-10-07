@@ -8,8 +8,8 @@
 \subsection{\code{closure_data}}{
 
 A list with 4 elements, each corresponding to a pandemic response strategy,
-and each with 2 elements ("heavy" or "light") giving the coefficients of
-sector openness under different levels of implementation.
+each a vector \code{N_ECONOMIC_SECTORS} (45) giving the coefficients of
+sector openness.
 \describe{
 \item{none}{All economic sectors are fully open and there is no pandemic
 response.}
@@ -30,8 +30,7 @@ closure_data
 }
 \description{
 Coefficients of openness of economic sectors under different
-pandemic response strategies.
-There are four strategies (including no response), with two levels of
-implementation ("heavy" and "light").
+pandemic response strategies. There are four strategies (including no
+response, identified as \code{"none"}).
 }
 \keyword{datasets}
