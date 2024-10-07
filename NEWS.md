@@ -1,4 +1,12 @@
-# daedalus 0.0.18
+# daedalus 0.0.17
+
+This patch removes dual implementation levels for response strategies. The "elimination" strategy has a "high" implementation level, while all other strategies keep their "light" implementation level.
+
+- The `daedalus()` argument `implementation_level` has been removed.
+
+- Tests and documentation have been updated to remove references to implementation levels.
+
+# daedalus 0.0.16
 
 This patch fixes an issue where vaccination start was tied to the `response_time`; it is now correctly controlled by the vaccine investment level passed to `daedalus()`.
 
