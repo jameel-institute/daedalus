@@ -57,4 +57,16 @@ closure_data[["none"]] <- list(
   heavy = rep(1.0, N_ECON_SECTORS)
 )
 
+# JIDEA-132: pick a single implementation level for each response strategy
+# elimination: heavy; all others: light
+levels_to_keep <- c("heavy", rep("light", 3L))
+strategies <- c(strategies, "none")
+
+closure_data <- Map(
+  closure_data[strategies], levels_to_keep,
+  f = function(s, l) {
+    s[[l]]
+  }
+)
+
 usethis::use_data(closure_data, overwrite = TRUE)
