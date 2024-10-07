@@ -28,9 +28,6 @@
 #' While the response strategy is active, economic contacts are scaled using the
 #' package data object `daedalus::closure_data`.
 #'
-#' @param implementation_level A string for the level at which the strategy is
-#' implemented; defaults to "light".
-#'
 #' @param response_time A single numeric value for the time in days
 #' at which the selected response is activated. This is ignored if the response
 #' has already been activated by the hospitalisation threshold being reached.
@@ -113,7 +110,6 @@ daedalus <- function(country,
                        "none", "elimination", "economic_closures",
                        "school_closures"
                      ),
-                     implementation_level = c("light", "heavy"),
                      vaccine_investment = c(
                        "none", "low", "medium", "high"
                      ),
@@ -136,7 +132,6 @@ daedalus <- function(country,
   }
 
   response_strategy <- rlang::arg_match(response_strategy)
-  implementation_level <- rlang::arg_match(implementation_level)
 
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
   if (!is_good_time_end) {
@@ -215,9 +210,7 @@ daedalus <- function(country,
   mutables <- prepare_mutable_parameters()
 
   # add the appropriate economic openness vectors to parameters
-  openness <- daedalus::closure_data[[
-    response_strategy
-  ]][[implementation_level]]
+  openness <- daedalus::closure_data[[response_strategy]]
 
   # NOTE: psi (vax waning rate), tau (vax reduction in suscept.), and dims of nu
   # are hard-coded until vaccination scenarios are decided
@@ -351,7 +344,6 @@ daedalus <- function(country,
     infection_parameters = unclass(infection),
     response_data = list(
       response_strategy = response_strategy,
-      implementation_level = implementation_level,
       openness = openness, # easier to include here
       closure_info = get_closure_info(mutables)
     )

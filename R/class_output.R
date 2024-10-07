@@ -28,7 +28,7 @@ validate_daedalus_output <- function(x) {
     "model_data",
     # NOTE: reserving 'parameters' for values fixed before model run
     "country_parameters", "infection_parameters",
-    "response_data" # includes response strategy and implementation level
+    "response_data" # includes response strategy
   )
 
   stopifnot(
