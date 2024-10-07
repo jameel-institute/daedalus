@@ -190,7 +190,6 @@ print.daedalus_vaccination <- function(x, ...) {
 format.daedalus_vaccination <- function(x, ...) {
   chkDots(...)
 
-  # NOTE: rough implementations, better scaling e.g. to millions could be added
   cli::cli_text("{.cls {class(x)}}")
   cli::cli_text(
     "Advance vaccine investment: {cli::style_bold(x$name)}"
