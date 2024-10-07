@@ -8,7 +8,6 @@ daedalus(
   country,
   infection,
   response_strategy = c("none", "elimination", "economic_closures", "school_closures"),
-  implementation_level = c("light", "heavy"),
   vaccine_investment = c("none", "low", "medium", "high"),
   response_time = 30,
   response_threshold = NULL,
@@ -43,9 +42,6 @@ response threshold following which the response is activated. See
 
 While the response strategy is active, economic contacts are scaled using the
 package data object \code{daedalus::closure_data}.}
-
-\item{implementation_level}{A string for the level at which the strategy is
-implemented; defaults to "light".}
 
 \item{vaccine_investment}{Either a single string or a
 \verb{<daedalus_vaccination>} object specifying the vaccination parameters
