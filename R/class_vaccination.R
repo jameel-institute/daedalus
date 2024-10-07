@@ -293,9 +293,13 @@ scale_nu <- function(state, nu, uptake_limit) {
   scaling <- (total / sum(eligible)) *
     (1.0 / (1.0 + exp(prop_vaccinated - uptake_limit)))
 
-  # handle zero division if there are no eligibles
-  scaling <- if (is.finite(scaling)) scaling else 0.0
-
-  # prevent more vaccinations than available individuals
-  min(1.0, scaling * nu)
+  # handle conditions:
+  # - scaling is finite: return minimum of 1.0 or scaled `nu`
+  # prevent more vaccinations than eligibles
+  # - scaling is inifite due to zero division (no eligibles): return 0
+  if (is.finite(scaling)) {
+    min(1.0, scaling * nu)
+  } else {
+    0.0
+  }
 }
