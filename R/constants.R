@@ -38,12 +38,18 @@
 #'
 #' - Array dimension of vaccination strata: 4
 #'
+#' - Indices and numbers of key groups.
+#'
 #' @keywords model_constant
 N_AGE_GROUPS <- 4L
 
 #' @name model_constants
 #' @keywords model_constant
 N_VACCINE_STRATA <- 2L
+
+#' @name model_constants
+#' @keywords model_constant
+N_VACCINE_DATA_GROUPS <- 3L
 
 #' @name model_constants
 #' @keywords model_constant
@@ -90,6 +96,9 @@ i_UNVACCINATED_STRATUM <- 1L
 
 #' @name model_constants
 i_VACCINATED_STRATUM <- 2L
+
+#' @name model_constants
+i_NEW_VAX_STRATUM <- 3L
 
 #' @name model_constants
 VACCINE_GROUPS <- c("unvaccinated", "vaccinated")
@@ -180,7 +189,9 @@ i_dD <- 10L # new deaths
 #' @rdname summary_constants
 #'
 #' @keywords summary_constants
-SUMMARY_MEASURES <- c("infections", "hospitalisations", "deaths")
+SUMMARY_MEASURES <- c(
+  "infections", "hospitalisations", "deaths"
+)
 
 #' @name summary_constants
 SUMMARY_GROUPS <- c("age_group", "vaccine_group", "econ_sector")
