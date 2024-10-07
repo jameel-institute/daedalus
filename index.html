@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,12 +80,12 @@
 <span></span>
 <span><span class="co"># get pandemic costs as a total in million dollars</span></span>
 <span><span class="fu"><a href="reference/get_costs.html">get_costs</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"total"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 739498.3</span></span>
+<span><span class="co">#&gt; [1] 436377.2</span></span>
 <span></span>
 <span><span class="co"># disaggregate total for economic, education, and health costs</span></span>
 <span><span class="fu"><a href="reference/get_costs.html">get_costs</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"domain"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   economic  education life_years </span></span>
-<span><span class="co">#&gt;  18528.338   1235.451 719734.519</span></span></code></pre></div>
+<span><span class="co">#&gt;  29758.631   2277.528 404341.003</span></span></code></pre></div>
 <p>Users can select infection parameters from among seven epidemics caused by directly-transmitted viral respiratory pathogens, which are stored in the package as <code><a href="reference/epidemic_data.html">daedalus::infection_data</a></code>, with epidemic identifiers are stored as <code><a href="reference/epidemic_data.html">daedalus::epidemic_names</a></code>.</p>
 <p>Users can override default country contact data and epidemic-specific infection arguments by passing custom classes to <code><a href="reference/daedalus.html">daedalus()</a></code>; see the package website for more details.</p>
 <p>Users can also model the implementation of pandemic response measures: for more on this see the documentation for the main model function <code><a href="reference/daedalus.html">daedalus()</a></code>, and the vignette on modelling interventions on the package website.</p>

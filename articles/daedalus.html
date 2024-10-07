@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -187,17 +187,46 @@ parameters are included.</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> gamma_H: <span style="color: #0000BB;">0.175</span>, <span style="color: #0000BB;">0.175</span>, <span style="color: #0000BB;">0.175</span>, and <span style="color: #0000BB;">0.175</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="representing-vaccine-investment-for-pandemic-preparedness">Representing vaccine investment for pandemic preparedness<a class="anchor" aria-label="anchor" href="#representing-vaccine-investment-for-pandemic-preparedness"></a>
+</h2>
+<p><em>daedalus</em> includes a vaccination response in the model. The
+default response assumes no advance, pre-pandemic investment in a
+vaccine specific to the pandemic-causing pathogen.</p>
+<p>This scenario (<code>vaccine_investment = "none"</code>) is intended
+to represent the Covid-19 pandemic, and assumes that a vaccine only
+becomes available 1 year after the pandemic begins, that it is slow to
+roll out, and that uptake is low.</p>
+<p>These parameters are contained in the package data
+<code>daedalus::vaccine_scenario_data</code>, for a total of four
+scenarios of advance vaccine investment (“none”, “low”, “medium”, and
+“high”).</p>
+<p>Vaccine investment scenarios can be passed a string to
+<code><a href="../reference/daedalus.html">daedalus()</a></code> to use the default parameters for each scenario,
+or as a <code>&lt;daedalus_vaccination&gt;</code> object using
+<code>daedalus_vaccination(name, &lt;PARAMETERS&gt;)</code> to modify
+vaccination parameters.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># the default vaccine investment scenario</span></span>
+<span><span class="fu"><a href="../reference/class_vaccination.html">daedalus_vaccination</a></span><span class="op">(</span><span class="st">"none"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">&lt;daedalus_vaccination&gt;</span></span></span>
+<span><span class="co">#&gt; Advance vaccine investment: <span style="font-weight: bold;">none</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Start time (days): <span style="color: #0000BB;">365</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Rate (% per day): <span style="color: #0000BB;">0.143</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Uptake limit (%): 40</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="running-the-model">Running the model<a class="anchor" aria-label="anchor" href="#running-the-model"></a>
 </h2>
 <p>Run the model by passing the <code>country</code> and
-<code>infection</code> arguments to <code><a href="../reference/daedalus.html">daedalus()</a></code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code>infection</code> arguments to <code><a href="../reference/daedalus.html">daedalus()</a></code>. The vaccine
+investment scenarios is automatically assumed to be “none”.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># simulate a Covid-19 wild type outbreak in Canada; using default parameters</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span></code></pre></div>
 <p>The model runs for 300 timesteps by default; timesteps should be
 interpreted as days since model parameters are in terms of days.</p>
 <p>Plot the data to view the epidemic curve.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data.html">get_data</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">compartment</span> <span class="op">==</span> <span class="st">"infect_symp"</span> <span class="op">&amp;</span> <span class="va">data</span><span class="op">$</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"20-65"</span>, <span class="op">]</span></span>

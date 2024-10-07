@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,14 @@
       <small>Source: <a href="https://github.com/j-idea/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.14" id="daedalus-0014">daedalus 0.0.14<a class="anchor" aria-label="anchor" href="#daedalus-0014"></a></h2>
+<p>This patch adds vaccine investment scenarios to <em>daedalus</em>. All model runs must now include an assumption about the level of advance vaccine investment, defaulting to “none”.</p>
+<ol style="list-style-type: decimal"><li><p>Added vaccine investment scenario related data: <code>vaccination_scenario_data</code> for vaccination parameters, <code>vaccination_scenario_names</code>, and <code>vaccination_parameter_names</code>.</p></li>
+<li><p>Added the <code>&lt;daedalus_vaccination&gt;</code> S3 class to hold vaccination parameters, along with class infrastructure (print, get/set, and <code><a href="../reference/prepare_parameters.html">prepare_parameters()</a></code> methods).</p></li>
+<li><p>Added helper function <code><a href="../reference/class_vaccination.html">daedalus_vaccination()</a></code> to return vaccination object corresponding to four vaccine investment scenarios.</p></li>
+<li><p>Added tests for vaccination class, model runs with vaccination, and updated documentation.</p></li>
+</ol></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.13" id="daedalus-0013">daedalus 0.0.13<a class="anchor" aria-label="anchor" href="#daedalus-0013"></a></h2>
 <p>This patch version adds ISO 3166 2- and 3- character country codes for the countries in <code>country_names</code>, as the package data <code>country_codes_iso2c</code> and <code>country_codes_iso3c</code>.</p>

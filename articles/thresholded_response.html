@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,15 +75,13 @@
 <span><span class="va">response_threshold</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span></code></pre></div>
 <p>Initially run the model with no response, and then with an
 elimination response activated when total hospitalisations reach 1000 or
-after 30 days, whichever is sooner. We run both models for 100 days as
-the epidemic peak occurs within this timeframe.</p>
+after 30 days, whichever is sooner.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Canada"</span>,</span>
 <span>  <span class="fu"><a href="../reference/class_infection.html">daedalus_infection</a></span><span class="op">(</span><span class="st">"influenza_1918"</span>, rho <span class="op">=</span> <span class="fl">0.0</span><span class="op">)</span>, <span class="co"># prevent re-infection</span></span>
 <span>  response_threshold <span class="op">=</span> <span class="va">response_threshold</span>,</span>
-<span>  response_strategy <span class="op">=</span> <span class="st">"none"</span>,</span>
-<span>  time_end <span class="op">=</span> <span class="fl">100</span></span>
+<span>  response_strategy <span class="op">=</span> <span class="st">"none"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># get the model timeseries</span></span>
@@ -95,8 +93,7 @@ the epidemic peak occurs within this timeframe.</p>
 <span>  <span class="st">"Canada"</span>,</span>
 <span>  <span class="fu"><a href="../reference/class_infection.html">daedalus_infection</a></span><span class="op">(</span><span class="st">"influenza_1918"</span>, rho <span class="op">=</span> <span class="fl">0.0</span><span class="op">)</span>, <span class="co"># prevent re-infection</span></span>
 <span>  response_threshold <span class="op">=</span> <span class="va">response_threshold</span>,</span>
-<span>  response_strategy <span class="op">=</span> <span class="st">"elimination"</span>,</span>
-<span>  time_end <span class="op">=</span> <span class="fl">100</span></span>
+<span>  response_strategy <span class="op">=</span> <span class="st">"elimination"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># get the model timeseries</span></span>
