@@ -11,7 +11,7 @@ An environment with three mutable parameters:
 \itemize{
 \item \code{switch}: The switch parameter which controls whether closures are active
 or not.
-\item \code{hosp_swith}: The switch for excess mortality due to more hospitalisations
+\item \code{hosp_switch}: The switch for excess mortality due to more hospitalisations
 required than hospital places are available.
 \item \code{closures_time_start} and \code{closures_time_end}: The times at which closures
 start and end. Defaults to the end time of the simulation so as to
