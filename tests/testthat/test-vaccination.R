@@ -1,7 +1,8 @@
 # Tests for daedalus() with vaccination active
 test_that("Vaccination: basic expectations", {
+  vax_level <- daedalus_vaccination("medium")
   expect_no_condition({
-    output <- daedalus("Canada", "sars_cov_1", vaccine_investment = "medium")
+    output <- daedalus("Canada", "sars_cov_1", vaccine_investment = vax_level)
   })
   data <- get_data(output)
 
@@ -9,6 +10,14 @@ test_that("Vaccination: basic expectations", {
   expect_gt(
     max(data_vaccinated$value), 0
   )
+
+  # expect that there are no vaccinations before the vaccination start time
+  t_vax <- get_data(vax_level, "vax_start_time")
+  vax_per_day <- tapply(data_vaccinated$value, data_vaccinated$time, sum)
+  expect_identical(
+    max(vax_per_day[seq_len(t_vax)]), 0.0
+  )
+
 
   # expect that vaccination does not affect population size
   data_start <- data[data$time == min(data$time), ]
