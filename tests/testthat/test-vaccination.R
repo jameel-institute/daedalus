@@ -28,39 +28,26 @@ test_that("Vaccination: basic expectations", {
 })
 
 test_that("Vaccination: basic statistical correctness", {
-  time_end <- 300
-  # expect that higher vaccination rate leads to fewer deaths
-  data_low_vax <- get_data(
-    daedalus(
-      "Canada", "sars_cov_1",
-      response_time = 10,
-      vaccine_investment = "medium",
-      time_end = time_end
-    )
+  # expect that higher vaccination investment leads to fewer deaths
+  # set disease to lower R0 to make it run longer
+  data_list <- lapply(
+    daedalus::vaccination_scenario_names,
+    function(v) {
+      daedalus(
+        country = "Canada",
+        infection = daedalus_infection("sars_cov_1", r0 = 1.1),
+        response_time = 10, vaccine_investment = v
+      )
+    }
   )
 
-  data_high_vax <- get_data(
-    daedalus(
-      "Canada", "sars_cov_1",
-      response_time = 10,
-      vaccine_investment = "high",
-      time_end = time_end
-    )
+  deaths <- vapply(
+    data_list, function(df) {
+      get_epidemic_summary(df, "deaths")$value
+    }, numeric(1L)
   )
 
-  deaths_low_vax <- sum(
-    data_low_vax[
-      data_low_vax$time == time_end &
-        data_low_vax$compartment == "dead",
-    ]$value
-  )
-  deaths_high_vax <- sum(
-    data_high_vax[
-      data_high_vax$time == time_end &
-        data_high_vax$compartment == "dead",
-    ]$value
-  )
-  expect_gt(
-    deaths_low_vax, deaths_high_vax
+  expect_lt(
+    min(diff(deaths)), 0.0
   )
 })

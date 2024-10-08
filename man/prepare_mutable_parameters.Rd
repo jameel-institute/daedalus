@@ -13,6 +13,8 @@ An environment with three mutable parameters:
 or not.
 \item \code{hosp_switch}: The switch for excess mortality due to more hospitalisations
 required than hospital places are available.
+\item \code{vax_switch}: A switch for whether vaccination is active. Manually switched
+on in model stage 3.
 \item \code{closures_time_start} and \code{closures_time_end}: The times at which closures
 start and end. Defaults to the end time of the simulation so as to
 give a default duration of 0.0.
