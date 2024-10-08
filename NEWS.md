@@ -1,3 +1,13 @@
+# daedalus 0.0.18
+
+This patch fixes an issue where vaccination start was tied to the `response_time`; it is now correctly controlled by the vaccine investment level passed to `daedalus()`.
+
+- Added a `vax_switch` which is manually turned on in stage 03 of the model (never turned off);
+
+- Added test to check that there is no vaccination before scenario-defined start times;
+
+- Added tests to check that vaccine investment levels control epidemic deaths.
+
 # daedalus 0.0.15
 
 This patch fixes an issue where closures were not ended in model runs where the closure began after the epidemic had stopped growing. This mostly affected edge cases of countries with large spare hospital capacity, and relatively late `response_time`s. In such cases the closure end time was assigned as the simulation end time, inflating costs related to closures. The fix:
