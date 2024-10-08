@@ -65,7 +65,6 @@ test_that("daedalus: basic expectations", {
 })
 
 # test that daedalus runs for all epidemic infection parameter sets
-skip()
 test_that("daedalus: Runs for all country x infection x response", {
   country_infection_combos <- data.table::CJ(
     country = daedalus::country_names,
