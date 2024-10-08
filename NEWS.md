@@ -10,7 +10,9 @@ Tests for different response times check that the model behaves as expected.
 
 ## Miscellaneous changes
 
-- The package now requires a minimum R version >= v4.3 due to the use of the new function `array2DF()`.
+- The package now requires a minimum R version >= v4.3 due to the use of the new function `array2DF()`;
+
+- `prepare_parameters.daedalus_country()` now provides a contact matrix scaled by the leading eigenvalue but not the demography for use in `r_eff()`.
 
 # daedalus 0.0.14
 

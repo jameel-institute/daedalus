@@ -418,7 +418,8 @@ prepare_parameters.daedalus_country <- function(x, ...) {
   # scale contacts by largest real eigenvalue
   cm <- get_data(x, "contact_matrix")
   eigv <- max(Re(eigen(cm)$values))
-  cm <- (cm / eigv) %*% diag(1 / demography)
+  cm_unscaled <- cm / eigv
+  cm <- (cm_unscaled) %*% diag(1 / demography)
 
   cmw <- get_data(x, "contacts_workplace")
   cmw <- cmw / max(cmw) # max(cmw) is leading eigenvalue of diag matrix cmw
@@ -431,6 +432,7 @@ prepare_parameters.daedalus_country <- function(x, ...) {
   list(
     demography = demography,
     contact_matrix = cm,
+    cm_unscaled = cm_unscaled, # for use in Rt calculations
     contacts_workplace = cmw,
     contacts_consumer_worker = cmcw,
     contacts_between_sectors = get_data(x, "contacts_between_sectors") # 0s

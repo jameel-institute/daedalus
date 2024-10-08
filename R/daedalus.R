@@ -286,7 +286,7 @@ daedalus <- function(country,
   is_epidemic_growing <- r_eff(
     parameters[["r0"]],
     state_temp,
-    parameters[["contact_matrix"]] %*% diag(parameters[["demography"]])
+    parameters[["cm_unscaled"]]
   ) >= 1.0
 
   if (!is_epidemic_growing) {
