@@ -102,6 +102,9 @@ set_data <- function(x, ...) {
 #' - `contact_matrix`: the scaled contact matrix suitable for multiplication
 #' with \eqn{R_0} in force of infection calculations;
 #'
+#' - `cm_unscaled`: the contact matrix multiplied column-wise by the demography
+#' vector, suitable for calculations of \eqn{R_{\text{eff}}}; see [r_eff()].
+#'
 #' - `contacts_workplace`: the contacts in workplaces scaled by their largest
 #' value (which is the leading eigenvalue of the diagonal matrix of contacts);
 #'

@@ -23,8 +23,8 @@ make_response_threshold_event <- function(response_threshold) {
       state,
       c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
     )
-    cm <- parameters[["contact_matrix"]] %*% diag(parameters[["demography"]])
-    rt <- r_eff(parameters[["r0"]], state, cm)
+
+    rt <- r_eff(parameters[["r0"]], state, parameters[["cm_unscaled"]])
 
     # NOTE: to ensure only first hosp threshold crossing is logged
     is_hosp_switch_on <- rlang::env_get(parameters[["mutables"]], "hosp_switch")
@@ -63,11 +63,8 @@ make_rt_end_event <- function() {
       c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
     )
 
-    # because contacts are divided by demography during parameter prep
-    cm <- parameters[["contact_matrix"]] %*% diag(parameters[["demography"]])
-
     # arbitrary precision, may not be hit!
-    r_eff(parameters[["r0"]], state, cm) - 0.99
+    rt <- r_eff(parameters[["r0"]], state, parameters[["cm_unscaled"]]) - 0.99
   }
 
   event_function <- function(time, state, parameters) {
