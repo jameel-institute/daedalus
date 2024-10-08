@@ -64,7 +64,7 @@ make_rt_end_event <- function() {
     )
 
     # arbitrary precision, may not be hit!
-    rt <- r_eff(parameters[["r0"]], state, parameters[["cm_unscaled"]]) - 0.99
+    r_eff(parameters[["r0"]], state, parameters[["cm_unscaled"]]) - 0.99
   }
 
   event_function <- function(time, state, parameters) {
