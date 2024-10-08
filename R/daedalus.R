@@ -318,6 +318,11 @@ daedalus <- function(country,
   # reset min time
   parameters[["min_time"]] <- vaccination_start
 
+  # turn vax_switch on
+  rlang::env_poke(
+    parameters[["mutables"]], "vax_switch", TRUE
+  )
+
   data_stage_03 <- deSolve::ode(
     initial_state, times_stage_03,
     daedalus_rhs, parameters,

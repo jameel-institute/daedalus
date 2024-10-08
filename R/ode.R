@@ -90,7 +90,8 @@ daedalus_rhs <- function(t, state, parameters) {
 
   # NOTE: scale vax rate by proportion of eligible individuals remaining
   # to maintain rate relative to total population as eligibles decrease
-  nu <- if (switch) scale_nu(state_, nu, vax_uptake_limit) else 0.0
+  vax_switch <- rlang::env_get(parameters[["mutables"]], "vax_switch")
+  nu <- if (vax_switch) scale_nu(state_, nu, vax_uptake_limit) else 0.0
 
   # create empty array of the dimensions of state
   d_state <- array(0.0, dim(state_))

@@ -97,6 +97,9 @@ make_initial_state <- function(country, initial_state_manual) {
 #' - `hosp_switch`: The switch for excess mortality due to more hospitalisations
 #' required than hospital places are available.
 #'
+#' - `vax_switch`: A switch for whether vaccination is active. Manually switched
+#' on in model stage 3.
+#'
 #' - `closures_time_start` and `closures_time_end`: The times at which closures
 #' start and end. Defaults to the end time of the simulation so as to
 #' give a default duration of 0.0.
@@ -109,7 +112,8 @@ prepare_mutable_parameters <- function() {
     # to later process duration as time_start - time_end
     closure_time_start = 0.0,
     closure_time_end = 0.0,
-    hosp_switch = FALSE
+    hosp_switch = FALSE,
+    vax_switch = FALSE
   )
 
   env
