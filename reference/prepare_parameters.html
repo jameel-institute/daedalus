@@ -9,7 +9,7 @@ daedalus classes."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.14</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.15</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,6 +91,8 @@ scaling contacts from each age group by the size of that group).</p></li>
 </ul><p>The returned parameter list consists of:</p><ul><li><p><code>demography</code>: the demography vector;</p></li>
 <li><p><code>contact_matrix</code>: the scaled contact matrix suitable for multiplication
 with \(R_0\) in force of infection calculations;</p></li>
+<li><p><code>cm_unscaled</code>: the contact matrix multiplied column-wise by the demography
+vector, suitable for calculations of \(R_{\text{eff}}\); see <code><a href="reff_calculation.html">r_eff()</a></code>.</p></li>
 <li><p><code>contacts_workplace</code>: the contacts in workplaces scaled by their largest
 value (which is the leading eigenvalue of the diagonal matrix of contacts);</p></li>
 <li><p><code>contacts_consumer_worker</code>: contacts in workplaces distributed in

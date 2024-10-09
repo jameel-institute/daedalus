@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.14</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.15</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,18 @@
       <small>Source: <a href="https://github.com/j-idea/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.15" id="daedalus-0015">daedalus 0.0.15<a class="anchor" aria-label="anchor" href="#daedalus-0015"></a></h2>
+<p>This patch fixes an issue where closures were not ended in model runs where the closure began after the epidemic had stopped growing. This mostly affected edge cases of countries with large spare hospital capacity, and relatively late <code>response_time</code>s. In such cases the closure end time was assigned as the simulation end time, inflating costs related to closures. The fix:</p>
+<ul><li><p>Prevents closures from being activated by the <code>hospital_capacity</code> trigger if the epidemic is not growing, even if the hospital capacity threshold is crossed;</p></li>
+<li><p>Prevents closures from being activated by the <code>response_time</code> trigger if the epidemic is not growing between stage 01 and stage 02. Closures are manually turned off if the epidemic is not growing (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>t</mi></msub><mo>&lt;</mo><mn>1.0</mn></mrow><annotation encoding="application/x-tex">R_t &lt; 1.0</annotation></semantics></math>).</p></li>
+</ul><p>Tests for different response times check that the model behaves as expected.</p>
+<div class="section level3">
+<h3 id="miscellaneous-changes-0-0-15">Miscellaneous changes<a class="anchor" aria-label="anchor" href="#miscellaneous-changes-0-0-15"></a></h3>
+<ul><li><p>The package now requires a minimum R version &gt;= v4.3 due to the use of the new function <code><a href="https://rdrr.io/r/base/array2DF.html" class="external-link">array2DF()</a></code>;</p></li>
+<li><p><code><a href="../reference/prepare_parameters.html">prepare_parameters.daedalus_country()</a></code> now provides a contact matrix scaled by the leading eigenvalue but not the demography for use in <code><a href="../reference/reff_calculation.html">r_eff()</a></code>.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.14" id="daedalus-0014">daedalus 0.0.14<a class="anchor" aria-label="anchor" href="#daedalus-0014"></a></h2>
 <p>This patch adds vaccine investment scenarios to <em>daedalus</em>. All model runs must now include an assumption about the level of advance vaccine investment, defaulting to “none”.</p>
