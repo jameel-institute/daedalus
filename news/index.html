@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.15</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.16</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,13 @@
       <small>Source: <a href="https://github.com/j-idea/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.18" id="daedalus-0018">daedalus 0.0.18<a class="anchor" aria-label="anchor" href="#daedalus-0018"></a></h2>
+<p>This patch fixes an issue where vaccination start was tied to the <code>response_time</code>; it is now correctly controlled by the vaccine investment level passed to <code><a href="../reference/daedalus.html">daedalus()</a></code>.</p>
+<ul><li><p>Added a <code>vax_switch</code> which is manually turned on in stage 03 of the model (never turned off);</p></li>
+<li><p>Added test to check that there is no vaccination before scenario-defined start times;</p></li>
+<li><p>Added tests to check that vaccine investment levels control epidemic deaths.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.15" id="daedalus-0015">daedalus 0.0.15<a class="anchor" aria-label="anchor" href="#daedalus-0015"></a></h2>
 <p>This patch fixes an issue where closures were not ended in model runs where the closure began after the epidemic had stopped growing. This mostly affected edge cases of countries with large spare hospital capacity, and relatively late <code>response_time</code>s. In such cases the closure end time was assigned as the simulation end time, inflating costs related to closures. The fix:</p>
