@@ -137,3 +137,16 @@ get_closure_info <- function(mutables) {
 
   lapply(closure_times, floor)
 }
+
+#' Reshape a vector to the dimensions of the DAEDALUS state array
+#'
+#' @param x A vector of numeric values.
+#'
+#' @return An array of dimensions (4, 9, 46, 3).
+#' @keywords internal
+values_to_state <- function(x) {
+  array(
+    x,
+    c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_DATA_GROUPS)
+  )
+}
