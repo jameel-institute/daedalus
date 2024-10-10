@@ -4,27 +4,40 @@
 #' @rdname epi_output_helpers
 #'
 #' @description Functions to quickly summarise timeseries data from `daedalus()`
-#' while allowing grouping by different strata.
+#' to provide daily values for infections, hospitalisations, deaths, and
+#' vaccinations, while allowing grouping by different strata.
 #'
-#' @param data Either a `<data.frame>` or a `<daedalus_output>` object.
-#' @param measures A character vector of one or more of the following:
-#' `"epidemic_size"`, `"total_hospitalisations"` or `"total_deaths"` for the
-#' measure to return.
-#' Defaults to returning all three in long format.
+#' @param data Either a `<data.frame>` from a call to `get_daedalus()` on a
+#' `<daedalus_output>` object, or such an object directly.
+#'
+#' @param measures A character vector of one or more of the following, passed to
+#' `get_incidence()` and `get_epidemic_summary()`:
+#' `"infections"`, `"hospitalisations"` or `"deaths"` for the
+#' measure to return. Defaults to returning all three in long format.
+#'
+#' `get_daily_vaccinations()` does not accept a `measures` argument and only
+#' provides the number of daily vaccinations.
+#'
 #' @param groups An optional character vector of grouping variables that
 #' correspond to model strata. Defaults to `NULL` which gives incidence across
 #' the whole population. Allowed groups correspond to modelled strata:
 #' `"age_group"`, `"vaccine_group"`, and `"econ_sector"`.
 #'
-#' @return A `<data.frame>` in long format, with at least one entry per
+#' `get_daily_vaccinations()` only accepts "`age_group`" and `"econ_sector"`.
+#'
+#' @return A `<data.frame>` in long format, with one entry per
 #' model timestep, measure, and group chosen.
 #'
 #' - `get_incidence()` returns a data frame with the number of daily new
 #' infections, new hospitalisations, and/or new deaths in each of the groups
 #' specified by `groups`.
 #'
-#' - `get_epidemic_summary()` returns a data frame with the measure specified
-#' in `measure` for each of the groups specified by `groups`.
+#' - `get_epidemic_summary()` returns a data frame with the total number of the
+#' value specified in `measure` for each of the groups specified by `groups`.
+#'
+#' - `get_daily_vaccinations()` returns a data frame with columns for the
+#' number of new daily vaccination in each combination of `groups` if provided.
+#' Columns for the `groups` are added when `groups` are specified.
 #'
 #' @examples
 #' data <- daedalus("Canada", "sars_cov_1")
@@ -37,6 +50,9 @@
 #'   data,
 #'   groups = "age_group"
 #' )
+#'
+#' # get daily vaccinations
+#' daily_vaccinations <- get_new_vaccinations(data)
 #'
 #' @export
 get_incidence <- function(data,
@@ -73,11 +89,8 @@ get_incidence <- function(data,
   )
   if (!is_good_groups) {
     cli::cli_abort(
-      c(
-        "Expected `groups` to be either `NULL` or a character vector of
-        model groups.",
-        i = "Allowed groups are {.str {allowed_groups}}."
-      )
+      "Expected `groups` to be either `NULL` or one or more of
+        {.str {SUMMARY_GROUPS}}."
     )
   }
 
@@ -151,7 +164,7 @@ get_epidemic_summary <- function(data,
       c(
         "Expected `groups` to be either `NULL` or a character vector of
         model groups.",
-        i = "Allowed groups are {.str {allowed_groups}}."
+        i = "Allowed groups are {.str {SUMMARY_GROUPS}}."
       )
     )
   }
@@ -187,26 +200,7 @@ get_epidemic_summary <- function(data,
   dt_summary[, setdiff(colnames(dt_summary), "compartment")]
 }
 
-#' Get time-series of new vaccinations
-#'
-#' @description
-#' Get the number of new daily vaccinations, with optional breakdown by model
-#' groups such as age and economic sector.
-#'
-#' @param data A `<daedalus_output>` object resulting from a call to
-#' `daedalus()`, or, a `<data.frame>` resulting from a call to `get_data()` on
-#' a `<daedalus_output>` object.
-#' @param groups An optional character vector of model groups: daily new
-#' vaccinations are provided separately for each combination of groups.
-#' Accepted values are `"age_group"` and `"econ_sector"`.
-#' Defaults to `NULL`, which provides the daily new vaccinations for the whole
-#' population.
-#'
-#' @return
-#' A `<data.frame>` with columns for the number of new daily vaccination in each
-#' combination of `groups` if provided. Columns for the `groups` are added when
-#' `groups` are specified.
-#'
+#' @name epi_output_helpers
 #' @export
 get_new_vaccinations <- function(data, groups = NULL) {
   # set global variables to NULL
