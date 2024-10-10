@@ -39,10 +39,10 @@ daedalus_rhs <- function(t, state, parameters) {
   # NOTE: see constants.R for compartmental indices
   # NOTE: DAEDALUS includes 45 vaccination strata for economic sectors,
   # and these are represented by the third dimension of the tensor
-  state_ <- array(
-    state,
-    c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
-  )
+  state_ <- values_to_state(state)
+
+  # remove delta vaccinations layer
+  state_ <- state_[, , , -i_NEW_VAX_STRATUM]
 
   #### Parameter preparation ####
   r0 <- parameters[["r0"]]
@@ -93,7 +93,7 @@ daedalus_rhs <- function(t, state, parameters) {
   vax_switch <- rlang::env_get(parameters[["mutables"]], "vax_switch")
   nu <- if (vax_switch) scale_nu(state_, nu, vax_uptake_limit) else 0.0
 
-  # create empty array of the dimensions of state
+  # create empty array of the dimensions of `state_`
   d_state <- array(0.0, dim(state_))
 
   #### Social distancing ####

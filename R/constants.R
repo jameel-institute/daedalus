@@ -101,7 +101,7 @@ i_VACCINATED_STRATUM <- 2L
 i_NEW_VAX_STRATUM <- 3L
 
 #' @name model_constants
-VACCINE_GROUPS <- c("unvaccinated", "vaccinated")
+VACCINE_GROUPS <- c("unvaccinated", "vaccinated", "new_vaccinations")
 
 #' @name model_constants
 #' @keywords model_constant
