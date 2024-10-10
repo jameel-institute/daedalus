@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,7 +39,13 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.0.18" id="daedalus-0018">daedalus 0.0.18<a class="anchor" aria-label="anchor" href="#daedalus-0018"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.0.17" id="daedalus-0017">daedalus 0.0.17<a class="anchor" aria-label="anchor" href="#daedalus-0017"></a></h2>
+<p>This patch removes dual implementation levels for response strategies. The “elimination” strategy has a “high” implementation level, while all other strategies keep their “light” implementation level.</p>
+<ul><li><p>The <code><a href="../reference/daedalus.html">daedalus()</a></code> argument <code>implementation_level</code> has been removed.</p></li>
+<li><p>Tests and documentation have been updated to remove references to implementation levels.</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.16" id="daedalus-0016">daedalus 0.0.16<a class="anchor" aria-label="anchor" href="#daedalus-0016"></a></h2>
 <p>This patch fixes an issue where vaccination start was tied to the <code>response_time</code>; it is now correctly controlled by the vaccine investment level passed to <code><a href="../reference/daedalus.html">daedalus()</a></code>.</p>
 <ul><li><p>Added a <code>vax_switch</code> which is manually turned on in stage 03 of the model (never turned off);</p></li>
 <li><p>Added test to check that there is no vaccination before scenario-defined start times;</p></li>

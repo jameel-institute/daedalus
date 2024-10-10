@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,7 +49,6 @@
 <span>  <span class="va">country</span>,</span>
 <span>  <span class="va">infection</span>,</span>
 <span>  response_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"elimination"</span>, <span class="st">"economic_closures"</span>, <span class="st">"school_closures"</span><span class="op">)</span>,</span>
-<span>  implementation_level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"light"</span>, <span class="st">"heavy"</span><span class="op">)</span>,</span>
 <span>  vaccine_investment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span><span class="op">)</span>,</span>
 <span>  response_time <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  response_threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -92,11 +91,6 @@ response threshold following which the response is activated. See
 <code>response_threshold</code>.</p>
 <p>While the response strategy is active, economic contacts are scaled using the
 package data object <code><a href="closure_data.html">daedalus::closure_data</a></code>.</p></dd>
-
-
-<dt id="arg-implementation-level">implementation_level<a class="anchor" aria-label="anchor" href="#arg-implementation-level"></a></dt>
-<dd><p>A string for the level at which the strategy is
-implemented; defaults to "light".</p></dd>
 
 
 <dt id="arg-vaccine-investment">vaccine_investment<a class="anchor" aria-label="anchor" href="#arg-vaccine-investment"></a></dt>
