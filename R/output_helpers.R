@@ -186,3 +186,70 @@ get_epidemic_summary <- function(data,
   data.table::setDF(dt_summary)
   dt_summary[, setdiff(colnames(dt_summary), "compartment")]
 }
+
+#' Get time-series of new vaccinations
+#'
+#' @description
+#' Get the number of new daily vaccinations, with optional breakdown by model
+#' groups such as age and economic sector.
+#'
+#' @param data A `<daedalus_output>` object resulting from a call to
+#' `daedalus()`, or, a `<data.frame>` resulting from a call to `get_data()` on
+#' a `<daedalus_output>` object.
+#' @param groups An optional character vector of model groups: daily new
+#' vaccinations are provided separately for each combination of groups.
+#' Accepted values are `"age_group"` and `"econ_sector"`.
+#' Defaults to `NULL`, which provides the daily new vaccinations for the whole
+#' population.
+#'
+#' @return
+#' A `<data.frame>` with columns for the number of new daily vaccination in each
+#' combination of `groups` if provided. Columns for the `groups` are added when
+#' `groups` are specified.
+#'
+#' @export
+get_new_vaccinations <- function(data, groups = NULL) {
+  # set global variables to NULL
+  value <- NULL
+
+  # check data
+  is_good_data <- checkmate::test_data_frame(
+    data,
+    any.missing = FALSE
+  ) || checkmate::test_class(data, "daedalus_output")
+
+  if (!is_good_data) {
+    cli::cli_abort(
+      "Expected `data` to be either a `data.frame` or a
+        {.cls daedalus_output} object."
+    )
+  } else if (is_daedalus_output(data)) {
+    data <- get_data(data)
+  }
+
+  # NOTE: allowed groups are different from SUMMARY_GROUPS as `vaccine_group`
+  # is not allowed
+  allowed_groups <- setdiff(SUMMARY_GROUPS, "vaccine_group")
+
+  is_good_groups <- checkmate::test_subset(
+    groups, allowed_groups
+  )
+  if (!is_good_groups) {
+    cli::cli_abort(
+      c(
+        "Expected `groups` to be either `NULL` or a character vector of
+        model groups.",
+        i = "Allowed groups are {.str {allowed_groups}}."
+      )
+    )
+  }
+
+  dt_new <- data[data$vaccine_group == "new_vaccinations", ]
+  data.table::setDT(dt_new)
+
+  dt_new <- dt_new[, list(value = sum(value)), by = c("time", groups)]
+  dt_new[, "new_vaccinations" := c(0, diff(value)), by = groups]
+
+  data.table::setDF(dt_new)
+  dt_new[, setdiff(colnames(dt_new), "value")]
+}
