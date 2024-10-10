@@ -185,6 +185,21 @@ daedalus_rhs <- function(t, state, parameters) {
     rho * state_[, i_R, , ]
 
   #### Vaccination and vaccine waning ####
+  # add empty array for new vax
+  d_vax_temp <- array(
+    0.0,
+    c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA)
+  )
+  d_state <- values_to_state(
+    c(d_state, d_vax_temp)
+  )
+
+  # log new vaccinations
+  d_state[, c(i_S, i_R), , i_NEW_VAX_STRATUM] <-
+    state_[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] * nu
+
+  # NOTE: changes in S and R are on top of previous changes due to infection,
+  # recovery, and waning
   # change in vaccinated: only susceptible and recovered are vaccinated
   d_state[, c(i_S, i_R), , i_VACCINATED_STRATUM] <-
     d_state[, c(i_S, i_R), , i_VACCINATED_STRATUM] +
@@ -193,9 +208,9 @@ daedalus_rhs <- function(t, state, parameters) {
 
   # change in unvaccinated: assume waning only affects susceptible and recovered
   d_state[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] <-
-    d_state[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] -
-    (state_[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] * nu) +
-    state_[, c(i_S, i_R), , i_VACCINATED_STRATUM] * psi
+    d_state[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] +
+    state_[, c(i_S, i_R), , i_VACCINATED_STRATUM] * psi -
+    state_[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] * nu
 
   # return in the same order as state
   list(c(d_state))
