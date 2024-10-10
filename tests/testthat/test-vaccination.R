@@ -26,16 +26,21 @@ test_that("Vaccination: basic expectations", {
   expect_identical(
     sum(
       data[data$time == max(data$time) &
-        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], ]$value
+        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS] &
+        data$vaccine_group != "new_vaccinations", ]$value
     ),
     sum(
       data[data$time == min(data$time) &
-        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], ]$value
+        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS] &
+        data$vaccine_group != "new_vaccinations", ]$value
     ),
     tolerance = 1
   )
 })
 
+# NOTE: testing that higher vaccine investment leads to fewer deaths
+# but not lower costs, as vaccination lifts social distancing which leads
+# to more infections and deaths, leading to higher life-years lost
 test_that("Vaccination: basic statistical correctness", {
   # expect that higher vaccination investment leads to fewer deaths
   # set disease to lower R0 to make it run longer

@@ -1,3 +1,17 @@
+# daedalus 0.0.18
+
+This patch adds logging of daily new vaccinations and provides an output helper function, `get_new_vaccinations()`, to get daily new vaccinations.
+
+- Adds a third layer to the fourth dimension to the state array to hold new vaccinations;
+
+- Adds a new helper function `values_to_state()` to convert a vector to the state array;
+
+- Updates a number of indexing operations to disregard the new data layer of new vaccinations;
+
+- Updates `daedalus()`, `prepare_output()` and `make_initial_state()` to account for the new vaccinations layer;
+
+- Updates tests for newly added functionality.
+
 # daedalus 0.0.17
 
 This patch removes dual implementation levels for response strategies. The "elimination" strategy has a "high" implementation level, while all other strategies keep their "light" implementation level.

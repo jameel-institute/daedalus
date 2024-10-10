@@ -4,27 +4,40 @@
 #' @rdname epi_output_helpers
 #'
 #' @description Functions to quickly summarise timeseries data from `daedalus()`
-#' while allowing grouping by different strata.
+#' to provide daily values for infections, hospitalisations, deaths, and
+#' vaccinations, while allowing grouping by different strata.
 #'
-#' @param data Either a `<data.frame>` or a `<daedalus_output>` object.
-#' @param measures A character vector of one or more of the following:
-#' `"epidemic_size"`, `"total_hospitalisations"` or `"total_deaths"` for the
-#' measure to return.
-#' Defaults to returning all three in long format.
+#' @param data Either a `<data.frame>` from a call to `get_daedalus()` on a
+#' `<daedalus_output>` object, or such an object directly.
+#'
+#' @param measures A character vector of one or more of the following, passed to
+#' `get_incidence()` and `get_epidemic_summary()`:
+#' `"infections"`, `"hospitalisations"` or `"deaths"` for the
+#' measure to return. Defaults to returning all three in long format.
+#'
+#' `get_daily_vaccinations()` does not accept a `measures` argument and only
+#' provides the number of daily vaccinations.
+#'
 #' @param groups An optional character vector of grouping variables that
 #' correspond to model strata. Defaults to `NULL` which gives incidence across
 #' the whole population. Allowed groups correspond to modelled strata:
 #' `"age_group"`, `"vaccine_group"`, and `"econ_sector"`.
 #'
-#' @return A `<data.frame>` in long format, with at least one entry per
+#' `get_daily_vaccinations()` only accepts "`age_group`" and `"econ_sector"`.
+#'
+#' @return A `<data.frame>` in long format, with one entry per
 #' model timestep, measure, and group chosen.
 #'
 #' - `get_incidence()` returns a data frame with the number of daily new
 #' infections, new hospitalisations, and/or new deaths in each of the groups
 #' specified by `groups`.
 #'
-#' - `get_epidemic_summary()` returns a data frame with the measure specified
-#' in `measure` for each of the groups specified by `groups`.
+#' - `get_epidemic_summary()` returns a data frame with the total number of the
+#' value specified in `measure` for each of the groups specified by `groups`.
+#'
+#' - `get_daily_vaccinations()` returns a data frame with columns for the
+#' number of new daily vaccination in each combination of `groups` if provided.
+#' Columns for the `groups` are added when `groups` are specified.
 #'
 #' @examples
 #' data <- daedalus("Canada", "sars_cov_1")
@@ -37,6 +50,9 @@
 #'   data,
 #'   groups = "age_group"
 #' )
+#'
+#' # get daily vaccinations
+#' daily_vaccinations <- get_new_vaccinations(data)
 #'
 #' @export
 get_incidence <- function(data,
@@ -73,11 +89,8 @@ get_incidence <- function(data,
   )
   if (!is_good_groups) {
     cli::cli_abort(
-      c(
-        "Expected `groups` to be either `NULL` or a character vector of
-        model groups.",
-        i = "Allowed groups are {.str {allowed_groups}}."
-      )
+      "Expected `groups` to be either `NULL` or one or more of
+        {.str {SUMMARY_GROUPS}}."
     )
   }
 
@@ -151,7 +164,7 @@ get_epidemic_summary <- function(data,
       c(
         "Expected `groups` to be either `NULL` or a character vector of
         model groups.",
-        i = "Allowed groups are {.str {allowed_groups}}."
+        i = "Allowed groups are {.str {SUMMARY_GROUPS}}."
       )
     )
   }
@@ -185,4 +198,52 @@ get_epidemic_summary <- function(data,
 
   data.table::setDF(dt_summary)
   dt_summary[, setdiff(colnames(dt_summary), "compartment")]
+}
+
+#' @name epi_output_helpers
+#' @export
+get_new_vaccinations <- function(data, groups = NULL) {
+  # set global variables to NULL
+  value <- NULL
+
+  # check data
+  is_good_data <- checkmate::test_data_frame(
+    data,
+    any.missing = FALSE
+  ) || checkmate::test_class(data, "daedalus_output")
+
+  if (!is_good_data) {
+    cli::cli_abort(
+      "Expected `data` to be either a `data.frame` or a
+        {.cls daedalus_output} object."
+    )
+  } else if (is_daedalus_output(data)) {
+    data <- get_data(data)
+  }
+
+  # NOTE: allowed groups are different from SUMMARY_GROUPS as `vaccine_group`
+  # is not allowed
+  allowed_groups <- setdiff(SUMMARY_GROUPS, "vaccine_group")
+
+  is_good_groups <- checkmate::test_subset(
+    groups, allowed_groups
+  )
+  if (!is_good_groups) {
+    cli::cli_abort(
+      c(
+        "Expected `groups` to be either `NULL` or a character vector of
+        model groups.",
+        i = "Allowed groups are {.str {allowed_groups}}."
+      )
+    )
+  }
+
+  dt_new <- data[data$vaccine_group == "new_vaccinations", ]
+  data.table::setDT(dt_new)
+
+  dt_new <- dt_new[, list(value = sum(value)), by = c("time", groups)]
+  dt_new[, "new_vaccinations" := c(0, diff(value)), by = groups]
+
+  data.table::setDF(dt_new)
+  dt_new[, setdiff(colnames(dt_new), "value")]
 }

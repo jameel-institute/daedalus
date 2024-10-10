@@ -52,10 +52,11 @@ make_initial_state <- function(country, initial_state_manual) {
   # build for all age groups
   initial_state <- array(
     rep(initial_state, each = N_AGE_GROUPS),
-    c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
+    c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_DATA_GROUPS)
   )
   # set vaccinated to zero
   initial_state[, , , i_VACCINATED_STRATUM] <- 0.0
+  initial_state[, , , i_NEW_VAX_STRATUM] <- 0.0
 
   # get demography and sector workforce
   demography <- get_data(country, "demography")
@@ -135,4 +136,17 @@ get_closure_info <- function(mutables) {
   closure_times[["closure_duration"]] <- unname(diff(unlist(closure_times)))
 
   lapply(closure_times, floor)
+}
+
+#' Reshape a vector to the dimensions of the DAEDALUS state array
+#'
+#' @param x A vector of numeric values.
+#'
+#' @return An array of dimensions (4, 9, 46, 3).
+#' @keywords internal
+values_to_state <- function(x) {
+  array(
+    x,
+    c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_DATA_GROUPS)
+  )
 }

@@ -17,6 +17,9 @@ test_that("daedalus: basic expectations", {
   # as non-working groups do not have data per sector
   expected_rows <- time_end * N_MODEL_COMPARTMENTS *
     (N_AGE_GROUPS + N_ECON_SECTORS) * N_VACCINE_STRATA
+  # add new vaccinations which only occur in two epi compartments, S and R
+  expected_rows <- expected_rows +
+    (time_end * 2L * (N_AGE_GROUPS + N_ECON_SECTORS))
 
   expect_identical(
     nrow(data),
@@ -54,11 +57,13 @@ test_that("daedalus: basic expectations", {
   expect_identical(
     sum(
       data[data$time == max(data$time) &
-        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], ]$value
+        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS] &
+        data$vaccine_group != "new_vaccinations", ]$value
     ),
     sum(
       data[data$time == min(data$time) &
-        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], ]$value
+        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS] &
+        data$vaccine_group != "new_vaccinations", ]$value
     ),
     tolerance = 1e-12
   )
@@ -139,14 +144,16 @@ test_that("daedalus: statistical correctness", {
   data <- get_data(output)
   data <- data[data$age_group == "65+", ]
 
-  susceptibles <- data[data$compartment == "susceptible", ]
+  susceptibles <- data[data$compartment == "susceptible" &
+    data$vaccine_group != "new_vaccinations", ]
   susceptibles <- tapply(susceptibles$value, susceptibles$time, sum)
   expect_lte(
     max(diff(susceptibles)), 1e-6 # allowing small positive diff
   )
 
   # NOTE: allow very small negative values
-  recovered <- data[data$compartment == "recovered", ]
+  recovered <- data[data$compartment == "recovered" &
+    data$vaccine_group != "new_vaccinations", ]
   recovered <- tapply(recovered$value, recovered$time, sum)
   expect_gte(
     min(diff(recovered)), -1e-6

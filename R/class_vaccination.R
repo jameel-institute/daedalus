@@ -266,7 +266,7 @@ prepare_parameters.daedalus_vaccination <- function(x, ...) {
 
   # convert percentages to proportions
   x[["nu"]] <- x[["nu"]] / 100.0
-  x[["uptake_limit"]] <- x[["uptake_limit"]] / 100.0
+  x[["vax_uptake_limit"]] <- x[["vax_uptake_limit"]] / 100.0
 
   x[names(x) != "name"]
 }
@@ -279,25 +279,30 @@ prepare_parameters.daedalus_vaccination <- function(x, ...) {
 #' @return The scaled vaccination rate.
 #' @keywords internal
 scale_nu <- function(state, nu, uptake_limit) {
-  total <- sum(state)
-  eligible <- state[, c(i_S, i_R), , i_UNVACCINATED_STRATUM]
-
-  total_vaccinated <- sum(state[, , , i_VACCINATED_STRATUM])
+  # NOTE: state must be a 4D array with only vaccinated and unvaccinated layers
+  # in dim 4
+  total <- sum(
+    state[
+      , i_EPI_COMPARTMENTS, ,
+      c(i_VACCINATED_STRATUM, i_UNVACCINATED_STRATUM)
+    ]
+  )
+  total_vaccinated <- sum(state[, i_EPI_COMPARTMENTS, , i_VACCINATED_STRATUM])
   prop_vaccinated <- total_vaccinated / total
 
   # NOTE: simplified scaling works only for uniform rates and start times
   # across age groups
   # NOTE: scale vaccination rate using a sigmoid function around the uptake
   # limit for a smoother transition
-  scaling <- (total / sum(eligible)) *
-    (1.0 / (1.0 + exp(prop_vaccinated - uptake_limit)))
+  scaled_nu <- (nu / (1 - prop_vaccinated)) /
+    (1.0 + exp(100.0 * (prop_vaccinated - uptake_limit)))
 
   # handle conditions:
   # - scaling is finite: return minimum of 1.0 or scaled `nu`
   # prevent more vaccinations than eligibles
   # - scaling is inifite due to zero division (no eligibles): return 0
-  if (is.finite(scaling)) {
-    min(1.0, scaling * nu)
+  if (is.finite(scaled_nu)) {
+    min(1.0, scaled_nu)
   } else {
     0.0
   }

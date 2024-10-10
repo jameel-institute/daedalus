@@ -256,8 +256,11 @@ daedalus <- function(country,
   ) # coerce to logical; automatically FALSE as default value is 0.0
 
   if (!is_response_active) {
-    rlang::env_poke(
-      parameters[["mutables"]], "closure_time_start", response_time
+    # set switch parameter and log closure start time if not 0.0/FALSE
+    rlang::env_bind(
+      parameters[["mutables"]],
+      switch = TRUE,
+      closure_time_start = response_time
     )
   }
 
@@ -269,10 +272,7 @@ daedalus <- function(country,
   initial_state <- as.numeric(initial_state)
 
   ### cancel closures if epidemic is not growing ###
-  state_temp <- array(
-    initial_state,
-    c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
-  )
+  state_temp <- values_to_state(initial_state)
   # close intervention IFF epidemic is not growing
   # NOTE: this step placed here as a conditional on r_eff < 1.0 is not
   # practical in a root-finding function (Error: 'root too near initial point')

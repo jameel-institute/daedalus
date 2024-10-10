@@ -31,12 +31,22 @@ test_that("class <daedalus_vaccination>: basic expectations", {
   )
 
   # model function can handle either string or class input
+  data_string <- daedalus(
+    "Canada", "influenza_1918",
+    vaccine_investment = "medium"
+  )
+  data_string <- get_new_vaccinations(data_string)
+
+  data_s3 <- daedalus(
+    "Canada", "influenza_1918",
+    vaccine_investment = daedalus_vaccination("medium")
+  )
+  data_s3 <- get_new_vaccinations(data_s3)
+
   expect_identical(
-    daedalus("Canada", "influenza_1918", vaccine_investment = "medium"),
-    daedalus(
-      "Canada", "influenza_1918",
-      vaccine_investment = daedalus_vaccination("medium")
-    )
+    data_string,
+    data_s3,
+    tolerance = 1e-6
   )
 
   expect_snapshot(

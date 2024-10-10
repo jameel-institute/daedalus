@@ -59,3 +59,46 @@ test_that("Epidemic summary: basic expectations", {
     get_epidemic_summary(data, groups = "dummy")
   )
 })
+
+# Test get_new_vaccinations() - expect that there are no
+# vaccinations before the scenario-specific start time
+test_that("New vaccinations: basic expectations", {
+  vaccine_level <- daedalus_vaccination("medium")
+  vax_time <- get_data(vaccine_level, "vax_start_time")
+  time_end <- 600
+  data <- daedalus(
+    "Canada",
+    daedalus_infection("sars_cov_1", rho = 0.0),
+    vaccine_investment = vaccine_level,
+    time_end = time_end
+  )
+
+  expect_no_condition(
+    get_new_vaccinations(data)
+  )
+  expect_no_condition(
+    get_new_vaccinations(data, groups = c("age_group", "econ_sector"))
+  )
+  expect_error(
+    get_new_vaccinations(data, groups = c("age_group", "vaccine_group"))
+  )
+
+  # check that the first vaccinations start at vax_time + 1
+  new_vax <- get_new_vaccinations(data)$new_vaccinations
+
+  # equivalency expectation due to integer/double comparison
+  expect_equal(
+    min(which(new_vax > 0)),
+    vax_time + 1L,
+    ignore_attr = TRUE
+  )
+
+  # check new vaccinations is always positive
+  expect_gte(
+    min(new_vax), 0.0
+  )
+  checkmate::expect_numeric(
+    new_vax,
+    finite = TRUE, any.missing = FALSE, len = time_end
+  )
+})

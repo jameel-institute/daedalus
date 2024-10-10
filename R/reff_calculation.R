@@ -24,7 +24,7 @@ r_eff <- function(r0, state, cm) {
   p_susc <- rowSums(
     state[, i_S, , i_UNVACCINATED_STRATUM] +
       0.5 * state[, i_S, , i_VACCINATED_STRATUM]
-  ) / rowSums(state)
+  ) / rowSums(state[, i_EPI_COMPARTMENTS, , -i_NEW_VAX_STRATUM])
   cm_eff <- cm %*% diag(p_susc)
 
   r0 * max(Re(eigen(cm_eff)$values))
@@ -36,6 +36,7 @@ r_eff <- function(r0, state, cm) {
 #' columns.
 #' @keywords internal
 get_hospitalisations <- function(state) {
-  # NOTE: assumes state is a 3D array; not checked as this is internal
-  sum(state[, i_H, , ])
+  # NOTE: assumes state is a 4D array; not checked as this is internal
+  # remove the new vaccinations stratum from sum
+  sum(state[, i_H, , -i_NEW_VAX_STRATUM])
 }

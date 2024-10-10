@@ -4,6 +4,7 @@
 \alias{epi_output_helpers}
 \alias{get_incidence}
 \alias{get_epidemic_summary}
+\alias{get_new_vaccinations}
 \title{Calculate daily incidences and summarise epidemic measures}
 \usage{
 get_incidence(
@@ -17,34 +18,46 @@ get_epidemic_summary(
   measures = c("infections", "hospitalisations", "deaths"),
   groups = NULL
 )
+
+get_new_vaccinations(data, groups = NULL)
 }
 \arguments{
-\item{data}{Either a \verb{<data.frame>} or a \verb{<daedalus_output>} object.}
+\item{data}{Either a \verb{<data.frame>} from a call to \code{get_daedalus()} on a
+\verb{<daedalus_output>} object, or such an object directly.}
 
-\item{measures}{A character vector of one or more of the following:
-\code{"epidemic_size"}, \code{"total_hospitalisations"} or \code{"total_deaths"} for the
-measure to return.
-Defaults to returning all three in long format.}
+\item{measures}{A character vector of one or more of the following, passed to
+\code{get_incidence()} and \code{get_epidemic_summary()}:
+\code{"infections"}, \code{"hospitalisations"} or \code{"deaths"} for the
+measure to return. Defaults to returning all three in long format.
+
+\code{get_daily_vaccinations()} does not accept a \code{measures} argument and only
+provides the number of daily vaccinations.}
 
 \item{groups}{An optional character vector of grouping variables that
 correspond to model strata. Defaults to \code{NULL} which gives incidence across
 the whole population. Allowed groups correspond to modelled strata:
-\code{"age_group"}, \code{"vaccine_group"}, and \code{"econ_sector"}.}
+\code{"age_group"}, \code{"vaccine_group"}, and \code{"econ_sector"}.
+
+\code{get_daily_vaccinations()} only accepts "\code{age_group}" and \code{"econ_sector"}.}
 }
 \value{
-A \verb{<data.frame>} in long format, with at least one entry per
+A \verb{<data.frame>} in long format, with one entry per
 model timestep, measure, and group chosen.
 \itemize{
 \item \code{get_incidence()} returns a data frame with the number of daily new
 infections, new hospitalisations, and/or new deaths in each of the groups
 specified by \code{groups}.
-\item \code{get_epidemic_summary()} returns a data frame with the measure specified
-in \code{measure} for each of the groups specified by \code{groups}.
+\item \code{get_epidemic_summary()} returns a data frame with the total number of the
+value specified in \code{measure} for each of the groups specified by \code{groups}.
+\item \code{get_daily_vaccinations()} returns a data frame with columns for the
+number of new daily vaccination in each combination of \code{groups} if provided.
+Columns for the \code{groups} are added when \code{groups} are specified.
 }
 }
 \description{
 Functions to quickly summarise timeseries data from \code{daedalus()}
-while allowing grouping by different strata.
+to provide daily values for infections, hospitalisations, deaths, and
+vaccinations, while allowing grouping by different strata.
 }
 \examples{
 data <- daedalus("Canada", "sars_cov_1")
@@ -57,5 +70,8 @@ get_epidemic_summary(
   data,
   groups = "age_group"
 )
+
+# get daily vaccinations
+daily_vaccinations <- get_new_vaccinations(data)
 
 }

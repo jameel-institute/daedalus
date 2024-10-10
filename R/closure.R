@@ -19,10 +19,7 @@ make_response_threshold_event <- function(response_threshold) {
   event_function <- function(time, state, parameters) {
     # NOTE: prevent flipping switch when checkEventFunc runs
     # NOTE: prevent response activation if epdedemic is not growing
-    state <- array(
-      state,
-      c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
-    )
+    state <- values_to_state(state)
 
     rt <- r_eff(parameters[["r0"]], state, parameters[["cm_unscaled"]])
 
@@ -58,10 +55,7 @@ make_response_threshold_event <- function(response_threshold) {
 make_rt_end_event <- function() {
   # NOTE: state reconstruction could be sped up
   root_function <- function(time, state, parameters) {
-    state <- array(
-      state,
-      c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
-    )
+    state <- values_to_state(state)
 
     # arbitrary precision, may not be hit!
     r_eff(parameters[["r0"]], state, parameters[["cm_unscaled"]]) - 0.99
@@ -82,10 +76,7 @@ make_rt_end_event <- function() {
     # switch execess mortality on or off independent of closure status
     if (time != parameters[["min_time"]]) {
       # check if hospitalisations are greater than threshold
-      state <- array(
-        state,
-        c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
-      )
+      state <- values_to_state(state)
       total_hosp <- get_hospitalisations(state)
 
       if (total_hosp > parameters[["hospital_capacity"]]) {

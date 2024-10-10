@@ -5,6 +5,7 @@
 \alias{model_constants}
 \alias{N_AGE_GROUPS}
 \alias{N_VACCINE_STRATA}
+\alias{N_VACCINE_DATA_GROUPS}
 \alias{AGE_GROUPS}
 \alias{i_WORKING_AGE}
 \alias{N_ECON_SECTORS}
@@ -17,10 +18,13 @@
 \alias{DIM_VACCINE_STRATA}
 \alias{i_UNVACCINATED_STRATUM}
 \alias{i_VACCINATED_STRATUM}
+\alias{i_NEW_VAX_STRATUM}
 \alias{VACCINE_GROUPS}
 \alias{N_OUTPUT_COLS}
 \title{DAEDALUS model constants}
 \format{
+An object of class \code{integer} of length 1.
+
 An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
@@ -49,7 +53,9 @@ An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
 
-An object of class \code{character} of length 2.
+An object of class \code{integer} of length 1.
+
+An object of class \code{character} of length 3.
 
 An object of class \code{integer} of length 1.
 }
@@ -57,6 +63,8 @@ An object of class \code{integer} of length 1.
 N_AGE_GROUPS
 
 N_VACCINE_STRATA
+
+N_VACCINE_DATA_GROUPS
 
 AGE_GROUPS
 
@@ -81,6 +89,8 @@ DIM_VACCINE_STRATA
 i_UNVACCINATED_STRATUM
 
 i_VACCINATED_STRATUM
+
+i_NEW_VAX_STRATUM
 
 VACCINE_GROUPS
 
@@ -111,6 +121,7 @@ working age individuals.
 \item Array dimension of epidemiological compartments: 2
 \item Array dimension of economic sectors: 3
 \item Array dimension of vaccination strata: 4
+\item Indices and numbers of key groups.
 }
 }
 \keyword{datasets}

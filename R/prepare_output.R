@@ -24,7 +24,7 @@ prepare_output <- function(output) {
     output[, setdiff(colnames(output), "time")],
     c(
       n_times, N_AGE_GROUPS, N_MODEL_COMPARTMENTS,
-      N_ECON_STRATA, N_VACCINE_STRATA
+      N_ECON_STRATA, N_VACCINE_DATA_GROUPS
     )
   )
   data <- array2DF(data)
@@ -32,20 +32,20 @@ prepare_output <- function(output) {
   # time labels
   data$Var1 <- rep(
     seq(n_times),
-    N_AGE_GROUPS * N_MODEL_COMPARTMENTS * N_ECON_STRATA * N_VACCINE_STRATA
+    N_AGE_GROUPS * N_MODEL_COMPARTMENTS * N_ECON_STRATA * N_VACCINE_DATA_GROUPS
   )
 
   # age group labels
   age_groups <- rep(AGE_GROUPS, each = n_times)
   age_groups <- rep(
     age_groups,
-    N_MODEL_COMPARTMENTS * N_ECON_STRATA * N_VACCINE_STRATA
+    N_MODEL_COMPARTMENTS * N_ECON_STRATA * N_VACCINE_DATA_GROUPS
   )
   data$Var2 <- age_groups
 
   # model compartment labels
   compartments <- rep(COMPARTMENTS, each = N_AGE_GROUPS * n_times)
-  compartments <- rep(compartments, N_ECON_STRATA * N_VACCINE_STRATA)
+  compartments <- rep(compartments, N_ECON_STRATA * N_VACCINE_DATA_GROUPS)
   data$Var3 <- compartments
 
   # economic stratum labels
@@ -56,7 +56,7 @@ prepare_output <- function(output) {
     each = N_AGE_GROUPS * N_MODEL_COMPARTMENTS * n_times
   )
   econ_sector <- rep(
-    econ_sector, N_VACCINE_STRATA
+    econ_sector, N_VACCINE_DATA_GROUPS
   )
   data$Var4 <- econ_sector
 
@@ -74,6 +74,12 @@ prepare_output <- function(output) {
 
   # remove economic sectors for non-working age groups
   data <- data[!(data$age_group != "20-65" & data$econ_sector != "sector_00"), ]
+
+  # new vaccinations only in susceptible and recovered epi compartments
+  data <- data[
+    !(data$vaccine_group == "new_vaccinations" &
+      !data$compartment %in% c("susceptible", "recovered")),
+  ]
 
   # return data
   data
