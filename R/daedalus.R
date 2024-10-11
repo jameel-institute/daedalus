@@ -256,7 +256,7 @@ daedalus <- function(country,
   ) # coerce to logical; automatically FALSE as default value is 0.0
 
   if (!is_response_active) {
-    # set switch parameter and log closure start time if not 0.0/FALSE
+    # set switch parameter and log closure start time if not 0.0 or FALSE
     rlang::env_bind(
       parameters[["mutables"]],
       switch = TRUE,
