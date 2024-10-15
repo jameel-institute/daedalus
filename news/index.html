@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.18</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,15 @@
       <small>Source: <a href="https://github.com/j-idea/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.18" id="daedalus-0018">daedalus 0.0.18<a class="anchor" aria-label="anchor" href="#daedalus-0018"></a></h2>
+<p>This patch adds logging of daily new vaccinations and provides an output helper function, <code><a href="../reference/epi_output_helpers.html">get_new_vaccinations()</a></code>, to get daily new vaccinations.</p>
+<ul><li><p>Adds a third layer to the fourth dimension to the state array to hold new vaccinations;</p></li>
+<li><p>Adds a new helper function <code><a href="../reference/values_to_state.html">values_to_state()</a></code> to convert a vector to the state array;</p></li>
+<li><p>Updates a number of indexing operations to disregard the new data layer of new vaccinations;</p></li>
+<li><p>Updates <code><a href="../reference/daedalus.html">daedalus()</a></code>, <code><a href="../reference/prepare_output.html">prepare_output()</a></code> and <code><a href="../reference/make_initial_state.html">make_initial_state()</a></code> to account for the new vaccinations layer;</p></li>
+<li><p>Updates tests for newly added functionality.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.17" id="daedalus-0017">daedalus 0.0.17<a class="anchor" aria-label="anchor" href="#daedalus-0017"></a></h2>
 <p>This patch removes dual implementation levels for response strategies. The “elimination” strategy has a “high” implementation level, while all other strategies keep their “light” implementation level.</p>

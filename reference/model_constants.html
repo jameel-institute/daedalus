@@ -11,7 +11,7 @@ specific to the epidemiological model."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.18</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,6 +55,8 @@ specific to the epidemiological model.</p>
 <span></span>
 <span><span class="va">N_VACCINE_STRATA</span></span>
 <span></span>
+<span><span class="va">N_VACCINE_DATA_GROUPS</span></span>
+<span></span>
 <span><span class="va">AGE_GROUPS</span></span>
 <span></span>
 <span><span class="va">i_WORKING_AGE</span></span>
@@ -79,6 +81,8 @@ specific to the epidemiological model.</p>
 <span></span>
 <span><span class="va">i_VACCINATED_STRATUM</span></span>
 <span></span>
+<span><span class="va">i_NEW_VAX_STRATUM</span></span>
+<span></span>
 <span><span class="va">VACCINE_GROUPS</span></span>
 <span></span>
 <span><span class="va">N_OUTPUT_COLS</span></span></code></pre></div>
@@ -87,6 +91,7 @@ specific to the epidemiological model.</p>
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
     <p>An object of class <code>integer</code> of length 1.</p>
+<p>An object of class <code>integer</code> of length 1.</p>
 <p>An object of class <code>integer</code> of length 1.</p>
 <p>An object of class <code>character</code> of length 4.</p>
 <p>An object of class <code>integer</code> of length 1.</p>
@@ -100,7 +105,8 @@ specific to the epidemiological model.</p>
 <p>An object of class <code>integer</code> of length 1.</p>
 <p>An object of class <code>integer</code> of length 1.</p>
 <p>An object of class <code>integer</code> of length 1.</p>
-<p>An object of class <code>character</code> of length 2.</p>
+<p>An object of class <code>integer</code> of length 1.</p>
+<p>An object of class <code>character</code> of length 3.</p>
 <p>An object of class <code>integer</code> of length 1.</p>
     </div>
     <div class="section level2">
@@ -123,6 +129,7 @@ working age individuals.</p></li>
 <li><p>Array dimension of epidemiological compartments: 2</p></li>
 <li><p>Array dimension of economic sectors: 3</p></li>
 <li><p>Array dimension of vaccination strata: 4</p></li>
+<li><p>Indices and numbers of key groups.</p></li>
 </ul></div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
