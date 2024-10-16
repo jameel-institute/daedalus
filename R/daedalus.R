@@ -122,7 +122,7 @@ daedalus <- function(country,
   # NOTE: names are case sensitive
   checkmate::assert_multi_class(country, c("daedalus_country", "character"))
   if (is.character(country)) {
-    country <- rlang::arg_match(country, daedalus::country_names)
+    country <- country_name_from_arg(country)
     country <- daedalus_country(country)
   }
   checkmate::assert_multi_class(infection, c("daedalus_infection", "character"))
