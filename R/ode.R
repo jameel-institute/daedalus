@@ -106,17 +106,14 @@ daedalus_rhs <- function(t, state, parameters) {
   r0 <- r0 * if (switch) get_distancing_coefficient(new_deaths_total) else 1.0
 
   #### Force of infection calculations ####
+  # NOTE: get total number in each age group infectious
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
   community_infectious <- state_[, i_Is, , ] + state_[, i_Ia, , ] * epsilon
-  # NOTE: dims 1 and 2 are age group and econ sector; reducing along vax grp
-  community_infectious <- apply(community_infectious, c(1, 2), sum)
+  community_infectious <- rowSums(community_infectious)
   cm_inf <- cm %*% community_infectious
 
-  # Infections in vaccinated groups - with reduced susceptibility
-  new_community_infections <- r0 * array(
-    apply(state_[, i_S, , ], DIM_ECON_SECTORS, `*`, cm_inf),
-    c(N_AGE_GROUPS, N_ECON_STRATA, N_VACCINE_STRATA)
-  )
+  # NOTE: `state` and `cm_inf` mult. assumes length(cm_inf) == nrows(state)
+  new_community_infections <- r0 * state_[, i_S, , ] * as.vector(cm_inf)
 
   # not keen on loops - consider better solution
   for (i in seq_len(N_VACCINE_STRATA)) {
