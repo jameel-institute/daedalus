@@ -430,11 +430,13 @@ prepare_parameters.daedalus_country <- function(x, ...) {
   singv <- max(Re(svd(cmcw)[["d"]]))
   cmcw <- cmcw / singv
 
+  workers <- get_data(x, "workers")
+
   list(
     demography = demography,
     contact_matrix = cm,
     cm_unscaled = cm_unscaled, # for use in Rt calculations
-    contacts_workplace = cmw,
+    contacts_workplace = cmw / workers,
     contacts_consumer_worker = cmcw,
     contacts_between_sectors = get_data(x, "contacts_between_sectors") # 0s
   )
