@@ -69,6 +69,22 @@ test_that("daedalus: basic expectations", {
   )
 })
 
+test_that("Can run with ISO2 country parameter", {
+  expect_no_condition({
+    output <- daedalus("CA", "influenza_1918")
+  })
+  data <- get_data(output)
+  expect_length(data, N_OUTPUT_COLS)
+})
+
+test_that("Can run with ISO3 country parameter", {
+  expect_no_condition({
+    output <- daedalus("CAN", "influenza_1918")
+  })
+  data <- get_data(output)
+  expect_length(data, N_OUTPUT_COLS)
+})
+
 # test that daedalus runs for all epidemic infection parameter sets
 test_that("daedalus: Runs for all country x infection x response", {
   country_infection_combos <- data.table::CJ(
