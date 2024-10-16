@@ -123,9 +123,7 @@ daedalus_rhs <- function(t, state, parameters) {
   workplace_infected <- state_[i_WORKING_AGE, i_Is, -i_NOT_WORKING, ] +
     state_[i_WORKING_AGE, i_Ia, -i_NOT_WORKING, ] * epsilon
   # NOTE: re-assigning `workplace_infected`
-  workplace_infected <- (cmw * workplace_infected +
-    cm_ww %*% workplace_infected) /
-    colSums(state_[i_WORKING_AGE, i_EPI_COMPARTMENTS, -i_NOT_WORKING, ])
+  workplace_infected <- cmw * workplace_infected
   # reset any NaNs to 0; NaNs come from zero division as vaxxed are initially 0s
   workplace_infected[is.nan(workplace_infected)] <- 0.0
 
