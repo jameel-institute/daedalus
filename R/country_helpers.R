@@ -3,7 +3,8 @@
 #' may be a country name or may be an ISO2 or ISO3 code. In all cases,
 #' the function checks if the country identifier is supported.
 #'
-#' @param country A string which could be a country name, or an ISO2 or ISO3 code.
+#' @param country A string which could be a country name, or an ISO2 or ISO3
+#' code.
 #'
 #' @return A supported country name
 #' @keywords internal
@@ -16,14 +17,14 @@ country_name_from_arg <- function(country) {
   }
 
   # regex check for ISO2
-  if (length(grep("^[A-Z]{2}$", country)) > 0) {
+  if (any(grep("^[A-Z]{2}$", country))) {
     country <- lookup_country_name_from_code(
       country, daedalus::country_codes_iso2c
     )
   }
 
   # regex check for ISO3
-  if (length(grep("^[A-Z]{3}$", country)) > 0) {
+  if (any(grep("^[A-Z]{3}$", country))) {
     country <- lookup_country_name_from_code(
       country, daedalus::country_codes_iso3c
     )
