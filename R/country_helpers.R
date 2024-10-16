@@ -1,6 +1,7 @@
 #' Get country name from arg
-#' @description Function to get a supported country name given an arg which may be a country name or may
-#' be an ISO2 or ISO3 code. In all cases, the function checks if the country identifier is supported.
+#' @description Function to get a supported country name given an arg which
+#' may be a country name or may be an ISO2 or ISO3 code. In all cases,
+#' the function checks if the country identifier is supported.
 #'
 #' @param country A string which could be a country name, or an ISO2 or ISO3 code.
 #'
@@ -15,13 +16,17 @@ country_name_from_arg <- function(country) {
   }
 
   # regex check for ISO2
-  if (length(grep("^[A-Z]{2}$", country)) != 0) {
-    country <- lookup_country_name_from_code(country, daedalus::country_codes_iso2c)
+  if (length(grep("^[A-Z]{2}$", country)) > 0) {
+    country <- lookup_country_name_from_code(
+      country, daedalus::country_codes_iso2c
+    )
   }
 
   # regex check for ISO3
-  if (length(grep("^[A-Z]{3}$", country)) != 0) {
-    country <- lookup_country_name_from_code(country, daedalus::country_codes_iso3c)
+  if (length(grep("^[A-Z]{3}$", country)) > 0) {
+    country <- lookup_country_name_from_code(
+      country, daedalus::country_codes_iso3c
+    )
   }
 
   # check country name is known
