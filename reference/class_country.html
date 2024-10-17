@@ -15,7 +15,7 @@ characteristics for the DAEDALUS model."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.18</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.19</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,7 +58,7 @@ characteristics for the DAEDALUS model.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus_country</span><span class="op">(</span></span>
-<span>  <span class="va">name</span>,</span>
+<span>  <span class="va">country</span>,</span>
 <span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>contact_matrix <span class="op">=</span> <span class="cn">NULL</span>, contacts_workplace <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    contacts_consumer_worker <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
@@ -73,9 +73,10 @@ characteristics for the DAEDALUS model.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
-<dd><p>A string giving the country or territory name; must be from among
-<a href="country_names_codes.html">country_names</a>.</p></dd>
+<dl><dt id="arg-country">country<a class="anchor" aria-label="anchor" href="#arg-country"></a></dt>
+<dd><p>A string giving the country or territory name, or ISO2 or
+ISO3 code; must be from among <a href="country_names_codes.html">country_codes_iso2c</a> or
+<a href="country_names_codes.html">country_codes_iso3c</a> or <a href="country_names_codes.html">country_names</a>.</p></dd>
 
 
 <dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
