@@ -20,9 +20,23 @@ test_that("class <daedalus_country>: basic expectations", {
   )
 })
 
-test_that("class <daedalus_country>`: works for all countries", {
+test_that("class <daedalus_country>`: works for all country names", {
   expect_no_condition({
     countries <- lapply(daedalus::country_names, daedalus_country) # nolint
+  })
+  checkmate::expect_list(countries, "daedalus_country")
+})
+
+test_that("class <daedalus_country>`: works for all country ISO2 codes", {
+  expect_no_condition({
+    countries <- lapply(daedalus::country_codes_iso2c, daedalus_country) # nolint
+  })
+  checkmate::expect_list(countries, "daedalus_country")
+})
+
+test_that("class <daedalus_country>`: works for all country ISO3 codes", {
+  expect_no_condition({
+    countries <- lapply(daedalus::country_codes_iso3c, daedalus_country) # nolint
   })
   checkmate::expect_list(countries, "daedalus_country")
 })
@@ -121,7 +135,19 @@ test_that("class <daedalus_country>`: errors", {
   # invalid name
   expect_error(
     daedalus_country("dummy"),
-    regexp = "`name` must be one of"
+    regexp = "`country` must be one of"
+  )
+
+  # invalid ISO2
+  expect_error(
+    daedalus_country("ZZ"),
+    regexp = "`code` must be one of"
+  )
+
+  # invalid ISO3
+  expect_error(
+    daedalus_country("ZZZ"),
+    regexp = "`code` must be one of"
   )
 
   # invalid `parameter` type
