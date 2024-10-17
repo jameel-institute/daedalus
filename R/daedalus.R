@@ -4,7 +4,8 @@
 #'
 #' @param country A country or territory object of class `<daedalus_country>`,
 #' **or** a country or territory name from those included in the package;
-#' see [daedalus::country_names].
+#' see [daedalus::country_names], **or** a country ISO2 or ISO3 code; see
+#' [daedalus::country_codes_iso2c] and [daedalus::country_codes_iso3c] .
 #' Country-specific data such as the community and workplace contacts, the
 #' demography, and the distribution of the workforce into economic sectors is
 #' automatically accessed from package data for the relevant country name if it
@@ -122,7 +123,6 @@ daedalus <- function(country,
   # NOTE: names are case sensitive
   checkmate::assert_multi_class(country, c("daedalus_country", "character"))
   if (is.character(country)) {
-    country <- rlang::arg_match(country, daedalus::country_names)
     country <- daedalus_country(country)
   }
   checkmate::assert_multi_class(infection, c("daedalus_infection", "character"))

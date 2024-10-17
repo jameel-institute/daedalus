@@ -33,8 +33,9 @@ new_daedalus_country <- function(name, parameters) {
 #' parameter access and editing, as well as processing raw country
 #' characteristics for the DAEDALUS model.
 #'
-#' @param name A string giving the country or territory name; must be from among
-#' [daedalus::country_names].
+#' @param country A string giving the country or territory name, or ISO2 or
+#' ISO3 code; must be from among [daedalus::country_codes_iso2c] or
+#' [daedalus::country_codes_iso3c] or [daedalus::country_names].
 #'
 #' @param parameters An optional named list of country parameters that are
 #' allowed to be modified. Currently, users may only pass their own contact
@@ -72,14 +73,14 @@ new_daedalus_country <- function(name, parameters) {
 #' # using assignment operators
 #' x$contact_matrix <- matrix(99, 4, 4)
 #' x
-daedalus_country <- function(name,
+daedalus_country <- function(country,
                              parameters = list(
                                contact_matrix = NULL,
                                contacts_workplace = NULL,
                                contacts_consumer_worker = NULL
                              )) {
   # input checking
-  name <- rlang::arg_match(name, daedalus::country_names)
+  name <- country_name_from_arg(country)
   # check list but allow missing and NULL
   checkmate::assert_list(
     parameters, c("numeric", "matrix", "NULL")
