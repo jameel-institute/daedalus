@@ -1,8 +1,8 @@
-url: ~
+url: https://jameel-institute.github.io/daedalus/
 template:
   bootstrap: 5
-development:
-  mode: auto
+  package: jameelinst.rpkg.theme
+
 reference:
   - title: Model function
     desc: Run the DAEDALUS integrated economic-epidemiological model
