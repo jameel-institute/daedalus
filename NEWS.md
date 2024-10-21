@@ -1,3 +1,25 @@
+# daedalus 0.0.20
+
+This patch updates the state variable in `daedalus()` to substantially reduce the number of compartments; all empty compartments have been removed. This improves the speed of model runs as there are fewer derivatives to calculate.
+
+1. State variable is a 3D array with the dimensions: `c(49, 9, 3)`. The working-age economic sectors are added on as rows after the age-groups. Epidemiological compartments are unchanged. The third dimension holds data on vaccination status, including new vaccinations.
+
+2. Helper functions are updated to support the new state dimensions.
+
+3. $R_t$ calculation in `r_eff()` has been simplified to the proportional susceptible times $R_0$, pending a more accurate calculation.
+
+4. The internal helper function `prepare_output()` has been refactored to avoid use of `base::array2DF()` to remove the dependency on newer versions of R.
+
+5. Removes unused between-sector contacts in force-of-infection calculations.
+
+6. Moves some contact scaling to the parameter preparation stage to reduce operations during the model run.
+
+7. Correctly sums the total number of infectious individuals in the community; previously, the implementation resulted in segregation by economic sector.
+
+# daedalus 0.0.19
+
+This patch adds functionality to run `daedalus()` with the `country` argument passed as one of `country_codes_iso2c` or `country_codes_iso3c` for 2 and 3 letter ISO country codes.
+
 # daedalus 0.0.18
 
 This patch adds logging of daily new vaccinations and provides an output helper function, `get_new_vaccinations()`, to get daily new vaccinations.
