@@ -139,8 +139,9 @@ get_closure_info <- function(mutables) {
 #' @return An array of dimensions (4, 9, 46, 3).
 #' @keywords internal
 values_to_state <- function(x) {
-  array(
-    x,
-    c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_DATA_GROUPS)
+  dim(x) <- c(
+    N_AGE_GROUPS + N_ECON_SECTORS, N_MODEL_COMPARTMENTS, N_VACCINE_DATA_GROUPS
   )
+
+  x
 }
