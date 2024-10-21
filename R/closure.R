@@ -8,10 +8,7 @@ make_response_threshold_event <- function(response_threshold) {
   # NOTE: input checking at top level
   ## event triggered when thresholds are crossed
   root_function <- function(time, state, parameters) {
-    state <- array(
-      state,
-      c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_STRATA)
-    )
+    state <- values_to_state(state)
 
     get_hospitalisations(state) - response_threshold
   }
