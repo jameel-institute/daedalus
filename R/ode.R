@@ -42,7 +42,7 @@ daedalus_rhs <- function(t, state, parameters) {
   state_ <- values_to_state(state)
 
   # remove delta vaccinations layer
-  state_ <- state_[, , , -i_NEW_VAX_STRATUM]
+  state_ <- state_[, , -i_NEW_VAX_STRATUM]
 
   #### Parameter preparation ####
   r0 <- parameters[["r0"]]
@@ -73,8 +73,6 @@ daedalus_rhs <- function(t, state, parameters) {
   # epi compartments preventing contacts - hospitalisation and death - have
   # age-specific entry rates (e.g. older people are hospitalised more).
   cw <- parameters[["contacts_consumer_worker"]]
-  # NOTE: worker contacts between sectors takes a dummy value of 1e-6
-  cm_ww <- parameters[["contacts_between_sectors"]]
 
   # NOTE: `demography` includes the hospitalised and dead. Should probably be
   # removed. May not be a major factor as mortality rate * hosp_rate is low.
@@ -99,8 +97,8 @@ daedalus_rhs <- function(t, state, parameters) {
   #### Social distancing ####
   # get new deaths and implement social distancing only when closures are active
   # as described in https://github.com/robj411/p2_drivers
-  d_state[, i_D, , ] <- omega * state_[, i_H, , ]
-  new_deaths <- d_state[, i_D, , ]
+  new_deaths <- state_[, i_H, ] * omega # row i by element i
+  d_state[, i_D, ] <- new_deaths
   new_deaths_total <- sum(new_deaths)
 
   r0 <- r0 * if (switch) get_distancing_coefficient(new_deaths_total) else 1.0
@@ -108,104 +106,108 @@ daedalus_rhs <- function(t, state, parameters) {
   #### Force of infection calculations ####
   # NOTE: get total number in each age group infectious
   # NOTE: epsilon controls relative contribution of infectious asymptomatic
-  community_infectious <- state_[, i_Is, , ] + state_[, i_Ia, , ] * epsilon
-  community_infectious <- rowSums(community_infectious)
+  infectious <- state_[, i_Is, ] + state_[, i_Ia, ] * epsilon
+  community_infectious <- rowSums(infectious)
+
+  community_infectious[i_WORKING_AGE] <- community_infectious[i_WORKING_AGE] +
+    sum(community_infectious[i_ECON_SECTORS])
+
+  community_infectious <- community_infectious[i_AGE_GROUPS]
+
   cm_inf <- cm %*% community_infectious
 
   # NOTE: `state` and `cm_inf` mult. assumes length(cm_inf) == nrows(state)
-  new_community_infections <- r0 * state_[, i_S, , ] * as.vector(cm_inf)
+  new_community_infections <- state_[, i_S, ]
+  new_community_infections[i_AGE_GROUPS, ] <- state_[i_AGE_GROUPS, i_S, ] *
+    as.vector(cm_inf)
+  new_community_infections[i_ECON_SECTORS, ] <- state_[i_ECON_SECTORS, i_S, ] *
+    cm_inf[i_WORKING_AGE]
 
-  # not keen on loops - consider better solution
-  for (i in seq_len(N_VACCINE_STRATA)) {
-    new_community_infections[, , i] <- new_community_infections[, , i] * tau[i]
-  }
+  new_community_infections <- new_community_infections %*% diag(tau)
 
-  workplace_infected <- state_[i_WORKING_AGE, i_Is, -i_NOT_WORKING, ] +
-    state_[i_WORKING_AGE, i_Ia, -i_NOT_WORKING, ] * epsilon
   # NOTE: re-assigning `workplace_infected`
-  workplace_infected <- cmw * workplace_infected
-  # reset any NaNs to 0; NaNs come from zero division as vaxxed are initially 0s
-  workplace_infected[is.nan(workplace_infected)] <- 0.0
+  workplace_infected <- infectious[i_ECON_SECTORS, ]
+  workplace_infected <- cmw * workplace_infected %*% diag(tau)
+  workplace_infected <- rowSums(workplace_infected)
 
   # workplace infections from other workers w/ reduced susceptibility of vaxxed
   # NOTE: explicit col-wise multiplication of workplace infected * tau
   new_workplace_infections <- r0_econ *
-    state_[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] *
-    workplace_infected %*% diag(tau)
+    state_[i_ECON_SECTORS, i_S, ] * workplace_infected
 
   # NOTE: only consumer to worker infections are currently allowed
-  infected_consumers <- (state_[, i_Is, i_NOT_WORKING, ] +
-    state_[, i_Ia, i_NOT_WORKING, ] * epsilon) / demography
+  # NOTE: only infections from non-working consumers currently possible
+  infected_consumers <- (state_[i_AGE_GROUPS, i_Is, ] +
+    state_[i_AGE_GROUPS, i_Ia, ] * epsilon) / demography
   foi_cw <- r0_econ * cw %*% infected_consumers
 
   # force col-wise multiplication of vax-derived reduction in susceptibility
-  new_comm_work_infections <- state_[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] %*%
+  new_comm_work_infections <- state_[i_ECON_SECTORS, i_S, ] %*%
     diag(tau) * foi_cw
 
   #### State change equations ####
   # change in susceptibles
-  d_state[, i_S, , ] <- -new_community_infections + (rho * state_[, i_R, , ])
-  d_state[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] <-
-    d_state[i_WORKING_AGE, i_S, -i_NOT_WORKING, ] -
+  d_state[, i_S, ] <- -new_community_infections + (rho * state_[, i_R, ])
+  d_state[i_ECON_SECTORS, i_S, ] <-
+    d_state[i_ECON_SECTORS, i_S, ] -
     new_workplace_infections - new_comm_work_infections
 
   # log new infections
-  d_state[, i_dE, , ] <- new_community_infections
-  d_state[i_WORKING_AGE, i_dE, -i_NOT_WORKING, ] <-
-    d_state[i_WORKING_AGE, i_dE, -i_NOT_WORKING, ] +
+  d_state[, i_dE, ] <- new_community_infections
+  d_state[i_ECON_SECTORS, i_dE, ] <-
+    d_state[i_ECON_SECTORS, i_dE, ] +
     new_workplace_infections + new_comm_work_infections
 
   # change in exposed
-  d_state[, i_E, , ] <- d_state[, i_dE, , ] - (sigma * state_[, i_E, , ])
-
-  # change in infectious symptomatic
-  d_state[, i_Is, , ] <- p_sigma * sigma * state_[, i_E, , ] -
-    (gamma_Is + eta) * state_[, i_Is, , ]
-
-  # change in infectious asymptomatic
-  d_state[, i_Ia, , ] <- sigma * (1.0 - p_sigma) * state_[, i_E, , ] -
-    gamma_Ia * state_[, i_Ia, , ]
+  d_state[, i_E, ] <- d_state[, i_dE, ] - (sigma * state_[, i_E, ])
 
   # log new hospitalisations
-  d_state[, i_dH, , ] <- eta * state_[, i_Is, , ]
+  d_state[, i_dH, ] <- state_[, i_Is, ] * eta
+
+  # change in infectious symptomatic
+  d_state[, i_Is, ] <- p_sigma * sigma * state_[, i_E, ] -
+    (gamma_Is * state_[, i_Is, ]) - d_state[, i_dH, ]
+
+  # change in infectious asymptomatic
+  d_state[, i_Ia, ] <- sigma * (1.0 - p_sigma) * state_[, i_E, ] -
+    gamma_Ia * state_[, i_Ia, ]
 
   # change in hospitalised
-  d_state[, i_H, , ] <- d_state[, i_dH, , ] -
-    (gamma_H + omega) * state_[, i_H, , ]
+  d_state[, i_H, ] <- d_state[, i_dH, ] - d_state[, i_D, ] -
+    gamma_H * state_[, i_H, ]
 
   # change in recovered - NOTE: different recovery rates for each compartment
-  d_state[, i_R, , ] <- gamma_Is * state_[, i_Is, , ] +
-    gamma_Ia * state_[, i_Ia, , ] +
-    gamma_H * state_[, i_H, , ] -
-    rho * state_[, i_R, , ]
+  d_state[, i_R, ] <- gamma_Is * state_[, i_Is, ] +
+    gamma_Ia * state_[, i_Ia, ] +
+    gamma_H * state_[, i_H, ] -
+    rho * state_[, i_R, ]
 
   #### Vaccination and vaccine waning ####
   # add empty array for new vax
-  d_vax_temp <- array(
-    0.0,
-    c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA)
+  d_vax_temp <- matrix(
+    0, N_AGE_GROUPS + N_ECON_SECTORS, N_MODEL_COMPARTMENTS
   )
   d_state <- values_to_state(
     c(d_state, d_vax_temp)
   )
 
   # log new vaccinations
-  d_state[, c(i_S, i_R), , i_NEW_VAX_STRATUM] <-
-    state_[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] * nu
+  d_state[, c(i_S, i_R), i_NEW_VAX_STRATUM] <-
+    state_[, c(i_S, i_R), i_UNVACCINATED_STRATUM] * nu
 
   # NOTE: changes in S and R are on top of previous changes due to infection,
   # recovery, and waning
   # change in vaccinated: only susceptible and recovered are vaccinated
-  d_state[, c(i_S, i_R), , i_VACCINATED_STRATUM] <-
-    d_state[, c(i_S, i_R), , i_VACCINATED_STRATUM] +
-    state_[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] * nu -
-    state_[, c(i_S, i_R), , i_VACCINATED_STRATUM] * psi
+  d_state[, c(i_S, i_R), i_VACCINATED_STRATUM] <-
+    d_state[, c(i_S, i_R), i_VACCINATED_STRATUM] +
+    state_[, c(i_S, i_R), i_UNVACCINATED_STRATUM] * nu -
+    state_[, c(i_S, i_R), i_VACCINATED_STRATUM] * psi
 
-  # change in unvaccinated: assume waning only affects susceptible and recovered
-  d_state[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] <-
-    d_state[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] +
-    state_[, c(i_S, i_R), , i_VACCINATED_STRATUM] * psi -
-    state_[, c(i_S, i_R), , i_UNVACCINATED_STRATUM] * nu
+  # change in unvaccinated: assume waning only for susceptible and recovered
+  d_state[, c(i_S, i_R), i_UNVACCINATED_STRATUM] <-
+    d_state[, c(i_S, i_R), i_UNVACCINATED_STRATUM] +
+    state_[, c(i_S, i_R), i_VACCINATED_STRATUM] * psi -
+    state_[, c(i_S, i_R), i_UNVACCINATED_STRATUM] * nu
 
   # return in the same order as state
   list(c(d_state))
