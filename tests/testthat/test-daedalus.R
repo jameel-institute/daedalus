@@ -30,10 +30,12 @@ test_that("daedalus: basic expectations", {
     c(
       "time", "age_group", "compartment", "econ_sector",
       "vaccine_group", "value"
-    )
+    ),
+    ignore.order = TRUE
   )
-  expect_type(
-    data[["time"]], "integer"
+  checkmate::expect_numeric(
+    data[["time"]],
+    lower = 1, upper = time_end
   )
   expect_type(
     data[["age_group"]], "character"
