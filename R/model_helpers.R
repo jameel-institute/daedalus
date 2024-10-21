@@ -49,38 +49,32 @@ make_initial_state <- function(country, initial_state_manual) {
     dE = 0.0, dH = 0.0
   )
 
-  # build for all age groups
-  initial_state <- array(
-    rep(initial_state, each = N_AGE_GROUPS),
-    c(N_AGE_GROUPS, N_MODEL_COMPARTMENTS, N_ECON_STRATA, N_VACCINE_DATA_GROUPS)
+  # build for all age groups and economic sectors (working age only)
+  initial_state <- matrix(
+    initial_state,
+    N_AGE_GROUPS + N_ECON_SECTORS,
+    N_MODEL_COMPARTMENTS,
+    byrow = TRUE
   )
-  # set vaccinated to zero
-  initial_state[, , , i_VACCINATED_STRATUM] <- 0.0
-  initial_state[, , , i_NEW_VAX_STRATUM] <- 0.0
 
-  # get demography and sector workforce
+  # get demography and sector workforce, including non-working
   demography <- get_data(country, "demography")
   sector_workforce <- get_data(country, "workers")
-
-  # calculate non-working working-age, and prepare initial state accounting
-  # for distribution of working age into economic sectors
   inactive_workers <- demography[i_WORKING_AGE] - sum(sector_workforce)
+  demography[i_WORKING_AGE] <- inactive_workers
 
-  initial_state[-i_WORKING_AGE, , i_NOT_WORKING, i_UNVACCINATED_STRATUM] <-
-    initial_state[-i_WORKING_AGE, , i_NOT_WORKING, i_UNVACCINATED_STRATUM] *
-      demography[-i_WORKING_AGE]
+  # multiply by demography and sector workforce, row-wise
+  initial_state[seq_len(N_AGE_GROUPS), ] <-
+    initial_state[seq_len(N_AGE_GROUPS), ] * demography
 
-  initial_state[i_WORKING_AGE, , i_NOT_WORKING, i_UNVACCINATED_STRATUM] <-
-    initial_state[i_WORKING_AGE, , i_NOT_WORKING, i_UNVACCINATED_STRATUM] *
-      inactive_workers
+  initial_state[(N_AGE_GROUPS + 1):nrow(initial_state), ] <-
+    initial_state[(N_AGE_GROUPS + 1):nrow(initial_state), ] * sector_workforce
 
-  # explicit col-wise multiplication as R tries to guess interpretation of `*`
-  initial_state[i_WORKING_AGE, , -i_NOT_WORKING, i_UNVACCINATED_STRATUM] <-
-    initial_state[i_WORKING_AGE, , -i_NOT_WORKING, i_UNVACCINATED_STRATUM] %*%
-    diag(sector_workforce)
-
-  # set all economic sector non-working age values to 0
-  initial_state[-i_WORKING_AGE, , -i_NOT_WORKING, ] <- 0.0
+  # add strata for vaccination groups and set to zero
+  initial_state <- array(
+    initial_state, c(dim(initial_state), N_VACCINE_DATA_GROUPS)
+  )
+  initial_state[, , -i_UNVACCINATED_STRATUM] <- 0
 
   initial_state
 }
