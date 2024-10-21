@@ -4,11 +4,13 @@
 \name{model_constants}
 \alias{model_constants}
 \alias{N_AGE_GROUPS}
+\alias{i_AGE_GROUPS}
 \alias{N_VACCINE_STRATA}
 \alias{N_VACCINE_DATA_GROUPS}
 \alias{AGE_GROUPS}
 \alias{i_WORKING_AGE}
 \alias{N_ECON_SECTORS}
+\alias{i_ECON_SECTORS}
 \alias{i_EDUCATION_SECTOR}
 \alias{N_ECON_STRATA}
 \alias{i_NOT_WORKING}
@@ -25,6 +27,8 @@
 \format{
 An object of class \code{integer} of length 1.
 
+An object of class \code{integer} of length 4.
+
 An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
@@ -34,6 +38,8 @@ An object of class \code{character} of length 4.
 An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
+
+An object of class \code{integer} of length 45.
 
 An object of class \code{integer} of length 1.
 
@@ -62,6 +68,8 @@ An object of class \code{integer} of length 1.
 \usage{
 N_AGE_GROUPS
 
+i_AGE_GROUPS
+
 N_VACCINE_STRATA
 
 N_VACCINE_DATA_GROUPS
@@ -71,6 +79,8 @@ AGE_GROUPS
 i_WORKING_AGE
 
 N_ECON_SECTORS
+
+i_ECON_SECTORS
 
 i_EDUCATION_SECTOR
 

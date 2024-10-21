@@ -4,13 +4,13 @@
 \alias{get_distancing_coefficient}
 \title{Coefficient to scale transmission by public concern about the pandemic}
 \usage{
-get_distancing_coefficient(new_deaths, rate = 0.01, lower_limit = 0.2)
+get_distancing_coefficient(new_deaths, rate = 0.001, lower_limit = 0.2)
 }
 \arguments{
 \item{new_deaths}{The number of new deaths at time \code{t}.}
 
 \item{rate}{The proportional reduction of social contacts due to each
-additional death. Defaults to 0.01, or a 1\% decrease for each additional
+additional death. Defaults to 0.01, or a 0.1\% decrease for each additional
 death.}
 
 \item{lower_limit}{The lower limit to which social contacts can be reduced.
