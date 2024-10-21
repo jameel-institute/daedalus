@@ -63,7 +63,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   )
 
   # absences due to infection, hospitalisation, death
-  model_data <- x$model_data
+  model_data <- get_data(x)
   worker_absences <- model_data[
     model_data$compartment %in%
       c("infect_symp", "infect_asymp", "hospitalised", "dead") &
