@@ -276,11 +276,12 @@ daedalus <- function(country,
   # close intervention IFF epidemic is not growing
   # NOTE: this step placed here as a conditional on r_eff < 1.0 is not
   # practical in a root-finding function (Error: 'root too near initial point')
-  is_epidemic_growing <- r_eff(
+  rt <- r_eff(
     parameters[["r0"]],
     state_temp,
     parameters[["cm_unscaled"]]
-  ) >= 1.0
+  )
+  is_epidemic_growing <- rt >= 1.0
 
   if (!is_epidemic_growing) {
     rlang::env_bind(
