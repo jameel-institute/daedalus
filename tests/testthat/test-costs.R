@@ -29,7 +29,7 @@ test_that("Costs: basic expectations", {
 
 test_that("Costs: scenario expectations", {
   ## when response = "none"
-  output <- daedalus("Canada", "influenza_1918")
+  output <- daedalus("Canada", "influenza_2009", time_end = 400)
   costs <- get_costs(output)
 
   expect_identical(
@@ -38,10 +38,25 @@ test_that("Costs: scenario expectations", {
   expect_identical(
     costs$education_costs$education_cost_closures, 0
   )
-  # store life years lost for later use
-  life_value_lost_noresp <- costs$life_years_lost$life_years_lost_total
 
-  ## when there is a response
+  # expect life years lost costs in response scenarios are higher than no resp.
+  x <- c("none", "school_closures", "economic_closures", "elimination")
+
+  o <- lapply(
+    x, daedalus,
+    country = "United Kingdom", infection = "influenza_1957",
+    response_time = 10
+  )
+
+  a <- lapply(o, get_costs, "domain")
+
+  v <- vapply(a, `[[`, FUN.VALUE = 1, "life_years")
+
+  expect_true(
+    all(v[-1] < v[1])
+  )
+
+  ## expect that closure costs are non-zero
   response_names <- c("elimination", "economic_closures", "school_closures")
   invisible({
     lapply(response_names, function(x) {
@@ -61,12 +76,6 @@ test_that("Costs: scenario expectations", {
       expect_identical(
         costs$education_costs$education_cost_closures,
         sum(expected_cost_closures[i_EDUCATION_SECTOR])
-      )
-
-      # expect lives lost cost is lower
-      expect_lt(
-        costs$life_years_lost$life_years_lost_total,
-        life_value_lost_noresp
       )
     })
   })
