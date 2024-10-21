@@ -9,7 +9,7 @@
 #'
 #' @param new_deaths The number of new deaths at time `t`.
 #' @param rate The proportional reduction of social contacts due to each
-#' additional death. Defaults to 0.01, or a 1% decrease for each additional
+#' additional death. Defaults to 0.01, or a 0.1% decrease for each additional
 #' death.
 #' @param lower_limit The lower limit to which social contacts can be reduced.
 #' Defaults to 0.2, which is equivalent to a greater than a 50% reduction in
@@ -19,7 +19,7 @@
 #' coefficient.
 #' @keywords internal
 get_distancing_coefficient <- function(
-    new_deaths, rate = 0.01, lower_limit = 0.2) {
+    new_deaths, rate = 0.001, lower_limit = 0.2) {
   # NOTE: no input checks on this internal function
   (1 - rate)^new_deaths * (1 - lower_limit) + lower_limit
 }
