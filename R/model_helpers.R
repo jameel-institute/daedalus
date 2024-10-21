@@ -1,13 +1,21 @@
 #' @title Generate a default initial state for DAEDALUS
-#' @description Function to prepare the model initial state.
+#' @description Function to prepare the model initial state. Assumes that
+#' 1 in every million individuals is initially infected, and that 60% are
+#' asymptomatic infections. This does not affect the actual probability of
+#' asymptomatic infections in the simulation, which is a property of a
+#' `<daedalus_infection>`.
 #'
 #' @inheritParams daedalus
 #'
-#' @return An array with as many dimensions as `N_ECON_STRATA` (currently, 46)
-#' with each layer giving the proportion of individuals of each group in each
-#' epidemiological compartment.
+#' @return An array with as many dimensions as `N_VACCINE_DATA_GROUPS`
+#' (currently, 3); rows specify the age and economic groups, columns specify the
+#' epidemiological compartments (including new infections and hospitalisations),
+#' and array layers hold information on vaccination status (including new
+#' vaccinations).
 #' @keywords internal
-make_initial_state <- function(country, initial_state_manual) {
+make_initial_state <- function(
+    country,
+    initial_state_manual) {
   # NOTE: country checked in daedalus()
   initial_infect_state <- list(
     p_infectious = 1e-6,
