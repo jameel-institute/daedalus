@@ -394,5 +394,15 @@ prepare_parameters.daedalus_infection <- function(x, ...) {
 
   validate_daedalus_infection(x)
   x <- unclass(x)
+
+  age_varying_params <- c("eta", "omega", "gamma_H")
+
+  x[age_varying_params] <- lapply(
+    x[age_varying_params], function(p) {
+      p <- c(p, rep(p[i_WORKING_AGE], N_ECON_SECTORS))
+      p
+    }
+  )
+
   x[names(x) != "name"]
 }
