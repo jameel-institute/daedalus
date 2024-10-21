@@ -142,7 +142,7 @@ test_that("Closures: correct logging of time limits", {
         data <- daedalus(
           "United States", "influenza_1957",
           initial_state_manual = list(
-            p_infectious = 0.9
+            p_infectious = 0.9999
           ),
           response_strategy = "elimination",
           response_time = x,
