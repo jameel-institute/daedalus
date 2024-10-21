@@ -45,6 +45,10 @@ N_AGE_GROUPS <- 4L
 
 #' @name model_constants
 #' @keywords model_constant
+i_AGE_GROUPS <- seq_len(N_AGE_GROUPS)
+
+#' @name model_constants
+#' @keywords model_constant
 N_VACCINE_STRATA <- 2L
 
 #' @name model_constants
@@ -62,6 +66,10 @@ i_WORKING_AGE <- 3L
 #' @name model_constants
 #' @keywords model_constant
 N_ECON_SECTORS <- 45L
+
+#' @name model_constants
+#' @keywords model_constant
+i_ECON_SECTORS <- seq(N_AGE_GROUPS + 1, N_AGE_GROUPS + N_ECON_SECTORS)
 
 #' @name model_constants
 #' @keywords model_constant
