@@ -21,13 +21,12 @@ r_eff <- function(r0, state, cm) {
   # NOTE: assumes state is a 4D array, and
   # cm is a 2D contact matrix with eigenvalue = 1.0
   # NOTE: reduced susceptibility for vaccinated!
-  p_susc <- rowSums(
-    state[, i_S, , i_UNVACCINATED_STRATUM] +
-      0.5 * state[, i_S, , i_VACCINATED_STRATUM]
-  ) / rowSums(state[, i_EPI_COMPARTMENTS, , -i_NEW_VAX_STRATUM])
-  cm_eff <- cm %*% diag(p_susc)
+  p_susc <- sum(
+    state[, i_S, i_UNVACCINATED_STRATUM] +
+      0.5 * state[, i_S, i_VACCINATED_STRATUM]
+  ) / sum(state[, i_EPI_COMPARTMENTS, -i_NEW_VAX_STRATUM])
 
-  r0 * max(Re(eigen(cm_eff)$values))
+  r0 * p_susc
 }
 
 #' @title Calculate total hospitalisations
@@ -38,5 +37,5 @@ r_eff <- function(r0, state, cm) {
 get_hospitalisations <- function(state) {
   # NOTE: assumes state is a 4D array; not checked as this is internal
   # remove the new vaccinations stratum from sum
-  sum(state[, i_H, , -i_NEW_VAX_STRATUM])
+  sum(state[, i_H, -i_NEW_VAX_STRATUM])
 }
