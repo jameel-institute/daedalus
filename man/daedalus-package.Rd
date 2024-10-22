@@ -3,14 +3,15 @@
 \docType{package}
 \name{daedalus-package}
 \alias{daedalus-package}
-\title{daedalus: Model health, social, and economic costs of a pandemic using _DAEDALUS_}
+\title{daedalus: Model health, social, and economic costs of a pandemic using DAEDALUS}
 \description{
-Model the health, social, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of preparedness and reactive interventions, using the _DAEDALUS_ integrated health-economics model adapted from Haw et al. (2022) <doi.org/10.1038/s43588-022-00233-0>.
+Model the health, education, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of prior vaccine investment and reactive interventions, using the _DAEDALUS_ integrated health-economics model adapted from Haw et al. (2022) <doi.org/10.1038/s43588-022-00233-0>.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/j-idea/daedalus}
+  \item \url{https://jameel-institute.github.io/daedalus/}
   \item Report bugs at \url{https://github.com/j-idea/daedalus/issues}
 }
 
@@ -18,9 +19,20 @@ Useful links:
 \author{
 \strong{Maintainer}: Pratik Gupte \email{p.gupte24@imperial.ac.uk} (\href{https://orcid.org/0000-0001-5294-7819}{ORCID})
 
+Authors:
+\itemize{
+  \item Patrick Doohan (\href{https://orcid.org/0000-0001-8076-1106}{ORCID})
+  \item Robert Johnson (\href{https://orcid.org/0000-0002-7365-0042}{ORCID})
+  \item Rich FitzJohn (\href{https://orcid.org/0000-0001-8888-3837}{ORCID})
+  \item Emma Russell
+  \item David Mears
+  \item Katharina Hauck (\href{https://orcid.org/0000-0003-3138-4169}{ORCID})
+}
+
 Other contributors:
 \itemize{
-  \item Imperial College of Science, Technology and Medicine [copyright holder]
+  \item Abdul Latif Jameel Institute for Disease and Emergency Analytics [funder]
+  \item Imperial College of Science, Technology and Medicine [copyright holder, funder]
 }
 
 }
