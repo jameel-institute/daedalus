@@ -51,6 +51,9 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   gva <- x$country_parameters$gva
   openness <- x$response_data$openness
 
+  # value of a school year in this country
+  vsy <- get_value_school_year(x$gni)
+
   # cost of closures
   economic_cost_closures <- sum(
     gva[-i_EDUCATION_SECTOR] * (1 - openness[-i_EDUCATION_SECTOR]) *
@@ -58,8 +61,8 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   )
 
   education_cost_closures <- sum(
-    gva[i_EDUCATION_SECTOR] * (1 - openness[i_EDUCATION_SECTOR]) *
-      closure_duration
+    (gva[i_EDUCATION_SECTOR] + vsy) * (1 - openness[i_EDUCATION_SECTOR]) *
+      (1 - edu_effectiveness_remote) * closure_duration
   )
 
   # absences due to infection, hospitalisation, death
