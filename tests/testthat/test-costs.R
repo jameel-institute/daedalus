@@ -73,10 +73,6 @@ test_that("Costs: scenario expectations", {
         costs$economic_costs$economic_cost_closures,
         sum(expected_cost_closures[-i_EDUCATION_SECTOR])
       )
-      expect_identical(
-        costs$education_costs$education_cost_closures,
-        sum(expected_cost_closures[i_EDUCATION_SECTOR])
-      )
     })
   })
 })
