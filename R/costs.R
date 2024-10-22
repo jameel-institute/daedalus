@@ -146,3 +146,32 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
 
   costs
 }
+
+#' Calculate the present value of lost earnings due to educational disruption
+#'
+#' @keywords internal
+#' @return A single number (around 20) that gives a coefficient of lost
+#' earnings.
+# NOTE: this could be a model constant as it seems to be a fixed value. Unclear
+# why this is not being treated as a constant.
+# NOTE: simplifying assumption of single age group with a mean age of 12.5
+get_value_lost_earnings <- function() {
+  mean_age <- mean(c(5, 20))
+  (1 - (1 + earnings_loss_discount)^(-(work_expected_years + 20 - mean_age))) /
+    earnings_loss_discount -
+    (1 - (1 + earnings_loss_discount)^(-(20 - mean_age))) /
+      earnings_loss_discount
+}
+
+#' Calculate the value of a school year
+#'
+#' @param gni The GNI per capita of a country. Must be a single value. See
+#' [daedalus::country_gni] for values.
+#'
+#' @return A single value giving the value of a school year given the country
+#' GNI per capita and an expected work period of 45 years.
+#' @keywords internal
+get_value_school_year <- function(gni) {
+  # no checking on GNI for this internal function
+  get_value_lost_earnings() * gni * edu_annual_ror
+}
