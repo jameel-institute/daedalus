@@ -163,6 +163,8 @@ daedalus_country <- function(country,
 
   # add value of statistical life (VSL)
   vsl <- daedalus::life_value[[name]]
+  gni <- daedalus::country_gni[[name]]
+
   # calculate consumer-worker contacts
   contacts_consumer_worker <- matrix(
     daedalus::economic_contacts[["contacts_workplace"]],
@@ -177,7 +179,8 @@ daedalus_country <- function(country,
       contacts_consumer_worker = contacts_consumer_worker,
       contacts_between_sectors =
         daedalus::economic_contacts[["contacts_between_sectors"]],
-      vsl = vsl
+      vsl = vsl,
+      gni = gni
     )
   )
   parameters <- Filter(parameters, f = function(x) !is.null(x))
@@ -213,7 +216,7 @@ validate_daedalus_country <- function(x) {
     "name", "demography", "contact_matrix",
     "contacts_workplace", "contacts_consumer_worker",
     "contacts_between_sectors", "workers", "gva",
-    "vsl", "hospital_capacity"
+    "vsl", "hospital_capacity", "gni"
   )
   has_invariants <- checkmate::test_names(
     attributes(x)$names,
@@ -300,6 +303,11 @@ validate_daedalus_country <- function(x) {
       checkmate::test_count(
         x$hospital_capacity,
         positive = TRUE
+      ),
+    "Country `gni` must be a single positive number" =
+      checkmate::test_count(
+        x$gni,
+        positive = TRUE
       )
   )
 
@@ -349,8 +357,13 @@ format.daedalus_country <- function(x, ...) {
   print(
     get_data(x, "contact_matrix")
   )
-  cli::cli_text("Hospital capacity: {cli::col_red(x$hospital_capacity)}")
 
+  cli::cli_bullets(
+    c(
+      "*" = "GNI (PPP $): {cli::col_blue(x$gni)}",
+      "*" = "Hospital capacity: {cli::col_green(x$hospital_capacity)}"
+    )
+  )
   invisible(x)
 }
 
