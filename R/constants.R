@@ -69,6 +69,9 @@ N_ECON_SECTORS <- 45L
 
 #' @name model_constants
 #' @keywords model_constant
+# NOTE: state variable attaches econ sectors as rows after age groups
+# for a total of N_AGE_GROUPS + N_ECON_SECTORS rows, +1 needed to index the
+# econ sectors only.
 i_ECON_SECTORS <- seq(N_AGE_GROUPS + 1, N_AGE_GROUPS + N_ECON_SECTORS)
 
 #' @name model_constants
