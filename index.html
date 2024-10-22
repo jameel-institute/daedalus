@@ -5,21 +5,23 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Model health, social, and economic costs of a pandemic using _DAEDALUS_ • daedalus</title>
-<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Model health, social, and economic costs of a pandemic using DAEDALUS • daedalus</title>
+<script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/Inter-0.4.9/font.css" rel="stylesheet">
+<link href="deps/Source_Code_Pro-0.4.9/font.css" rel="stylesheet">
+<link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Model health, social, and economic costs of a pandemic using _DAEDALUS_">
-<meta name="description" content="Model the health, social, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of preparedness and reactive interventions, using the _DAEDALUS_ integrated health-economics model adapted from Haw et al. (2022) &lt;doi.org/10.1038/s43588-022-00233-0&gt;.">
-<meta property="og:description" content="Model the health, social, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of preparedness and reactive interventions, using the _DAEDALUS_ integrated health-economics model adapted from Haw et al. (2022) &lt;doi.org/10.1038/s43588-022-00233-0&gt;.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Model health, social, and economic costs of a pandemic using DAEDALUS">
+<meta name="description" content="Model the health, education, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of prior vaccine investment and reactive interventions, using the _DAEDALUS_ integrated health-economics model adapted from Haw et al. (2022) &lt;doi.org/10.1038/s43588-022-00233-0&gt;.">
+<meta property="og:description" content="Model the health, education, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of prior vaccine investment and reactive interventions, using the _DAEDALUS_ integrated health-economics model adapted from Haw et al. (2022) &lt;doi.org/10.1038/s43588-022-00233-0&gt;.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
-
+    <nav class="navbar navbar-expand-lg fixed-top " aria-label="Site navigation"><div class="container">
+    <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="index.html">daedalus</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.19</small>
@@ -47,6 +49,14 @@
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/j-idea/daedalus/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-lightswitch">
+<li><button class="dropdown-item" data-bs-theme-value="light"><span class="fa fa-sun"></span> Light</button></li>
+    <li><button class="dropdown-item" data-bs-theme-value="dark"><span class="fa fa-moon"></span> Dark</button></li>
+    <li><button class="dropdown-item" data-bs-theme-value="auto"><span class="fa fa-adjust"></span> Auto</button></li>
+  </ul>
+</li>
       </ul>
 </div>
 
@@ -71,7 +81,7 @@
 <div class="section level2">
 <h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<p>The model can be run for any country or territory in the <code>country_names</code> list by passing the country name to the function. This automatically pulls country-specific demographic and economic data, which is included in the package, into the model (see the <a href="https://jameel-institute.github.io/daedalus/articles/daedalus.html" class="external-link">‘Get started’ vignette</a> for more details).</p>
+<p>The model can be run for any country or territory in the <code>country_names</code> list by passing the country name to the function. This automatically pulls country-specific demographic and economic data, which is included in the package, into the model (see the <a href="https://jameel-institute.github.io/daedalus/articles/daedalus.html">‘Get started’ vignette</a> for more details).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/j-idea/daedalus" class="external-link">daedalus</a></span><span class="op">)</span></span>
 <span></span>
@@ -80,12 +90,12 @@
 <span></span>
 <span><span class="co"># get pandemic costs as a total in million dollars</span></span>
 <span><span class="fu"><a href="reference/get_costs.html">get_costs</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"total"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 436377.2</span></span>
+<span><span class="co">#&gt; [1] 490778</span></span>
 <span></span>
 <span><span class="co"># disaggregate total for economic, education, and health costs</span></span>
 <span><span class="fu"><a href="reference/get_costs.html">get_costs</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"domain"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   economic  education life_years </span></span>
-<span><span class="co">#&gt;  29758.631   2277.528 404341.003</span></span></code></pre></div>
+<span><span class="co">#&gt;  32762.859   2438.326 455576.772</span></span></code></pre></div>
 <p>Users can select infection parameters from among seven epidemics caused by directly-transmitted viral respiratory pathogens, which are stored in the package as <code><a href="reference/epidemic_data.html">daedalus::infection_data</a></code>, with epidemic identifiers are stored as <code><a href="reference/epidemic_data.html">daedalus::epidemic_names</a></code>.</p>
 <p>Users can override default country contact data and epidemic-specific infection arguments by passing custom classes to <code><a href="reference/daedalus.html">daedalus()</a></code>; see the package website for more details.</p>
 <p>Users can also model the implementation of pandemic response measures: for more on this see the documentation for the main model function <code><a href="reference/daedalus.html">daedalus()</a></code>, and the vignette on modelling interventions on the package website.</p>
@@ -133,7 +143,14 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Pratik Gupte <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-5294-7819" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li><a href="authors.html">More about authors...</a></li>
+<li>Patrick Doohan <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-8076-1106" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Robert Johnson <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7365-0042" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Rich FitzJohn <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-8888-3837" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Emma Russell <br><small class="roles"> Author </small>  </li>
+<li>David Mears <br><small class="roles"> Author </small>  </li>
+<li>Katharina Hauck <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-3138-4169" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Abdul Latif Jameel Institute for Disease and Emergency Analytics <br><small class="roles"> Funder </small>  </li>
+<li>Imperial College of Science, Technology and Medicine <br><small class="roles"> Copyright holder, funder </small>  </li>
 </ul>
 </div>
 
@@ -144,7 +161,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Pratik Gupte.</p>
+  <p>Developed by Pratik Gupte, Patrick Doohan, Robert Johnson, Rich FitzJohn, Emma Russell, David Mears, Katharina Hauck, Abdul Latif Jameel Institute for Disease and Emergency Analytics, Imperial College of Science, Technology and Medicine.</p>
 </div>
 
 <div class="pkgdown-footer-right">
