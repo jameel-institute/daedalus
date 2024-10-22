@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.19</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.20</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,6 +44,21 @@
       <small>Source: <a href="https://github.com/j-idea/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.20" id="daedalus-0020">daedalus 0.0.20<a class="anchor" aria-label="anchor" href="#daedalus-0020"></a></h2>
+<p>This patch updates the state variable in <code><a href="../reference/daedalus.html">daedalus()</a></code> to substantially reduce the number of compartments; all empty compartments have been removed. This improves the speed of model runs as there are fewer derivatives to calculate.</p>
+<ol style="list-style-type: decimal"><li><p>State variable is a 3D array with the dimensions: <code>c(49, 9, 3)</code>. The working-age economic sectors are added on as rows after the age-groups. Epidemiological compartments are unchanged. The third dimension holds data on vaccination status, including new vaccinations.</p></li>
+<li><p>Helper functions are updated to support the new state dimensions.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mi>t</mi></msub><annotation encoding="application/x-tex">R_t</annotation></semantics></math> calculation in <code><a href="../reference/reff_calculation.html">r_eff()</a></code> has been simplified to the proportional susceptible times <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mn>0</mn></msub><annotation encoding="application/x-tex">R_0</annotation></semantics></math>, pending a more accurate calculation.</p></li>
+<li><p>The internal helper function <code><a href="../reference/prepare_output.html">prepare_output()</a></code> has been refactored to avoid use of <code><a href="https://rdrr.io/r/base/array2DF.html" class="external-link">base::array2DF()</a></code> to remove the dependency on newer versions of R.</p></li>
+<li><p>Removes unused between-sector contacts in force-of-infection calculations.</p></li>
+<li><p>Moves some contact scaling to the parameter preparation stage to reduce operations during the model run.</p></li>
+<li><p>Correctly sums the total number of infectious individuals in the community; previously, the implementation resulted in segregation by economic sector.</p></li>
+</ol></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.19" id="daedalus-0019">daedalus 0.0.19<a class="anchor" aria-label="anchor" href="#daedalus-0019"></a></h2>
+<p>This patch adds functionality to run <code><a href="../reference/daedalus.html">daedalus()</a></code> with the <code>country</code> argument passed as one of <code>country_codes_iso2c</code> or <code>country_codes_iso3c</code> for 2 and 3 letter ISO country codes.</p>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.18" id="daedalus-0018">daedalus 0.0.18<a class="anchor" aria-label="anchor" href="#daedalus-0018"></a></h2>
 <p>This patch adds logging of daily new vaccinations and provides an output helper function, <code><a href="../reference/epi_output_helpers.html">get_new_vaccinations()</a></code>, to get daily new vaccinations.</p>
