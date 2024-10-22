@@ -206,3 +206,20 @@ SUMMARY_MEASURES <- c(
 
 #' @name summary_constants
 SUMMARY_GROUPS <- c("age_group", "vaccine_group", "econ_sector")
+
+#' Economic constants used in DAEDALUS
+#'
+#' @name econ_constants
+#' @rdname econ_constants
+#'
+#' @keywords econ_constants
+edu_effectiveness_remote <- 0.33
+
+#' @name econ_constants
+edu_annual_ror <- 0.08
+
+#' @name econ_constants
+work_expected_years <- 45
+
+#' @name econ_constants
+earnings_loss_discount <- 0.03
