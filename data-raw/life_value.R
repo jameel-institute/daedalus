@@ -73,6 +73,10 @@ life_value <- life_value[country %in% names(life_expectancy), ]
 life_value <- split(life_value, by = "country")
 life_value <- lapply(life_value, `[[`, "vly")
 
+# save as country_GNI
+country_gni <- life_value
+usethis::use_data(country_gni, overwrite = TRUE)
+
 #### value of life lost per age group ####
 # subset life expectancy by life value as some are not available
 # these are Cuba, NK, Syria
