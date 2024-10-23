@@ -67,7 +67,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   )
 
   education_cost_closures <- sum(
-    (vsd) * n_students * (1 - openness[i_EDUCATION_SECTOR]) *
+    vsd * n_students * (1 - openness[i_EDUCATION_SECTOR]) *
       (1 - edu_effectiveness_remote) * closure_duration
   )
 
