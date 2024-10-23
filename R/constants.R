@@ -230,14 +230,17 @@ SUMMARY_GROUPS <- c("age_group", "vaccine_group", "econ_sector")
 #' 4. `earnings_loss_discount`: The discounting rate used in the calculation of
 #' lost earnings.
 #'
-#' @keywords econ_constants
+#' @keywords econ_constant
 edu_effectiveness_remote <- 0.33
 
 #' @name econ_constants
+#' @keywords econ_constant
 edu_annual_ror <- 0.08
 
 #' @name econ_constants
+#' @keywords econ_constant
 work_expected_years <- 45
 
 #' @name econ_constants
+#' @keywords econ_constant
 earnings_loss_discount <- 0.03

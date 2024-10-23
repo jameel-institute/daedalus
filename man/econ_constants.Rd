@@ -29,5 +29,15 @@ earnings_loss_discount
 \description{
 Economic constants used in DAEDALUS
 }
-\keyword{datasets}
-\keyword{econ_constants}
+\details{
+The Daedalus model uses these constants for economic value calculations:
+\enumerate{
+\item \code{edu_effectiveness_remote}: The effectiveness of remote education.
+\item \code{edu_annual_ror}: The rate of return on a year of education.
+\item \code{work_expected_years}: The expected number of years of work for school-age
+children.
+\item \code{earnings_loss_discount}: The discounting rate used in the calculation of
+lost earnings.
+}
+}
+\keyword{econ_constant}
