@@ -1,3 +1,19 @@
+# daedalus 0.0.21
+
+This patch updates and corrects the cost of school closures by adding lost earnings, with simplifying assumptions of a single school-age cohort, that all school age children are in school, a single value of the number of expected work years, and a constant global value of the effectiveness of remote education.
+
+Educational losses are now a function of number of school days lost to closures, the country per-capita GNI, the number of school-age children, the effectiveness of remote education, and a coefficient of lost earnings.
+
+This calculation replaces the previous value of educational losses, which was the education sector GVA loss over the closure period. The education sector GVA loss is now added to the overall economic losses.
+
+Educational losses due to absences are still calculated as GVA losses due to worker absences, and not in terms of lost earnings for students due to student illness and absence.
+
+1. Added internal function `get_value_lost_earnings()` to get a (constant) coefficient for the value of earnings lost due to lost education;
+
+2. Added internal function `get_value_school_year()` to get the value of a school year for any country GNI (gross national income per capita).
+
+3. Added package constants `i_SCHOOL_AGE`, `edu_effectiveness_remote` (0.33), `edu_annual_ror` (0.08), and `earnings_loss_discount` (0.03)
+
 # daedalus 0.0.20
 
 This patch updates the state variable in `daedalus()` to substantially reduce the number of compartments; all empty compartments have been removed. This improves the speed of model runs as there are fewer derivatives to calculate.

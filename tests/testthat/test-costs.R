@@ -71,8 +71,31 @@ test_that("Costs: scenario expectations", {
 
       expect_identical(
         costs$economic_costs$economic_cost_closures,
-        sum(expected_cost_closures[-i_EDUCATION_SECTOR])
+        sum(expected_cost_closures)
       )
     })
   })
+})
+
+test_that("Expectations on schooling costs", {
+  # exepct that costs due to closures are non-zero, in scenarios with schools
+  # closed
+  x <- c("none", "school_closures", "elimination")
+
+  o <- lapply(
+    x, daedalus,
+    country = "United Kingdom",
+    infection = daedalus_infection("sars_cov_1")
+  )
+
+  a <- vapply(o, function(x) {
+    y <- get_costs(x)
+    y[["education_costs"]][["education_cost_closures"]]
+  }, 1)
+  names(a) <- x
+
+  checkmate::expect_numeric(
+    a[setdiff(x, c("none", "economic_closures"))],
+    lower = 1
+  )
 })
