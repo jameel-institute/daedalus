@@ -9,6 +9,7 @@
 \alias{N_VACCINE_DATA_GROUPS}
 \alias{AGE_GROUPS}
 \alias{i_WORKING_AGE}
+\alias{i_SCHOOL_AGE}
 \alias{N_ECON_SECTORS}
 \alias{i_ECON_SECTORS}
 \alias{i_EDUCATION_SECTOR}
@@ -34,6 +35,8 @@ An object of class \code{integer} of length 1.
 An object of class \code{integer} of length 1.
 
 An object of class \code{character} of length 4.
+
+An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
 
@@ -77,6 +80,8 @@ N_VACCINE_DATA_GROUPS
 AGE_GROUPS
 
 i_WORKING_AGE
+
+i_SCHOOL_AGE
 
 N_ECON_SECTORS
 

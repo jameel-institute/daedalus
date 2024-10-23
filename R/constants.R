@@ -65,6 +65,10 @@ i_WORKING_AGE <- 3L
 
 #' @name model_constants
 #' @keywords model_constant
+i_SCHOOL_AGE <- 2L
+
+#' @name model_constants
+#' @keywords model_constant
 N_ECON_SECTORS <- 45L
 
 #' @name model_constants
@@ -211,6 +215,20 @@ SUMMARY_GROUPS <- c("age_group", "vaccine_group", "econ_sector")
 #'
 #' @name econ_constants
 #' @rdname econ_constants
+#'
+#' @details
+#'
+#' The Daedalus model uses these constants for economic value calculations:
+#'
+#' 1. `edu_effectiveness_remote`: The effectiveness of remote education.
+#'
+#' 2. `edu_annual_ror`: The rate of return on a year of education.
+#'
+#' 3. `work_expected_years`: The expected number of years of work for school-age
+#' children.
+#'
+#' 4. `earnings_loss_discount`: The discounting rate used in the calculation of
+#' lost earnings.
 #'
 #' @keywords econ_constants
 edu_effectiveness_remote <- 0.33
