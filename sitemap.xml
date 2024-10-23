@@ -20,6 +20,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus-package.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus_rhs.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/econ_constants.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/economic_contacts.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/epi_constants.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/epi_output_helpers.html</loc></url>
@@ -29,6 +30,8 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_data.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_distancing_coefficient.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_hospitalisations.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/get_value_lost_earnings.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/get_value_school_year.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/index.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/life_value.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/make_initial_state.html</loc></url>

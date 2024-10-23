@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.20</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.21</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,6 +44,16 @@
       <small>Source: <a href="https://github.com/j-idea/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.21" id="daedalus-0021">daedalus 0.0.21<a class="anchor" aria-label="anchor" href="#daedalus-0021"></a></h2>
+<p>This patch updates and corrects the cost of school closures by adding lost earnings, with simplifying assumptions of a single school-age cohort, that all school age children are in school, a single value of the number of expected work years, and a constant global value of the effectiveness of remote education.</p>
+<p>Educational losses are now a function of number of school days lost to closures, the country per-capita GNI, the number of school-age children, the effectiveness of remote education, and a coefficient of lost earnings.</p>
+<p>This calculation replaces the previous value of educational losses, which was the education sector GVA loss over the closure period. The education sector GVA loss is now added to the overall economic losses.</p>
+<p>Educational losses due to absences are still calculated as GVA losses due to worker absences, and not in terms of lost earnings for students due to student illness and absence.</p>
+<ol style="list-style-type: decimal"><li><p>Added internal function <code><a href="../reference/get_value_lost_earnings.html">get_value_lost_earnings()</a></code> to get a (constant) coefficient for the value of earnings lost due to lost education;</p></li>
+<li><p>Added internal function <code><a href="../reference/get_value_school_year.html">get_value_school_year()</a></code> to get the value of a school year for any country GNI (gross national income per capita).</p></li>
+<li><p>Added package constants <code>i_SCHOOL_AGE</code>, <code>edu_effectiveness_remote</code> (0.33), <code>edu_annual_ror</code> (0.08), and <code>earnings_loss_discount</code> (0.03)</p></li>
+</ol></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.20" id="daedalus-0020">daedalus 0.0.20<a class="anchor" aria-label="anchor" href="#daedalus-0020"></a></h2>
 <p>This patch updates the state variable in <code><a href="../reference/daedalus.html">daedalus()</a></code> to substantially reduce the number of compartments; all empty compartments have been removed. This improves the speed of model runs as there are fewer derivatives to calculate.</p>
