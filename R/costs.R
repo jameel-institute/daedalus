@@ -51,17 +51,23 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   gva <- x$country_parameters$gva
   openness <- x$response_data$openness
 
-  # value of a school year in this country
-  vsy <- get_value_school_year(x$gni)
+  # NOTE: might be good to split these into separate functions for different
+  # cost domains, but might end up replicating a good bit of code
+  # value of a school year, school day (vsd), and N students
+  # convert vsd to be in million dollars
+  # NOTE: assuming all in school, need data for in-school proportion
+  vsy <- get_value_school_year(x$country_parameters$gni)
+  vsd <- vsy / 365
+  vsd <- vsd / 1e6 # for uniformity with daily GVA
+  n_students <- x$country_parameters$demography[i_SCHOOL_AGE]
 
   # cost of closures
   economic_cost_closures <- sum(
-    gva[-i_EDUCATION_SECTOR] * (1 - openness[-i_EDUCATION_SECTOR]) *
-      closure_duration
+    gva * (1 - openness) * closure_duration
   )
 
   education_cost_closures <- sum(
-    (gva[i_EDUCATION_SECTOR] + vsy) * (1 - openness[i_EDUCATION_SECTOR]) *
+    (vsd) * n_students * (1 - openness[i_EDUCATION_SECTOR]) *
       (1 - edu_effectiveness_remote) * closure_duration
   )
 
@@ -88,6 +94,8 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
 
   gva_loss <- colSums(gva_loss)
 
+  # NOTE: education costs of absences are ONLY related to the absence of
+  # educational workers, not students - may need to be updated
   education_cost_absences <- gva_loss[i_EDUCATION_SECTOR]
   economic_cost_absences <- sum(
     gva_loss[-i_EDUCATION_SECTOR]
