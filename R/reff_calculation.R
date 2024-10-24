@@ -29,6 +29,58 @@ r_eff <- function(r0, state, cm) {
   r0 * p_susc
 }
 
+#' Calculate transmission parameter from infection and contact parameters
+#'
+#' @param infection A `<daedalus_infection>` object.
+#'
+#' @param country A `<daedalus_country>` object.
+#'
+#' @return A single numeric value for the transmission parameter, denoted
+#' \eqn{\beta}.
+#' @keywords internal
+get_beta <- function(infection, country) {
+  r0 <- infection$r0
+  cm <- country$contact_matrix
+  nn <- country$demography
+  eta <- infection$eta
+  sigma <- infection$sigma
+  p_sigma <- infection$p_sigma
+  epsilon <- infection$epsilon
+  gamma_Ia <- infection$gamma_Ia
+  gamma_Is <- infection$gamma_Is
+
+  sig1 <- sigma * (1 - p_sigma)
+  sig2 <- sigma * p_sigma
+  red <- epsilon
+
+  FOI <- (cm / nn)
+  for (i in seq(ncol(FOI))) {
+    FOI[, i] <- FOI[, i] * nn
+  }
+
+  FOIa <- red * FOI
+  FOIs <- FOI
+
+  Fmat <- matrix(0, 3 * 4, 12)
+  Fmat[1:4, 5:8] <- FOIa
+  Fmat[1:4, 9:12] <- FOIs
+
+  ones <- matrix(1, 4, 1)
+  vvec <- c(sigma * ones, gamma_Ia * ones, gamma_Is * ones)
+  # this assumes equal duration infectious to recovery and hospitalisation
+
+  Vmat <- diag(vvec)
+
+  Vmat[5:8, 1:4] <- diag(-sig1 * ones)
+  Vmat[9:12, 1:4] <- diag(-sig2 * ones)
+
+  NGM <- Fmat %*% solve(Vmat)
+  R0a <- max(eigen(NGM)$values)
+
+  beta <- r0 / R0a
+}
+
+
 #' @title Calculate total hospitalisations
 #'
 #' @param state The ODE state variable as an array. Must have at least `i_H`
