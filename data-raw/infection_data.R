@@ -109,7 +109,7 @@ data_omega_eta[, c("omega", "gamma_H") := list(
 )]
 
 data_omega_eta <- data_omega_eta[, c(
-  "epidemic", "age_group", "eta", "omega", "gamma_H"
+  "epidemic", "age_group", "ifr", "eta", "omega", "gamma_H"
 )]
 
 ## epsilon: relative contribution of asymptomatics
@@ -153,6 +153,7 @@ infection_data <- split(infection_data, by = "epidemic") |>
 data_omega_eta <- split(data_omega_eta, by = c("epidemic")) |>
   lapply(function(dt) {
     list(
+      ifr = dt[["ifr"]],
       eta = dt[["eta"]],
       omega = dt[["omega"]],
       gamma_H = dt[["gamma_H"]]
@@ -168,8 +169,8 @@ infection_data <- Map(
 
 usethis::use_data(infection_data, overwrite = TRUE)
 
-# save infection parameter names
-infection_parameter_names <- names(infection_data)
+# save infection parameter names, access first element
+infection_parameter_names <- names(infection_data[[1L]])
 usethis::use_data(infection_parameter_names, overwrite = TRUE)
 
 # save epidemic names for easy reference

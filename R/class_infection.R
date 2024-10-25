@@ -104,6 +104,9 @@ new_daedalus_infection <- function(name, parameters) {
 #' - `gamma_Ia`: A single numeric value for the recovery rate from asymptomatic
 #' infection.
 #'
+#' - `ifr`: A numeric vector of length `N_AGE_GROUPS` (4) for the
+#' age-specific infection fatality risk.
+#'
 #' - `gamma_H`: A numeric vector of length `N_AGE_GROUPS` (4) for the
 #' age-specific recovery rate for individuals who are hospitalised.
 #'
@@ -149,7 +152,7 @@ daedalus_infection <- function(name, ...) {
       )
     }
 
-    allowed_numerics_names <- c("eta", "gamma_H", "omega")
+    allowed_numerics_names <- c("ifr", "eta", "gamma_H", "omega")
     is_each_number <- all(
       vapply(
         parameters[!names(parameters) %in%
@@ -245,7 +248,7 @@ validate_daedalus_infection <- function(x) {
   }
 
   # check class members
-  allowed_numerics_names <- c("eta", "gamma_H", "omega")
+  allowed_numerics_names <- c("ifr", "eta", "gamma_H", "omega")
   expected_number <- setdiff(
     daedalus::infection_parameter_names, allowed_numerics_names
   )
@@ -316,6 +319,7 @@ print.daedalus_infection <- function(x, ...) {
 format.daedalus_infection <- function(x, ...) {
   chkDots(...)
 
+  # NOTE: not showing IFR as this is also a function of country demography
   cli::cli_text("{.cls {class(x)}}")
   divid <- cli::cli_div(theme = list(.val = list(digits = 3)))
   cli::cli_bullets(

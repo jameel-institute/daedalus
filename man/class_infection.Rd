@@ -79,6 +79,8 @@ symptomatic individuals).
 individuals who are not hospitalised.
 \item \code{gamma_Ia}: A single numeric value for the recovery rate from asymptomatic
 infection.
+\item \code{ifr}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the
+age-specific infection fatality risk.
 \item \code{gamma_H}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the
 age-specific recovery rate for individuals who are hospitalised.
 \item \code{eta}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the age-specific
