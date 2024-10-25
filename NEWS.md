@@ -1,3 +1,7 @@
+# daedalus 0.0.22
+
+This patch makes the infection IFR values available for the DAEDALUS-relevant age group in `infection_data` and in `<daedalus_infection>` objects under the name `"ifr"`.
+
 # daedalus 0.0.21
 
 This patch updates and corrects the cost of school closures by adding lost earnings, with simplifying assumptions of a single school-age cohort, that all school age children are in school, a single value of the number of expected work years, and a constant global value of the effectiveness of remote education.
