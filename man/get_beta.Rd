@@ -11,6 +11,10 @@ get_beta(infection, country)
 
 \item{country}{A \verb{<daedalus_country>} object.}
 }
+\value{
+A single numeric value for the transmission parameter, denoted
+\eqn{\beta}.
+}
 \description{
 Calculate transmission parameter from infection and contact parameters
 }

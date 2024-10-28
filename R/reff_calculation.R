@@ -88,8 +88,6 @@ get_beta <- function(infection, country) {
 
   r0 <- infection$r0
   cm <- country$contact_matrix
-  nn <- country$demography
-  eta <- infection$eta
   sigma <- infection$sigma
   p_sigma <- infection$p_sigma
   epsilon <- infection$epsilon
