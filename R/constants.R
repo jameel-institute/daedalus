@@ -198,6 +198,9 @@ i_dH <- 9L # new hospitalisations
 #' @name epi_constants
 i_dD <- 10L # new deaths
 
+#' @name epi_constants
+N_INFECTION_SUBSYSTEM <- 3L # compartments in the infectious subsystem
+
 #' Model output measures and groups for summaries and derived time-series
 #'
 #' @name summary_constants
