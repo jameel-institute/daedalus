@@ -53,13 +53,17 @@ get_beta <- function(infection, country) {
   sig2 <- sigma * p_sigma
   red <- epsilon
 
-  FOI <- (cm / nn)
-  for (i in seq(ncol(FOI))) {
-    FOI[, i] <- FOI[, i] * nn
-  }
+  # NOTE: the intention was to divide each row by the corresponding
+  # demographic group size: M[i, ] / v[i]
+  # and then multiply each column by each element of v: M[, j] * v
+  # This is equivalent to the original contact matrix (??)
+  # FOI <- (cm / nn)
+  # for (i in seq(ncol(FOI))) {
+  #   FOI[, i] <- FOI[, i] * nn
+  # }
 
-  FOIa <- red * FOI
-  FOIs <- FOI
+  FOIa <- red * cm
+  FOIs <- cm
 
   Fmat <- matrix(0, 3 * 4, 12)
   Fmat[1:4, 5:8] <- FOIa
@@ -78,6 +82,7 @@ get_beta <- function(infection, country) {
   R0a <- max(eigen(NGM)$values)
 
   beta <- r0 / R0a
+  beta
 }
 
 
