@@ -39,6 +39,8 @@ r_eff <- function(r0, state, cm) {
 #' \eqn{\beta}.
 #' @keywords internal
 get_beta <- function(infection, country) {
+  # NOTE: this calculation does not take workplace contacts into account
+
   r0 <- infection$r0
   cm <- country$contact_matrix
   nn <- country$demography
@@ -53,33 +55,32 @@ get_beta <- function(infection, country) {
   sig2 <- sigma * p_sigma
   red <- epsilon
 
-  # NOTE: the intention was to divide each row by the corresponding
-  # demographic group size: M[i, ] / v[i]
-  # and then multiply each column by each element of v: M[, j] * v
-  # This is equivalent to the original contact matrix (??)
-  # FOI <- (cm / nn)
-  # for (i in seq(ncol(FOI))) {
-  #   FOI[, i] <- FOI[, i] * nn
-  # }
-
   FOIa <- red * cm
   FOIs <- cm
 
-  Fmat <- matrix(0, 3 * 4, 12)
-  Fmat[1:4, 5:8] <- FOIa
-  Fmat[1:4, 9:12] <- FOIs
+  Fmat <- matrix(
+    0,
+    N_INFECTION_SUBSYSTEM * N_AGE_GROUPS,
+    N_INFECTION_SUBSYSTEM * N_AGE_GROUPS
+  )
 
-  ones <- matrix(1, 4, 1)
+  # assign the F_matrix elements: hardcoding numbers for now
+  # i_AGE_GROUPS + N_AGE_GROUPS: infectious_asymptomatic compartments
+  # i_AGE_GROUPS + N_AGE_GROUPS * 2: infectious symptomatic compartments
+  Fmat[i_AGE_GROUPS, i_AGE_GROUPS + N_AGE_GROUPS] <- FOIa
+  Fmat[i_AGE_GROUPS, i_AGE_GROUPS + N_AGE_GROUPS * 2] <- FOIs
+
+  ones <- matrix(1, N_AGE_GROUPS)
   vvec <- c(sigma * ones, gamma_Ia * ones, gamma_Is * ones)
   # this assumes equal duration infectious to recovery and hospitalisation
 
   Vmat <- diag(vvec)
 
-  Vmat[5:8, 1:4] <- diag(-sig1 * ones)
-  Vmat[9:12, 1:4] <- diag(-sig2 * ones)
+  Vmat[i_AGE_GROUPS + N_AGE_GROUPS, i_AGE_GROUPS] <- diag(-sig1 * ones)
+  Vmat[i_AGE_GROUPS + N_AGE_GROUPS * 2, i_AGE_GROUPS] <- diag(-sig2 * ones)
 
   NGM <- Fmat %*% solve(Vmat)
-  R0a <- max(eigen(NGM)$values)
+  R0a <- max(Re(eigen(NGM)$values))
 
   beta <- r0 / R0a
   beta
