@@ -18,7 +18,7 @@ make_response_threshold_event <- function(response_threshold) {
     # NOTE: prevent response activation if epdedemic is not growing
     state <- values_to_state(state)
 
-    rt <- r_eff(parameters[["r0"]], state, parameters[["cm_unscaled"]])
+    rt <- r_eff(state, parameters)
 
     # NOTE: to ensure only first hosp threshold crossing is logged
     is_hosp_switch_on <- rlang::env_get(parameters[["mutables"]], "hosp_switch")
@@ -54,8 +54,10 @@ make_rt_end_event <- function() {
   root_function <- function(time, state, parameters) {
     state <- values_to_state(state)
 
+    rt <- r_eff(state, parameters)
+
     # arbitrary precision, may not be hit!
-    r_eff(parameters[["r0"]], state, parameters[["cm_unscaled"]]) - 0.99
+    rt - 0.99
   }
 
   event_function <- function(time, state, parameters) {
