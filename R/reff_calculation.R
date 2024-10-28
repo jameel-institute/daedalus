@@ -17,16 +17,60 @@
 #' @return A single numeric value for the \eqn{R_\text{eff}}.
 #'
 #' @keywords internal
-r_eff <- function(r0, state, cm) {
-  # NOTE: assumes state is a 4D array, and
-  # cm is a 2D contact matrix with eigenvalue = 1.0
-  # NOTE: reduced susceptibility for vaccinated!
-  p_susc <- sum(
-    state[, i_S, i_UNVACCINATED_STRATUM] +
-      0.5 * state[, i_S, i_VACCINATED_STRATUM]
-  ) / sum(state[, i_EPI_COMPARTMENTS, -i_NEW_VAX_STRATUM])
+r_eff <- function(state, parameters) {
+  # get number of susceptibles
+  susceptibles <- state[, i_S, i_UNVACCINATED_STRATUM] +
+    0.5 * state[, i_S, i_VACCINATED_STRATUM] # reduced for vaccinated
+  susceptibles[i_WORKING_AGE] <- susceptibles[i_WORKING_AGE] +
+    sum(susceptibles[i_ECON_SECTORS])
+  susceptibles <- susceptibles[i_AGE_GROUPS]
 
-  r0 * p_susc
+  demography <- parameters$demography
+
+  cm <- parameters$cm_unscaled
+  sigma <- parameters$sigma
+  p_sigma <- parameters$p_sigma
+  epsilon <- parameters$epsilon
+  gamma_Ia <- parameters$gamma_Ia
+  gamma_Is <- parameters$gamma_Is
+
+  sig1 <- sigma * (1 - p_sigma)
+  sig2 <- sigma * p_sigma
+  red <- epsilon
+
+  p_susc = susceptibles / demography
+
+  # multiply each row by the proportion susceptible in that group
+  FOI <- (cm * p_susc)
+
+  FOIa <- red * FOI
+  FOIs <- FOI
+
+  Fmat <- matrix(
+    0,
+    N_INFECTION_SUBSYSTEM * N_AGE_GROUPS,
+    N_INFECTION_SUBSYSTEM * N_AGE_GROUPS
+  )
+
+  # assign the F_matrix elements: hardcoding numbers for now
+  # i_AGE_GROUPS + N_AGE_GROUPS: infectious_asymptomatic compartments
+  # i_AGE_GROUPS + N_AGE_GROUPS * 2: infectious symptomatic compartments
+  Fmat[i_AGE_GROUPS, i_AGE_GROUPS + N_AGE_GROUPS] <- FOIa
+  Fmat[i_AGE_GROUPS, i_AGE_GROUPS + N_AGE_GROUPS * 2] <- FOIs
+
+  ones <- matrix(1, N_AGE_GROUPS)
+  vvec <- c(sigma * ones, gamma_Ia * ones, gamma_Is * ones)
+  # this assumes equal duration infectious to recovery and hospitalisation
+
+  Vmat <- diag(vvec)
+
+  Vmat[i_AGE_GROUPS + N_AGE_GROUPS, i_AGE_GROUPS] <- diag(-sig1 * ones)
+  Vmat[i_AGE_GROUPS + N_AGE_GROUPS * 2, i_AGE_GROUPS] <- diag(-sig2 * ones)
+
+  NGM <- Fmat %*% solve(Vmat)
+  R0a <- max(Re(eigen(NGM)$values))
+
+  R0a
 }
 
 #' Calculate transmission parameter from infection and contact parameters
