@@ -38,7 +38,7 @@ r_eff <- function(state, parameters) {
   sig2 <- sigma * p_sigma
   red <- epsilon
 
-  p_susc = susceptibles / demography
+  p_susc <- susceptibles / demography
 
   # multiply each row by the proportion susceptible in that group
   FOI <- (cm * p_susc)
