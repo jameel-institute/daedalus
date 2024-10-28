@@ -19,6 +19,7 @@
 \alias{i_dE}
 \alias{i_dH}
 \alias{i_dD}
+\alias{N_INFECTION_SUBSYSTEM}
 \title{Epidemiological compartments and indices}
 \format{
 An object of class \code{character} of length 9.
@@ -32,6 +33,8 @@ An object of class \code{integer} of length 1.
 An object of class \code{integer} of length 7.
 
 An object of class \code{integer} of length 2.
+
+An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
 
@@ -85,6 +88,8 @@ i_dE
 i_dH
 
 i_dD
+
+N_INFECTION_SUBSYSTEM
 }
 \value{
 \code{COMPARTMENTS} returns a character vector of the epidemiological
