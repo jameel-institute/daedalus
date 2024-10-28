@@ -10,9 +10,9 @@
 #' This assumes a single susceptible stratum with full susceptibility, and will
 #' be updated in future versions to account for the addition of vaccination
 #' strata with reduced susceptibility.
-#' @param r0 The basic reproduction number.
 #' @param state The ODE state variable. Must be an array.
-#' @param cm The contact matrix.
+#' @param parameters A list of parameters passed to
+#' [daedalus_rhs()].
 #'
 #' @return A single numeric value for the \eqn{R_\text{eff}}.
 #'
@@ -27,6 +27,7 @@ r_eff <- function(state, parameters) {
 
   demography <- parameters$demography
 
+  beta <- parameters$beta
   cm <- parameters$cm_unscaled
   sigma <- parameters$sigma
   p_sigma <- parameters$p_sigma
@@ -41,7 +42,7 @@ r_eff <- function(state, parameters) {
   p_susc <- susceptibles / demography
 
   # multiply each row by the proportion susceptible in that group
-  FOI <- (cm * p_susc)
+  FOI <- beta * cm * p_susc
 
   FOIa <- red * FOI
   FOIs <- FOI

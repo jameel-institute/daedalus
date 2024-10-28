@@ -5,14 +5,13 @@
 \alias{r_eff}
 \title{Calculate the effective R}
 \usage{
-r_eff(r0, state, cm)
+r_eff(state, parameters)
 }
 \arguments{
-\item{r0}{The basic reproduction number.}
-
 \item{state}{The ODE state variable. Must be an array.}
 
-\item{cm}{The contact matrix.}
+\item{parameters}{A list of parameters passed to
+\code{\link[=daedalus_rhs]{daedalus_rhs()}}.}
 }
 \value{
 A single numeric value for the \eqn{R_\text{eff}}.
