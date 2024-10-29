@@ -220,6 +220,7 @@ daedalus <- function(country,
       hospital_capacity = response_threshold, # to increase HFR if crossed
       psi = 1 / 270,
       tau = c(1.0, 0.5),
+      beta = get_beta(infection, country),
       openness = openness,
       mutables = mutables,
       min_time = 1 # setting minimum time to prevent switch flipping
