@@ -1,3 +1,19 @@
+# daedalus 0.0.23
+
+This patch corrects epidemic dynamics:
+
+1. Replaces $R_0$ in force of infection calculations with transmission parameter $\beta$;
+
+2. Adds a new function `get_beta()` to calculate model $\beta$ for a country and infection (thanks @patcatgit);
+
+3. Corrects the implementation of `r_eff()` to use model $\beta$;
+
+4. Corrects `prepare_parameters.daedalus_country()` to provide appropriate contact matrix values;
+
+5. Adds tests to check newly added functions.
+
+There is a noticeable speed loss due to repeated calls to `base::eigen()` and `base::solve()` in `r_eff()`.
+
 # daedalus 0.0.22
 
 This patch makes the infection IFR values available for the DAEDALUS-relevant age group in `infection_data` and in `<daedalus_infection>` objects under the name `"ifr"`.
