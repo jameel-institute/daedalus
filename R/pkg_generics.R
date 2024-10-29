@@ -99,25 +99,20 @@ set_data <- function(x, ...) {
 #'
 #' - `demography`: the demography vector;
 #'
-#' - `contact_matrix`: the scaled contact matrix suitable for multiplication
-#' with \eqn{R_0} in force of infection calculations;
+#' - `contact_matrix`: the contact matrix;
 #'
-#' - `cm_unscaled`: the contact matrix multiplied column-wise by the demography
-#' vector, suitable for calculations of \eqn{R_{\text{eff}}}; see [r_eff()].
-#'
-#' - `contacts_workplace`: the contacts in workplaces scaled by their largest
-#' value (which is the leading eigenvalue of the diagonal matrix of contacts);
+#' - `contacts_workplace`: the contacts in workplaces scaled by the number of
+#' workers in each sector;
 #'
 #' - `contacts_consumer_worker`: contacts in workplaces distributed in
 #' proportion to the demography distribution, and scaled by the largest singular
 #' value (similar to eigenvalue for non-square matrices).
 #'
-#' - `contacts_between_sectors`: dummy matrix of zeros for future use.
-#'
 #' ## Infection parameters
 #'
-#' Infection parameters are returned from `<daedalusinfection>` objects without
+#' Infection parameters are returned from `<daedalus_infection>` objects without
 #' modification and only the name removed.
+#' 
 #' @keywords internal
 prepare_parameters <- function(x, ...) {
   UseMethod("prepare_parameters")

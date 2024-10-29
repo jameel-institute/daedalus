@@ -432,24 +432,17 @@ prepare_parameters.daedalus_country <- function(x, ...) {
   # scale contacts by largest real eigenvalue
   cm <- get_data(x, "contact_matrix")
   eigv <- max(Re(eigen(cm)$values))
-  cm_unscaled <- cm / eigv
-  cm <- (cm_unscaled) %*% diag(1 / demography)
 
   cmw <- get_data(x, "contacts_workplace")
-  cmw <- cmw / max(cmw) # max(cmw) is leading eigenvalue of diag matrix cmw
 
   cmcw <- get_data(x, "contacts_consumer_worker")
-  # NOTE: scaling by largest singular value using base::svd, accessed as "d"
-  singv <- max(Re(svd(cmcw)[["d"]]))
-  cmcw <- cmcw / singv
 
   workers <- get_data(x, "workers")
 
   list(
     demography = demography,
     contact_matrix = cm,
-    cm_unscaled = cm_unscaled, # for use in Rt calculations
-    contacts_workplace = cmw / workers,
+    contacts_workplace = cmw / workers, # scaled by workers
     contacts_consumer_worker = cmcw
   )
 }
