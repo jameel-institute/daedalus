@@ -59,7 +59,7 @@ r_eff <- function(state, parameters) {
   Fmat[i_AGE_GROUPS, i_AGE_GROUPS + N_AGE_GROUPS] <- FOIa
   Fmat[i_AGE_GROUPS, i_AGE_GROUPS + N_AGE_GROUPS * 2] <- FOIs
 
-  ones <- matrix(1, N_AGE_GROUPS)
+  ones <- rep(1, N_AGE_GROUPS)
   vvec <- c(sigma * ones, gamma_Ia * ones, gamma_Is * ones)
   # this assumes equal duration infectious to recovery and hospitalisation
 
@@ -113,7 +113,7 @@ get_beta <- function(infection, country) {
   Fmat[i_AGE_GROUPS, i_AGE_GROUPS + N_AGE_GROUPS] <- FOIa
   Fmat[i_AGE_GROUPS, i_AGE_GROUPS + N_AGE_GROUPS * 2] <- FOIs
 
-  ones <- matrix(1, N_AGE_GROUPS)
+  ones <- rep(1, N_AGE_GROUPS)
   vvec <- c(sigma * ones, gamma_Ia * ones, gamma_Is * ones)
   # this assumes equal duration infectious to recovery and hospitalisation
 
