@@ -45,7 +45,7 @@ daedalus_rhs <- function(t, state, parameters) {
   state_ <- state_[, , -i_NEW_VAX_STRATUM]
 
   #### Parameter preparation ####
-  r0 <- parameters[["r0"]]
+  beta <- parameters[["beta"]]
   sigma <- parameters[["sigma"]] # exposed to infectious
   p_sigma <- parameters[["p_sigma"]] # proportion symptomatic
   epsilon <- parameters[["epsilon"]] # relative FOI from asymptomatics
@@ -84,7 +84,7 @@ daedalus_rhs <- function(t, state, parameters) {
   switch <- rlang::env_get(parameters[["mutables"]], "switch")
 
   scaling <- if (switch) openness else 1.0
-  r0_econ <- r0 * scaling
+  beta_econ <- beta * scaling
 
   # NOTE: scale vax rate by proportion of eligible individuals remaining
   # to maintain rate relative to total population as eligibles decrease
@@ -101,7 +101,11 @@ daedalus_rhs <- function(t, state, parameters) {
   d_state[, i_D, ] <- new_deaths
   new_deaths_total <- sum(new_deaths)
 
-  r0 <- r0 * if (switch) get_distancing_coefficient(new_deaths_total) else 1.0
+  beta <- beta * if (switch) {
+    get_distancing_coefficient(new_deaths_total)
+  } else {
+    1.0
+  }
 
   #### Force of infection calculations ####
   # NOTE: get total number in each age group infectious
@@ -114,7 +118,8 @@ daedalus_rhs <- function(t, state, parameters) {
 
   community_infectious <- community_infectious[i_AGE_GROUPS]
 
-  cm_inf <- cm %*% community_infectious
+  cm_inf <- beta * parameters$cm_unscaled %*%
+    (community_infectious / demography)
 
   # NOTE: `state` and `cm_inf` mult. assumes length(cm_inf) == nrows(state)
   new_community_infections <- state_[, i_S, ]
@@ -122,7 +127,8 @@ daedalus_rhs <- function(t, state, parameters) {
     as.vector(cm_inf)
   new_community_infections[i_ECON_SECTORS, ] <- state_[i_ECON_SECTORS, i_S, ] *
     cm_inf[i_WORKING_AGE]
-
+  # scaling by vaccine-reduced susceptibility
+  # NOTE: add MISSING scaling by beta here for βSI/N
   new_community_infections <- new_community_infections %*% diag(tau)
 
   # NOTE: re-assigning `workplace_infected`
@@ -132,14 +138,14 @@ daedalus_rhs <- function(t, state, parameters) {
 
   # workplace infections from other workers w/ reduced susceptibility of vaxxed
   # NOTE: explicit col-wise multiplication of workplace infected * tau
-  new_workplace_infections <- r0_econ *
+  new_workplace_infections <- beta_econ *
     state_[i_ECON_SECTORS, i_S, ] * workplace_infected
 
   # NOTE: only consumer to worker infections are currently allowed
   # NOTE: only infections from non-working consumers currently possible
   infected_consumers <- (state_[i_AGE_GROUPS, i_Is, ] +
     state_[i_AGE_GROUPS, i_Ia, ] * epsilon) / demography
-  foi_cw <- r0_econ * cw %*% infected_consumers
+  foi_cw <- beta_econ * cw %*% infected_consumers
 
   # force col-wise multiplication of vax-derived reduction in susceptibility
   new_comm_work_infections <- state_[i_ECON_SECTORS, i_S, ] %*%
