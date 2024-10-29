@@ -43,22 +43,18 @@ scaling contacts from each age group by the size of that group).
 The returned parameter list consists of:
 \itemize{
 \item \code{demography}: the demography vector;
-\item \code{contact_matrix}: the scaled contact matrix suitable for multiplication
-with \eqn{R_0} in force of infection calculations;
-\item \code{cm_unscaled}: the contact matrix multiplied column-wise by the demography
-vector, suitable for calculations of \eqn{R_{\text{eff}}}; see \code{\link[=r_eff]{r_eff()}}.
-\item \code{contacts_workplace}: the contacts in workplaces scaled by their largest
-value (which is the leading eigenvalue of the diagonal matrix of contacts);
+\item \code{contact_matrix}: the contact matrix;
+\item \code{contacts_workplace}: the contacts in workplaces scaled by the number of
+workers in each sector;
 \item \code{contacts_consumer_worker}: contacts in workplaces distributed in
 proportion to the demography distribution, and scaled by the largest singular
 value (similar to eigenvalue for non-square matrices).
-\item \code{contacts_between_sectors}: dummy matrix of zeros for future use.
 }
 }
 
 \subsection{Infection parameters}{
 
-Infection parameters are returned from \verb{<daedalusinfection>} objects without
+Infection parameters are returned from \verb{<daedalus_infection>} objects without
 modification and only the name removed.
 }
 }
