@@ -112,7 +112,7 @@ set_data <- function(x, ...) {
 #'
 #' Infection parameters are returned from `<daedalus_infection>` objects without
 #' modification and only the name removed.
-#' 
+#'
 #' @keywords internal
 prepare_parameters <- function(x, ...) {
   UseMethod("prepare_parameters")

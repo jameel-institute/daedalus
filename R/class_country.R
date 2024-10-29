@@ -431,12 +431,8 @@ prepare_parameters.daedalus_country <- function(x, ...) {
 
   # scale contacts by largest real eigenvalue
   cm <- get_data(x, "contact_matrix")
-  eigv <- max(Re(eigen(cm)$values))
-
   cmw <- get_data(x, "contacts_workplace")
-
   cmcw <- get_data(x, "contacts_consumer_worker")
-
   workers <- get_data(x, "workers")
 
   list(
