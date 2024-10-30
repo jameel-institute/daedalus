@@ -28,7 +28,7 @@ r_eff <- function(state, parameters) {
   demography <- parameters$demography
 
   beta <- parameters$beta
-  cm <- parameters$contact_matrix
+  cm <- parameters$cm_unscaled
   sigma <- parameters$sigma
   p_sigma <- parameters$p_sigma
   epsilon <- parameters$epsilon
