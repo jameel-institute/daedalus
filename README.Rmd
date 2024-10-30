@@ -19,8 +19,8 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![Project Status: Concept – Minimal or no implementation has been done yet, or the repository is only intended to be a limited example, demo, or proof-of-concept.](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
-[![R build status](https://github.com/j-idea/daedalus/workflows/R-CMD-check/badge.svg)](https://github.com/j-idea/daedalus/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/j-idea/daedalus/branch/main/graph/badge.svg)](https://app.codecov.io/gh/j-idea/daedalus?branch=main)
+[![R build status](https://github.com/jameel-institute/daedalus/workflows/R-CMD-check/badge.svg)](https://github.com/jameel-institute/daedalus/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/jameel-institute/daedalus/branch/main/graph/badge.svg)](https://app.codecov.io/gh/jameel-institute/daedalus?branch=main)
 [![CRAN status](https://www.r-pkg.org/badges/version/daedalus)](https://CRAN.R-project.org/package=daedalus)
 <!-- badges: end -->
 
@@ -30,9 +30,9 @@ _daedalus_ implements the integrated epidemiological and economic model in @haw2
 
 You can install the development version of daedalus from [GitHub](https://github.com/) using the _remotes_ package.
 
-``` r
-# install.packages("remotes")
-remotes::install_github("j-idea/daedalus", upgrade = FALSE)
+```r
+# install.packages("pak")
+pak::pak("jameel-institute/daedalus", upgrade = FALSE)
 ```
 
 ## Quick start

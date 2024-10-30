@@ -24,9 +24,9 @@ Description: Model the health, education, and economic costs of directly
     _DAEDALUS_ integrated health-economics model adapted from Haw et al.
     (2022) <doi.org/10.1038/s43588-022-00233-0>.
 License: MIT + file LICENSE
-URL: https://github.com/j-idea/daedalus,
+URL: https://github.com/jameel-institute/daedalus,
     https://jameel-institute.github.io/daedalus/
-BugReports: https://github.com/j-idea/daedalus/issues
+BugReports: https://github.com/jameel-institute/daedalus/issues
 Depends: 
     R (>= 2.10)
 Imports: 
