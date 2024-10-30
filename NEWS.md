@@ -1,3 +1,7 @@
+# daedalus 0.0.24
+
+This patch version adds a vignette on exploring the effect of parameter uncertainty on overall pandemic costs, and updates other vignettes and improves documentation.
+
 # daedalus 0.0.23
 
 This patch corrects epidemic dynamics:
