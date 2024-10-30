@@ -429,8 +429,9 @@ prepare_parameters.daedalus_country <- function(x, ...) {
 
   demography <- get_data(x, "demography")
 
-  # scale contacts by largest real eigenvalue
-  cm <- get_data(x, "contact_matrix")
+  # scale M[i, ] by demography[j]
+  cm_unscaled <- get_data(x, "contact_matrix")
+  cm <- cm_unscaled / demography
   cmw <- get_data(x, "contacts_workplace")
   cmcw <- get_data(x, "contacts_consumer_worker")
   workers <- get_data(x, "workers")
@@ -438,6 +439,7 @@ prepare_parameters.daedalus_country <- function(x, ...) {
   list(
     demography = demography,
     contact_matrix = cm,
+    cm_unscaled = cm_unscaled, # for use in Rt calculations
     contacts_workplace = cmw / workers, # scaled by workers
     contacts_consumer_worker = cmcw
   )

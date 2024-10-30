@@ -118,7 +118,7 @@ daedalus_rhs <- function(t, state, parameters) {
 
   community_infectious <- community_infectious[i_AGE_GROUPS]
 
-  cm_inf <- beta * cm %*% (community_infectious / demography)
+  cm_inf <- beta * cm %*% (community_infectious)
 
   # NOTE: `state` and `cm_inf` mult. assumes length(cm_inf) == nrows(state)
   new_community_infections <- state_[, i_S, ]
