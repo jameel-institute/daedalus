@@ -10,9 +10,9 @@ yet, or the repository is only intended to be a limited example, demo,
 or
 proof-of-concept.](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
 [![R build
-status](https://github.com/j-idea/daedalus/workflows/R-CMD-check/badge.svg)](https://github.com/j-idea/daedalus/actions/workflows/R-CMD-check.yaml)
+status](https://github.com/jameel-institute/daedalus/workflows/R-CMD-check/badge.svg)](https://github.com/jameel-institute/daedalus/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/j-idea/daedalus/branch/main/graph/badge.svg)](https://app.codecov.io/gh/j-idea/daedalus?branch=main)
+coverage](https://codecov.io/gh/jameel-institute/daedalus/branch/main/graph/badge.svg)](https://app.codecov.io/gh/jameel-institute/daedalus?branch=main)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/daedalus)](https://CRAN.R-project.org/package=daedalus)
 <!-- badges: end -->
@@ -26,8 +26,8 @@ You can install the development version of daedalus from
 [GitHub](https://github.com/) using the *remotes* package.
 
 ``` r
-# install.packages("remotes")
-remotes::install_github("j-idea/daedalus", upgrade = FALSE)
+# install.packages("pak")
+pak::pak("jameel-institute/daedalus", upgrade = FALSE)
 ```
 
 ## Quick start
@@ -47,12 +47,12 @@ data <- daedalus("Canada", "influenza_1918")
 
 # get pandemic costs as a total in million dollars
 get_costs(data, "total")
-#> [1] 490778
+#> [1] 1621184
 
 # disaggregate total for economic, education, and health costs
 get_costs(data, "domain")
-#>   economic  education life_years 
-#>  32762.859   2438.326 455576.772
+#>    economic   education  life_years 
+#>   33680.950    2201.333 1585301.497
 ```
 
 Users can select infection parameters from among seven epidemics caused
@@ -77,9 +77,10 @@ preparedness](https://github.com/robj411/p2_drivers).
 
 ## References
 
-<div id="refs" class="references hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
-<div id="ref-haw2022">
+<div id="ref-haw2022" class="csl-entry">
 
 Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo
 Pianella, Robert Johnson, Sumali Bajaj, et al. 2022. “Optimizing Social

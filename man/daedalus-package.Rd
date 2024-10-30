@@ -10,9 +10,9 @@ Model the health, education, and economic costs of directly transmitted respirat
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/j-idea/daedalus}
+  \item \url{https://github.com/jameel-institute/daedalus}
   \item \url{https://jameel-institute.github.io/daedalus/}
-  \item Report bugs at \url{https://github.com/j-idea/daedalus/issues}
+  \item Report bugs at \url{https://github.com/jameel-institute/daedalus/issues}
 }
 
 }
