@@ -22,12 +22,20 @@ in Haw et al. ([2022](#ref-haw2022)).
 
 ## Installation
 
-You can install the development version of daedalus from
-[GitHub](https://github.com/) using the *remotes* package.
+You can install the development version of daedalus from this repository
+using the *pak* package, or from the Jameel Institute R-universe.
 
 ``` r
 # install.packages("pak")
 pak::pak("jameel-institute/daedalus", upgrade = FALSE)
+
+# installation from R-universe
+install.packages(
+  "daedalus", 
+  repos = c(
+    "https://jameel-institute.r-universe.dev", "https://cloud.r-project.org"
+  )
+)
 ```
 
 ## Quick start
