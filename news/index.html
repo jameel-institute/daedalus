@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.22</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.23</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,6 +44,16 @@
       <small>Source: <a href="https://github.com/j-idea/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.23" id="daedalus-0023">daedalus 0.0.23<a class="anchor" aria-label="anchor" href="#daedalus-0023"></a></h2>
+<p>This patch corrects epidemic dynamics:</p>
+<ol style="list-style-type: decimal"><li><p>Replaces <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mn>0</mn></msub><annotation encoding="application/x-tex">R_0</annotation></semantics></math> in force of infection calculations with transmission parameter <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>;</p></li>
+<li><p>Adds a new function <code><a href="../reference/get_beta.html">get_beta()</a></code> to calculate model <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math> for a country and infection (thanks <a href="https://github.com/patcatgit" class="external-link">@patcatgit</a>);</p></li>
+<li><p>Corrects the implementation of <code><a href="../reference/reff_calculation.html">r_eff()</a></code> to use model <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>;</p></li>
+<li><p>Corrects <code><a href="../reference/prepare_parameters.html">prepare_parameters.daedalus_country()</a></code> to provide appropriate contact matrix values;</p></li>
+<li><p>Adds tests to check newly added functions.</p></li>
+</ol><p>There is a noticeable speed loss due to repeated calls to <code><a href="https://rdrr.io/r/base/eigen.html" class="external-link">base::eigen()</a></code> and <code><a href="https://rdrr.io/r/base/solve.html" class="external-link">base::solve()</a></code> in <code><a href="../reference/reff_calculation.html">r_eff()</a></code>.</p>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.22" id="daedalus-0022">daedalus 0.0.22<a class="anchor" aria-label="anchor" href="#daedalus-0022"></a></h2>
 <p>This patch makes the infection IFR values available for the DAEDALUS-relevant age group in <code>infection_data</code> and in <code>&lt;daedalus_infection&gt;</code> objects under the name <code>"ifr"</code>.</p>

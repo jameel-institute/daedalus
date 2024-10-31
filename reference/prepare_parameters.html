@@ -9,7 +9,7 @@ daedalus classes."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.22</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.23</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,23 +95,19 @@ daedalus classes."></head><body>
 <code>j</code> scaled by the <code>j</code>-th element of the country demography vector (i.e.,
 scaling contacts from each age group by the size of that group).</p></li>
 </ul><p>The returned parameter list consists of:</p><ul><li><p><code>demography</code>: the demography vector;</p></li>
-<li><p><code>contact_matrix</code>: the scaled contact matrix suitable for multiplication
-with \(R_0\) in force of infection calculations;</p></li>
-<li><p><code>cm_unscaled</code>: the contact matrix multiplied column-wise by the demography
-vector, suitable for calculations of \(R_{\text{eff}}\); see <code><a href="reff_calculation.html">r_eff()</a></code>.</p></li>
-<li><p><code>contacts_workplace</code>: the contacts in workplaces scaled by their largest
-value (which is the leading eigenvalue of the diagonal matrix of contacts);</p></li>
+<li><p><code>contact_matrix</code>: the contact matrix;</p></li>
+<li><p><code>contacts_workplace</code>: the contacts in workplaces scaled by the number of
+workers in each sector;</p></li>
 <li><p><code>contacts_consumer_worker</code>: contacts in workplaces distributed in
 proportion to the demography distribution, and scaled by the largest singular
 value (similar to eigenvalue for non-square matrices).</p></li>
-<li><p><code>contacts_between_sectors</code>: dummy matrix of zeros for future use.</p></li>
 </ul></div>
 
 <div class="section">
 <h3 id="infection-parameters">Infection parameters<a class="anchor" aria-label="anchor" href="#infection-parameters"></a></h3>
 
 
-<p>Infection parameters are returned from <code>&lt;daedalusinfection&gt;</code> objects without
+<p>Infection parameters are returned from <code>&lt;daedalus_infection&gt;</code> objects without
 modification and only the name removed.</p>
 </div>
 

@@ -17,7 +17,7 @@ strata with reduced susceptibility."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.22</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.23</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,23 +66,20 @@ strata with reduced susceptibility.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">r_eff</span><span class="op">(</span><span class="va">r0</span>, <span class="va">state</span>, <span class="va">cm</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">r_eff</span><span class="op">(</span><span class="va">state</span>, <span class="va">parameters</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-r-">r0<a class="anchor" aria-label="anchor" href="#arg-r-"></a></dt>
-<dd><p>The basic reproduction number.</p></dd>
-
-
-<dt id="arg-state">state<a class="anchor" aria-label="anchor" href="#arg-state"></a></dt>
+<dl><dt id="arg-state">state<a class="anchor" aria-label="anchor" href="#arg-state"></a></dt>
 <dd><p>The ODE state variable. Must be an array.</p></dd>
 
 
-<dt id="arg-cm">cm<a class="anchor" aria-label="anchor" href="#arg-cm"></a></dt>
-<dd><p>The contact matrix.</p></dd>
+<dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
+<dd><p>A list of parameters passed to
+<code><a href="daedalus_rhs.html">daedalus_rhs()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
