@@ -24,7 +24,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.23</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.24</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/pandemic_costs.html">Evaluating the costs of pandemic scenarios</a></li>
+    <li><a class="dropdown-item" href="articles/parameter_uncertainty.html">Exploring uncertainty in pandemic costs due to parameter uncertainty</a></li>
     <li><a class="dropdown-item" href="articles/thresholded_response.html">Modelling threshold-dependent economic closures</a></li>
   </ul>
 </li>
@@ -48,7 +49,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/j-idea/daedalus/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/jameel-institute/daedalus/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-lightswitch">
@@ -73,29 +74,37 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of daedalus from <a href="https://github.com/" class="external-link">GitHub</a> using the <em>remotes</em> package.</p>
+<p>You can install the development version of daedalus from this repository using the <em>pak</em> package, or from the Jameel Institute R-universe.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"j-idea/daedalus"</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"jameel-institute/daedalus"</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># installation from R-universe</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
+<span>  <span class="st">"daedalus"</span>, </span>
+<span>  repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"https://jameel-institute.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
 <p>The model can be run for any country or territory in the <code>country_names</code> list by passing the country name to the function. This automatically pulls country-specific demographic and economic data, which is included in the package, into the model (see the <a href="https://jameel-institute.github.io/daedalus/articles/daedalus.html">‘Get started’ vignette</a> for more details).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/j-idea/daedalus" class="external-link">daedalus</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jameel-institute/daedalus" class="external-link">daedalus</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># run model for Canada</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"influenza_1918"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># get pandemic costs as a total in million dollars</span></span>
 <span><span class="fu"><a href="reference/get_costs.html">get_costs</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"total"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 490778</span></span>
+<span><span class="co">#&gt; [1] 1621184</span></span>
 <span></span>
 <span><span class="co"># disaggregate total for economic, education, and health costs</span></span>
 <span><span class="fu"><a href="reference/get_costs.html">get_costs</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"domain"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   economic  education life_years </span></span>
-<span><span class="co">#&gt;  32762.859   2438.326 455576.772</span></span></code></pre></div>
+<span><span class="co">#&gt;    economic   education  life_years </span></span>
+<span><span class="co">#&gt;   33680.950    2201.333 1585301.497</span></span></code></pre></div>
 <p>Users can select infection parameters from among seven epidemics caused by directly-transmitted viral respiratory pathogens, which are stored in the package as <code><a href="reference/epidemic_data.html">daedalus::infection_data</a></code>, with epidemic identifiers are stored as <code><a href="reference/epidemic_data.html">daedalus::epidemic_names</a></code>.</p>
 <p>Users can override default country contact data and epidemic-specific infection arguments by passing custom classes to <code><a href="reference/daedalus.html">daedalus()</a></code>; see the package website for more details.</p>
 <p>Users can also model the implementation of pandemic response measures: for more on this see the documentation for the main model function <code><a href="reference/daedalus.html">daedalus()</a></code>, and the vignette on modelling interventions on the package website.</p>
@@ -108,9 +117,9 @@
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references hanging-indent">
-<div id="ref-haw2022">
-<p>Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo Pianella, Robert Johnson, Sumali Bajaj, et al. 2022. “Optimizing Social and Economic Activity While Containing SARS-CoV-2 Transmission Using DAEDALUS.” <em>Nature Computational Science</em> 2 (4): 223–33. <a href="https://doi.org/10.1038/s43588-022-00233-0" class="external-link uri">https://doi.org/10.1038/s43588-022-00233-0</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-haw2022" class="csl-entry">
+Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo Pianella, Robert Johnson, Sumali Bajaj, et al. 2022. “Optimizing Social and Economic Activity While Containing SARS-CoV-2 Transmission Using DAEDALUS.” <em>Nature Computational Science</em> 2 (4): 223–33. <a href="https://doi.org/10.1038/s43588-022-00233-0" class="external-link uri">https://doi.org/10.1038/s43588-022-00233-0</a>.
 </div>
 </div>
 </div>
@@ -118,8 +127,8 @@
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/j-idea/daedalus/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/j-idea/daedalus/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/jameel-institute/daedalus/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/jameel-institute/daedalus/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
