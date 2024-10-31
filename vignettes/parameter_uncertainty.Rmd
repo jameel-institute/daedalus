@@ -12,6 +12,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+# set seed for local reproducibility
+set.seed(1)
 ```
 
 This vignette shows how to explore the effect of model parameter uncertainty on epidemic costs using _daedalus_.
@@ -52,10 +55,7 @@ sars_2004 <- daedalus_infection("sars_cov_1")
 sars_2004_r0 <- get_data(sars_2004, "r0")
 
 # draw samples from a normal distribution
-r0_samples <- withr::with_seed(
-  1,
-  rnorm(100, sars_2004_r0, sd = 0.1)
-)
+r0_samples <- rnorm(100, sars_2004_r0, sd = 0.1)
 ```
 
 ## Create infection objects
@@ -86,6 +86,8 @@ The model runs for 600 days or a little over 1.5 years.
 
 **Note that** running `daedalus()` iteratively may take some time, as the function checks the inputs and internally prepares parameters each time, as well as preparing the output data. Future package versions aim to streamline these steps and provide a stripped down version of the function optimised for scenario modelling for parameter fitting or with parameter uncertainty.
 
+Users can run the model iteratively over the $R_0$ samples in parallel using frameworks such as [the _furrr_ package](https://cran.r-project.org/package=furrr).
+
 ```{r uncertainty_run_model}
 # run daedalus()
 output_list <- lapply(
@@ -107,7 +109,9 @@ costs <- vapply(
 
 We can plot the total costs to view the distribution using the [_ggdist_ package](https://cran.r-project.org/package=ggdist) to visualise the distribution.
 
-```{r plot_total_costs_dist, echo=FALSE}
+```{r plot_total_costs_dist}
+# Use {ggplot2} to visualise the output
+# `stat_histinterval()` is from {ggdist}
 ggplot() +
   stat_histinterval(
     aes(costs),

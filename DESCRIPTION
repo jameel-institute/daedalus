@@ -43,8 +43,7 @@ Suggests:
     rmarkdown,
     scales,
     spelling,
-    testthat (>= 3.0.0),
-    withr
+    testthat (>= 3.0.0)
 VignetteBuilder: 
     knitr
 Config/Needs/website: jameel-institute/jameelinst.rpkg.theme
