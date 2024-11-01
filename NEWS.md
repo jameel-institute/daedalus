@@ -1,3 +1,7 @@
+# daedalus 0.1.0
+
+This is a minor version release of {daedalus} for use in the IDM conference in 2024.
+
 # daedalus 0.0.24
 
 This patch version adds a vignette on exploring the effect of parameter uncertainty on overall pandemic costs, and updates other vignettes and improves documentation.
