@@ -1,0 +1,129 @@
+---
+title: "Comparing response strategies under uncertainty and valuations"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Comparing response strategies under uncertainty and valuations}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+# set seed for local reproducibility
+set.seed(1)
+```
+
+This vignette explores how decision-makers could compare different pandemic response strategies under parameter uncertainty and differing life-year valuations, using the _daedalus_ model.
+
+As an example, we focus on the outbreak of a novel covid-like outbreak in Thailand and we consider the uncertainty in community contact rates (see also the vignette on disease parameter uncertainty).
+
+```{r setup}
+# load {daedalus} and helper packages
+library(daedalus)
+library(data.table)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+```
+
+## General approach
+
+The general approach is:
+
+- Create multiple `<daedalus_country>` objects with distinct values of contact_matrix;
+
+- Run `daedalus()` on each distinct `<daedalus_country>` object, comparing costs under two different response strategies;
+
+- Compare the breakdown of costs in terms of life-year, economic and educational components;
+
+- Analyse how costs changes with different life-year valuations and their impact on strategy choice.
+
+## Introducing uncertainty in contact rates
+
+To introduce uncertainty in contact rates, we randomly sample contact matrices from other countries in the package and store these in country objects.
+
+```{r get_contact_matrices}
+#draw 100 random integers between 1 and the number of countries in the package
+rand_ind <- sample(1:length(country_names), 100, replace = TRUE)
+
+#create a list of the contact matrices associated with these random integers: index 3 of daedalus_country is the contact matrix 
+rand_mat <- lapply(rand_ind, function(ind) {country <- country_names[ind]
+                                            daedalus_country(country)[[3]]})
+
+#create a list of daedalus_country objects using Thai data and the randomly selected contact matrices
+country_list <- lapply(rand_mat, function(x) daedalus_country("Thailand",  parameters = list(contact_matrix = x)))
+
+#view a country object
+country_list[[1]]
+```
+
+## Run DAEDALUS model for each country object undery two response strategies
+
+As an example, we run the model for no closures and economic closure response strategies, for a covid like outbreak assuming no prior vaccine investment. 
+
+**Note that** running `daedalus()` iteratively may take some time, as the function checks the inputs and internally prepares parameters each time, as well as preparing the output data. Future package versions aim to streamline these steps and provide a stripped down version of the function optimised for scenario modelling for parameter fitting or with parameter uncertainty.
+
+Users can run the model iteratively over the country samples in parallel using frameworks such as [the _furrr_ package](https://cran.r-project.org/package=furrr).
+
+```{r country_uncertainty_run_model}
+# run daedalus() for no clousure and economic closure strategies
+output_list_none_closure <- lapply(country_list, daedalus, infection = "sars_cov_2_pre_alpha", 
+                                   response_strategy = "none")
+output_list_econ_closure <- lapply(country_list, daedalus, infection = "sars_cov_2_pre_alpha", 
+                                   response_strategy = "economic_closures")
+```
+
+We can then extract and plot the total losses under each strategy.
+
+```{r extract_plot_cost}
+#extract the costs under each strategy across all three domains
+costs_none_closure <- vapply(output_list_none_closure, get_costs, numeric(3), "domain")
+costs_econ_closure <- vapply(output_list_econ_closure, get_costs, numeric(3), "domain")
+
+#store as a dataframe
+costs_none_closure <- data.frame(t(costs_none_closure)) %>% mutate(sample = row_number(), response_strategy = "none")
+costs_econ_closure <- data.frame(t(costs_econ_closure)) %>% mutate(sample = row_number(), response_strategy = "economic_closures")
+costs              <- bind_rows(costs_none_closure, costs_econ_closure)
+
+#make violin plots of the total cost under each strategy
+ggplot(data = costs, aes(x = response_strategy, y = economic + education + life_years, fill = response_strategy)) + geom_violin()
+```
+
+## Comparing cost dimensions/domains
+
+Response strategies should not just be compared in terms of total losses, but also the loss in each dimension (life years, economic losses and educational losses). There may be a trade-off between e.g. life year losses and economic losses when comparing two strategies.
+
+Here, we make scatter plots of the life-year losses vs. the economic and educational losses under each strategy.
+
+``` {r domain_scatter_plots}
+#first calculate the mean life-year and mean economic and educational losses for each strategy
+means <- costs %>% group_by(response_strategy) %>% summarize(mean_x = mean(life_years), mean_y = mean(economic + education))
+
+#make a scatter plot of the losses
+ggplot(data = costs, aes(x = life_years, y = economic + education, colour = response_strategy)) + geom_point() +   
+geom_point(data = means, aes(x = mean_x, y = mean_y, fill = response_strategy), colour = "black", shape = 21, size = 4)
+```
+
+##Changing life-year valuations
+
+Decision-makers may have different preferences and different willingness-to-pay to avert the loss of a life-year. Here, we change the life-year valuations used in the model to see how that affects strategy choice.
+
+``` {r ceac_plot}
+#first we consider a range of multipliers for the value of a life year and we identify the loss-minimising strategy for each
+props <- costs %>% crossing(vsl = seq(0, 200, by = 2)) %>% 
+         mutate(life_years = life_years*vsl) %>%
+         group_by(vsl, sample) %>% 
+         summarise(min_strat = response_strategy[which.min(life_years + economic + education)], .groups = "drop") %>%
+         group_by(vsl) %>%
+         count(min_strat) %>% mutate(proportion = n / sum(n)) %>% ungroup()
+
+#then we can make a plot of the probability each strategy is loss-minimising for different valuations
+ggplot(data = props, aes(x = vsl, y = proportion, fill = min_strat)) + geom_area()
+
+```
+
