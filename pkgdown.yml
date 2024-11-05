@@ -5,8 +5,9 @@ articles:
   daedalus: daedalus.html
   pandemic_costs: pandemic_costs.html
   parameter_uncertainty: parameter_uncertainty.html
+  strategy_comparison: strategy_comparison.html
   thresholded_response: thresholded_response.html
-last_built: 2024-11-01T11:50Z
+last_built: 2024-11-05T06:22Z
 urls:
   reference: https://jameel-institute.github.io/daedalus/reference
   article: https://jameel-institute.github.io/daedalus/articles
