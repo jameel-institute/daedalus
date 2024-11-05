@@ -8,7 +8,7 @@ message: 'To cite package "daedalus" in publications use:'
 type: software
 license: MIT
 title: 'daedalus: Model health, social, and economic costs of a pandemic using DAEDALUS'
-version: 0.0.20
+version: 0.1.0
 abstract: Model the health, education, and economic costs of directly transmitted
   respiratory virus pandemics, under different scenarios of prior vaccine investment
   and reactive interventions, using the _DAEDALUS_ integrated health-economics model
@@ -34,7 +34,7 @@ authors:
 - family-names: Hauck
   given-names: Katharina
   orcid: https://orcid.org/0000-0003-3138-4169
-repository-code: https://github.com/j-idea/daedalus
+repository-code: https://github.com/jameel-institute/daedalus
 url: https://jameel-institute.github.io/daedalus/
 contact:
 - family-names: Gupte
@@ -167,6 +167,43 @@ references:
   year: '2024'
   doi: 10.32614/CRAN.package.countrycode
 - type: software
+  title: dplyr
+  abstract: 'dplyr: A Grammar of Data Manipulation'
+  notes: Suggests
+  url: https://dplyr.tidyverse.org
+  repository: https://CRAN.R-project.org/package=dplyr
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+    orcid: https://orcid.org/0000-0003-4757-117X
+  - family-names: François
+    given-names: Romain
+    orcid: https://orcid.org/0000-0002-2444-4226
+  - family-names: Henry
+    given-names: Lionel
+  - family-names: Müller
+    given-names: Kirill
+    orcid: https://orcid.org/0000-0002-1416-3412
+  - family-names: Vaughan
+    given-names: Davis
+    email: davis@posit.co
+    orcid: https://orcid.org/0000-0003-4777-038X
+  year: '2024'
+  doi: 10.32614/CRAN.package.dplyr
+- type: software
+  title: ggdist
+  abstract: 'ggdist: Visualizations of Distributions and Uncertainty'
+  notes: Suggests
+  url: https://mjskay.github.io/ggdist/
+  repository: https://CRAN.R-project.org/package=ggdist
+  authors:
+  - family-names: Kay
+    given-names: Matthew
+    email: mjskay@northwestern.edu
+  year: '2024'
+  doi: 10.32614/CRAN.package.ggdist
+- type: software
   title: ggplot2
   abstract: 'ggplot2: Create Elegant Data Visualisations Using the Grammar of Graphics'
   notes: Suggests
@@ -264,6 +301,24 @@ references:
   year: '2024'
   doi: 10.32614/CRAN.package.rmarkdown
 - type: software
+  title: scales
+  abstract: 'scales: Scale Functions for Visualization'
+  notes: Suggests
+  url: https://scales.r-lib.org
+  repository: https://CRAN.R-project.org/package=scales
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  - family-names: Pedersen
+    given-names: Thomas Lin
+    email: thomas.pedersen@posit.co
+    orcid: https://orcid.org/0000-0002-5147-4711
+  - family-names: Seidel
+    given-names: Dana
+  year: '2024'
+  doi: 10.32614/CRAN.package.scales
+- type: software
   title: spelling
   abstract: 'spelling: Tools for Spell Checking in R'
   notes: Suggests
@@ -292,4 +347,21 @@ references:
   year: '2024'
   doi: 10.32614/CRAN.package.testthat
   version: '>= 3.0.0'
+- type: software
+  title: tidyr
+  abstract: 'tidyr: Tidy Messy Data'
+  notes: Suggests
+  url: https://tidyr.tidyverse.org
+  repository: https://CRAN.R-project.org/package=tidyr
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  - family-names: Vaughan
+    given-names: Davis
+    email: davis@posit.co
+  - family-names: Girlich
+    given-names: Maximilian
+  year: '2024'
+  doi: 10.32614/CRAN.package.tidyr
 
