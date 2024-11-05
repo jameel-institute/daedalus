@@ -44,7 +44,8 @@ Suggests:
     rmarkdown,
     scales,
     spelling,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    tidyr
 VignetteBuilder: 
     knitr
 Config/Needs/website: jameel-institute/jameelinst.rpkg.theme
