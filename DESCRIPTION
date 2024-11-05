@@ -37,6 +37,7 @@ Imports:
     rlang
 Suggests:
     countrycode,
+    dplyr,
     ggdist,
     ggplot2,
     knitr,
