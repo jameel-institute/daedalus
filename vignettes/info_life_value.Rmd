@@ -1,8 +1,8 @@
 ---
-title: "Value of a statistical life"
+title: "Value of life-years lost"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Value of a statistical life}
+  %\VignetteIndexEntry{Value of life-years lost}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,7 +14,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette explains how the value of a statistical life (VSL, also referred to hereafter as 'life-value') is calculated in _daedalus_.
+This vignette explains how the value of lives lost due to infection in a pandemic scenario is calculated in _daedalus_.
+
+The main focus is on explaining how the value of a statistical life (VSL, also referred to hereafter as 'life-value') is calculated in _daedalus_.
+The VSL is multiplied by the number of deaths to get the total value of life-years lost due to the pandemic.
 
 The methodology used here has been chosen so as to be generalisable for the widest possible range of countries and territories, while using publicly available data.
 
@@ -70,3 +73,13 @@ get_data(x, "vsl")
 
 x$vsl
 ```
+
+## Value of lives lost
+
+In a `daedalus()` scenario, the total value of lives lost is the sum of the products of the country- and age-specific VSL and the number of deaths in each age-group in that country:
+
+$$\Sigma_{i = 1}^{N} \text{VSL}_{c_i} \times D_i$$
+
+where $D_i$ is the total number of deaths in age group $i$, with $i \in 1, 2, 3, 4$ (as detailed above).
+
+For users' convenience, the total value of lives lost is reported in million dollars, to bring it in line with the scaling used for other pandemic costs.
