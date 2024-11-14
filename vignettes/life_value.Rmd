@@ -1,0 +1,72 @@
+---
+title: "Value of a statistical life"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Value of a statistical life}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette explains how the value of a statistical life (VSL, also referred to hereafter as 'life-value') is calculated in _daedalus_.
+
+The methodology used here has been chosen so as to be generalisable for the widest possible range of countries and territories, while using publicly available data.
+
+This approach balances the ability to run _daedalus_ scenarios for a large number of countries, and the effort required to obtain and update official life-values from national governments.
+
+::: {.alert .alert-info}
+**Note that** the VSL values used in a call to `daedalus()` for any country can always be substituted with values considered to be more appropriate (e.g., from a national health ministry).
+:::
+
+## Value of a life year
+
+The value of a life year (VLY) in a country is assumed to be the gross national income (GNI) per capita scaled for purchasing power parity in international dollars.
+
+Country GNI values are for the most recent year available, and are taken from the [World Bank's World Development Indicators](https://databank.worldbank.org/source/world-development-indicators).
+
+::: {.alert .alert-info}
+**Note that** there is no discounting applied to older age groups, that is, all remaining years of life are valued the same, and are not adjusted for disabilities or quality.
+:::
+
+## Life expectancy
+
+Life-expectancy data in terms of years for each country and territory is initially accessed for age-bins and separated by sex.
+
+The life-expectancy data is then aggregated by the DAEDALUS age bins: 0 -- 4, 5 -- 19 (school age), 20 -- 65 (working age), 65+ (retired or not working).
+
+::: {.alert .alert-warning}
+**Note that** the aggregation of is a simple mean across all age-bins in the raw data; a more appropriate approach which we aim to add in future would be a weighted mean that takes into account the size of each age-bin in the raw data.
+:::
+
+This results in four life-expectancy values for each country, each corresponding to one of the four DAEDALUS age groups.
+
+## Value of a statistical life
+
+The value of a statistical life for an individual of country $c$ in age group $i$ denoted as $\text{VSL}_{c_i}$ is the product of the country-specific VLY ($\text{VLY}_{c}$) and the country- and age-specific life expectancy ($T_{c_i}$), and depends on the country and age-group of the individual; this can be expressed as:
+
+$$\text{VSL}_{c_i} = \text{VLY}_c \times T_{c_i}$$
+
+Essentially, the VSL lost due to a death is the country-specific GNI per capita that would have been contributed by the individual over their remaining years of life.
+
+In _daedalus_, the country- and age-specifc VSL values can be accessed from the package data object `daedalus::life_value`.
+These values are also automatically accessed and included when a `<daedalus_country>` object is created, under the name `vsl`.
+
+```{r vsl_example}
+# load library for examples
+library(daedalus)
+
+# create a <daedalus_country>
+x <- daedalus_country("China")
+
+# access VSL values using either a helper function or
+# the subsetting operator
+get_data(x, "vsl")
+
+x$vsl
+```
