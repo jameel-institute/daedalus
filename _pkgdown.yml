@@ -2,6 +2,21 @@ url: https://jameel-institute.github.io/daedalus/
 template:
   bootstrap: 5
   package: jameelinst.rpkg.theme
+# NOTE: development mode is off, consider enabling after next minor version
+
+articles:
+- title: Package vignettes and user guides
+  navbar: Package vignettes and user guides
+  contents:
+  - thresholded_response
+  - pandemic_costs
+  - parameter_uncertainty
+  - strategy_comparison
+- title: "Model details: Calculating pandemic costs"
+  navbar: "Model details: Calculating pandemic costs"
+  contents:
+  - info_life_value
+  - info_edu_value
 
 reference:
   - title: Model function
