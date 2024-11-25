@@ -1,6 +1,8 @@
 ---
 title: "Value of life-years lost"
 output: rmarkdown::html_vignette
+bibliography: resources/references.json
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Value of life-years lost}
   %\VignetteEngine{knitr::rmarkdown}
@@ -51,11 +53,16 @@ This results in four life-expectancy values for each country, each corresponding
 
 ## Value of a statistical life
 
+::: {.alert .alert-info}
+Many policies aim to improve longevity, decreasing the risk of death in each year.
+The value of these risk reductions is often expressed as the value per statistical life (VSL); at times a value per statistical life year (VSLY) may be used.
+
+The VSL concept is widely misunderstood. It is not the value that the analyst, the government, or the individual places on saving an identified life with certainty. Instead, it reflects individuals' willingness to exchange money for a small change in their own risk, such as a 1 in 10,000 decrease in the chance of dying in a specific year [@robinson2019].
+:::
+
 The value of a statistical life for an individual of country $c$ in age group $i$ denoted as $\text{VSL}_{c_i}$ is the product of the country-specific VLY ($\text{VLY}_{c}$) and the country- and age-specific life expectancy ($T_{c_i}$), and depends on the country and age-group of the individual; this can be expressed as:
 
 $$\text{VSL}_{c_i} = \text{VLY}_c \times T_{c_i}$$
-
-Essentially, the VSL lost due to a death is the country-specific GNI per capita that would have been contributed by the individual over their remaining years of life.
 
 In _daedalus_, the country- and age-specifc VSL values can be accessed from the package data object `daedalus::life_value`.
 These values are also automatically accessed and included when a `<daedalus_country>` object is created, under the name `vsl`.
@@ -83,3 +90,5 @@ $$\Sigma_{i = 1}^{N} \text{VSL}_{c_i} \times D_i$$
 where $D_i$ is the total number of deaths in age group $i$, with $i \in 1, 2, 3, 4$ (as detailed above).
 
 For users' convenience, the total value of lives lost is reported in million dollars, to bring it in line with the scaling used for other pandemic costs.
+
+## References
