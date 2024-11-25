@@ -3,11 +3,13 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   daedalus: daedalus.html
+  info_edu_value: info_edu_value.html
+  info_life_value: info_life_value.html
   pandemic_costs: pandemic_costs.html
   parameter_uncertainty: parameter_uncertainty.html
   strategy_comparison: strategy_comparison.html
   thresholded_response: thresholded_response.html
-last_built: 2024-11-11T11:27Z
+last_built: 2024-11-25T12:55Z
 urls:
   reference: https://jameel-institute.github.io/daedalus/reference
   article: https://jameel-institute.github.io/daedalus/articles
