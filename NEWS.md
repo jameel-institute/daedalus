@@ -14,6 +14,8 @@ This patch version makes changes to how vaccine groups are modelled in {daedalus
 
 6. Reduced use of {rlang} for environment access and modification.
 
+7. Updates GitHub Actions workflows to cancel concurrent runs.
+
 # daedalus 0.1.0
 
 This is a minor version release of {daedalus} for use in the IDM conference in 2024.
