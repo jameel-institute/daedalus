@@ -16,10 +16,7 @@ test_that("daedalus: basic expectations", {
 
   # as non-working groups do not have data per sector
   expected_rows <- time_end * N_MODEL_COMPARTMENTS *
-    (N_AGE_GROUPS + N_ECON_SECTORS) * N_VACCINE_STRATA
-  # add new vaccinations which only occur in two epi compartments, S and R
-  expected_rows <- expected_rows +
-    (time_end * 2L * (N_AGE_GROUPS + N_ECON_SECTORS))
+    (N_AGE_GROUPS + N_ECON_SECTORS)
 
   expect_identical(
     nrow(data),
@@ -29,7 +26,7 @@ test_that("daedalus: basic expectations", {
     data,
     c(
       "time", "age_group", "compartment", "econ_sector",
-      "vaccine_group", "value"
+      "value"
     ),
     ignore.order = TRUE
   )
@@ -47,9 +44,6 @@ test_that("daedalus: basic expectations", {
     data[["econ_sector"]], "character"
   )
   expect_type(
-    data[["vaccine_group"]], "character"
-  )
-  expect_type(
     data[["value"]], "double"
   )
 
@@ -59,13 +53,11 @@ test_that("daedalus: basic expectations", {
   expect_identical(
     sum(
       data[data$time == max(data$time) &
-        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS] &
-        data$vaccine_group != "new_vaccinations", ]$value
+        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], ]$value
     ),
     sum(
       data[data$time == min(data$time) &
-        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS] &
-        data$vaccine_group != "new_vaccinations", ]$value
+        data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS], ]$value
     ),
     tolerance = 1e-12
   )
@@ -134,7 +126,7 @@ test_that("daedalus: statistical correctness", {
   output <- daedalus("Canada", "influenza_1918")
   data <- get_data(output)
   # tests on single compartment without workers
-  data <- data[data$age_group == "65+" & data$vaccine_group == "unvaccinated", ]
+  data <- data[data$age_group == "65+", ]
 
   # expectations when immunity wanes allowing R -> S
   # no elegant way of programmatically accessing idx
@@ -156,29 +148,32 @@ test_that("daedalus: statistical correctness", {
   # expectations when immunity does not wane
   # - monotonically decreasing susceptibles
   # - monotonically increasing recovered and deaths
+  # NOTE: vaccinated group wanes directly into susceptible and out of S, R
+  # which breaks monotonicity; needs vax rate `nu = 0.0`
   output <- daedalus(
-    "Canada", daedalus_infection("influenza_1918", rho = 0.0)
+    "Canada", daedalus_infection("influenza_1918", rho = 0.0),
+    vaccine_investment = daedalus_vaccination(
+      "low",
+      nu = 0.0
+    )
   )
   data <- get_data(output)
   data <- data[data$age_group == "65+", ]
 
-  susceptibles <- data[data$compartment == "susceptible" &
-    data$vaccine_group != "new_vaccinations", ]
+  susceptibles <- data[data$compartment == "susceptible", ]
   susceptibles <- tapply(susceptibles$value, susceptibles$time, sum)
   expect_lte(
     max(diff(susceptibles)), 1e-6 # allowing small positive diff
   )
 
   # NOTE: allow very small negative values
-  recovered <- data[data$compartment == "recovered" &
-    data$vaccine_group != "new_vaccinations", ]
+  recovered <- data[data$compartment == "recovered", ]
   recovered <- tapply(recovered$value, recovered$time, sum)
   expect_gte(
     min(diff(recovered)), -1e-6
   )
 
-  deaths <- data[data$compartment == "dead" &
-    data$vaccine_group == "unvaccinated", ]$value
+  deaths <- data[data$compartment == "dead", ]$value
   expect_gte(
     min(diff(deaths)), 0.0
   )
