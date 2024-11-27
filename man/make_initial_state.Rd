@@ -4,7 +4,7 @@
 \alias{make_initial_state}
 \title{Generate a default initial state for DAEDALUS}
 \usage{
-make_initial_state(country, initial_state_manual)
+make_initial_state(country, initial_state_manual = list())
 }
 \arguments{
 \item{country}{A country or territory object of class \verb{<daedalus_country>},

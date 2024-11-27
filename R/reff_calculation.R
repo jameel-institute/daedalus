@@ -19,8 +19,8 @@
 #' @keywords internal
 r_eff <- function(state, parameters) {
   # get number of susceptibles
-  susceptibles <- state[, i_S, i_UNVACCINATED_STRATUM] +
-    0.5 * state[, i_S, i_VACCINATED_STRATUM] # reduced for vaccinated
+  susceptibles <- state[, i_S] +
+    0.5 * state[, i_V] # reduced for vaccinated
   susceptibles[i_WORKING_AGE] <- susceptibles[i_WORKING_AGE] +
     sum(susceptibles[i_ECON_SECTORS])
   susceptibles <- susceptibles[i_AGE_GROUPS]
@@ -138,5 +138,5 @@ get_beta <- function(infection, country) {
 get_hospitalisations <- function(state) {
   # NOTE: assumes state is a 4D array; not checked as this is internal
   # remove the new vaccinations stratum from sum
-  sum(state[, i_H, -i_NEW_VAX_STRATUM])
+  sum(state[, i_H])
 }
