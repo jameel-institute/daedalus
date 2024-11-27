@@ -1,3 +1,19 @@
+# daedalus 0.1.1
+
+This patch version makes changes to how vaccine groups are modelled in {daedalus}. The model trades explicit tracking of infection pathways of different vaccine groups for a gain in performance.
+
+1. Vaccine groups now share a single infection pathway, cutting the number of model compartments to 539 (49 age and economic groups $\times$ 11 epi and data compartments) from 1323. This improves performance in most cases by about 3x.
+
+2. The state variable adds two compartments, one for vaccinated individuals who have a lower susceptibility to infection ($\tau \beta$; $\tau = 0.5$), and one for the number of new vaccinations per timestep.
+
+3. Individuals in both susceptible and recovered compartments are considered eligible for vaccination. Vaccinated individuals transition at the rate $\psi$ into the susceptible compartment, but not into the recovered compartment. The vaccine-derived protection and waning dynamics need more work to ensure they have realistic transition rates, and/or to make transition rates independent and flexible.
+
+4. The helper functions `values_to_state()`, `r_eff()`, `get_hospitalisations()`, `make_initial_state()`, `prepare_output()`, and `get_daily_vaccinations()` have been updated to reflect the reduced state size.
+
+5. Tests have been updated to reflect reduced state size.
+
+6. Reduced use of {rlang} for environment access and modification.
+
 # daedalus 0.1.0
 
 This is a minor version release of {daedalus} for use in the IDM conference in 2024.
