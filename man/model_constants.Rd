@@ -5,8 +5,6 @@
 \alias{model_constants}
 \alias{N_AGE_GROUPS}
 \alias{i_AGE_GROUPS}
-\alias{N_VACCINE_STRATA}
-\alias{N_VACCINE_DATA_GROUPS}
 \alias{AGE_GROUPS}
 \alias{i_WORKING_AGE}
 \alias{i_SCHOOL_AGE}
@@ -19,20 +17,12 @@
 \alias{DIM_EPI_COMPARTMENTS}
 \alias{DIM_ECON_SECTORS}
 \alias{DIM_VACCINE_STRATA}
-\alias{i_UNVACCINATED_STRATUM}
-\alias{i_VACCINATED_STRATUM}
-\alias{i_NEW_VAX_STRATUM}
-\alias{VACCINE_GROUPS}
 \alias{N_OUTPUT_COLS}
 \title{DAEDALUS model constants}
 \format{
 An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 4.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
 
 An object of class \code{character} of length 4.
 
@@ -59,23 +49,11 @@ An object of class \code{integer} of length 1.
 An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{character} of length 3.
-
-An object of class \code{integer} of length 1.
 }
 \usage{
 N_AGE_GROUPS
 
 i_AGE_GROUPS
-
-N_VACCINE_STRATA
-
-N_VACCINE_DATA_GROUPS
 
 AGE_GROUPS
 
@@ -100,14 +78,6 @@ DIM_EPI_COMPARTMENTS
 DIM_ECON_SECTORS
 
 DIM_VACCINE_STRATA
-
-i_UNVACCINATED_STRATUM
-
-i_VACCINATED_STRATUM
-
-i_NEW_VAX_STRATUM
-
-VACCINE_GROUPS
 
 N_OUTPUT_COLS
 }
@@ -139,5 +109,4 @@ working age individuals.
 \item Indices and numbers of key groups.
 }
 }
-\keyword{datasets}
 \keyword{model_constant}

@@ -36,9 +36,7 @@ provides the number of daily vaccinations.}
 \item{groups}{An optional character vector of grouping variables that
 correspond to model strata. Defaults to \code{NULL} which gives incidence across
 the whole population. Allowed groups correspond to modelled strata:
-\code{"age_group"}, \code{"vaccine_group"}, and \code{"econ_sector"}.
-
-\code{get_daily_vaccinations()} only accepts "\code{age_group}" and \code{"econ_sector"}.}
+\code{"age_group"} and \code{"econ_sector"}.}
 }
 \value{
 A \verb{<data.frame>} in long format, with one entry per

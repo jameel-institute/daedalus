@@ -21,9 +21,7 @@
 #' @param groups An optional character vector of grouping variables that
 #' correspond to model strata. Defaults to `NULL` which gives incidence across
 #' the whole population. Allowed groups correspond to modelled strata:
-#' `"age_group"`, `"vaccine_group"`, and `"econ_sector"`.
-#'
-#' `get_daily_vaccinations()` only accepts "`age_group`" and `"econ_sector"`.
+#' `"age_group"` and `"econ_sector"`.
 #'
 #' @return A `<data.frame>` in long format, with one entry per
 #' model timestep, measure, and group chosen.
@@ -221,12 +219,8 @@ get_new_vaccinations <- function(data, groups = NULL) {
     data <- get_data(data)
   }
 
-  # NOTE: allowed groups are different from SUMMARY_GROUPS as `vaccine_group`
-  # is not allowed
-  allowed_groups <- setdiff(SUMMARY_GROUPS, "vaccine_group")
-
   is_good_groups <- checkmate::test_subset(
-    groups, allowed_groups
+    groups, SUMMARY_GROUPS
   )
   if (!is_good_groups) {
     cli::cli_abort(
@@ -238,7 +232,7 @@ get_new_vaccinations <- function(data, groups = NULL) {
     )
   }
 
-  dt_new <- data[data$vaccine_group == "new_vaccinations", ]
+  dt_new <- data[data$compartment == "new_vax", ]
   data.table::setDT(dt_new)
 
   dt_new <- dt_new[, list(value = sum(value)), by = c("time", groups)]

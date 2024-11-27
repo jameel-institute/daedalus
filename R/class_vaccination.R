@@ -282,9 +282,9 @@ scale_nu <- function(state, nu, uptake_limit) {
   # NOTE: state must be a 4D array with only vaccinated and unvaccinated layers
   # in dim 4
   total <- sum(
-    state[, i_EPI_COMPARTMENTS, c(i_VACCINATED_STRATUM, i_UNVACCINATED_STRATUM)]
+    state[, i_EPI_COMPARTMENTS]
   )
-  total_vaccinated <- sum(state[, i_EPI_COMPARTMENTS, i_VACCINATED_STRATUM])
+  total_vaccinated <- sum(state[, i_V])
   prop_vaccinated <- total_vaccinated / total
 
   # NOTE: simplified scaling works only for uniform rates and start times

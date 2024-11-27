@@ -21,21 +21,16 @@ make_response_threshold_event <- function(response_threshold) {
     rt <- r_eff(state, parameters)
 
     # NOTE: to ensure only first hosp threshold crossing is logged
-    is_hosp_switch_on <- rlang::env_get(parameters[["mutables"]], "hosp_switch")
+    is_hosp_switch_on <- parameters[["mutables"]]$hosp_switch
 
     if (time != parameters[["min_time"]] && !is_hosp_switch_on) {
-      rlang::env_poke(
-        parameters[["mutables"]], "hosp_switch", TRUE
-      )
+      parameters[["mutables"]]$hosp_switch <- TRUE
 
       # NOTE: trigger response and log closure start time only if
       # epidemic is growing
       if (rt >= 1.0) {
-        rlang::env_bind(
-          parameters[["mutables"]],
-          switch = TRUE,
-          closure_time_start = time
-        )
+        parameters[["mutables"]]$switch <- TRUE
+        parameters[["mutables"]]$closure_time_start <- time
       }
     }
     as.numeric(state)
@@ -62,14 +57,11 @@ make_rt_end_event <- function() {
 
   event_function <- function(time, state, parameters) {
     # NOTE: log the FIRST time Rt < 1.0 as closure time end
-    is_switch_on <- rlang::env_get(parameters[["mutables"]], "switch")
+    is_switch_on <- parameters[["mutables"]]$switch
     # prevent flipping switch when checkEventFunc runs
     if (time != parameters[["min_time"]] && is_switch_on) {
-      rlang::env_bind(
-        parameters[["mutables"]],
-        switch = FALSE,
-        closure_time_end = time
-      )
+      parameters[["mutables"]]$switch <- FALSE
+      parameters[["mutables"]]$closure_time_end <- time
     }
 
     # switch execess mortality on or off independent of closure status
@@ -79,13 +71,9 @@ make_rt_end_event <- function() {
       total_hosp <- get_hospitalisations(state)
 
       if (total_hosp > parameters[["hospital_capacity"]]) {
-        rlang::env_poke(
-          parameters[["mutables"]], "hosp_switch", TRUE
-        )
+        parameters[["mutables"]]$hosp_switch <- TRUE
       } else {
-        rlang::env_poke(
-          parameters[["mutables"]], "hosp_switch", FALSE
-        )
+        parameters[["mutables"]]$hosp_switch <- FALSE
       }
     }
 

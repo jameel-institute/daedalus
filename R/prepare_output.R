@@ -25,7 +25,6 @@ prepare_output <- function(output) {
     COMPARTMENTS,
     each = (N_AGE_GROUPS + N_ECON_SECTORS) * n_times
   )
-  compartment_labels <- rep(compartment_labels, N_VACCINE_DATA_GROUPS)
 
   # economic sector labels including non-working
   econ_sectors <- sprintf("sector_%02i", seq.int(N_ECON_SECTORS))
@@ -34,7 +33,7 @@ prepare_output <- function(output) {
     each = n_times
   )
   econ_labels <- rep(
-    econ_labels, N_MODEL_COMPARTMENTS * N_VACCINE_DATA_GROUPS
+    econ_labels, N_MODEL_COMPARTMENTS
   )
 
   # age group labels
@@ -42,12 +41,8 @@ prepare_output <- function(output) {
     c(AGE_GROUPS, rep(AGE_GROUPS[i_WORKING_AGE], N_ECON_SECTORS)),
     each = n_times
   )
-  age_labels <- rep(age_labels, N_MODEL_COMPARTMENTS * N_VACCINE_DATA_GROUPS)
-
-  # vaccine group labels
-  vaccine_labels <- rep(
-    VACCINE_GROUPS,
-    each = (N_AGE_GROUPS + N_ECON_SECTORS) * N_MODEL_COMPARTMENTS * n_times
+  age_labels <- rep(
+    age_labels, N_MODEL_COMPARTMENTS #* N_VACCINE_DATA_GROUPS
   )
 
   # make data.frame, then data.table, pivot longer and assign labels
@@ -55,21 +50,14 @@ prepare_output <- function(output) {
   data.table::setDT(data)
   data <- data.table::melt(data, id.vars = "time")
   data[, c(
-    "age_group", "econ_sector", "vaccine_group",
-    "compartment"
+    "age_group", "econ_sector", "compartment"
   ) := list(
-    age_labels, econ_labels, vaccine_labels,
-    compartment_labels
+    age_labels, econ_labels, compartment_labels
   )]
   data$variable <- NULL
 
   # reset to DF and return data
   data.table::setDF(data)
 
-  # new vaccinations only in susceptible and recovered epi compartments
-  data <- data[
-    !(data$vaccine_group == "new_vaccinations" &
-      !data$compartment %in% c("susceptible", "recovered")),
-  ]
   data
 }

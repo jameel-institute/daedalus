@@ -15,7 +15,7 @@
 #' @keywords internal
 make_initial_state <- function(
     country,
-    initial_state_manual) {
+    initial_state_manual = list()) {
   # NOTE: country checked in daedalus()
   initial_infect_state <- list(
     p_infectious = 1e-6,
@@ -53,8 +53,8 @@ make_initial_state <- function(
     S = 1.0 - p_infectious, E = 0.0,
     Is = p_infectious * (1.0 - p_asymptomatic),
     Ia = p_infectious * p_asymptomatic,
-    H = 0.0, R = 0.0, D = 0.0,
-    dE = 0.0, dH = 0.0
+    H = 0.0, R = 0.0, D = 0.0, V = 0.0,
+    dE = 0.0, dH = 0.0, dV = 0.0
   )
 
   # build for all age groups and economic sectors (working age only)
@@ -77,12 +77,6 @@ make_initial_state <- function(
 
   initial_state[(N_AGE_GROUPS + 1):nrow(initial_state), ] <-
     initial_state[(N_AGE_GROUPS + 1):nrow(initial_state), ] * sector_workforce
-
-  # add strata for vaccination groups and set to zero
-  initial_state <- array(
-    initial_state, c(dim(initial_state), N_VACCINE_DATA_GROUPS)
-  )
-  initial_state[, , -i_UNVACCINATED_STRATUM] <- 0
 
   initial_state
 }
@@ -148,7 +142,7 @@ get_closure_info <- function(mutables) {
 #' @keywords internal
 values_to_state <- function(x) {
   dim(x) <- c(
-    N_AGE_GROUPS + N_ECON_SECTORS, N_MODEL_COMPARTMENTS, N_VACCINE_DATA_GROUPS
+    N_AGE_GROUPS + N_ECON_SECTORS, N_MODEL_COMPARTMENTS
   )
 
   x
