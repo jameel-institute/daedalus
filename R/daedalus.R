@@ -219,7 +219,7 @@ daedalus <- function(country,
     list(
       hospital_capacity = response_threshold, # to increase HFR if crossed
       psi = 1 / 270,
-      tau = c(1.0, 0.5),
+      tau = 0.5,
       beta = get_beta(infection, country),
       openness = openness,
       mutables = mutables,
@@ -250,19 +250,16 @@ daedalus <- function(country,
   )
 
   # set switch parameter and log closure start time if not 0.0/FALSE
-  rlang::env_poke(parameters[["mutables"]], "switch", TRUE)
+  parameters[["mutables"]]$switch <- TRUE
 
   is_response_active <- as.logical(
-    rlang::env_get(parameters[["mutables"]], "closure_time_start")
+    parameters[["mutables"]]$closure_time_start
   ) # coerce to logical; automatically FALSE as default value is 0.0
 
   if (!is_response_active) {
     # set switch parameter and log closure start time if not 0.0 or FALSE
-    rlang::env_bind(
-      parameters[["mutables"]],
-      switch = TRUE,
-      closure_time_start = response_time
-    )
+    parameters[["mutables"]]$switch <- TRUE
+    parameters[["mutables"]]$closure_time_start <- response_time
   }
 
   #### Stage 2 - response time to vaccination start time ####
@@ -281,11 +278,8 @@ daedalus <- function(country,
   is_epidemic_growing <- rt >= 1.0
 
   if (!is_epidemic_growing) {
-    rlang::env_bind(
-      parameters[["mutables"]],
-      switch = FALSE,
-      closure_time_end = response_time
-    )
+    parameters[["mutables"]]$switch <- FALSE
+    parameters[["mutables"]]$closure_time_end <- response_time
   }
 
   # reset min time
@@ -310,9 +304,7 @@ daedalus <- function(country,
   parameters[["min_time"]] <- vaccination_start
 
   # turn vax_switch on
-  rlang::env_poke(
-    parameters[["mutables"]], "vax_switch", TRUE
-  )
+  parameters[["mutables"]]$vax_switch <- TRUE
 
   data_stage_03 <- deSolve::ode(
     initial_state, times_stage_03,
@@ -324,12 +316,10 @@ daedalus <- function(country,
 
   # log simulation end time as closure end time if not already ended
   is_response_ended <- as.logical(
-    rlang::env_get(parameters[["mutables"]], "closure_time_end")
+    parameters[["mutables"]]$closure_time_end
   ) # coerce to logical; automatically FALSE as default value is 0.0
   if (!is_response_ended) {
-    rlang::env_poke(
-      parameters[["mutables"]], "closure_time_end", time_end
-    )
+    parameters[["mutables"]]$closure_time_end <- time_end
   }
 
   data <- rbind(data_stage_01, data_stage_02[-1L, ], data_stage_03[-1L, ])
