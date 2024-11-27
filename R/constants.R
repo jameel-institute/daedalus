@@ -49,14 +49,6 @@ i_AGE_GROUPS <- seq_len(N_AGE_GROUPS)
 
 #' @name model_constants
 #' @keywords model_constant
-N_VACCINE_STRATA <- 2L
-
-#' @name model_constants
-#' @keywords model_constant
-N_VACCINE_DATA_GROUPS <- 3L
-
-#' @name model_constants
-#' @keywords model_constant
 AGE_GROUPS <- c("0-4", "5-19", "20-65", "65+")
 
 #' @name model_constants
@@ -107,20 +99,8 @@ DIM_ECON_SECTORS <- 3L
 DIM_VACCINE_STRATA <- 4L
 
 #' @name model_constants
-i_UNVACCINATED_STRATUM <- 1L
-
-#' @name model_constants
-i_VACCINATED_STRATUM <- 2L
-
-#' @name model_constants
-i_NEW_VAX_STRATUM <- 3L
-
-#' @name model_constants
-VACCINE_GROUPS <- c("unvaccinated", "vaccinated", "new_vaccinations")
-
-#' @name model_constants
 #' @keywords model_constant
-N_OUTPUT_COLS <- 6L
+N_OUTPUT_COLS <- 5L
 
 #' @title Epidemiological compartments and indices
 #' @description Names and indices for the epidemiological compartments used in
@@ -147,25 +127,25 @@ N_OUTPUT_COLS <- 6L
 #' @keywords epi_constant
 COMPARTMENTS <- c(
   "susceptible", "exposed", "infect_symp", "infect_asymp",
-  "hospitalised", "recovered", "dead",
-  "new_infections", "new_hosp"
+  "hospitalised", "recovered", "dead", "vaccinated",
+  "new_infections", "new_hosp", "new_vax"
 )
 
 #' @name epi_constants
 #' @keywords epi_constant
-N_MODEL_COMPARTMENTS <- 9L
+N_MODEL_COMPARTMENTS <- 11L
 
 #' @name epi_constants
-N_EPI_COMPARTMENTS <- 7L
+N_EPI_COMPARTMENTS <- 8L
 
 #' @name epi_constants
-N_DATA_COMPARTMENTS <- 2L
+N_DATA_COMPARTMENTS <- 3L
 
 #' @name epi_constants
 i_EPI_COMPARTMENTS <- seq.int(N_EPI_COMPARTMENTS)
 
 #' @name epi_constants
-i_DATA_COMPARTMENTS <- c(8L, 9L)
+i_DATA_COMPARTMENTS <- c(9L, 10L, 11L)
 
 #' @name epi_constants
 #' @keywords epi_constant
@@ -190,13 +170,16 @@ i_R <- 6L
 i_D <- 7L
 
 #' @name epi_constants
-i_dE <- 8L # new infections
+i_V <- 8L
 
 #' @name epi_constants
-i_dH <- 9L # new hospitalisations
+i_dE <- 9L # new infections
 
 #' @name epi_constants
-i_dD <- 10L # new deaths
+i_dH <- 10L # new hospitalisations
+
+#' @name epi_constants
+i_dV <- 11L # new deaths
 
 #' @name epi_constants
 N_INFECTION_SUBSYSTEM <- 3L # compartments in the infectious subsystem
@@ -212,7 +195,7 @@ SUMMARY_MEASURES <- c(
 )
 
 #' @name summary_constants
-SUMMARY_GROUPS <- c("age_group", "vaccine_group", "econ_sector")
+SUMMARY_GROUPS <- c("age_group", "econ_sector")
 
 #' Economic constants used in DAEDALUS
 #'
