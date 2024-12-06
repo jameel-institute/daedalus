@@ -8,27 +8,56 @@
 #include <boost/numeric/odeint.hpp>
 // clang-format on
 
+/// @brief A simple observer for the integrator
+struct observer {
+  std::vector<odetools::state_type> &m_states;
+  std::vector<double> &m_times;
+
+  /// @brief Constructor for the observer
+  /// @param states A vector of `odetools::state_type`, the model compartments
+  /// @param times A vector of doubles, the model times logged
+  observer(std::vector<odetools::state_type> &states,  // NOLINT
+           std::vector<double> &times)                 // NOLINT
+      : m_states(states), m_times(times) {}
+
+  /// @brief Overloaded operator for the observer structure
+  /// @param x The current system state x.
+  /// @param t The current system time t.
+  void operator()(const odetools::state_type &x, double t) {
+    size_t t_index = static_cast<size_t>(t);
+    m_states[t_index] = x;
+    m_times[t_index] = t;
+  }
+};
+
 /// @brief Struct containing the daedalus epidemic ODE system
 struct epidemic_daedalus {
-  //
   const double beta, sigma, p_sigma, gamma, eta, omega;
-  const Eigen::MatrixXd contact_matrix;
+  const Eigen::Matrix<double, 49, 49> contact_matrix;
+  Eigen::Matrix<double, 49, 49> cm_temp;
 
   Eigen::Array<double, 49, 1> sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR,
       hToD;
+  Eigen::Vector<double, 49> comm_inf;
+  Eigen::Vector<double, 4> comm_inf_1;
+
+  Eigen::Array<double, 45, 1> contacts_work;
 
   /// @brief Constructor for the daedalus epidemic struct
   /// @param model_params Rcpp List of model parameters
   /// @param contact_matrix The population contact matrix
   epidemic_daedalus(const Rcpp::List &model_params,
-                    const Eigen::MatrixXd &contact_matrix)
+                    const Eigen::MatrixXd &contact_matrix,
+                    const Eigen::ArrayXd &contacts_work)
       : beta(Rcpp::as<double>(model_params["beta"])),
         sigma(Rcpp::as<double>(model_params["sigma"])),
         p_sigma(Rcpp::as<double>(model_params["p_sigma"])),
         gamma(Rcpp::as<double>(model_params["gamma"])),
         eta(Rcpp::as<double>(model_params["eta"])),
         omega(Rcpp::as<double>(model_params["omega"])),
-        contact_matrix(contact_matrix) {}
+        contact_matrix(contact_matrix),
+        cm_temp(contact_matrix),
+        contacts_work(contacts_work) {}
 
   /// @brief Operator for the default model
   /// @param x The initial state of the population - rows represent age groups
@@ -50,13 +79,21 @@ struct epidemic_daedalus {
 
     // compartmental transitions without accounting for contacts
     // Susceptible (unvaccinated) to exposed
-    auto community_infectious = (x.col(2) + x.col(3)).head(4);
-    
+    comm_inf = (x.col(2) + x.col(3));
+    // comm_inf_1 = comm_inf.head(4);
+    // comm_inf_1[2] = comm_inf.segment(5, 49).sum();
+
     sToE = x.col(0).array();
     sToE.setZero();
 
-    sToE.head(4) = beta * x.col(0).array().head(4) *
-           (contact_matrix * community_infectious).array();
+    // cm_temp.diagonal().array().tail<45>() *= sToE.tail<45>();
+
+    sToE = beta * x.col(0).array() * (cm_temp * comm_inf).array();
+
+    // workplace infections within sectors
+    sToE.segment(5, 49) += beta * x.col(0).segment(5, 49).array() *
+                           contacts_work * comm_inf.segment(5, 49).array();
+
     eToIs = sigma * p_sigma * x.col(1).array();
     eToIa = sigma * (1.f - p_sigma) * x.col(1).array();
     isToR = gamma * x.col(2).array();
@@ -86,18 +123,20 @@ struct epidemic_daedalus {
 // [[Rcpp::export(name=".model_daedalus_cpp")]]
 Rcpp::List model_daedalus_internal(
     const Eigen::MatrixXd &initial_state, const Rcpp::List &params,
-    const Eigen::MatrixXd &contact_matrix,
+    const Eigen::MatrixXd &contact_matrix, const Eigen::ArrayXd &contacts_work,
     const double &time_end = 100.0,  // double required by boost solver
     const double &increment = 1.0) {
   // initial conditions from input
   odetools::state_type x = initial_state;
 
   // create a default epidemic with parameters
-  epidemic_daedalus this_model(params, contact_matrix);
+  epidemic_daedalus this_model(params, contact_matrix, contacts_work);
+
+  size_t n_times = static_cast<size_t>(time_end) + 1;
 
   // prepare storage containers for the observer
-  std::vector<odetools::state_type> x_vec;  // is a vector of MatrixXd
-  std::vector<double> times;
+  std::vector<odetools::state_type> x_vec(n_times);  // is a vector of MatrixXd
+  std::vector<double> times(n_times);
 
   // a controlled stepper for constant step sizes
   boost::numeric::odeint::runge_kutta4<
@@ -107,8 +146,7 @@ Rcpp::List model_daedalus_internal(
 
   // run the function without assignment
   boost::numeric::odeint::integrate_const(stepper, this_model, x, 0.0, time_end,
-                                          increment,
-                                          odetools::observer(x_vec, times));
+                                          increment, observer(x_vec, times));
 
   return Rcpp::List::create(Rcpp::Named("x") = Rcpp::wrap(x_vec),
                             Rcpp::Named("time") = Rcpp::wrap(times));
