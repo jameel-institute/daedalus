@@ -12,23 +12,24 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // model_daedalus_internal
-Rcpp::List model_daedalus_internal(const Rcpp::NumericVector& initial_state, const Rcpp::List& params, const Eigen::MatrixXd& contact_matrix, const double& time_end, const double& increment);
-RcppExport SEXP _daedalus_model_daedalus_internal(SEXP initial_stateSEXP, SEXP paramsSEXP, SEXP contact_matrixSEXP, SEXP time_endSEXP, SEXP incrementSEXP) {
+Rcpp::List model_daedalus_internal(const Eigen::MatrixXd& initial_state, const Rcpp::List& params, const Eigen::MatrixXd& contact_matrix, const Eigen::ArrayXd& contacts_work, const double& time_end, const double& increment);
+RcppExport SEXP _daedalus_model_daedalus_internal(SEXP initial_stateSEXP, SEXP paramsSEXP, SEXP contact_matrixSEXP, SEXP contacts_workSEXP, SEXP time_endSEXP, SEXP incrementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type initial_state(initial_stateSEXP);
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type initial_state(initial_stateSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type contact_matrix(contact_matrixSEXP);
+    Rcpp::traits::input_parameter< const Eigen::ArrayXd& >::type contacts_work(contacts_workSEXP);
     Rcpp::traits::input_parameter< const double& >::type time_end(time_endSEXP);
     Rcpp::traits::input_parameter< const double& >::type increment(incrementSEXP);
-    rcpp_result_gen = Rcpp::wrap(model_daedalus_internal(initial_state, params, contact_matrix, time_end, increment));
+    rcpp_result_gen = Rcpp::wrap(model_daedalus_internal(initial_state, params, contact_matrix, contacts_work, time_end, increment));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_daedalus_model_daedalus_internal", (DL_FUNC) &_daedalus_model_daedalus_internal, 5},
+    {"_daedalus_model_daedalus_internal", (DL_FUNC) &_daedalus_model_daedalus_internal, 6},
     {NULL, NULL, 0}
 };
 
