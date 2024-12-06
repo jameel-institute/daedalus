@@ -34,6 +34,7 @@ Imports:
     cli,
     data.table,
     deSolve,
+    Rcpp,
     rlang
 Suggests:
     countrycode,
@@ -55,3 +56,8 @@ Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+LinkingTo: 
+    BH,
+    epidemics,
+    Rcpp,
+    RcppEigen
