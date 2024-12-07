@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // model_daedalus_internal
-Rcpp::List model_daedalus_internal(const Eigen::MatrixXd& initial_state, const Rcpp::List& params, const Eigen::MatrixXd& contact_matrix, const Eigen::ArrayXd& contacts_work, const double& time_end, const double& increment);
-RcppExport SEXP _daedalus_model_daedalus_internal(SEXP initial_stateSEXP, SEXP paramsSEXP, SEXP contact_matrixSEXP, SEXP contacts_workSEXP, SEXP time_endSEXP, SEXP incrementSEXP) {
+Rcpp::List model_daedalus_internal(const Eigen::MatrixXd& initial_state, const Rcpp::List& params, const Eigen::MatrixXd& contact_matrix, const Eigen::ArrayXd& contacts_work, const Eigen::ArrayXd& openness, const double& t_start, const double& t_end, const double& time_end, const double& increment);
+RcppExport SEXP _daedalus_model_daedalus_internal(SEXP initial_stateSEXP, SEXP paramsSEXP, SEXP contact_matrixSEXP, SEXP contacts_workSEXP, SEXP opennessSEXP, SEXP t_startSEXP, SEXP t_endSEXP, SEXP time_endSEXP, SEXP incrementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,15 +21,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type contact_matrix(contact_matrixSEXP);
     Rcpp::traits::input_parameter< const Eigen::ArrayXd& >::type contacts_work(contacts_workSEXP);
+    Rcpp::traits::input_parameter< const Eigen::ArrayXd& >::type openness(opennessSEXP);
+    Rcpp::traits::input_parameter< const double& >::type t_start(t_startSEXP);
+    Rcpp::traits::input_parameter< const double& >::type t_end(t_endSEXP);
     Rcpp::traits::input_parameter< const double& >::type time_end(time_endSEXP);
     Rcpp::traits::input_parameter< const double& >::type increment(incrementSEXP);
-    rcpp_result_gen = Rcpp::wrap(model_daedalus_internal(initial_state, params, contact_matrix, contacts_work, time_end, increment));
+    rcpp_result_gen = Rcpp::wrap(model_daedalus_internal(initial_state, params, contact_matrix, contacts_work, openness, t_start, t_end, time_end, increment));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_daedalus_model_daedalus_internal", (DL_FUNC) &_daedalus_model_daedalus_internal, 6},
+    {"_daedalus_model_daedalus_internal", (DL_FUNC) &_daedalus_model_daedalus_internal, 9},
     {NULL, NULL, 0}
 };
 
