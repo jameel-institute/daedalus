@@ -8,6 +8,12 @@
 #include <boost/numeric/odeint.hpp>
 // clang-format on
 
+template<typename T>
+T apply_npi(T value, const double &flag)
+{
+    return (1.0 - (1.0 - value) * flag);
+}
+
 /// @brief A simple observer for the integrator
 struct observer {
   std::vector<odetools::state_type> &m_states;
