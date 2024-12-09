@@ -17,6 +17,8 @@ const int N_GROUPS = N_AGE_GROUPS + N_ECON_SECTORS;
 const int iS = 0, iE = 1, iIs = 2, iIa = 3, iH = 4, iR = 5, iD = 6, iV = 7,
           idE = 8, idH = 9;
 
+const double excess_mortality_coef = 1.6;
+
 /// @brief
 /// @tparam T
 /// @param value The value of the opennness coefficient. For an 80% closure of a
@@ -68,55 +70,64 @@ struct observer {
 
 /// @brief Struct containing the daedalus epidemic ODE system
 struct epidemic_daedalus {
+  // infection params
   Rcpp::List model_params;
-  double beta, sigma, p_sigma, epsilon, gamma, eta, omega, rho;
-  const double t_start, t_end;
-  const Eigen::Matrix<double, N_GROUPS, N_GROUPS> contact_matrix;
-  Eigen::Matrix<double, N_GROUPS, N_GROUPS> cm_temp;
+  double beta, sigma, p_sigma, epsilon, gamma_Ia, gamma_Is, rho;
+  Eigen::ArrayXd eta, omega, gamma_H;
 
+  // model parameters
+  const double hospital_capacity, t_start, t_end;
+
+  // contact data
+  const Eigen::Matrix<double, N_GROUPS, N_GROUPS> contact_matrix;
+
+  // arrays for transitions between compartments
   Eigen::Array<double, N_GROUPS, 1> sToE, eToIs, eToIa, isToR, iaToR, isToH,
       hToR, hToD, rToS;
   Eigen::Vector<double, N_GROUPS> comm_inf;
+  Eigen::Array<double, N_ECON_SECTORS, 1> contacts_work, openness;  // openness
 
-  Eigen::Array<double, N_ECON_SECTORS, 1> contacts_work, openness;
+  // intervention flag and counters and coefficients for model mechanisms
+  double flag = 0.0, new_deaths = 0.0, total_hospitalisations = 0.0;
+  double distancing_coef = 1.0, mortality_coef = 1.0;
 
-  // intervention flag
-  double flag = 0.0, new_deaths = 0.0;
-  double distancing_coef = 1.0;
-
+  // whether social distancing is active
   const bool auto_social_distancing;
 
-  /// @brief 
-  /// @param model_params 
-  /// @param contact_matrix 
-  /// @param contacts_work 
-  /// @param openness 
-  /// @param t_start 
-  /// @param t_end 
-  /// @param auto_social_distancing 
+  /// @brief
+  /// @param model_params
+  /// @param contact_matrix
+  /// @param contacts_work
+  /// @param openness
+  /// @param t_start
+  /// @param t_end
+  /// @param auto_social_distancing
   epidemic_daedalus(const Rcpp::List &model_params,
                     const Eigen::MatrixXd &contact_matrix,
                     const Eigen::ArrayXd &contacts_work,
-                    const Eigen::ArrayXd &openness, const double &t_start,
+                    const Eigen::ArrayXd &openness,
+                    const double &hospital_capacity, const double &t_start,
                     const double &t_end, const bool &auto_social_distancing)
       : model_params(model_params),
         contact_matrix(contact_matrix),
-        cm_temp(contact_matrix),
         contacts_work(contacts_work),
         openness(openness),
+        hospital_capacity(hospital_capacity),
         t_start(t_start),
         t_end(t_end),
         auto_social_distancing(auto_social_distancing) {}
-  
-  /// @brief 
+
+  /// @brief
   void init_params() {
     beta = model_params["beta"];
     sigma = model_params["sigma"];
     p_sigma = model_params["p_sigma"];
     epsilon = model_params["epsilon"];
-    gamma = model_params["gamma_Ia"];
-    eta = model_params["eta"];
-    omega = model_params["omega"];
+    gamma_Ia = model_params["gamma_Ia"];
+    gamma_Is = model_params["gamma_Is"];
+    gamma_H = Rcpp::as<Eigen::ArrayXd>(model_params["gamma_H"]);
+    eta = Rcpp::as<Eigen::ArrayXd>(model_params["eta"]);
+    omega = Rcpp::as<Eigen::ArrayXd>(model_params["omega"]);
     rho = model_params["rho"];
   }
 
@@ -139,9 +150,15 @@ struct epidemic_daedalus {
     // 0|1| 2| 3|4|5|6|7| 8| 9
     // S|E|Is|Ia|H|R|D|V|dE|dH
 
+    // get total hospitalisations to determine if excess mortality applies
+    total_hospitalisations = x.col(iH).sum();
+    mortality_coef = total_hospitalisations > hospital_capacity
+                         ? excess_mortality_coef
+                         : 1.0;
+
     // calculate new deaths first to scale social distancing
     // if 'public concern' mechanism is modelled
-    hToD = omega * x.col(iH).array();
+    hToD = omega * mortality_coef * x.col(iH).array();
     new_deaths = get_new_deaths(hToD);
     if (auto_social_distancing) {
       distancing_coef = get_distancing_coef(new_deaths);
@@ -155,7 +172,7 @@ struct epidemic_daedalus {
     sToE.setZero();
 
     sToE = beta * distancing_coef * x.col(iS).array() *
-           (cm_temp * comm_inf).array();
+           (contact_matrix * comm_inf).array();
 
     // set flag based on intervention time
     flag = t > t_start && t < t_end ? 1.0 : 0.0;
@@ -170,14 +187,11 @@ struct epidemic_daedalus {
 
     eToIs = sigma * p_sigma * x.col(iE).array();
     eToIa = sigma * (1.0 - p_sigma) * x.col(iE).array();
-    isToR = gamma * x.col(iIs).array();
-    iaToR = gamma * x.col(iIa).array();
+    isToR = gamma_Is * x.col(iIs).array();
+    iaToR = gamma_Ia * x.col(iIa).array();
     isToH = eta * x.col(iIs).array();
-    hToR = gamma * x.col(iH).array();
+    hToR = gamma_H * x.col(iH).array();
     rToS = rho * x.col(iR).array();
-
-    Eigen::ArrayXd sToV = x.col(iS).array();
-    sToV.setZero();
 
     dxdt.col(iS) = -sToE + rToS;
     dxdt.col(iE) = sToE - eToIs - eToIa;
@@ -187,7 +201,7 @@ struct epidemic_daedalus {
     dxdt.col(iR) = isToR + iaToR - rToS;
 
     dxdt.col(iD) = hToD;
-    dxdt.col(iV) = sToV;
+    // dxdt.col(iV) = sToV; // vaccination not currently included
 
     dxdt.col(idE) = sToE;
     dxdt.col(idH) = hToR;
@@ -198,7 +212,8 @@ struct epidemic_daedalus {
 Rcpp::List model_daedalus_internal(
     const Eigen::MatrixXd &initial_state, const Rcpp::List &params,
     const Eigen::MatrixXd &contact_matrix, const Eigen::ArrayXd &contacts_work,
-    const Eigen::ArrayXd &openness, const double &t_start, const double &t_end,
+    const Eigen::ArrayXd &openness, const double &hospital_capacity,
+    const double &t_start, const double &t_end,
     const bool auto_social_distancing = false,
     const double &time_end = 100.0,  // double required by boost solver
     const double &increment = 1.0) {
@@ -223,7 +238,7 @@ Rcpp::List model_daedalus_internal(
 
   // create a default epidemic with parameters
   epidemic_daedalus this_model(params[0], contact_matrix, contacts_work,
-                               openness, t_start, t_end,
+                               openness, hospital_capacity, t_start, t_end,
                                auto_social_distancing);
 
   for (size_t i = 0; i < n_reps; i++) {
