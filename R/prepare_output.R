@@ -83,7 +83,7 @@ prepare_output <- function(output) {
 COMPARTMENTS_cpp <- c(
   "susceptible", "exposed", "infect_symp", "infect_asymp",
   "hospitalised", "recovered", "dead", "vaccinated", "new_infections",
-  "new_hospitalisations"
+  "new_hosp"
 )
 
 #' Prepare output from the C++ model
@@ -111,6 +111,13 @@ prepare_output_cpp <- function(output) {
   data$age_group <- rep(age_group_labels, n_times)
   data$econ_sector <- rep(econ_group_labels, n_times)
   data$time <- rep(times, each = N_AGE_GROUPS + N_ECON_SECTORS)
+
+  # make long format
+  data <- data.table::melt(
+    data,
+    id.vars = c("time", "age_group", "econ_sector"),
+    variable.name = "compartment"
+  )
 
   data.table::setDF(data)
   data
