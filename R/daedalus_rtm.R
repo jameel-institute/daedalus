@@ -36,26 +36,31 @@ daedalus_rtm <- function(country,
                          response_strategy = NULL,
                          response_time_start = 0.0,
                          response_time_end = 0.0,
+                         hospital_capacity = NULL,
                          initial_state_manual = list(p_infectious = 1e-7),
                          auto_social_distancing = FALSE,
                          time_end = 300) {
-  # # input checking
-  # # NOTE: names are case sensitive
-  # checkmate::assert_multi_class(country, c("daedalus_country", "character"))
+  # input checking
+  # NOTE: names are case sensitive
+  checkmate::assert_multi_class(country, c("daedalus_country", "character"))
   if (is.character(country)) {
     country <- daedalus_country(country)
   }
-  # checkmate::assert_multi_class(infection, c("daedalus_infection", "character"))
+  checkmate::assert_multi_class(
+    infection, c("daedalus_infection", "character", "list")
+  )
   if (is.character(infection)) {
-    # infection <- rlang::arg_match(infection, daedalus::epidemic_names)
+    infection <- rlang::arg_match(infection, daedalus::epidemic_names)
     infection <- daedalus_infection(infection)
     parameters <- prepare_parameters.daedalus_infection(infection)
-    parameters$eta <- parameters$eta[1]
-    parameters$omega <- parameters$omega[1]
+    parameters$beta <- get_beta(infection, country)
+    parameters <- list(parameters)
+  } else if (is_daedalus_infection(infection)) {
+    parameters <- prepare_parameters.daedalus_infection(infection)
+    parameters$beta <- get_beta(infection, country)
+    parameters <- list(parameters)
   } else if (checkmate::test_list(infection, types = "daedalus_infection")) {
     z <- prepare_parameters.daedalus_infection(infection[[1]])
-    z$eta <- z$eta[1]
-    z$omega <- z$omega[1]
 
     parameters <- lapply(
       infection, function(x) {
@@ -63,94 +68,96 @@ daedalus_rtm <- function(country,
         z
       }
     )
+  } else {
+    cli::cli_abort(
+      "`infection` must be a character from among `daedalus::epidemic_names`,
+      a `<daedalus_infection>`, or a list of `<daedalus_infection>`s."
+    )
   }
 
-  # is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
-  # if (!is_good_time_end) {
-  #   cli::cli_abort(
-  #     c(
-  #       "Expected `time_end` to be a single positive integer-like number.",
-  #       i = "E.g. `time_end = 100`, but not `time_end = 100.5`"
-  #     )
-  #   )
-  # }
-
-  # is_good_response_time <- checkmate::test_integerish(
-  #   response_time_start,
-  #   upper = time_end - 2L, lower = 2L, any.missing = FALSE
-  # )
-  # if (!is_good_response_time) {
-  #   cli::cli_abort(
-  #     "Expected `response_time` to be between 2 and {time_end - 2L}."
-  #   )
-  # }
+  is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
+  if (!is_good_time_end) {
+    cli::cli_abort(
+      c(
+        "Expected `time_end` to be a single positive integer-like number.",
+        i = "E.g. `time_end = 100`, but not `time_end = 100.5`"
+      )
+    )
+  }
 
   # prepare initial state for Cpp model
   initial_state <- make_initial_state(country, initial_state_manual)
   initial_state <- as.matrix(initial_state[, , 1])
   initial_state <- cbind(initial_state, matrix(0, nrow(initial_state), 1))
 
-  # parameters <- c(
-  #   # prepare_parameters(country),
-  #   prepare_parameters.daedalus_infection(infection)
-  # )
-
-  # hotfix
-  # parameters$eta <- parameters$eta[1]
-  # parameters$omega <- parameters$omega[1]
-
-  # add the appropriate economic openness vectors to parameters
+  # prepare the appropriate economic openness vectors
+  # allowing for a numeric vector, or NULL for no response
   if (is.null(response_strategy)) {
     openness <- rep(1.0, N_ECON_SECTORS)
+    resp_strat_tag <- "none"
   } else if (is.numeric(response_strategy)) {
     openness <- response_strategy
-  } else if (response_strategy %in% names(closure_data)) {
+    resp_strat_tag <- "manual"
+  } else if (response_strategy %in% names(daedalus::closure_data)) {
     openness <- daedalus::closure_data[[response_strategy]]
+    resp_strat_tag <- response_strategy
   }
 
-  # NOTE: psi (vax waning rate), tau (vax reduction in suscept.), and dims of nu
-  # are hard-coded until vaccination scenarios are decided
-  # parameters <- c(
-  #   parameters,
-  #   list(
-  #     # to increase HFR if crossed
-  #     hospital_capacity = get_data(country, "hospital_capacity"),
-  #     # psi = 1 / 270,
-  #     # tau = c(1.0, 0.5),
-  #     # beta = get_beta(infection, country),
-  #     openness = openness
-  #   )
-  # )
-
+  # prepare within workplace and community contacts
   contact_matrix <- make_conmat_large(country)
   contacts_work <- make_work_contacts(country)
 
+  # prepare hospital capacity from country data if none specified
+  if (is.null(hospital_capacity)) {
+    hospital_capacity <- get_data(country, "hospital_capacity")
+  }
+
   # ode solving
-  # output <- lapply(
-  #   parameters,
-  #   function(x) {
-      output = .model_daedalus_cpp(
-        initial_state = initial_state,
-        params = parameters,
-        contact_matrix = contact_matrix,
-        contacts_work = contacts_work,
-        openness = openness,
-        t_start = response_time_start,
-        t_end = response_time_end,
-        auto_social_distancing,
-        time_end
-      )
-  #   }
-  # )
+  output <- .model_daedalus_cpp(
+    initial_state = initial_state,
+    params = parameters,
+    contact_matrix = contact_matrix,
+    contacts_work = contacts_work,
+    openness = openness,
+    hospital_capacity = hospital_capacity,
+    t_start = response_time_start,
+    t_end = response_time_end,
+    auto_social_distancing,
+    time_end
+  )
 
   output <- Map(output, seq_along(output), f = function(x, y) {
     z <- prepare_output_cpp(x)
     z$replicate <- y
-  
+
     z
   })
-  
-  data = data.table::rbindlist(output)
-  
-  data.table::setDF(data)
+
+  output <- lapply(
+    output, function(x) {
+      z <- list(
+        total_time = time_end,
+        model_data = x,
+        country_parameters = unclass(country),
+        infection_parameters = unclass(infection),
+        response_data = list(
+          response_strategy = resp_strat_tag,
+          openness = openness,
+          closure_info = list(
+            closure_time_start = response_time_start,
+            closure_time_end = response_time_end,
+            closure_duration = response_time_end - response_time_start
+          )
+        )
+      )
+
+      as_daedalus_output(z)
+    }
+  )
+
+  if (length(output) == 1) {
+    output[[1]]
+  } else {
+    output
+  }
 }
