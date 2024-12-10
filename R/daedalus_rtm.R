@@ -39,6 +39,7 @@ daedalus_rtm <- function(country,
                          hospital_capacity = NULL,
                          initial_state_manual = list(p_infectious = 1e-7),
                          auto_social_distancing = FALSE,
+                         social_distancing_mandate = 1.0,
                          time_end = 300) {
   # input checking
   # NOTE: names are case sensitive
@@ -123,6 +124,7 @@ daedalus_rtm <- function(country,
     t_start = response_time_start,
     t_end = response_time_end,
     auto_social_distancing,
+    social_distancing_mandate = social_distancing_mandate,
     time_end
   )
 

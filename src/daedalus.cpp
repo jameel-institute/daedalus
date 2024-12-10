@@ -78,7 +78,7 @@ struct epidemic_daedalus {
   Eigen::ArrayXd eta, omega, gamma_H;
 
   // model parameters
-  const double hospital_capacity, t_start, t_end;
+  const double hospital_capacity, t_start, t_end, social_distancing_mandate;
 
   // contact data
   const Eigen::Matrix<double, N_GROUPS, N_GROUPS> contact_matrix;
@@ -104,12 +104,14 @@ struct epidemic_daedalus {
   /// @param t_start
   /// @param t_end
   /// @param auto_social_distancing
+  /// @param social_distancing_mandate
   epidemic_daedalus(const Rcpp::List &model_params,
                     const Eigen::MatrixXd &contact_matrix,
                     const Eigen::ArrayXd &contacts_work,
                     const Eigen::ArrayXd &openness,
                     const double &hospital_capacity, const double &t_start,
-                    const double &t_end, const bool &auto_social_distancing)
+                    const double &t_end, const bool &auto_social_distancing,
+                    const double &social_distancing_mandate)
       : beta(0.0),  // initialised as cppcheck complains
         sigma(0.0),
         p_sigma(0.0),
@@ -124,7 +126,8 @@ struct epidemic_daedalus {
         hospital_capacity(hospital_capacity),
         t_start(t_start),
         t_end(t_end),
-        auto_social_distancing(auto_social_distancing) {}
+        auto_social_distancing(auto_social_distancing),
+        social_distancing_mandate(social_distancing_mandate) {}
 
   /// @brief
   void init_params() {
@@ -190,6 +193,11 @@ struct epidemic_daedalus {
     auto workplace_infected = apply_npi(openness, flag) * contacts_work *
                               comm_inf.array().tail<N_ECON_SECTORS>();
 
+    // get minimum of distancing coef and social distancing mandate
+    // mandated distancing is active only when the overall NPI is active
+    distancing_coef = std::min(distancing_coef,
+                               1.0 - (1.0 - social_distancing_mandate) * flag);
+
     // workplace infections within sectors
     sToE.tail<N_ECON_SECTORS>() +=
         beta * x.col(iS).array().tail<N_ECON_SECTORS>() * workplace_infected;
@@ -224,6 +232,7 @@ Rcpp::List model_daedalus_internal(
     const Eigen::ArrayXd &openness, const double &hospital_capacity,
     const double &t_start, const double &t_end,
     const bool auto_social_distancing = false,
+    const double &social_distancing_mandate = 1.0,
     const double &time_end = 100.0,  // double required by boost solver
     const double &increment = 1.0) {
   // initial conditions from input
@@ -244,9 +253,9 @@ Rcpp::List model_daedalus_internal(
       stepper;
 
   // create a default epidemic with parameters
-  epidemic_daedalus this_model(params[0], contact_matrix, contacts_work,
-                               openness, hospital_capacity, t_start, t_end,
-                               auto_social_distancing);
+  epidemic_daedalus this_model(
+      params[0], contact_matrix, contacts_work, openness, hospital_capacity,
+      t_start, t_end, auto_social_distancing, social_distancing_mandate);
 
   for (size_t i = 0; i < n_reps; i++) {
     // reset x
