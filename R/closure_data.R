@@ -20,3 +20,14 @@
 #' @source Multiple sources; to be updated shortly. See processing details in
 #' `data-raw/closure_data.R
 "closure_data"
+
+#' @title Economic sector names
+#'
+#' @description Names or descriptions of openness of economic sectors modelled
+#' in _daedalus_, to which closures apply.
+#'
+#' @format ## `econ_sector_names`
+#' A character vector of length `N_ECON_SECTORS` (45).
+#' @source Multiple sources; to be updated shortly. See processing details in
+#' `data-raw/closure_data.R
+"econ_sector_names"
