@@ -1,4 +1,8 @@
 #' @title Prepare DAEDALUS data
+#'
+#' @name prepare_output
+#' @rdname prepare_output
+#'
 #' @description Convert DAEDALUS data into a long-format `<data.frame>`.
 #' @param output Output from [daedalus()] of the class `<deSolve>`.
 #' @return A `<data.frame>` in long or 'tidy' format with the columns
@@ -71,5 +75,55 @@ prepare_output <- function(output) {
     !(data$vaccine_group == "new_vaccinations" &
       !data$compartment %in% c("susceptible", "recovered")),
   ]
+  data
+}
+
+
+#' Constants for `daedalus_rtm()`
+#'
+#' @name epi_constants
+#' @keywords epi_constant
+#' @return A vector of compartment names used in the C++ model.
+COMPARTMENTS_cpp <- c(
+  "susceptible", "exposed", "infect_symp", "infect_asymp",
+  "hospitalised", "recovered", "dead", "vaccinated", "new_infections",
+  "new_hosp"
+)
+
+#' Prepare output from the C++ model
+#'
+#' @name prepare_output
+#'
+#' @param output The output of `.model_daedalus_cpp()`.
+prepare_output_cpp <- function(output) {
+  times <- output[["time"]]
+  n_times <- length(times)
+
+  data <- do.call(rbind, output[["x"]])
+
+  age_group_labels <- c(
+    AGE_GROUPS, rep(AGE_GROUPS[i_WORKING_AGE], N_ECON_SECTORS)
+  )
+  econ_group_labels <- sprintf("sector_%02i", seq.int(N_ECON_SECTORS))
+  non_working_label <- rep("sector_00", N_AGE_GROUPS)
+
+  econ_group_labels <- c(non_working_label, econ_group_labels)
+
+  data <- data.table::as.data.table(data)
+  colnames(data) <- COMPARTMENTS_cpp
+
+  # assign names and times
+  data$age_group <- rep(age_group_labels, n_times)
+  data$econ_sector <- rep(econ_group_labels, n_times)
+  data$time <- rep(times, each = N_AGE_GROUPS + N_ECON_SECTORS)
+
+  # make long format
+  data <- data.table::melt(
+    data,
+    id.vars = c("time", "age_group", "econ_sector"),
+    variable.name = "compartment"
+  )
+
+  data.table::setDF(data)
   data
 }
