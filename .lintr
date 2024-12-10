@@ -32,5 +32,6 @@ exclusions: list(
       missing_package_linter = Inf,
       namespace_linter = Inf
     ),
-    "R/cpp11.R"
+    "R/cpp11.R",
+    "R/RcppExports.R"
     )
