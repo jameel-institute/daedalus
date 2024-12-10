@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // model_daedalus_internal
-Rcpp::List model_daedalus_internal(const Eigen::MatrixXd& initial_state, const Rcpp::List& params, const Eigen::MatrixXd& contact_matrix, const Eigen::ArrayXd& contacts_work, const Eigen::ArrayXd& openness, const double& t_start, const double& t_end, const bool auto_social_distancing, const double& time_end, const double& increment);
-RcppExport SEXP _daedalus_model_daedalus_internal(SEXP initial_stateSEXP, SEXP paramsSEXP, SEXP contact_matrixSEXP, SEXP contacts_workSEXP, SEXP opennessSEXP, SEXP t_startSEXP, SEXP t_endSEXP, SEXP auto_social_distancingSEXP, SEXP time_endSEXP, SEXP incrementSEXP) {
+Rcpp::List model_daedalus_internal(const Eigen::MatrixXd& initial_state, const Rcpp::List& params, const Eigen::MatrixXd& contact_matrix, const Eigen::ArrayXd& contacts_work, const Eigen::ArrayXd& openness, const double& hospital_capacity, const double& t_start, const double& t_end, const bool auto_social_distancing, const double& social_distancing_mandate, const double& time_end, const double& increment);
+RcppExport SEXP _daedalus_model_daedalus_internal(SEXP initial_stateSEXP, SEXP paramsSEXP, SEXP contact_matrixSEXP, SEXP contacts_workSEXP, SEXP opennessSEXP, SEXP hospital_capacitySEXP, SEXP t_startSEXP, SEXP t_endSEXP, SEXP auto_social_distancingSEXP, SEXP social_distancing_mandateSEXP, SEXP time_endSEXP, SEXP incrementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,18 +22,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type contact_matrix(contact_matrixSEXP);
     Rcpp::traits::input_parameter< const Eigen::ArrayXd& >::type contacts_work(contacts_workSEXP);
     Rcpp::traits::input_parameter< const Eigen::ArrayXd& >::type openness(opennessSEXP);
+    Rcpp::traits::input_parameter< const double& >::type hospital_capacity(hospital_capacitySEXP);
     Rcpp::traits::input_parameter< const double& >::type t_start(t_startSEXP);
     Rcpp::traits::input_parameter< const double& >::type t_end(t_endSEXP);
     Rcpp::traits::input_parameter< const bool >::type auto_social_distancing(auto_social_distancingSEXP);
+    Rcpp::traits::input_parameter< const double& >::type social_distancing_mandate(social_distancing_mandateSEXP);
     Rcpp::traits::input_parameter< const double& >::type time_end(time_endSEXP);
     Rcpp::traits::input_parameter< const double& >::type increment(incrementSEXP);
-    rcpp_result_gen = Rcpp::wrap(model_daedalus_internal(initial_state, params, contact_matrix, contacts_work, openness, t_start, t_end, auto_social_distancing, time_end, increment));
+    rcpp_result_gen = Rcpp::wrap(model_daedalus_internal(initial_state, params, contact_matrix, contacts_work, openness, hospital_capacity, t_start, t_end, auto_social_distancing, social_distancing_mandate, time_end, increment));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_daedalus_model_daedalus_internal", (DL_FUNC) &_daedalus_model_daedalus_internal, 10},
+    {"_daedalus_model_daedalus_internal", (DL_FUNC) &_daedalus_model_daedalus_internal, 12},
     {NULL, NULL, 0}
 };
 
