@@ -30,4 +30,6 @@
 #' A character vector of length `N_ECON_SECTORS` (45).
 #' @source Multiple sources; to be updated shortly. See processing details in
 #' `data-raw/closure_data.R
+#' @examples
+#' econ_sector_names
 "econ_sector_names"

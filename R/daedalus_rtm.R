@@ -1,6 +1,8 @@
 #' Make large contact matrix for Cpp model.
 #'
 #' @param country A `<daedalus_country>`.
+#'
+#' @keywords internal
 #' @return A 49x49 contact matrix.
 make_conmat_large <- function(country) {
   cm_nrow <- N_AGE_GROUPS + N_ECON_SECTORS
@@ -66,7 +68,7 @@ daedalus_rtm <- function(country,
     parameters$beta <- get_beta(infection, country)
     parameters <- list(parameters)
   } else if (checkmate::test_list(infection, types = "daedalus_infection")) {
-    z <- prepare_parameters.daedalus_infection(infection[[1]])
+    z <- prepare_parameters.daedalus_infection(infection[[1]]) # nolint
 
     parameters <- lapply(
       infection, function(x) {

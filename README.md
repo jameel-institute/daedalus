@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# daedalus: Optimise economic, social and health trade-offs in a pandemic
+# daedalus: Model health, social, and economic costs of a pandemic
 
 <!-- badges: start -->
 
@@ -85,8 +85,7 @@ preparedness](https://github.com/robj411/p2_drivers).
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
 <div id="ref-haw2022" class="csl-entry">
 
