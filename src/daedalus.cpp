@@ -191,9 +191,8 @@ struct epidemic_daedalus {
                               comm_inf.array().tail<N_ECON_SECTORS>();
 
     // workplace infections within sectors
-    sToE.tail<N_ECON_SECTORS>() += beta * distancing_coef *
-                                   x.col(iS).array().tail<N_ECON_SECTORS>() *
-                                   workplace_infected;
+    sToE.tail<N_ECON_SECTORS>() +=
+        beta * x.col(iS).array().tail<N_ECON_SECTORS>() * workplace_infected;
 
     eToIs = sigma * p_sigma * x.col(iE).array();
     eToIa = sigma * (1.0 - p_sigma) * x.col(iE).array();
