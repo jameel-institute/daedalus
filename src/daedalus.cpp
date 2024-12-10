@@ -1,3 +1,4 @@
+// Copyright 2024 'daedalus' authors. See repository licence in LICENSE.md.
 
 // clang-format off
 #include <Rcpp.h>
@@ -7,17 +8,18 @@
 #include <boost/numeric/odeint.hpp>
 // clang-format on
 
-/// @brief State type for ODEs.
-typedef Eigen::MatrixXd state_type;
-
 /// @brief Model constants.
 const int N_AGE_GROUPS = 4L;
 const int N_ECON_SECTORS = 45L;
 const int N_GROUPS = N_AGE_GROUPS + N_ECON_SECTORS;
 const int iS = 0, iE = 1, iIs = 2, iIa = 3, iH = 4, iR = 5, iD = 6, iV = 7,
           idE = 8, idH = 9;
+const int N_COMPARTMENTS = 10;
 
 const double excess_mortality_coef = 1.6;
+
+/// @brief State type for ODEs.
+typedef Eigen::MatrixXd state_type;
 
 /// @brief
 /// @tparam T
@@ -72,7 +74,7 @@ struct observer {
 struct epidemic_daedalus {
   // infection params
   Rcpp::List model_params;
-  double beta, sigma, p_sigma, epsilon, gamma_Ia, gamma_Is, rho;
+  double beta, sigma, p_sigma, epsilon, gamma_Ia, gamma_Is, rho;  // temp
   Eigen::ArrayXd eta, omega, gamma_H;
 
   // model parameters
@@ -108,7 +110,14 @@ struct epidemic_daedalus {
                     const Eigen::ArrayXd &openness,
                     const double &hospital_capacity, const double &t_start,
                     const double &t_end, const bool &auto_social_distancing)
-      : model_params(model_params),
+      : beta(0.0),  // initialised as cppcheck complains
+        sigma(0.0),
+        p_sigma(0.0),
+        epsilon(0.0),
+        gamma_Ia(0.0),
+        gamma_Is(0.0),
+        rho(0.0),
+        model_params(model_params),
         contact_matrix(contact_matrix),
         contacts_work(contacts_work),
         openness(openness),
@@ -119,6 +128,7 @@ struct epidemic_daedalus {
 
   /// @brief
   void init_params() {
+    // TODO(prg): replace with pointers and Eigen::Map
     beta = model_params["beta"];
     sigma = model_params["sigma"];
     p_sigma = model_params["p_sigma"];
@@ -221,20 +231,18 @@ Rcpp::List model_daedalus_internal(
   state_type x = initial_state;
 
   const size_t n_reps = params.size();
-
   Rcpp::List output(n_reps);
+  const size_t n_times = static_cast<size_t>(time_end) + 1;
+
+  // prepare storage containers for the observer
+  std::vector<state_type> x_vec(n_times);  // is a vector of MatrixXd
+  std::vector<double> times(n_times);
 
   // a controlled stepper for constant step sizes
   boost::numeric::odeint::runge_kutta4<
       state_type, double, state_type, double,
       boost::numeric::odeint::vector_space_algebra>
       stepper;
-
-  const size_t n_times = static_cast<size_t>(time_end) + 1;
-
-  // prepare storage containers for the observer
-  std::vector<state_type> x_vec(n_times);  // is a vector of MatrixXd
-  std::vector<double> times(n_times);
 
   // create a default epidemic with parameters
   epidemic_daedalus this_model(params[0], contact_matrix, contacts_work,
@@ -252,6 +260,7 @@ Rcpp::List model_daedalus_internal(
                                             time_end, increment,
                                             observer(x_vec, times));
 
+    // TODO(prg): pre-allocaton using STL containers and conversion at return
     output[i] = Rcpp::List::create(Rcpp::Named("x") = Rcpp::wrap(x_vec),
                                    Rcpp::Named("time") = Rcpp::wrap(times));
   }
