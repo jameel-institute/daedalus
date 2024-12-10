@@ -10,6 +10,8 @@ closures <- readxl::read_xlsx(
   sheet = "configurations"
 )
 
+econ_sector_names <- closures$Sector
+
 # heal names and set DT
 new_colnames <- colnames(closures) |>
   str_to_lower() |>
@@ -69,4 +71,5 @@ closure_data <- Map(
   }
 )
 
+usethis::use_data(econ_sector_names, overwrite = TRUE)
 usethis::use_data(closure_data, overwrite = TRUE)
