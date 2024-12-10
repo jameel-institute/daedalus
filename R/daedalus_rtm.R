@@ -28,6 +28,11 @@ make_work_contacts <- function(country) {
   country$contacts_workplace / country$workers
 }
 
+make_consumer_contacts <- function(country) {
+  # row-wise divison
+  country$contacts_consumer_worker / country$workers
+}
+
 #' @title DAEDALUS Cpp model
 #'
 #' @export
@@ -107,6 +112,7 @@ daedalus_rtm <- function(country,
   # prepare within workplace and community contacts
   contact_matrix <- make_conmat_large(country)
   contacts_work <- make_work_contacts(country)
+  contacts_consumers <- make_consumer_contacts(country)
 
   # prepare hospital capacity from country data if none specified
   if (is.null(hospital_capacity)) {
@@ -119,6 +125,7 @@ daedalus_rtm <- function(country,
     params = parameters,
     contact_matrix = contact_matrix,
     contacts_work = contacts_work,
+    contacts_consumers = contacts_consumers,
     openness = openness,
     hospital_capacity = hospital_capacity,
     t_start = response_time_start,
