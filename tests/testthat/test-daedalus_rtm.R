@@ -1,53 +1,93 @@
-test_that("multiplication works", {
+test_that("daedalus real-time modelling works", {
   expect_no_condition(
-    daedalus_rtm("GBR", "influenza_1918")
+    daedalus_rtm("GBR", "influenza_2009")
+  )
+
+  infection <- daedalus_infection("influenza_1918")
+  expect_no_condition(
+    daedalus_rtm("GBR", infection)
+  )
+
+  invisible(
+    lapply(
+      daedalus::country_codes_iso2c, function(x) {
+        expect_no_condition(
+          daedalus_rtm(x, infection, time_end = 10)
+        )
+      }
+    )
+  )
+
+  output <- daedalus_rtm("GBR", infection)
+  expect_s3_class(output, "daedalus_output")
+
+  # function runs on a list of infections
+  infection_list <- lapply(
+    epidemic_names, daedalus_infection
+  )
+
+  expect_no_condition(
+    daedalus_rtm("GBR", infection_list)
+  )
+  output_list <- daedalus_rtm("GBR", infection_list)
+  checkmate::expect_list(
+    output_list, "daedalus_output"
   )
 })
 
-bench::mark(
-  daedalus_rtm("GBR", "influenza_2009", time_end = 50)
-)
+test_that("daedalus real-time modelling: downstream func compat", {
+  infection <- daedalus_infection("influenza_2009")
+  output <- daedalus_rtm("GBR", infection)
 
-
-x = daedalus_country("GBR")
-params = list(
-  beta = 0.1, sigma = 1/3, p_sigma = 2/3, gamma = 1/5,
-  eta = 1/1000, omega = 1/200
-)
-
-state = make_initial_state(x, list())
-state = as.matrix(state[,,1])
-
-state = cbind(state, matrix(0, nrow(state), 1))
-
-## 49x49 contacts
-cm = matrix(NA, 49, 49)
-cm[1:4, 1:4] = x$contact_matrix
-cm[1:4, 5:49] = matrix(cm[1:4, 3], 4, 45)
-cm[5:49, 1:4] = matrix(cm[3, 1:4], 45, 4, byrow = T)
-# diag(cm)[5:49] = x$contacts_workplace + cm[3, 3] # community + work
-
-cm[is.na(cm)] = cm[3, 3]
-
-demog = rep(x$demography[3], 49)
-demog[1:4] = x$demography
-cm = cm / demog
-
-## 4x4 contacts
-# demog = x$demography
-# cm = x$contact_matrix
-# cm = cm / demog
-
-openness = rep(1.0, 45)
-
-contacts_work = x$contacts_workplace / x$workers
-
-test_that("DAEDALUS CPP works", {
+  # getting basic data
   expect_no_condition(
-    .model_daedalus_cpp(
-      state, params, cm, contacts_work, openness,
-      t_start = 10, t_end = 100,
-      time_end = 100
-    )
+    get_data(output)
+  )
+  expect_no_condition(
+    get_data(output, "response_data")
+  )
+  data <- get_data(output)
+  checkmate::expect_data_frame(data)
+
+  # get incidence
+  expect_no_condition(
+    get_incidence(output)
+  )
+  expect_no_condition(
+    get_incidence(output, groups = "age_group")
+  )
+  # NOTE: expect error when vaccine groups requested as these are not modelled
+  expect_error(
+    get_incidence(output, groups = "vaccine_group")
+  )
+  # NOTE: expect empty data on downstream func for new vaccinations
+  checkmate::expect_data_frame(
+    get_new_vaccinations(output),
+    nrows = 0L
+  )
+
+  # epidemic summary
+  expect_no_condition(
+    get_epidemic_summary(output)
+  )
+  expect_snapshot(
+    get_epidemic_summary(output)
+  )
+
+  # costs
+  expect_no_condition(
+    get_costs(output)
+  )
+  expect_snapshot(
+    get_costs(output)
+  )
+  expect_no_condition(
+    get_costs(output, "none")
+  )
+  expect_no_condition(
+    get_costs(output, "domain")
+  )
+  expect_no_condition(
+    get_costs(output, "total")
   )
 })
