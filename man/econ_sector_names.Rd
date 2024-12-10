@@ -21,4 +21,7 @@ econ_sector_names
 Names or descriptions of openness of economic sectors modelled
 in \emph{daedalus}, to which closures apply.
 }
+\examples{
+econ_sector_names
+}
 \keyword{datasets}

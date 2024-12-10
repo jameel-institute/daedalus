@@ -1,4 +1,8 @@
 #' @title Prepare DAEDALUS data
+#'
+#' @name prepare_output
+#' @rdname prepare_output
+#'
 #' @description Convert DAEDALUS data into a long-format `<data.frame>`.
 #' @param output Output from [daedalus()] of the class `<deSolve>`.
 #' @return A `<data.frame>` in long or 'tidy' format with the columns
@@ -88,8 +92,9 @@ COMPARTMENTS_cpp <- c(
 
 #' Prepare output from the C++ model
 #'
+#' @name prepare_output
+#'
 #' @param output The output of `.model_daedalus_cpp()`.
-#' @export
 prepare_output_cpp <- function(output) {
   times <- output[["time"]]
   n_times <- length(times)

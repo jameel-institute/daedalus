@@ -21,6 +21,7 @@ reference:
     desc: Run the DAEDALUS integrated economic-epidemiological model
     contents:
     - daedalus
+    - daedalus_rtm
   - title: Class `<daedalus_country>`
     desc: Represent and access country or territory characteristics
     contents:
@@ -52,6 +53,7 @@ reference:
     - contains("data")
     - contains("contacts")
     - country_names
+    - econ_sector_names
     - life_value
     - -has_keyword("generics")
   - title: Model constants
