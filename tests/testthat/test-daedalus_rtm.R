@@ -90,4 +90,35 @@ test_that("daedalus real-time modelling: downstream func compat", {
   expect_no_condition(
     get_costs(output, "total")
   )
+
+  # costs with closures
+  output <- daedalus_rtm(
+    "GBR", infection,
+    response_strategy = "elimination",
+    response_time_start = 14, response_time_end = 60
+  )
+  expect_no_condition(
+    get_costs(output)
+  )
+  expect_no_condition(
+    get_costs(output, "domain")
+  )
+  expect_no_condition(
+    get_costs(output, "total")
+  )
+
+  output <- daedalus_rtm(
+    "GBR", list(infection, infection),
+    response_strategy = "elimination",
+    response_time_start = 14, response_time_end = 60
+  )
+  expect_no_condition(
+    lapply(output, get_costs)
+  )
+  expect_no_condition(
+    lapply(output, get_costs, "domain")
+  )
+  expect_no_condition(
+    lapply(output, get_costs, "total")
+  )
 })
