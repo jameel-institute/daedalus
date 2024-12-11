@@ -144,6 +144,16 @@ daedalus_rtm <- function(country,
     z
   })
 
+  # NOTE: need to handle case when response is triggered after `time_end`
+  # this is needed when running sims for different durations to examine
+  # how costs evolve over time
+  if (time_end < response_time_start) {
+    response_time_start <- 0
+  }
+  if (time_end < response_time_end) {
+    response_time_end <- time_end
+  }
+
   output <- lapply(
     output, function(x) {
       z <- list(
