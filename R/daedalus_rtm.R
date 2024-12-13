@@ -149,6 +149,7 @@ daedalus_rtm <- function(country,
   # how costs evolve over time
   if (time_end < response_time_start) {
     response_time_start <- 0
+    response_time_end <- 0
   }
   if (time_end < response_time_end) {
     response_time_end <- time_end
