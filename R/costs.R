@@ -113,9 +113,10 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
     levels = unique(total_deaths$age_group)
   )
   total_deaths <- tapply(total_deaths$value, total_deaths$age_group, sum)
+  life_years_lost <- x$country_parameters$life_expectancy * total_deaths
 
   # NOTE: in million $s
-  life_years_lost <- x$country_parameters$vsl * total_deaths / 1e6
+  life_value_lost <- x$country_parameters$vsl * total_deaths / 1e6
 
   cost_list <- list(
     total_cost = NA,
@@ -131,7 +132,9 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
       education_cost_closures = education_cost_closures,
       education_cost_absences = education_cost_absences
     ),
-    life_years_lost = list(
+    life_value_lost = list(
+      life_value_lost_total = sum(life_value_lost),
+      life_value_lost_age = life_value_lost,
       life_years_lost_total = sum(life_years_lost),
       life_years_lost_age = life_years_lost
     )
