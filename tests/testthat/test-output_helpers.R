@@ -102,3 +102,25 @@ test_that("New vaccinations: basic expectations", {
     finite = TRUE, any.missing = FALSE, len = time_end
   )
 })
+
+# Tests for life years lost
+test_that("Calculate life years lost", {
+  output <- daedalus_rtm("GBR", "influenza_2009")
+  expect_no_condition(
+    get_life_years_lost(output)
+  )
+  checkmate::expect_data_frame(
+    get_life_years_lost(output, "none"),
+    nrows = 1L
+  )
+  expect_no_condition(
+    get_life_years_lost(output, "age_group")
+  )
+  checkmate::expect_data_frame(
+    get_life_years_lost(output, "age_group"),
+    nrows = N_AGE_GROUPS
+  )
+  expect_error(
+    get_life_years_lost(output, "bad_group_name")
+  )
+})

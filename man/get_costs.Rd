@@ -42,12 +42,20 @@ impacts on education due to pandemic-control restrictions or closures
 death (\code{education_cost_absences}).
 }
 
-\subsection{Life-years lost}{
+\subsection{Life-value lost}{
 
 A four-element vector (for the number of age groups) giving the value of
 life-years lost per age group. This is calculated as the life-expectancy of
 each age group times the value of a statistical life, with all years assumed
 to have the same value.
+}
+
+\subsection{Life-years lost}{
+
+A four-element vector (for the number of age groups) giving the value of
+life-years lost per age group. This is calculated as the life-expectancy of
+each age group times the number of deaths in that age group. No quality
+adjustment is applied.
 }
 }
 \examples{
