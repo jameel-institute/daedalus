@@ -1,9 +1,11 @@
-#' @title Values of statistical lives lost
+#' @title Life expectancies and values
 #'
 #' @name life_value
 #' @rdname life_value
 #'
-#' @description Values in dollars (scaled by purchasing power parity) of a
+#' @description
+#' Data on country- and age-group-specific life expectancy, and
+#' values in dollars (scaled by purchasing power parity) of a
 #' statistical life lost in each of the four DAEDALUS age groups, accounting
 #' for life expectancy.
 #'
@@ -21,3 +23,10 @@
 #' giving the GNI (gross national income) in international dollars.
 #' @source Multiple sources; see processing details in `data-raw/life_value.R.
 "country_gni"
+
+#' @name life_value
+#' @format ## `country_gni`
+#' A list with 67 elements, each corresponding to a country or territory, and
+#' giving the life expectancy in years.
+#' @source Multiple sources; see processing details in `data-raw/life_value.R.
+"life_expectancy"

@@ -4,7 +4,8 @@
 \name{life_value}
 \alias{life_value}
 \alias{country_gni}
-\title{Values of statistical lives lost}
+\alias{life_expectancy}
+\title{Life expectancies and values}
 \format{
 \subsection{\code{life_value}}{
 
@@ -19,8 +20,16 @@ in the following order: 0-4, 5-19, 20-65, 65+.
 A list with 67 elements, each corresponding to a country or territory, and
 giving the GNI (gross national income) in international dollars.
 }
+
+\subsection{\code{country_gni}}{
+
+A list with 67 elements, each corresponding to a country or territory, and
+giving the life expectancy in years.
+}
 }
 \source{
+Multiple sources; see processing details in `data-raw/life_value.R.
+
 Multiple sources; see processing details in `data-raw/life_value.R.
 
 Multiple sources; see processing details in `data-raw/life_value.R.
@@ -29,9 +38,12 @@ Multiple sources; see processing details in `data-raw/life_value.R.
 life_value
 
 country_gni
+
+life_expectancy
 }
 \description{
-Values in dollars (scaled by purchasing power parity) of a
+Data on country- and age-group-specific life expectancy, and
+values in dollars (scaled by purchasing power parity) of a
 statistical life lost in each of the four DAEDALUS age groups, accounting
 for life expectancy.
 }
