@@ -29,12 +29,19 @@
 #' (`education_cost_closures`), and pandemic-related absences due to illness and
 #' death (`education_cost_absences`).
 #'
-#' ## Life-years lost
+#' ## Life-value lost
 #'
 #' A four-element vector (for the number of age groups) giving the value of
 #' life-years lost per age group. This is calculated as the life-expectancy of
 #' each age group times the value of a statistical life, with all years assumed
 #' to have the same value.
+#'
+#' ## Life-years lost
+#'
+#' A four-element vector (for the number of age groups) giving the value of
+#' life-years lost per age group. This is calculated as the life-expectancy of
+#' each age group times the number of deaths in that age group. No quality
+#' adjustment is applied.
 #'
 #' @examples
 #' output <- daedalus("Canada", "influenza_1918")
@@ -113,9 +120,10 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
     levels = unique(total_deaths$age_group)
   )
   total_deaths <- tapply(total_deaths$value, total_deaths$age_group, sum)
+  life_years_lost <- x$country_parameters$life_expectancy * total_deaths
 
   # NOTE: in million $s
-  life_years_lost <- x$country_parameters$vsl * total_deaths / 1e6
+  life_value_lost <- x$country_parameters$vsl * total_deaths / 1e6
 
   cost_list <- list(
     total_cost = NA,
@@ -131,6 +139,10 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
       education_cost_closures = education_cost_closures,
       education_cost_absences = education_cost_absences
     ),
+    life_value_lost = list(
+      life_value_lost_total = sum(life_value_lost),
+      life_value_lost_age = life_value_lost
+    ),
     life_years_lost = list(
       life_years_lost_total = sum(life_years_lost),
       life_years_lost_age = life_years_lost
@@ -140,7 +152,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   # probably a neater way of doing this
   cost_list$total_cost <- economic_cost_closures + economic_cost_absences +
     education_cost_closures + education_cost_absences +
-    sum(life_years_lost)
+    sum(life_value_lost)
 
   # return summary if requested, defaults to no summary
   summarise_as <- rlang::arg_match(summarise_as)
@@ -151,7 +163,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
     domain = {
       cost_list[["total_cost"]] <- NULL
       vec_costs <- vapply(cost_list, `[[`, 1L, FUN.VALUE = numeric(1))
-      names(vec_costs) <- c("economic", "education", "life_years")
+      names(vec_costs) <- c("economic", "education", "life_value", "life_years")
 
       vec_costs
     }

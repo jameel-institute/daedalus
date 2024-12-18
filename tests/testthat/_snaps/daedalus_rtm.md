@@ -52,13 +52,22 @@
       [1] 855.6248
       
       
+      $life_value_lost
+      $life_value_lost$life_value_lost_total
+      [1] 62025.83
+      
+      $life_value_lost$life_value_lost_age
+            0-4      5-19     20-65       65+ 
+       3760.974 14754.418  5609.041 37901.395 
+      
+      
       $life_years_lost
       $life_years_lost$life_years_lost_total
-      [1] 62025.83
+      [1] 1352209
       
       $life_years_lost$life_years_lost_age
             0-4      5-19     20-65       65+ 
-       3760.974 14754.418  5609.041 37901.395 
+       81992.02 321657.24 122281.24 826278.51 
       
       
 

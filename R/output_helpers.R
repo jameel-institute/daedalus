@@ -247,3 +247,34 @@ get_new_vaccinations <- function(data, groups = NULL) {
   data.table::setDF(dt_new)
   dt_new[, setdiff(colnames(dt_new), "value")]
 }
+
+#' Get life-years lost by demographic group.
+#'
+#' @param output A `<daedalu_output>` object.
+#' @param groups Whether to get the life-years lost by age group. Selecting
+#' `"none"` gives the total life-years lost.
+#'
+#' @return A `<data.frame>` with the number of life-years lost, optionally per
+#' age-group.
+#'
+#' @export
+get_life_years_lost <- function(output, groups = c("none", "age_group")) {
+  checkmate::assert_class(output, "daedalus_output")
+  groups <- rlang::arg_match(groups)
+  df <- get_epidemic_summary(output, "deaths", "age_group")
+
+  life_expectancy <- get_data(output, "country_parameters")[["life_expectancy"]]
+
+  df$value <- df$value * life_expectancy
+  df$measure <- "life_years_lost"
+
+  switch(groups,
+    none = {
+      data.frame(
+        value = sum(df$value),
+        measure = "life_years_lost"
+      )
+    },
+    age_group = df
+  )
+}
