@@ -61,10 +61,9 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   vsd <- vsd / 1e6 # for uniformity with daily GVA
   n_students <- x$country_parameters$demography[i_SCHOOL_AGE]
 
-  # cost of closures
-  economic_cost_closures <- sum(
-    gva * (1 - openness) * closure_duration
-  )
+  # cost of closures, per sector and total
+  sector_cost_closures <- gva * (1 - openness) * closure_duration
+  economic_cost_closures <- sum(sector_cost_closures)
 
   education_cost_closures <- sum(
     vsd * n_students * (1 - openness[i_EDUCATION_SECTOR]) *
@@ -85,8 +84,9 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   )
   workforce <- x$country_parameters$workers
 
-  # calculate daily GVA loss; scale GVA loss by openness when closures are
-  # active
+  # calculate daily GVA loss due to illness-related absencees;
+  # scale GVA loss by openness when closures are active
+  # assuming no working from home
   gva_loss <- worker_absences %*% diag(gva / workforce)
 
   gva_loss[seq(closure_start, closure_end), ] <-
@@ -113,23 +113,28 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
     levels = unique(total_deaths$age_group)
   )
   total_deaths <- tapply(total_deaths$value, total_deaths$age_group, sum)
+  life_years_lost <- x$country_parameters$life_expectancy * total_deaths
 
   # NOTE: in million $s
-  life_years_lost <- x$country_parameters$vsl * total_deaths / 1e6
+  life_value_lost <- x$country_parameters$vsl * total_deaths / 1e6
 
   cost_list <- list(
     total_cost = NA,
     economic_costs = list(
       economic_cost_total = economic_cost_closures + economic_cost_absences,
       economic_cost_closures = economic_cost_closures,
-      economic_cost_absences = economic_cost_absences
+      economic_cost_absences = economic_cost_absences,
+      sector_cost_closures = sector_cost_closures,
+      sector_cost_absences = gva_loss
     ),
     education_costs = list(
       education_cost_total = education_cost_closures + education_cost_absences,
       education_cost_closures = education_cost_closures,
       education_cost_absences = education_cost_absences
     ),
-    life_years_lost = list(
+    life_value_lost = list(
+      life_value_lost_total = sum(life_value_lost),
+      life_value_lost_age = life_value_lost,
       life_years_lost_total = sum(life_years_lost),
       life_years_lost_age = life_years_lost
     )

@@ -2,12 +2,15 @@
 % Please edit documentation in R/prepare_output.R
 \name{prepare_output}
 \alias{prepare_output}
+\alias{prepare_output_cpp}
 \title{Prepare DAEDALUS data}
 \usage{
 prepare_output(output)
+
+prepare_output_cpp(output)
 }
 \arguments{
-\item{output}{Output from \code{\link[=daedalus]{daedalus()}} of the class \verb{<deSolve>}.}
+\item{output}{The output of \code{.model_daedalus_cpp()}.}
 }
 \value{
 A \verb{<data.frame>} in long or 'tidy' format with the columns

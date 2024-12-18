@@ -34,6 +34,8 @@ Imports:
     cli,
     data.table,
     deSolve,
+    Rcpp,
+    RcppEigen,
     rlang
 Suggests:
     countrycode,
@@ -46,6 +48,10 @@ Suggests:
     spelling,
     testthat (>= 3.0.0),
     tidyr
+LinkingTo: 
+    BH,
+    Rcpp,
+    RcppEigen
 VignetteBuilder: 
     knitr
 Config/Needs/website: jameel-institute/jameelinst.rpkg.theme

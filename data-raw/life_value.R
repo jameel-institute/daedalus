@@ -88,4 +88,5 @@ life_value <- Map(
   f = function(x, y) x * y
 )
 
+usethis::use_data(life_expectancy, overwrite = TRUE)
 usethis::use_data(life_value, overwrite = TRUE)
