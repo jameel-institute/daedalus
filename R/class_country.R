@@ -162,6 +162,7 @@ daedalus_country <- function(country,
   params$workers <- params$workers + 1
 
   # add value of statistical life (VSL)
+  life_expectancy <- daedalus::life_expectancy[[name]]
   vsl <- daedalus::life_value[[name]]
   gni <- daedalus::country_gni[[name]]
 
@@ -180,7 +181,8 @@ daedalus_country <- function(country,
       contacts_between_sectors =
         daedalus::economic_contacts[["contacts_between_sectors"]],
       vsl = vsl,
-      gni = gni
+      gni = gni,
+      life_expectancy = life_expectancy
     )
   )
   parameters <- Filter(parameters, f = function(x) !is.null(x))
@@ -216,7 +218,7 @@ validate_daedalus_country <- function(x) {
     "name", "demography", "contact_matrix",
     "contacts_workplace", "contacts_consumer_worker",
     "contacts_between_sectors", "workers", "gva",
-    "vsl", "hospital_capacity", "gni"
+    "vsl", "hospital_capacity", "gni", "life_expectancy"
   )
   has_invariants <- checkmate::test_names(
     attributes(x)$names,
@@ -308,6 +310,12 @@ validate_daedalus_country <- function(x) {
       checkmate::test_count(
         x$gni,
         positive = TRUE
+      ),
+    "Country `life_expectancy` must be a 4-element vector of positive values" =
+      checkmate::test_numeric(
+        x$life_expectancy,
+        len = N_AGE_GROUPS, any.missing = FALSE,
+        lower = 0, upper = 100 # reasonable upper limit
       )
   )
 
