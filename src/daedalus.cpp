@@ -160,6 +160,9 @@ struct epidemic_daedalus {
     dxdt.resize(x.rows(), x.cols());
     dxdt.setZero();
 
+    // set flag based on intervention time
+    flag = t > t_start && t < t_end ? 1.0 : 0.0;
+
     // NB: Casting initial conditions matrix columns to arrays is necessary
     // for vectorised operations
     // columns are as follows
@@ -180,6 +183,11 @@ struct epidemic_daedalus {
       distancing_coef = get_distancing_coef(new_deaths);
     }
 
+    // get minimum of distancing coef and social distancing mandate
+    // mandated distancing is active only when the overall NPI is active
+    distancing_coef = std::min(distancing_coef,
+                               1.0 - (1.0 - social_distancing_mandate) * flag);
+
     // compartmental transitions without accounting for contacts
     // Susceptible (unvaccinated) to exposed
     comm_inf = (x.col(iIs) + (x.col(iIa).array() * epsilon).matrix());
@@ -190,9 +198,6 @@ struct epidemic_daedalus {
     sToE = beta * distancing_coef * x.col(iS).array() *
            (contact_matrix * comm_inf).array();
 
-    // set flag based on intervention time
-    flag = t > t_start && t < t_end ? 1.0 : 0.0;
-
     auto sector_openness = apply_npi(openness, flag);
     // from infected workers to workers
     auto workplace_infected = sector_openness * contacts_work *
@@ -201,14 +206,6 @@ struct epidemic_daedalus {
     auto consumer_worker_infections =
         sector_openness *
         (contacts_consumers * comm_inf.head<N_AGE_GROUPS>()).array();
-
-    // Rcpp::Rcout << "consumer_to_worker infected = " <<
-    // consumer_worker_infections << "\n";
-
-    // get minimum of distancing coef and social distancing mandate
-    // mandated distancing is active only when the overall NPI is active
-    distancing_coef = std::min(distancing_coef,
-                               1.0 - (1.0 - social_distancing_mandate) * flag);
 
     // workplace infections within sectors
     sToE.tail<N_ECON_SECTORS>() +=
