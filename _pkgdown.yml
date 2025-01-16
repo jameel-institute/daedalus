@@ -43,6 +43,7 @@ reference:
     contents:
     - get_costs
     - epi_output_helpers
+    - get_life_years_lost
   - title: Package generics
     desc: Generics with methods for package S3 classes
     contents:
@@ -57,7 +58,7 @@ reference:
     - life_value
     - -has_keyword("generics")
   - title: Model constants
-    desc: Useful constant used internally
+    desc: Useful constants used internally
     contents:
     - has_keyword("model_constant")
     - has_keyword("epi_constant")

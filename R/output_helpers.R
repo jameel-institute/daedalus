@@ -250,7 +250,7 @@ get_new_vaccinations <- function(data, groups = NULL) {
 
 #' Get life-years lost by demographic group.
 #'
-#' @param output A `<daedalu_output>` object.
+#' @param output A `<daedalus_output>` object.
 #' @param groups Whether to get the life-years lost by age group. Selecting
 #' `"none"` gives the total life-years lost.
 #'
@@ -272,7 +272,7 @@ get_life_years_lost <- function(output, groups = c("none", "age_group")) {
     none = {
       data.frame(
         value = sum(df$value),
-        measure = "life_years_lost"
+        measure = factor("life_years_lost")
       )
     },
     age_group = df
