@@ -1,3 +1,62 @@
+# daedalus 0.2.0
+
+This is a minor version release of {daedalus} that adds real-time epidemic modelling functionality while removing the implementation of vaccination and vaccination-group infection pathways.
+There are no intervening versions between this and v0.1.0.
+
+1. Added new function `daedalus_rtm()` (for real-time modelling) which returns either a `<daedalus_output>` object or a list of these.
+    
+    - Has an Rcpp backed using RcppEigen and Boost Headers {BH} for Boost _odeint_ solvers; added Rcpp, RcppEigen, and BH as dependencies;
+
+    - Removes reactive intervention implementation and lifting; instead a single intervention on economic sectors can be passed for implementation in a user-specified time-frame ;
+
+    - Allows NPI on social contacts (basic scaling of transmission rate $\beta$) when economic sector NPI is active (default is 1.0 for no distancing); see arg `social_distancing_mandate`;
+
+    - Allows spontaneous social distancing mediated by daily deaths to be turned on (off by default); see arg `auto_social_distancing`;
+
+    - Allows passing a 45-element numeric vector specifying sector-wise openness coefficients;
+
+    - Allows passing a list of `<daedalus_infection>` objects to `infection` to accommodate parameter uncertainty (in this case it returns a list of `<daedalus_output>`);
+
+    - Hosptial capacity only determines when excess mortality is activated;
+
+    - Initial state asumes 1 in 10 million infected.
+
+2. Added C++ code in `src/daedalus.cpp` to help with ODE RHS, observer for ODE system, looping over parameter combinations, and exposing C++ code to R.
+
+3. Added functions to help with `daedalus_rtm()`:
+
+    - `prepare_output_cpp()` to handle output from Rcpp fn (returned as list of matrices);
+
+    - `make_conmat_large()` prepares a 49 $\times$ 49 contact matrix for C++ ODE RHS;
+
+    - `make_work_contacts()` and `make_consumer_contacts()` scale contacts by workers in economic sectors -- $N$ in $\beta SI \text{CM} / N$.
+
+4. Package classes:
+
+    - `<daedalus_country>` now returns life expectancy vector;
+
+5. Package data:
+
+    - Exporting economic sector names;
+
+    - Exporting country-wise life-expectancy data;
+
+    - Added C++-model compartment names as a constant.
+
+6. Downstream functions:
+
+    - `get_costs()` returns life-years lost; values of lives lost vector is renamed to `life_value_lost`
+
+    - `get_life_years_lost()` calculates life-years lost from total deaths and life-expectancy.
+
+7. Package infrastructure:
+
+    - Updated `.Rbuildignore`, `.gitignore`, `.lintr`, `_pkgdown.yml`, `WORDLIST` for C++ code;
+
+    - Updated Readmes to reflect package title and scope;
+
+    - Added basic tests for `daedalus_rtm()`.
+
 # daedalus 0.1.0
 
 This is a minor version release of {daedalus} for use in the IDM conference in 2024.

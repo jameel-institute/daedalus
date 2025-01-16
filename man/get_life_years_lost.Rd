@@ -7,7 +7,7 @@
 get_life_years_lost(output, groups = c("none", "age_group"))
 }
 \arguments{
-\item{output}{A \verb{<daedalu_output>} object.}
+\item{output}{A \verb{<daedalus_output>} object.}
 
 \item{groups}{Whether to get the life-years lost by age group. Selecting
 \code{"none"} gives the total life-years lost.}
