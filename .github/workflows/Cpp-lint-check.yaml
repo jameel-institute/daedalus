@@ -1,0 +1,31 @@
+# GitHub Action to run cpplint recursively on all pushes and pull requests
+# https://github.com/cpplint/GitHub-Action-for-cpplint
+
+# This workflow is adapted from epiverse-trace/epidemics and includes future-proof checks for headers
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+     - "src/**"
+     - "inst/include/**"
+     - ".github/workflows/Cpp-lint-check.yaml"
+
+name: Cpp-lint-check
+
+jobs:
+  cpplint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v2
+      - run: pip install cpplint
+      - run: cpplint --filter="-build/c++11, -build/include_subdir" --exclude="src/RcppExports.cpp" src/*.cpp
+      - run: cpplint --filter="-build/c++11, -build/include_subdir" --exclude="inst/include/daedalus.h" inst/include/*.h
+
+  cppcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: sudo apt-get install cppcheck
+      - run: cppcheck --std=c++14 -i src/RcppExports.cpp --enable=performance,portability,warning,style --error-exitcode=1 src
