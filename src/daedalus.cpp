@@ -1,10 +1,12 @@
-// Copyright 2024 'daedalus' authors. See repository licence in LICENSE.md.
+// Copyright 2025 'daedalus' authors. See repository licence in LICENSE.md.
 
 // clang-format off
 #include <Rcpp.h>
 #include <RcppEigen.h>
 
+#include <algorithm>
 #include <cmath>
+#include <vector>
 #include <boost/numeric/odeint.hpp>
 // clang-format on
 
@@ -77,6 +79,8 @@ struct epidemic_daedalus {
   double beta, sigma, p_sigma, epsilon, gamma_Ia, gamma_Is, rho;  // temp
   Eigen::ArrayXd eta, omega, gamma_H;
 
+  Eigen::Array<double, N_ECON_SECTORS, 1> contacts_work;
+
   // model parameters
   const double hospital_capacity, t_start, t_end, social_distancing_mandate;
 
@@ -88,7 +92,7 @@ struct epidemic_daedalus {
   Eigen::Array<double, N_GROUPS, 1> sToE, eToIs, eToIa, isToR, iaToR, isToH,
       hToR, hToD, rToS;
   Eigen::Vector<double, N_GROUPS> comm_inf;
-  Eigen::Array<double, N_ECON_SECTORS, 1> contacts_work, openness;  // openness
+  Eigen::Array<double, N_ECON_SECTORS, 1> openness;  // openness
 
   // intervention flag and counters and coefficients for model mechanisms
   double flag = 0.0, new_deaths = 0.0, total_hospitalisations = 0.0;
@@ -114,23 +118,23 @@ struct epidemic_daedalus {
                     const double &hospital_capacity, const double &t_start,
                     const double &t_end, const bool &auto_social_distancing,
                     const double &social_distancing_mandate)
-      : beta(0.0),  // initialised as cppcheck complains
+      : model_params(model_params),
+        beta(0.0),  // initialised as cppcheck complains
         sigma(0.0),
         p_sigma(0.0),
         epsilon(0.0),
         gamma_Ia(0.0),
         gamma_Is(0.0),
         rho(0.0),
-        model_params(model_params),
         contact_matrix(contact_matrix),
-        contacts_work(contacts_work),
         contacts_consumers(contacts_consumers),
-        openness(openness),
+        contacts_work(contacts_work),
         hospital_capacity(hospital_capacity),
         t_start(t_start),
         t_end(t_end),
-        auto_social_distancing(auto_social_distancing),
-        social_distancing_mandate(social_distancing_mandate) {}
+        openness(openness),
+        social_distancing_mandate(social_distancing_mandate),
+        auto_social_distancing(auto_social_distancing) {}
 
   /// @brief
   void init_params() {
