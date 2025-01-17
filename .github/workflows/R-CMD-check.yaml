@@ -50,8 +50,10 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      # NOTE: errors on "warning" instead of "note" due to large package size
+      # from using RcppEigen; see https://stackoverflow.com/a/52831333/7410366
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
-          error-on: '"note"'
+          error-on: '"warning"'
