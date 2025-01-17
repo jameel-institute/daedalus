@@ -10,8 +10,6 @@ articles:
   contents:
   - thresholded_response
   - pandemic_costs
-  - parameter_uncertainty
-  - strategy_comparison
 - title: "Model details: Calculating pandemic costs"
   navbar: "Model details: Calculating pandemic costs"
   contents:
