@@ -2,7 +2,7 @@
 % Please edit documentation in R/daedalus_rtm.R
 \name{daedalus_rtm}
 \alias{daedalus_rtm}
-\title{DAEDALUS Cpp model}
+\title{Model epidemic and economic outcomes under bespoke interventions}
 \usage{
 daedalus_rtm(
   country,
@@ -17,6 +17,65 @@ daedalus_rtm(
   time_end = 300
 )
 }
+\arguments{
+\item{country}{A country or territory object of class \verb{<daedalus_country>},
+\strong{or} a country or territory name from those included in the package;
+see \link{country_names}, \strong{or} a country ISO2 or ISO3 code; see
+\link{country_codes_iso2c} and \link{country_codes_iso3c} .
+Country-specific data such as the community and workplace contacts, the
+demography, and the distribution of the workforce into economic sectors is
+automatically accessed from package data for the relevant country name if it
+is passed as a string.
+To override package defaults for country characteristics, pass a
+\verb{<daedalus_country>} object instead. See \code{\link[=daedalus_country]{daedalus_country()}} for more.}
+
+\item{infection}{Similar to \code{\link[=daedalus]{daedalus()}}, may be a character vector from
+among \link{epidemic_names} or a \verb{<daedalus_infection>} object.
+May also be a list of \verb{<daedalus_infection>} objects.}
+
+\item{response_strategy}{Either a string for the name of response strategy
+followed from among "none", "school_closures", "economic_closures", and
+"elimination", or a numeric vector of the same length as the number of
+economic sectors (45) giving the openness coefficient for each sector when
+closures are active.}
+
+\item{response_time_start}{A single number for the time at which the
+\code{response_strategy} comes into effect.}
+
+\item{response_time_end}{A single number of the time at which the response
+comes to an end.}
+
+\item{hospital_capacity}{A single number specifying the hospital capacity
+dedicated to pandemic response. When hospital demand crosses this value,
+the \code{infection} parameter \code{omega} is increased by a factor of 1.6.}
+
+\item{initial_state_manual}{An optional \strong{named} list with the names
+\code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and
+symptomatic individuals in each age group and economic sector.
+Defaults to \code{1e-7} and \code{0.0} respectively.}
+
+\item{auto_social_distancing}{A single logical value for whether spontaneous
+social distancing is active. When active, social distancing is dependent on
+daily deaths and is active even when no response is active. Defaults to
+\code{FALSE}.}
+
+\item{social_distancing_mandate}{A single number for the scaling of the
+transmission rate due to other measures taken to reduce transmission, such as
+mask mandates. This scaling is only active between \code{response_time_start} and
+\code{response_time_end}, and is active even when no response strategy is
+specified. Defaults to 1.0.}
+
+\item{time_end}{The end point of the simulation, defaults to 300 days.}
+}
 \description{
-DAEDALUS Cpp model
+Allows modelling of epidemic trajectories and economic costs similar to
+\code{\link[=daedalus]{daedalus()}}, but with the start and duration of restrictions controlled by
+the user. No reactive interventions are allowed, and vaccination is not
+implemented. Offers the option to model spontaneous social distancing, and
+allows exogeneous reduction of the transmission rate to simulate the effect
+of measures that reduce transmission (such as social distancing or mask
+mandates).
+
+Also allows basic modelling of parameter uncertainty by passing a list of
+infection parameter combinations, see \code{infection} below.
 }

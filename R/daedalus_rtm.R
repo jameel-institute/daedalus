@@ -1,9 +1,22 @@
 #' Make large contact matrix for Cpp model.
 #'
+#' @name prepare_contacts
+#' @rdname prepare_contacts
+#'
 #' @param country A `<daedalus_country>`.
 #'
 #' @keywords internal
-#' @return A 49x49 contact matrix.
+#' @return
+#'
+#' 1. `make_conmat_large()` returns a 49x49 contact matrix scaled by the size of
+#' demography groups.
+#'
+#' 2. `make_work_contacts()` returns a 45-element vector (for the number of
+#' economic sectors) scaled by the number of workers per sector.
+#'
+#' 3. `make_consumer_contacts()` returns a 45x4 contact matrix with each row
+#' scaled by the number of workers per sector. Dimensions are the number of
+#' economic sectors and the number of age groups.
 make_conmat_large <- function(country) {
   cm_nrow <- N_AGE_GROUPS + N_ECON_SECTORS
 
@@ -26,16 +39,70 @@ make_conmat_large <- function(country) {
   cm
 }
 
+#' @name prepare_contacts
 make_work_contacts <- function(country) {
   country$contacts_workplace / country$workers
 }
 
+#' @name prepare_contacts
 make_consumer_contacts <- function(country) {
   # row-wise divison
   country$contacts_consumer_worker / country$workers
 }
 
-#' @title DAEDALUS Cpp model
+#' @title Model epidemic and economic outcomes under bespoke interventions
+#'
+#' @description
+#' Allows modelling of epidemic trajectories and economic costs similar to
+#' [daedalus()], but with the start and duration of restrictions controlled by
+#' the user. No reactive interventions are allowed, and vaccination is not
+#' implemented. Offers the option to model spontaneous social distancing, and
+#' allows exogeneous reduction of the transmission rate to simulate the effect
+#' of measures that reduce transmission (such as social distancing or mask
+#' mandates).
+#'
+#' Also allows basic modelling of parameter uncertainty by passing a list of
+#' infection parameter combinations, see `infection` below.
+#'
+#' @inheritParams daedalus
+#'
+#' @param infection Similar to [daedalus()], may be a character vector from
+#' among [daedalus::epidemic_names] or a `<daedalus_infection>` object.
+#' May also be a list of `<daedalus_infection>` objects.
+#'
+#' @param response_strategy Either a string for the name of response strategy
+#' followed from among "none", "school_closures", "economic_closures", and
+#' "elimination", or a numeric vector of the same length as the number of
+#' economic sectors (45) giving the openness coefficient for each sector when
+#' closures are active.
+#'
+#' @param response_time_start A single number for the time at which the
+#' `response_strategy` comes into effect.
+#'
+#' @param response_time_end A single number of the time at which the response
+#' comes to an end.
+#'
+#' @param hospital_capacity A single number specifying the hospital capacity
+#' dedicated to pandemic response. When hospital demand crosses this value,
+#' the `infection` parameter `omega` is increased by a factor of 1.6.
+#'
+#' @param initial_state_manual An optional **named** list with the names
+#' `p_infectious` and `p_asymptomatic` for the proportion of infectious and
+#' symptomatic individuals in each age group and economic sector.
+#' Defaults to `1e-7` and `0.0` respectively.
+#'
+#' @param auto_social_distancing A single logical value for whether spontaneous
+#' social distancing is active. When active, social distancing is dependent on
+#' daily deaths and is active even when no response is active. Defaults to
+#' `FALSE`.
+#'
+#' @param social_distancing_mandate A single number for the scaling of the
+#' transmission rate due to other measures taken to reduce transmission, such as
+#' mask mandates. This scaling is only active between `response_time_start` and
+#' `response_time_end`, and is active even when no response strategy is
+#' specified. Defaults to 1.0.
+#'
+#' @param time_end The end point of the simulation, defaults to 300 days.
 #'
 #' @export
 daedalus_rtm <- function(country,
