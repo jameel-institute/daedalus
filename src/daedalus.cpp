@@ -79,14 +79,13 @@ struct epidemic_daedalus {
   double beta, sigma, p_sigma, epsilon, gamma_Ia, gamma_Is, rho;  // temp
   Eigen::ArrayXd eta, omega, gamma_H;
 
+  // contact data
+  const Eigen::Matrix<double, N_GROUPS, N_GROUPS> contact_matrix;
+  const Eigen::Matrix<double, N_ECON_SECTORS, N_AGE_GROUPS> contacts_consumers;
   Eigen::Array<double, N_ECON_SECTORS, 1> contacts_work;
 
   // model parameters
   const double hospital_capacity, t_start, t_end, social_distancing_mandate;
-
-  // contact data
-  const Eigen::Matrix<double, N_GROUPS, N_GROUPS> contact_matrix;
-  const Eigen::Matrix<double, N_ECON_SECTORS, N_AGE_GROUPS> contacts_consumers;
 
   // arrays for transitions between compartments
   Eigen::Array<double, N_GROUPS, 1> sToE, eToIs, eToIa, isToR, iaToR, isToH,
@@ -132,8 +131,8 @@ struct epidemic_daedalus {
         hospital_capacity(hospital_capacity),
         t_start(t_start),
         t_end(t_end),
-        openness(openness),
         social_distancing_mandate(social_distancing_mandate),
+        openness(openness),
         auto_social_distancing(auto_social_distancing) {}
 
   /// @brief
