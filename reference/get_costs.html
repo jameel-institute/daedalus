@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,13 +106,23 @@ death (<code>education_cost_absences</code>).</p>
 </div>
 
 <div class="section">
-<h3 id="life-years-lost">Life-years lost<a class="anchor" aria-label="anchor" href="#life-years-lost"></a></h3>
+<h3 id="life-value-lost">Life-value lost<a class="anchor" aria-label="anchor" href="#life-value-lost"></a></h3>
 
 
 <p>A four-element vector (for the number of age groups) giving the value of
 life-years lost per age group. This is calculated as the life-expectancy of
 each age group times the value of a statistical life, with all years assumed
 to have the same value.</p>
+</div>
+
+<div class="section">
+<h3 id="life-years-lost">Life-years lost<a class="anchor" aria-label="anchor" href="#life-years-lost"></a></h3>
+
+
+<p>A four-element vector (for the number of age groups) giving the value of
+life-years lost per age group. This is calculated as the life-expectancy of
+each age group times the number of deaths in that age group. No quality
+adjustment is applied.</p>
 </div>
 
     </div>
@@ -135,6 +145,20 @@ to have the same value.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $economic_costs$economic_cost_absences</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 33680.95</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $economic_costs$sector_cost_closures</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39] 0 0 0 0 0 0 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $economic_costs$sector_cost_absences</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  537.03248   50.84374  946.93302  410.21804  215.27073  603.11998</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7]   43.47715  173.94359  219.36720  190.95406  266.69491   92.57954</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13]  174.05570  134.09063  215.72759  252.67426  110.38123   73.04621</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19]  281.49833  327.98116  198.78545  298.98543  723.26222  182.00506</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] 2222.73601 4281.61437  932.96535   28.34752  177.94897  413.21152</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31]  163.56849  908.28872  339.11816  642.11836  661.67353 2596.84018</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37] 4525.82697 1618.92311 1199.98586 2606.20381 2201.33256 2906.40499</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [43]  312.04938  368.75021   51.44708</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $education_costs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $education_costs$education_cost_total</span>
@@ -147,13 +171,22 @@ to have the same value.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2201.333</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $life_value_lost</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $life_value_lost$life_value_lost_total</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1585301</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $life_value_lost$life_value_lost_age</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      0-4     5-19    20-65      65+ </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 307992.6 646654.1 432455.2 198199.6 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $life_years_lost</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $life_years_lost$life_years_lost_total</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1585301</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 34425657</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $life_years_lost$life_years_lost_age</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      0-4     5-19    20-65      65+ </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 307992.6 646654.1 432455.2 198199.6 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6688221 14042434  9390993  4304009 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>

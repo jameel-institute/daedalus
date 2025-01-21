@@ -22,7 +22,9 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus-package.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus_rhs.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus_rtm.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/econ_constants.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/econ_sector_names.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/economic_contacts.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/epi_constants.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/epi_output_helpers.html</loc></url>
@@ -33,6 +35,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_data.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_distancing_coefficient.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_hospitalisations.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/get_life_years_lost.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_value_lost_earnings.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_value_school_year.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/index.html</loc></url>
@@ -41,6 +44,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/make_response_threshold_event.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/make_rt_end_event.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/model_constants.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/prepare_contacts.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/prepare_mutable_parameters.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/prepare_output.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/prepare_parameters.html</loc></url>

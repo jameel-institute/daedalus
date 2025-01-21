@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,6 +50,50 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="daedalus-020">daedalus 0.2.0<a class="anchor" aria-label="anchor" href="#daedalus-020"></a></h2>
+<p>This is a minor version release of {daedalus} that adds real-time epidemic modelling functionality while removing the implementation of vaccination and vaccination-group infection pathways. There are no intervening versions between this and v0.1.0.</p>
+<ol style="list-style-type: decimal"><li>
+<p>Added new function <code><a href="../reference/daedalus_rtm.html">daedalus_rtm()</a></code> (for real-time modelling) which returns either a <code>&lt;daedalus_output&gt;</code> object or a list of these.</p>
+<ul><li><p>Has an Rcpp backed using RcppEigen and Boost Headers {BH} for Boost <em>odeint</em> solvers; added Rcpp, RcppEigen, and BH as dependencies;</p></li>
+<li><p>Removes reactive intervention implementation and lifting; instead a single intervention on economic sectors can be passed for implementation in a user-specified time-frame ;</p></li>
+<li><p>Allows NPI on social contacts (basic scaling of transmission rate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>) when economic sector NPI is active (default is 1.0 for no distancing); see arg <code>social_distancing_mandate</code>;</p></li>
+<li><p>Allows spontaneous social distancing mediated by daily deaths to be turned on (off by default); see arg <code>auto_social_distancing</code>;</p></li>
+<li><p>Allows passing a 45-element numeric vector specifying sector-wise openness coefficients;</p></li>
+<li><p>Allows passing a list of <code>&lt;daedalus_infection&gt;</code> objects to <code>infection</code> to accommodate parameter uncertainty (in this case it returns a list of <code>&lt;daedalus_output&gt;</code>);</p></li>
+<li><p>Hosptial capacity only determines when excess mortality is activated;</p></li>
+<li><p>Initial state asumes 1 in 10 million infected.</p></li>
+</ul></li>
+<li><p>Added C++ code in <code>src/daedalus.cpp</code> to help with ODE RHS, observer for ODE system, looping over parameter combinations, and exposing C++ code to R.</p></li>
+<li>
+<p>Added functions to help with <code><a href="../reference/daedalus_rtm.html">daedalus_rtm()</a></code>:</p>
+<ul><li><p><code><a href="../reference/prepare_output.html">prepare_output_cpp()</a></code> to handle output from Rcpp fn (returned as list of matrices);</p></li>
+<li><p><code><a href="../reference/prepare_contacts.html">make_conmat_large()</a></code> prepares a 49 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 49 contact matrix for C++ ODE RHS;</p></li>
+<li><p><code><a href="../reference/prepare_contacts.html">make_work_contacts()</a></code> and <code><a href="../reference/prepare_contacts.html">make_consumer_contacts()</a></code> scale contacts by workers in economic sectors – <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi><mi>S</mi><mi>I</mi><mtext mathvariant="normal">CM</mtext><mi>/</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">\beta SI \text{CM} / N</annotation></semantics></math>.</p></li>
+</ul></li>
+<li>
+<p>Package classes:</p>
+<ul><li>
+<code>&lt;daedalus_country&gt;</code> now returns life expectancy vector;</li>
+</ul></li>
+<li>
+<p>Package data:</p>
+<ul><li><p>Exporting economic sector names;</p></li>
+<li><p>Exporting country-wise life-expectancy data;</p></li>
+<li><p>Added C++-model compartment names as a constant.</p></li>
+</ul></li>
+<li>
+<p>Downstream functions:</p>
+<ul><li><p><code><a href="../reference/get_costs.html">get_costs()</a></code> returns life-years lost; values of lives lost vector is renamed to <code>life_value_lost</code></p></li>
+<li><p><code><a href="../reference/get_life_years_lost.html">get_life_years_lost()</a></code> calculates life-years lost from total deaths and life-expectancy.</p></li>
+</ul></li>
+<li>
+<p>Package infrastructure:</p>
+<ul><li><p>Updated <code>.Rbuildignore</code>, <code>.gitignore</code>, <code>.lintr</code>, <code>_pkgdown.yml</code>, <code>WORDLIST</code> for C++ code;</p></li>
+<li><p>Updated Readmes to reflect package title and scope;</p></li>
+<li><p>Added basic tests for <code><a href="../reference/daedalus_rtm.html">daedalus_rtm()</a></code>.</p></li>
+</ul></li>
+</ol></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="daedalus-010">daedalus 0.1.0<a class="anchor" aria-label="anchor" href="#daedalus-010"></a></h2>
 <p>This is a minor version release of {daedalus} for use in the IDM conference in 2024.</p>

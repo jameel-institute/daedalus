@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,12 @@
 
         </dt>
         <dd>DAEDALUS model for health, social and economic costs of a pandemic</dd>
+      </dl><dl><dt>
+
+          <code><a href="daedalus_rtm.html">daedalus_rtm()</a></code>
+
+        </dt>
+        <dd>Model epidemic and economic outcomes under bespoke interventions</dd>
       </dl></div><div class="section level2">
       <h2 id="class-">Class <code>&lt;daedalus_country&gt;</code><a class="anchor" aria-label="anchor" href="#class-"></a></h2>
 
@@ -157,6 +163,12 @@
 
         </dt>
         <dd>Calculate daily incidences and summarise epidemic measures</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_life_years_lost.html">get_life_years_lost()</a></code>
+
+        </dt>
+        <dd>Get life-years lost by demographic group.</dd>
       </dl></div><div class="section level2">
       <h2 id="package-generics">Package generics<a class="anchor" aria-label="anchor" href="#package-generics"></a></h2>
 
@@ -229,14 +241,20 @@
         <dd>Country names and ISO codes for DAEDALUS</dd>
       </dl><dl><dt>
 
-          <code><a href="life_value.html">life_value</a></code> <code><a href="life_value.html">country_gni</a></code>
+          <code><a href="econ_sector_names.html">econ_sector_names</a></code>
 
         </dt>
-        <dd>Values of statistical lives lost</dd>
+        <dd>Economic sector names</dd>
+      </dl><dl><dt>
+
+          <code><a href="life_value.html">life_value</a></code> <code><a href="life_value.html">country_gni</a></code> <code><a href="life_value.html">life_expectancy</a></code>
+
+        </dt>
+        <dd>Life expectancies and values</dd>
       </dl></div><div class="section level2">
       <h2 id="model-constants">Model constants<a class="anchor" aria-label="anchor" href="#model-constants"></a></h2>
 
-      <div class="section-desc"><p>Useful constant used internally</p></div>
+      <div class="section-desc"><p>Useful constants used internally</p></div>
 
 
     </div><div class="section level2">
@@ -252,7 +270,7 @@
         <dd>DAEDALUS model constants</dd>
       </dl><dl><dt>
 
-          <code><a href="epi_constants.html">COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_MODEL_COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_EPI_COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_DATA_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_EPI_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_DATA_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_S</a></code> <code><a href="epi_constants.html">i_E</a></code> <code><a href="epi_constants.html">i_Is</a></code> <code><a href="epi_constants.html">i_Ia</a></code> <code><a href="epi_constants.html">i_H</a></code> <code><a href="epi_constants.html">i_R</a></code> <code><a href="epi_constants.html">i_D</a></code> <code><a href="epi_constants.html">i_dE</a></code> <code><a href="epi_constants.html">i_dH</a></code> <code><a href="epi_constants.html">i_dD</a></code> <code><a href="epi_constants.html">N_INFECTION_SUBSYSTEM</a></code>
+          <code><a href="epi_constants.html">COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_MODEL_COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_EPI_COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_DATA_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_EPI_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_DATA_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_S</a></code> <code><a href="epi_constants.html">i_E</a></code> <code><a href="epi_constants.html">i_Is</a></code> <code><a href="epi_constants.html">i_Ia</a></code> <code><a href="epi_constants.html">i_H</a></code> <code><a href="epi_constants.html">i_R</a></code> <code><a href="epi_constants.html">i_D</a></code> <code><a href="epi_constants.html">i_dE</a></code> <code><a href="epi_constants.html">i_dH</a></code> <code><a href="epi_constants.html">i_dD</a></code> <code><a href="epi_constants.html">N_INFECTION_SUBSYSTEM</a></code> <code><a href="epi_constants.html">COMPARTMENTS_cpp</a></code>
 
         </dt>
         <dd>Epidemiological compartments and indices</dd>
@@ -353,13 +371,19 @@
         <dd>Event and root-finding functions to terminate epidemic responses</dd>
       </dl><dl><dt>
 
+          <code><a href="prepare_contacts.html">make_conmat_large()</a></code> <code><a href="prepare_contacts.html">make_work_contacts()</a></code> <code><a href="prepare_contacts.html">make_consumer_contacts()</a></code>
+
+        </dt>
+        <dd>Make large contact matrix for Cpp model.</dd>
+      </dl><dl><dt>
+
           <code><a href="prepare_mutable_parameters.html">prepare_mutable_parameters()</a></code>
 
         </dt>
         <dd>Prepare mutable parameters for the DAEDALUS model</dd>
       </dl><dl><dt>
 
-          <code><a href="prepare_output.html">prepare_output()</a></code>
+          <code><a href="prepare_output.html">prepare_output()</a></code> <code><a href="prepare_output.html">prepare_output_cpp()</a></code>
 
         </dt>
         <dd>Prepare DAEDALUS data</dd>
