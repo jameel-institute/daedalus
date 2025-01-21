@@ -30,7 +30,7 @@ typedef Eigen::MatrixXd state_type;
 /// @param flag
 /// @return Either `value` when `flag` = 1.0, or 1.0 when `flag` = 0.0.
 template <typename T>
-T apply_npi(T value, const double &flag) {
+T apply_npi(T value, const double flag) {
   return (1.0 - (1.0 - value) * flag);
 }
 
