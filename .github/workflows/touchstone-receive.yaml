@@ -17,6 +17,11 @@ on:
       - ".github/workflows/touchstone-*.yaml"
       - ".benchmark"
 
+permissions:
+  contents: read
+  statuses: write
+  pull-requests: write
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
