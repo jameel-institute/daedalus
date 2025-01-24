@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2024 Imperial College of Science, Technology and Medicine
+Copyright (c) 2025 Imperial College of Science, Technology and Medicine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
