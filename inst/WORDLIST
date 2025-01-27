@@ -14,6 +14,7 @@ GVA
 Hosptial
 IDM
 IFR
+IfG
 Jameel
 Latif
 NPI
@@ -41,8 +42,6 @@ erroring
 exogeneous
 fn
 frac
-furrr
-ggdist
 odeint
 org
 pak
