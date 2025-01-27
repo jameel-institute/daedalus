@@ -5,16 +5,16 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Model health, social, and economic costs of a pandemic using DAEDALUS • daedalus</title>
+<title>Model Health, Social, and Economic Costs of a Pandemic • daedalus</title>
 <script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/Inter-0.4.9/font.css" rel="stylesheet">
 <link href="deps/Source_Code_Pro-0.4.9/font.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Model health, social, and economic costs of a pandemic using DAEDALUS">
-<meta name="description" content="Model the health, education, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of prior vaccine investment and reactive interventions, using the _DAEDALUS_ integrated health-economics model adapted from Haw et al. (2022) &lt;doi.org/10.1038/s43588-022-00233-0&gt;.">
-<meta property="og:description" content="Model the health, education, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of prior vaccine investment and reactive interventions, using the _DAEDALUS_ integrated health-economics model adapted from Haw et al. (2022) &lt;doi.org/10.1038/s43588-022-00233-0&gt;.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Model Health, Social, and Economic Costs of a Pandemic">
+<meta name="description" content="Model the health, education, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of prior vaccine investment and reactive interventions, using the DAEDALUS integrated health-economics model adapted from Haw et al. (2022) &lt;doi.org/10.1038/s43588-022-00233-0&gt;.">
+<meta property="og:description" content="Model the health, education, and economic costs of directly transmitted respiratory virus pandemics, under different scenarios of prior vaccine investment and reactive interventions, using the DAEDALUS integrated health-economics model adapted from Haw et al. (2022) &lt;doi.org/10.1038/s43588-022-00233-0&gt;.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -91,6 +91,15 @@
 <span>    <span class="st">"https://jameel-institute.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="installation-notes">Installation notes<a class="anchor" aria-label="anchor" href="#installation-notes"></a>
+</h3>
+<p><em>daedalus</em> is under active development. To use a version of <em>daedalus</em> associated with major milestones, install a specific version from the list below.</p>
+<ul>
+<li><p>IDM Thailand 2024: <code>pak::pak("jameel-institute/daedalus@v0.1.0")</code></p></li>
+<li><p>IfG workshop 2025 (with real time modelling): <code>pak::pak("jameel-institute/daedalus@v0.2.0")</code></p></li>
+</ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
@@ -108,8 +117,8 @@
 <span></span>
 <span><span class="co"># disaggregate total for economic, education, and health costs</span></span>
 <span><span class="fu"><a href="reference/get_costs.html">get_costs</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"domain"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    economic   education  life_years </span></span>
-<span><span class="co">#&gt;   33680.950    2201.333 1585301.497</span></span></code></pre></div>
+<span><span class="co">#&gt;     economic    education   life_value   life_years </span></span>
+<span><span class="co">#&gt;    33680.950     2201.333  1585301.497 34425656.823</span></span></code></pre></div>
 <p>Users can select infection parameters from among seven epidemics caused by directly-transmitted viral respiratory pathogens, which are stored in the package as <code><a href="reference/epidemic_data.html">daedalus::infection_data</a></code>, with epidemic identifiers are stored as <code><a href="reference/epidemic_data.html">daedalus::epidemic_names</a></code>.</p>
 <p>Users can override default country contact data and epidemic-specific infection arguments by passing custom classes to <code><a href="reference/daedalus.html">daedalus()</a></code>; see the package website for more details.</p>
 <p>Users can also model the implementation of pandemic response measures: for more on this see the documentation for the main model function <code><a href="reference/daedalus.html">daedalus()</a></code>, and the vignette on modelling interventions on the package website.</p>
@@ -122,7 +131,7 @@
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-haw2022" class="csl-entry">
 Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo Pianella, Robert Johnson, Sumali Bajaj, et al. 2022. “Optimizing Social and Economic Activity While Containing SARS-CoV-2 Transmission Using DAEDALUS.” <em>Nature Computational Science</em> 2 (4): 223–33. <a href="https://doi.org/10.1038/s43588-022-00233-0" class="external-link uri">https://doi.org/10.1038/s43588-022-00233-0</a>.
 </div>
