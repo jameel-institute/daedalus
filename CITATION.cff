@@ -7,11 +7,11 @@ cff-version: 1.2.0
 message: 'To cite package "daedalus" in publications use:'
 type: software
 license: MIT
-title: 'daedalus: Model health, social, and economic costs of a pandemic using DAEDALUS'
+title: 'daedalus: Model Health, Social, and Economic Costs of a Pandemic'
 version: 0.2.0
 abstract: Model the health, education, and economic costs of directly transmitted
   respiratory virus pandemics, under different scenarios of prior vaccine investment
-  and reactive interventions, using the _DAEDALUS_ integrated health-economics model
+  and reactive interventions, using the 'DAEDALUS' integrated health-economics model
   adapted from Haw et al. (2022) <doi.org/10.1038/s43588-022-00233-0>.
 authors:
 - family-names: Gupte
