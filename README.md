@@ -38,6 +38,17 @@ install.packages(
 )
 ```
 
+### Installation notes
+
+*daedalus* is under active development. To use a version of *daedalus*
+associated with major milestones, install a specific version from the
+list below.
+
+- IDM Thailand 2024: `pak::pak("jameel-institute/daedalus@v0.1.0")`
+
+- IfG workshop 2025 (with real time modelling):
+  `pak::pak("jameel-institute/daedalus@v0.2.0")`
+
 ## Quick start
 
 The model can be run for any country or territory in the `country_names`
