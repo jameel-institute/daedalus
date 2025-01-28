@@ -19,17 +19,40 @@ daedalus2_internal <- function(time_end, params) {
 #'
 #' `daedalus::daedalus2()` will eventually replace `daedalus::daedalus()` with
 #' the model implemented in C++ to integrate with \pkg{dust2}
-#' (and in future \pkg{dust}),
+#' (and in future \pkg{dust}). *This is a work in progress!*
 #'
 #' @inheritParams daedalus
+#' @param ... Optional named parameters for the model. See **Details** for more.
 #' @export
+#'
+#' @details
+#'
+#' ## Optional parameters
+#'
+#' Pass any of the following as named values (see example). This is a work in
+#' progress.
+#'
+#' - "I0": Initial number of exposed.
+#'
+#' - "N": Initial population size assumed to be uniform for all strata.
+#'
+#' - "beta": The transmission rate of the infection.
+#'
+#' - "sigma": The infectiousness rate.
+#'
+#' - "gamma": The recovery rate.
+#'
+#' - "n_strata": The number of strata (e.g. demography groups).
+#'
+#' @examples
+#' daedalus2(5, n_strata = 4)
 daedalus2 <- function(time_end = 100, ...) {
-  # TODO: input checking
-  # TODO: parameter filtering
+  # NOTE: input checking
+  # NOTE: parameter filtering
   params <- rlang::list2(...)
   output <- daedalus2_internal(time_end, params)
 
-  # TODO: needs to be compatible with `<daedalus_output>`
+  # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
   output
 }
