@@ -21,7 +21,7 @@ reference:
     desc: Run the DAEDALUS integrated economic-epidemiological model
     contents:
     - daedalus
-    - daedalus_rtm
+    - daedalus2
   - title: Class `<daedalus_country>`
     desc: Represent and access country or territory characteristics
     contents:
