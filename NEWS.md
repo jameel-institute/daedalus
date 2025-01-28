@@ -22,8 +22,6 @@ This is a patch version of {daedalus} that builds up to combining `daedalus::dae
 
 - Infrastructure files updated for changes above.
 
-
-
 # daedalus 0.2.0
 
 This is a minor version release of {daedalus} that adds real-time epidemic modelling functionality while removing the implementation of vaccination and vaccination-group infection pathways.

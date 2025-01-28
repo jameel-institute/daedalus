@@ -11,11 +11,28 @@ daedalus2(time_end = 100, ...)
 at which to return data. This is treated as the number of days with data
 returned for each day. Defaults to 300 days.}
 
-\item{...}{Other arguments to be passed to the ODE solver; these are passed
-to \code{\link[deSolve:ode]{deSolve::ode()}}.}
+\item{...}{Optional named parameters for the model. See \strong{Details} for more.}
 }
 \description{
 \code{daedalus::daedalus2()} will eventually replace \code{daedalus::daedalus()} with
 the model implemented in C++ to integrate with \pkg{dust2}
-(and in future \pkg{dust}),
+(and in future \pkg{dust}). \emph{This is a work in progress!}
+}
+\details{
+\subsection{Optional parameters}{
+
+Pass any of the following as named values (see example). This is a work in
+progress.
+\itemize{
+\item "I0": Initial number of exposed.
+\item "N": Initial population size assumed to be uniform for all strata.
+\item "beta": The transmission rate of the infection.
+\item "sigma": The infectiousness rate.
+\item "gamma": The recovery rate.
+\item "n_strata": The number of strata (e.g. demography groups).
+}
+}
+}
+\examples{
+daedalus2(5, n_strata = 4)
 }
