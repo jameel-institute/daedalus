@@ -5,7 +5,6 @@ CoV
 Codecov
 Cov
 Covid
-Cpp
 EPPI
 Forchini
 GH
@@ -35,13 +34,15 @@ VSY
 arg
 asumes
 asymp
+cpp
 doi
 econ
 edu
+eigen
 erroring
-exogeneous
 fn
 frac
+monty
 odeint
 org
 pak

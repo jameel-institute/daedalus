@@ -14,14 +14,5 @@ touchstone::benchmark_run(
   n = 10
 )
 
-# benchmark daedalus::daedalus_rtm()
-touchstone::benchmark_run(
-  test_daedalus_rtm = daedalus::daedalus_rtm(
-    "GBR", "influenza_2009", "elimination",
-    10, 90
-  ),
-  n = 10
-)
-
 # create artifacts used downstream in the GitHub Action
 touchstone::benchmark_analyze()
