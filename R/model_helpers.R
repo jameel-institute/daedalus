@@ -1,3 +1,55 @@
+#' Make large contact matrix for Cpp model.
+#'
+#' @name prepare_contacts
+#' @rdname prepare_contacts
+#'
+#' @param country A `<daedalus_country>`.
+#'
+#' @keywords internal
+#' @return
+#'
+#' 1. `make_conmat_large()` returns a 49x49 contact matrix scaled by the size of
+#' demography groups.
+#'
+#' 2. `make_work_contacts()` returns a 45-element vector (for the number of
+#' economic sectors) scaled by the number of workers per sector.
+#'
+#' 3. `make_consumer_contacts()` returns a 45x4 contact matrix with each row
+#' scaled by the number of workers per sector. Dimensions are the number of
+#' economic sectors and the number of age groups.
+make_conmat_large <- function(country) {
+  cm_nrow <- N_AGE_GROUPS + N_ECON_SECTORS
+
+  cm <- matrix(NA, cm_nrow, cm_nrow)
+  cm[i_AGE_GROUPS, i_AGE_GROUPS] <- country$contact_matrix
+  cm[i_AGE_GROUPS, i_ECON_SECTORS] <- matrix(
+    cm[i_AGE_GROUPS, i_WORKING_AGE], N_AGE_GROUPS, N_ECON_SECTORS
+  )
+  cm[i_ECON_SECTORS, i_AGE_GROUPS] <- matrix(
+    cm[i_WORKING_AGE, i_AGE_GROUPS], N_ECON_SECTORS, N_AGE_GROUPS,
+    byrow = TRUE
+  )
+
+  cm[is.na(cm)] <- cm[i_WORKING_AGE, i_WORKING_AGE]
+
+  demog <- rep(country$demography[i_WORKING_AGE], cm_nrow)
+  demog[i_AGE_GROUPS] <- country$demography
+  cm <- cm / demog
+
+  cm
+}
+
+#' @name prepare_contacts
+make_work_contacts <- function(country) {
+  country$contacts_workplace / country$workers
+}
+
+#' @name prepare_contacts
+make_consumer_contacts <- function(country) {
+  # row-wise divison
+  country$contacts_consumer_worker / country$workers
+}
+
 #' @title Generate a default initial state for DAEDALUS
 #' @description Function to prepare the model initial state. Assumes that
 #' 1 in every million individuals is initially infected, and that 60% are
