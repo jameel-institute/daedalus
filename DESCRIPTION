@@ -52,11 +52,11 @@ LinkingTo:
     cpp11eigen,
     dust2,
     monty
+VignetteBuilder: 
+    knitr
 Remotes:
     mrc-ide/dust2,
     mrc-ide/monty
-VignetteBuilder: 
-    knitr
 Config/Needs/website: jameel-institute/jameelinst.rpkg.theme
 Config/testthat/edition: 3
 Encoding: UTF-8

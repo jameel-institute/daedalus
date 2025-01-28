@@ -1,3 +1,29 @@
+# daedalus 0.2.1
+
+This is a patch version of {daedalus} that builds up to combining `daedalus::daedalus()` with `daedalus::daedalus_rtm()`.
+
+**Breaking changes**
+
+- `daedalus_rtm()` has been removed; please see installation instructions in the Readme for how install a {daedalus} version that provides it;
+
+- {Rcpp} and {RcppEigen} have been replaced with {cpp11} and {cpp11eigen};
+
+- Tests using `daedalus_rtm()` have been removed;
+
+- Continuous benchmarking removed for `daedalus_rtm()`.
+
+**Other changes**
+
+- Dependencies {dust2} and {monty} added;
+
+- Added successor function `daedalus2()` which will replace `daedalus()`;
+
+- Toy SEIR model with flexible number of demographic strata added in `inst/dust/daedalus.cpp`; this will build up to the full model;
+
+- Infrastructure files updated for changes above.
+
+
+
 # daedalus 0.2.0
 
 This is a minor version release of {daedalus} that adds real-time epidemic modelling functionality while removing the implementation of vaccination and vaccination-group infection pathways.
