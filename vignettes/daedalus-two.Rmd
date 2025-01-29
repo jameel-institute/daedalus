@@ -1,0 +1,29 @@
+---
+title: "Daedalus features in development"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Daedalus features in development}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(daedalus)
+```
+
+This vignette is intended as a visual check on _daedalus_ features in development.
+
+```{r}
+output <- daedalus2(100, n_strata = 1)
+
+plot(as.vector(output$E))
+plot(as.vector(output$I))
+plot(as.vector(output$cases_inc))
+```
