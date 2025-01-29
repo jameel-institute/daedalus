@@ -20,7 +20,9 @@ This is a patch version of {daedalus} that builds up to combining `daedalus::dae
 
 - Toy SEIR model with flexible number of demographic strata added in `inst/dust/daedalus.cpp`; this will build up to the full model;
 
-- Infrastructure files updated for changes above.
+- Infrastructure files updated for changes above;
+
+- Added small vignette to show functionality.
 
 # daedalus 0.2.0
 
