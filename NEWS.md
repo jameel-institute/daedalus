@@ -22,7 +22,7 @@ This is a patch version of {daedalus} that builds up to combining `daedalus::dae
 
 - Infrastructure files updated for changes above;
 
-- Added small vignette to show functionality.
+- Added small vignette to check functionality.
 
 # daedalus 0.2.0
 
