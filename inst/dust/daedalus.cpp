@@ -15,11 +15,11 @@
 // hardcoded as key to model structure
 const int N_EPI_COMPARTMENTS = 4;
 const int N_DATA_COMPARTMENTS = 1;
+const std::vector<size_t> i_DATA_COMPARTMENTS = {4};
 const int N_COMPARTMENTS = N_EPI_COMPARTMENTS + N_DATA_COMPARTMENTS;
 
 // [[dust2::class(daedalus_ode)]]
 // [[dust2::time_type(continuous)]]
-// [[dust2::has_compare()]]
 // [[dust2::parameter(I0, constant = FALSE)]]
 // [[dust2::parameter(N, constant = TRUE)]]
 // [[dust2::parameter(beta, constant = FALSE)]]
@@ -45,12 +45,8 @@ class daedalus_ode {
   /// @brief Internal state - unclear purpose.
   struct internal_state {};
 
-  /// @brief Holds incidence - unclear purpose.
-  struct data_type {
-    real_type incidence;
-  };
-
   // unclear whether dust2/common.hpp links to monty - probably
+  // NOTE: do not remove, causes compilation errors
   using rng_state_type = monty::random::generator<real_type>;
 
   /// @brief How compartments are packed.
@@ -89,22 +85,13 @@ class daedalus_ode {
     shared.n_strata = dust2::r::read_int(pars, "n_strata", shared.n_strata);
   }
 
-  /// @brief Return incidence data -- unclear purpose.
-  /// @param r_data A list of R data to copy.
-  /// @param shared Shared parameters -- unclear purpose.
-  /// @return Data on incidence -- unclear purpose.
-  static data_type build_data(cpp11::list r_data, const shared_state &shared) {
-    auto data = static_cast<cpp11::list>(r_data);
-    auto incidence = dust2::r::read_real(data, "incidence", NA_REAL);
-    return data_type{incidence};
-  }
-
   /// @brief Set initial values of the IVP model.
   /// @param time Time -- not used. Purpose unclear.
   /// @param shared Shared parameter object.
   /// @param state_next Next state as double value.
   static void initial(real_type time, const shared_state &shared,
-                      real_type *state_next) {
+                      const internal_state &internal,
+                      const rng_state_type &rng_state, real_type *state_next) {
     // TODO(pratik): remove `internal` and `rng_state` as not used
     size_t vec_size = shared.n_strata;  // currently a single size_t
 
@@ -125,7 +112,8 @@ class daedalus_ode {
   /// @param shared Shared parameters.
   /// @param state_deriv State change or dX.
   static void rhs(real_type time, const real_type *state,
-                  const shared_state &shared, real_type *state_deriv) {
+                  const shared_state &shared, const internal_state &internal,
+                  real_type *state_deriv) {
     size_t vec_size = shared.n_strata;  // currently a single size_t
 
     // map to Eigen containers
@@ -141,10 +129,10 @@ class daedalus_ode {
     const auto rate_EI = shared.sigma * x.col(1).array();
     const auto rate_IR = shared.gamma * x.col(2).array();
     dx.col(0) = -rate_SE;
-    dx.col(1) = rate_SE;
+    dx.col(1) = rate_SE - rate_EI;
     dx.col(2) = rate_EI - rate_IR;
     dx.col(3) = rate_IR;
-    dx.col(4) = rate_EI;
+    dx.col(4) = rate_SE;
   }
 
   /// @brief Set every value to zero - unclear.
@@ -152,25 +140,6 @@ class daedalus_ode {
   /// @return Probably an array of zeros.
   static auto zero_every(const shared_state &shared) {
     return dust2::zero_every_type<real_type>{
-        {1, {}}};  // unclear what value this should be
-  }
-
-  /// @brief Unclear what this does.
-  /// @param time
-  /// @param state
-  /// @param data
-  /// @param shared
-  /// @param internal
-  /// @param rng_state
-  /// @return
-  static real_type compare_data(const real_type time, const real_type *state,
-                                const data_type &data,
-                                const shared_state &shared) {
-    const auto incidence_observed = data.incidence;
-    if (std::isnan(incidence_observed)) {
-      return 0;
-    }
-    const auto lambda = state[3];
-    return monty::density::poisson(incidence_observed, lambda, true);
+        {1, i_DATA_COMPARTMENTS}};  // zero incidence data compartments
   }
 };

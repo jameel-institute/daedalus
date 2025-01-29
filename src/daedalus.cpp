@@ -17,11 +17,11 @@
 // hardcoded as key to model structure
 const int N_EPI_COMPARTMENTS = 4;
 const int N_DATA_COMPARTMENTS = 1;
+const std::vector<size_t> i_DATA_COMPARTMENTS = {4};
 const int N_COMPARTMENTS = N_EPI_COMPARTMENTS + N_DATA_COMPARTMENTS;
 
 // [[dust2::class(daedalus_ode)]]
 // [[dust2::time_type(continuous)]]
-// [[dust2::has_compare()]]
 // [[dust2::parameter(I0, constant = FALSE)]]
 // [[dust2::parameter(N, constant = TRUE)]]
 // [[dust2::parameter(beta, constant = FALSE)]]
@@ -47,12 +47,8 @@ class daedalus_ode {
   /// @brief Internal state - unclear purpose.
   struct internal_state {};
 
-  /// @brief Holds incidence - unclear purpose.
-  struct data_type {
-    real_type incidence;
-  };
-
   // unclear whether dust2/common.hpp links to monty - probably
+  // NOTE: do not remove, causes compilation errors
   using rng_state_type = monty::random::generator<real_type>;
 
   /// @brief How compartments are packed.
@@ -91,25 +87,13 @@ class daedalus_ode {
     shared.n_strata = dust2::r::read_int(pars, "n_strata", shared.n_strata);
   }
 
-  /// @brief Return incidence data -- unclear purpose.
-  /// @param r_data A list of R data to copy.
-  /// @param shared Shared parameters -- unclear purpose.
-  /// @return Data on incidence -- unclear purpose.
-  static data_type build_data(cpp11::list r_data, const shared_state &shared) {
-    auto data = static_cast<cpp11::list>(r_data);
-    auto incidence = dust2::r::read_real(data, "incidence", NA_REAL);
-    return data_type{incidence};
-  }
-
   /// @brief Set initial values of the IVP model.
   /// @param time Time -- not used. Purpose unclear.
   /// @param shared Shared parameter object.
-  /// @param internal Internal state object - not used. Purpose unclear.
-  /// @param rng_state RNG state -- not used. Purpose unclear.
   /// @param state_next Next state as double value.
   static void initial(real_type time, const shared_state &shared,
-                      internal_state &internal,   // NOLINT
-                      rng_state_type &rng_state,  // NOLINT
+                      const internal_state &internal,   // NOLINT
+                      const rng_state_type &rng_state,  // NOLINT
                       real_type *state_next) {
     // TODO(pratik): remove `internal` and `rng_state` as not used
     size_t vec_size = shared.n_strata;  // currently a single size_t
@@ -129,11 +113,10 @@ class daedalus_ode {
   /// @param time Time -- not used.
   /// @param state Pointer to state.
   /// @param shared Shared parameters.
-  /// @param internal Internal state -- purpose unclear.
   /// @param state_deriv State change or dX.
   static void rhs(real_type time, const real_type *state,
                   const shared_state &shared,
-                  internal_state &internal,  // NOLINT
+                  const internal_state &internal,  // NOLINT
                   real_type *state_deriv) {
     size_t vec_size = shared.n_strata;  // currently a single size_t
 
@@ -150,10 +133,10 @@ class daedalus_ode {
     const auto rate_EI = shared.sigma * x.col(1).array();
     const auto rate_IR = shared.gamma * x.col(2).array();
     dx.col(0) = -rate_SE;
-    dx.col(1) = rate_SE;
+    dx.col(1) = rate_SE - rate_EI;
     dx.col(2) = rate_EI - rate_IR;
     dx.col(3) = rate_IR;
-    dx.col(4) = rate_EI;
+    dx.col(4) = rate_SE;
   }
 
   /// @brief Set every value to zero - unclear.
@@ -161,35 +144,12 @@ class daedalus_ode {
   /// @return Probably an array of zeros.
   static auto zero_every(const shared_state &shared) {
     return dust2::zero_every_type<real_type>{
-        {1, {}}};  // unclear what value this should be
-  }
-
-  /// @brief Unclear what this does.
-  /// @param time
-  /// @param state
-  /// @param data
-  /// @param shared
-  /// @param internal
-  /// @param rng_state
-  /// @return
-  static real_type compare_data(const real_type time, const real_type *state,
-                                const data_type &data,
-                                const shared_state &shared,
-                                internal_state &internal,     // NOLINT
-                                rng_state_type &rng_state) {  // NOLINT
-    const auto incidence_observed = data.incidence;
-    if (std::isnan(incidence_observed)) {
-      return 0;
-    }
-    const auto lambda = state[3];
-    return monty::density::poisson(incidence_observed, lambda, true);
+        {1, i_DATA_COMPARTMENTS}};  // zero incidence data compartments
   }
 };
 
 #include <cpp11.hpp>
 #include <dust2/r/continuous/system.hpp>
-#include <dust2/r/continuous/filter.hpp>
-#include <dust2/r/continuous/unfilter.hpp>
 
 [[cpp11::register]]
 SEXP dust2_system_daedalus_ode_alloc(cpp11::list r_pars, cpp11::sexp r_time, cpp11::list r_time_control, cpp11::sexp r_n_particles, cpp11::sexp r_n_groups, cpp11::sexp r_seed, cpp11::sexp r_deterministic, cpp11::sexp r_n_threads) {
@@ -253,68 +213,4 @@ SEXP dust2_system_daedalus_ode_update_pars(cpp11::sexp ptr, cpp11::list pars) {
 [[cpp11::register]]
 SEXP dust2_system_daedalus_ode_simulate(cpp11::sexp ptr, cpp11::sexp r_times, cpp11::sexp r_index_state, bool preserve_particle_dimension, bool preserve_group_dimension) {
   return dust2::r::dust2_system_simulate<dust2::dust_continuous<daedalus_ode>>(ptr, r_times, r_index_state, preserve_particle_dimension, preserve_group_dimension);
-}
-
-[[cpp11::register]]
-SEXP dust2_unfilter_daedalus_ode_alloc(cpp11::list r_pars, cpp11::sexp r_time_start, cpp11::sexp r_time, cpp11::list r_time_control, cpp11::list r_data, cpp11::sexp r_n_particles, cpp11::sexp r_n_groups, cpp11::sexp r_n_threads) {
-  return dust2::r::dust2_continuous_unfilter_alloc<daedalus_ode>(r_pars, r_time_start, r_time, r_time_control, r_data, r_n_particles, r_n_groups, r_n_threads);
-}
-
-[[cpp11::register]]
-SEXP dust2_filter_daedalus_ode_alloc(cpp11::list r_pars, cpp11::sexp r_time_start, cpp11::sexp r_time, cpp11::list r_time_control, cpp11::list r_data, cpp11::sexp r_n_particles, cpp11::sexp r_n_groups, cpp11::sexp r_n_threads, cpp11::sexp r_seed) {
-  return dust2::r::dust2_continuous_filter_alloc<daedalus_ode>(r_pars, r_time_start, r_time, r_time_control, r_data, r_n_particles, r_n_groups, r_n_threads, r_seed);
-}
-[[cpp11::register]]
-SEXP dust2_system_daedalus_ode_compare_data(cpp11::sexp ptr, cpp11::list r_data, bool preserve_particle_dimension, bool preserve_group_dimension) {
-  return dust2::r::dust2_system_compare_data<dust2::dust_continuous<daedalus_ode>>(ptr, r_data, preserve_particle_dimension, preserve_group_dimension);
-}
-
-[[cpp11::register]]
-SEXP dust2_unfilter_daedalus_ode_update_pars(cpp11::sexp ptr, cpp11::list r_pars, cpp11::sexp r_index_group) {
-  return dust2::r::dust2_unfilter_update_pars<dust2::dust_continuous<daedalus_ode>>(ptr, r_pars, r_index_group);
-}
-
-[[cpp11::register]]
-SEXP dust2_unfilter_daedalus_ode_run(cpp11::sexp ptr, cpp11::sexp r_initial, bool save_history, bool adjoint, cpp11::sexp r_index_state, cpp11::sexp r_index_group, bool preserve_particle_dimension, bool preserve_group_dimension) {
-  return dust2::r::dust2_unfilter_run<dust2::dust_continuous<daedalus_ode>>(ptr, r_initial, save_history, adjoint, r_index_state, r_index_group, preserve_particle_dimension, preserve_group_dimension);
-}
-
-[[cpp11::register]]
-SEXP dust2_unfilter_daedalus_ode_last_trajectories(cpp11::sexp ptr, bool select_random_particle, bool preserve_particle_dimension, bool preserve_group_dimension) {
-  return dust2::r::dust2_unfilter_last_trajectories<dust2::dust_continuous<daedalus_ode>>(ptr, select_random_particle, preserve_particle_dimension, preserve_group_dimension);
-}
-
-[[cpp11::register]]
-SEXP dust2_unfilter_daedalus_ode_last_state(cpp11::sexp ptr, bool select_random_particle, bool preserve_particle_dimension, bool preserve_group_dimension) {
-  return dust2::r::dust2_unfilter_last_state<dust2::dust_continuous<daedalus_ode>>(ptr, select_random_particle, preserve_particle_dimension, preserve_group_dimension);
-}
-
-[[cpp11::register]]
-SEXP dust2_filter_daedalus_ode_update_pars(cpp11::sexp ptr, cpp11::list r_pars, cpp11::sexp r_index_group) {
-  return dust2::r::dust2_filter_update_pars<dust2::dust_continuous<daedalus_ode>>(ptr, r_pars, r_index_group);
-}
-
-[[cpp11::register]]
-SEXP dust2_filter_daedalus_ode_run(cpp11::sexp ptr, cpp11::sexp r_initial, bool save_history, bool adjoint, cpp11::sexp index_state, cpp11::sexp index_group, bool preserve_particle_dimension, bool preserve_group_dimension) {
-  return dust2::r::dust2_filter_run<dust2::dust_continuous<daedalus_ode>>(ptr, r_initial, save_history, adjoint, index_state, index_group, preserve_particle_dimension, preserve_group_dimension);
-}
-
-[[cpp11::register]]
-SEXP dust2_filter_daedalus_ode_last_trajectories(cpp11::sexp ptr, bool select_random_particle, bool preserve_particle_dimension, bool preserve_group_dimension) {
-  return dust2::r::dust2_filter_last_trajectories<dust2::dust_continuous<daedalus_ode>>(ptr, select_random_particle, preserve_particle_dimension, preserve_group_dimension);
-}
-
-[[cpp11::register]]
-SEXP dust2_filter_daedalus_ode_last_state(cpp11::sexp ptr, bool select_random_particle, bool preserve_particle_dimension, bool preserve_group_dimension) {
-  return dust2::r::dust2_filter_last_state<dust2::dust_continuous<daedalus_ode>>(ptr, select_random_particle, preserve_particle_dimension, preserve_group_dimension);
-}
-
-[[cpp11::register]]
-SEXP dust2_filter_daedalus_ode_rng_state(cpp11::sexp ptr) {
-  return dust2::r::dust2_filter_rng_state<dust2::dust_continuous<daedalus_ode>>(ptr);
-}
-
-[[cpp11::register]]
-SEXP dust2_filter_daedalus_ode_set_rng_state(cpp11::sexp ptr, cpp11::sexp r_rng_state) {
-  return dust2::r::dust2_filter_set_rng_state<dust2::dust_continuous<daedalus_ode>>(ptr, r_rng_state);
 }

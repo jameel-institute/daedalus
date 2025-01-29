@@ -12,7 +12,7 @@ daedalus_ode <- structure(
   ),
   properties = list(
     time_type = "continuous",
-    has_compare = TRUE,
+    has_compare = FALSE,
     has_adjoint = FALSE
   ),
   default_dt = NULL
