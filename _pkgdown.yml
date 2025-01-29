@@ -15,6 +15,10 @@ articles:
   contents:
   - info_life_value
   - info_edu_value
+- title: "In development"
+  navbar: "In development"
+  contents:
+  - daedalus-two
 
 reference:
   - title: Model function
