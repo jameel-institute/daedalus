@@ -100,7 +100,7 @@ class daedalus_ode {
     shared.sigma = dust2::r::read_real(pars, "sigma", shared.sigma);
     shared.gamma = dust2::r::read_real(pars, "gamma", shared.gamma);
     shared.n_strata = dust2::r::read_int(pars, "n_strata", shared.n_strata);
-    // TODO: add conmat update method
+    // TODO(pratik): add conmat update method?
   }
 
   /// @brief Set initial values of the IVP model.
@@ -110,7 +110,6 @@ class daedalus_ode {
   static void initial(real_type time, const shared_state &shared,
                       const internal_state &internal,
                       const rng_state_type &rng_state, real_type *state_next) {
-    // TODO(pratik): remove `internal` and `rng_state` as not used
     size_t vec_size = shared.n_strata;  // currently a single size_t
 
     // map an Eigen container
