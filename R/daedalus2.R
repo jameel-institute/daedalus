@@ -22,6 +22,8 @@ daedalus2_internal <- function(time_end, params) {
 #' (and in future \pkg{dust}). *This is a work in progress!*
 #'
 #' @inheritParams daedalus
+#' @param n_strata A single integer for the number of age or demographic groups.
+#' To be replaced with [daedalus()] like arguments in future.
 #' @param ... Optional named parameters for the model. See **Details** for more.
 #' @export
 #'
@@ -41,8 +43,6 @@ daedalus2_internal <- function(time_end, params) {
 #' - "sigma": The infectiousness rate.
 #'
 #' - "gamma": The recovery rate.
-#'
-#' - "n_strata": The number of strata (e.g. demography groups).
 #'
 #' @examples
 #' daedalus2(5, n_strata = 4)
