@@ -46,10 +46,20 @@ daedalus2_internal <- function(time_end, params) {
 #'
 #' @examples
 #' daedalus2(5, n_strata = 4)
-daedalus2 <- function(time_end = 100, ...) {
+daedalus2 <- function(time_end = 100, n_strata = 3, ...) {
   # NOTE: input checking
   # NOTE: parameter filtering
   params <- rlang::list2(...)
+
+  # all-ones matrix to make eigenvalue scaling easier
+  # demography scaling is in internal code
+  conmat <- matrix(1, n_strata, n_strata)
+  conmat <- conmat / n_strata
+
+  params <- c(
+    list(n_strata = n_strata, conmat = conmat), params
+  )
+
   output <- daedalus2_internal(time_end, params)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
