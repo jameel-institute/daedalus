@@ -12,7 +12,7 @@ This is a patch version of {daedalus} that builds up to combining `daedalus::dae
 
 - Continuous benchmarking removed for `daedalus_rtm()`.
 
-**Other changes**
+**Changes for dust2 implementation**
 
 - Dependencies {dust2} and {monty} added;
 
@@ -22,7 +22,9 @@ This is a patch version of {daedalus} that builds up to combining `daedalus::dae
 
 - Infrastructure files updated for changes above;
 
-- Added small vignette to check functionality.
+- Added small vignette to check functionality;
+
+- Added small header and package header with a helper function `zero_which()` in `daedalus::helpers` namespace to identify which compartments in the state to zero with `zero_every()`.
 
 # daedalus 0.2.0
 
