@@ -45,6 +45,7 @@ class daedalus_ode {
     real_type gamma;
     int n_strata;
     const std::vector<size_t> i_to_zero;
+    Eigen::MatrixXd conmat;
   };
 
   /// @brief Internal state - unclear purpose.
@@ -77,10 +78,17 @@ class daedalus_ode {
     const real_type gamma = dust2::r::read_real(pars, "gamma", 0.1);
     const int n_strata = dust2::r::read_int(pars, "n_strata", 3);
 
+    // handling compartments to zero
     const std::vector<size_t> i_to_zero =
         daedalus::helpers::zero_which(seq_DATA_COMPARTMENTS, n_strata);
 
-    return shared_state{N, I0, beta, sigma, gamma, n_strata, i_to_zero};
+    // handling contact matrix
+    const std::vector<size_t> vec_cm_dims(2, n_strata);  // for square matrix
+    const dust2::array::dimensions<2> cm_dims(vec_cm_dims.begin());
+    Eigen::MatrixXd conmat(n_strata, n_strata);
+    dust2::r::read_real_array(pars, cm_dims, conmat.data(), "conmat", true);
+
+    return shared_state{N, I0, beta, sigma, gamma, n_strata, i_to_zero, conmat};
   }
 
   /// @brief Updated shared parameters.
@@ -92,6 +100,7 @@ class daedalus_ode {
     shared.sigma = dust2::r::read_real(pars, "sigma", shared.sigma);
     shared.gamma = dust2::r::read_real(pars, "gamma", shared.gamma);
     shared.n_strata = dust2::r::read_int(pars, "n_strata", shared.n_strata);
+    // TODO: add conmat update method
   }
 
   /// @brief Set initial values of the IVP model.
