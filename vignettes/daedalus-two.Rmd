@@ -21,9 +21,14 @@ library(daedalus)
 This vignette is intended as a visual check on _daedalus_ features in development.
 
 ```{r}
-output <- daedalus2(100, n_strata = 1)
+output <- daedalus2(100, n_strata = 3)
 
-plot(as.vector(output$E))
-plot(as.vector(output$I))
-plot(as.vector(output$cases_inc))
+plot(colSums(output$E))
+plot(colSums(output$I))
+```
+
+This should be a curve and not monotonically increasing.
+
+```{r}
+plot(colSums(output$cases_inc))
 ```
