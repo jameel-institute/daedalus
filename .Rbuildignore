@@ -29,5 +29,7 @@
 ^data-raw$
 ^doc$
 ^Meta$
-^.*_cpp.sh$
+^format-cpp.sh$
+^lint-cpp.sh$
+^CPPLINT.cfg$
 ^touchstone$

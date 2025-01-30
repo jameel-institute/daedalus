@@ -18,4 +18,5 @@ pkgdown
 scratch*
 /doc/
 /Meta/
-*cpp.sh
+format-cpp.sh
+lint-cpp.sh
