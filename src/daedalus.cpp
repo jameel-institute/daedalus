@@ -6,7 +6,10 @@
 // NOTE: header inclusion causes style clashes b/w clang-format and cpplint
 // please include system headers in alphabetical order
 // clang-format off
+#include <daedalus.h>
+
 #include <iterator>
+#include <numeric>
 #include <vector>
 
 #include <cpp11.hpp>
@@ -18,6 +21,7 @@
 const int N_EPI_COMPARTMENTS = 4;
 const int N_DATA_COMPARTMENTS = 1;
 const std::vector<size_t> i_DATA_COMPARTMENTS = {4};
+const std::vector<size_t> seq_DATA_COMPARTMENTS = {5};
 const int N_COMPARTMENTS = N_EPI_COMPARTMENTS + N_DATA_COMPARTMENTS;
 
 // [[dust2::class(daedalus_ode)]]
@@ -42,6 +46,7 @@ class daedalus_ode {
     real_type sigma;
     real_type gamma;
     int n_strata;
+    const std::vector<size_t> i_to_zero;
   };
 
   /// @brief Internal state - unclear purpose.
@@ -73,7 +78,11 @@ class daedalus_ode {
     const real_type sigma = dust2::r::read_real(pars, "sigma", 0.2);
     const real_type gamma = dust2::r::read_real(pars, "gamma", 0.1);
     const int n_strata = dust2::r::read_int(pars, "n_strata", 3);
-    return shared_state{N, I0, beta, sigma, gamma, n_strata};
+
+    const std::vector<size_t> i_to_zero =
+        daedalus::helpers::zero_which(seq_DATA_COMPARTMENTS, n_strata);
+
+    return shared_state{N, I0, beta, sigma, gamma, n_strata, i_to_zero};
   }
 
   /// @brief Updated shared parameters.
@@ -92,9 +101,8 @@ class daedalus_ode {
   /// @param shared Shared parameter object.
   /// @param state_next Next state as double value.
   static void initial(real_type time, const shared_state &shared,
-                      const internal_state &internal,   // NOLINT
-                      const rng_state_type &rng_state,  // NOLINT
-                      real_type *state_next) {
+                      const internal_state &internal,
+                      const rng_state_type &rng_state, real_type *state_next) {
     // TODO(pratik): remove `internal` and `rng_state` as not used
     size_t vec_size = shared.n_strata;  // currently a single size_t
 
@@ -115,8 +123,7 @@ class daedalus_ode {
   /// @param shared Shared parameters.
   /// @param state_deriv State change or dX.
   static void rhs(real_type time, const real_type *state,
-                  const shared_state &shared,
-                  const internal_state &internal,  // NOLINT
+                  const shared_state &shared, const internal_state &internal,
                   real_type *state_deriv) {
     size_t vec_size = shared.n_strata;  // currently a single size_t
 
@@ -144,7 +151,7 @@ class daedalus_ode {
   /// @return Probably an array of zeros.
   static auto zero_every(const shared_state &shared) {
     return dust2::zero_every_type<real_type>{
-        {1, i_DATA_COMPARTMENTS}};  // zero incidence data compartments
+        {1, shared.i_to_zero}};  // zero incidence data compartments
   }
 };
 
