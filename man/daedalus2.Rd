@@ -4,12 +4,15 @@
 \alias{daedalus2}
 \title{DAEDALUS model implemented with dust}
 \usage{
-daedalus2(time_end = 100, ...)
+daedalus2(time_end = 100, n_strata = 3, ...)
 }
 \arguments{
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
 returned for each day. Defaults to 300 days.}
+
+\item{n_strata}{A single integer for the number of age or demographic groups.
+To be replaced with \code{\link[=daedalus]{daedalus()}} like arguments in future.}
 
 \item{...}{Optional named parameters for the model. See \strong{Details} for more.}
 }
@@ -29,7 +32,6 @@ progress.
 \item "beta": The transmission rate of the infection.
 \item "sigma": The infectiousness rate.
 \item "gamma": The recovery rate.
-\item "n_strata": The number of strata (e.g. demography groups).
 }
 }
 }

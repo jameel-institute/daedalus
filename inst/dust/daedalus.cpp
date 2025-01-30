@@ -141,8 +141,8 @@ class daedalus_ode {
     Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, N_COMPARTMENTS>> dx(
         &state_deriv[0], vec_size, N_COMPARTMENTS);
 
-    const auto rate_SE =
-        shared.beta * x.col(0).array() * x.col(2).array() / shared.N;
+    const auto rate_SE = shared.beta * x.col(0).array() *
+                         (shared.conmat * x.col(2)).array() / shared.N;
     const auto rate_EI = shared.sigma * x.col(1).array();
     const auto rate_IR = shared.gamma * x.col(2).array();
     dx.col(0) = -rate_SE;

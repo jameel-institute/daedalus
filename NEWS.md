@@ -1,3 +1,7 @@
+# daedalus 0.2.2
+
+This version adds support for including contact matrices in the `daedalus` class object and using them in the FOI calculation.
+
 # daedalus 0.2.1
 
 This is a patch version of {daedalus} that builds up to combining `daedalus::daedalus()` with `daedalus::daedalus_rtm()`.
