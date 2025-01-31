@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
       - run: pip install cpplint
       - run: cpplint --filter="-build/c++11, -build/include_subdir" inst/dust/*.cpp
       - run: cpplint --filter="-build/c++11, -build/include_subdir" --exclude="inst/include/daedalus.h" inst/include/*.h
