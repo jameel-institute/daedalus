@@ -2,12 +2,13 @@ pandoc: 3.1.11
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
+  daedalus-two: daedalus-two.html
   daedalus: daedalus.html
   info_edu_value: info_edu_value.html
   info_life_value: info_life_value.html
   pandemic_costs: pandemic_costs.html
   thresholded_response: thresholded_response.html
-last_built: 2025-01-27T11:17Z
+last_built: 2025-01-31T11:07Z
 urls:
   reference: https://jameel-institute.github.io/daedalus/reference
   article: https://jameel-institute.github.io/daedalus/articles

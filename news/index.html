@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,6 +27,9 @@
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
     <li><a class="dropdown-item" href="../articles/info_edu_value.html">Value of educational time lost</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>In development</h6></li>
+    <li><a class="dropdown-item" href="../articles/daedalus-two.html">Daedalus features in development</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -51,10 +54,26 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="daedalus-021">daedalus 0.2.1<a class="anchor" aria-label="anchor" href="#daedalus-021"></a></h2>
+<p>This is a patch version of {daedalus} that builds up to combining <code><a href="../reference/daedalus.html">daedalus::daedalus()</a></code> with <code>daedalus::daedalus_rtm()</code>.</p>
+<p><strong>Breaking changes</strong></p>
+<ul><li><p><code>daedalus_rtm()</code> has been removed; please see installation instructions in the Readme for how install a {daedalus} version that provides it;</p></li>
+<li><p>{Rcpp} and {RcppEigen} have been replaced with {cpp11} and {cpp11eigen};</p></li>
+<li><p>Tests using <code>daedalus_rtm()</code> have been removed;</p></li>
+<li><p>Continuous benchmarking removed for <code>daedalus_rtm()</code>.</p></li>
+</ul><p><strong>Changes for dust2 implementation</strong></p>
+<ul><li><p>Dependencies {dust2} and {monty} added;</p></li>
+<li><p>Added successor function <code><a href="../reference/daedalus2.html">daedalus2()</a></code> which will replace <code><a href="../reference/daedalus.html">daedalus()</a></code>;</p></li>
+<li><p>Toy SEIR model with flexible number of demographic strata added in <code>inst/dust/daedalus.cpp</code>; this will build up to the full model;</p></li>
+<li><p>Infrastructure files updated for changes above;</p></li>
+<li><p>Added small vignette to check functionality;</p></li>
+<li><p>Added small header and package header with a helper function <code>zero_which()</code> in <code>daedalus::helpers</code> namespace to identify which compartments in the state to zero with <code>zero_every()</code>.</p></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="daedalus-020">daedalus 0.2.0<a class="anchor" aria-label="anchor" href="#daedalus-020"></a></h2>
 <p>This is a minor version release of {daedalus} that adds real-time epidemic modelling functionality while removing the implementation of vaccination and vaccination-group infection pathways. There are no intervening versions between this and v0.1.0.</p>
 <ol style="list-style-type: decimal"><li>
-<p>Added new function <code><a href="../reference/daedalus_rtm.html">daedalus_rtm()</a></code> (for real-time modelling) which returns either a <code>&lt;daedalus_output&gt;</code> object or a list of these.</p>
+<p>Added new function <code>daedalus_rtm()</code> (for real-time modelling) which returns either a <code>&lt;daedalus_output&gt;</code> object or a list of these.</p>
 <ul><li><p>Has an Rcpp backed using RcppEigen and Boost Headers {BH} for Boost <em>odeint</em> solvers; added Rcpp, RcppEigen, and BH as dependencies;</p></li>
 <li><p>Removes reactive intervention implementation and lifting; instead a single intervention on economic sectors can be passed for implementation in a user-specified time-frame ;</p></li>
 <li><p>Allows NPI on social contacts (basic scaling of transmission rate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>) when economic sector NPI is active (default is 1.0 for no distancing); see arg <code>social_distancing_mandate</code>;</p></li>
@@ -66,7 +85,7 @@
 </ul></li>
 <li><p>Added C++ code in <code>src/daedalus.cpp</code> to help with ODE RHS, observer for ODE system, looping over parameter combinations, and exposing C++ code to R.</p></li>
 <li>
-<p>Added functions to help with <code><a href="../reference/daedalus_rtm.html">daedalus_rtm()</a></code>:</p>
+<p>Added functions to help with <code>daedalus_rtm()</code>:</p>
 <ul><li><p><code><a href="../reference/prepare_output.html">prepare_output_cpp()</a></code> to handle output from Rcpp fn (returned as list of matrices);</p></li>
 <li><p><code><a href="../reference/prepare_contacts.html">make_conmat_large()</a></code> prepares a 49 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 49 contact matrix for C++ ODE RHS;</p></li>
 <li><p><code><a href="../reference/prepare_contacts.html">make_work_contacts()</a></code> and <code><a href="../reference/prepare_contacts.html">make_consumer_contacts()</a></code> scale contacts by workers in economic sectors – <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi><mi>S</mi><mi>I</mi><mtext mathvariant="normal">CM</mtext><mi>/</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">\beta SI \text{CM} / N</annotation></semantics></math>.</p></li>
@@ -91,7 +110,7 @@
 <p>Package infrastructure:</p>
 <ul><li><p>Updated <code>.Rbuildignore</code>, <code>.gitignore</code>, <code>.lintr</code>, <code>_pkgdown.yml</code>, <code>WORDLIST</code> for C++ code;</p></li>
 <li><p>Updated Readmes to reflect package title and scope;</p></li>
-<li><p>Added basic tests for <code><a href="../reference/daedalus_rtm.html">daedalus_rtm()</a></code>.</p></li>
+<li><p>Added basic tests for <code>daedalus_rtm()</code>.</p></li>
 </ul></li>
 </ol></div>
     <div class="section level2">
