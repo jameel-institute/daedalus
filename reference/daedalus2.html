@@ -11,7 +11,7 @@ the model implemented in C++ to integrate with dust2
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@ the model implemented in C++ to integrate with <span class="pkg">dust2</span>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus2</span><span class="op">(</span>time_end <span class="op">=</span> <span class="fl">100</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus2</span><span class="op">(</span>time_end <span class="op">=</span> <span class="fl">100</span>, n_strata <span class="op">=</span> <span class="fl">3</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -77,6 +77,11 @@ the model implemented in C++ to integrate with <span class="pkg">dust2</span>
 <dd><p>An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
 returned for each day. Defaults to 300 days.</p></dd>
+
+
+<dt id="arg-n-strata">n_strata<a class="anchor" aria-label="anchor" href="#arg-n-strata"></a></dt>
+<dd><p>A single integer for the number of age or demographic groups.
+To be replaced with <code><a href="daedalus.html">daedalus()</a></code> like arguments in future.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -96,7 +101,6 @@ progress.</p><ul><li><p>"I0": Initial number of exposed.</p></li>
 <li><p>"beta": The transmission rate of the infection.</p></li>
 <li><p>"sigma": The infectiousness rate.</p></li>
 <li><p>"gamma": The recovery rate.</p></li>
-<li><p>"n_strata": The number of strata (e.g. demography groups).</p></li>
 </ul></div>
 
     </div>
