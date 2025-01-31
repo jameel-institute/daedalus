@@ -32,6 +32,7 @@ const int N_COMPARTMENTS = N_EPI_COMPARTMENTS + N_DATA_COMPARTMENTS;
 // [[dust2::parameter(sigma, constant = FALSE)]]
 // [[dust2::parameter(gamma, constant = FALSE)]]
 // [[dust2::parameter(n_strata, constant = FALSE, type = "int")]]
+// [[dust2::parameter(conmat, constant = TRUE)]]
 class daedalus_ode {
  public:
   daedalus_ode() = delete;
@@ -102,7 +103,6 @@ class daedalus_ode {
     shared.sigma = dust2::r::read_real(pars, "sigma", shared.sigma);
     shared.gamma = dust2::r::read_real(pars, "gamma", shared.gamma);
     shared.n_strata = dust2::r::read_int(pars, "n_strata", shared.n_strata);
-    // TODO(pratik): add conmat update method?
   }
 
   /// @brief Set initial values of the IVP model.
@@ -143,8 +143,8 @@ class daedalus_ode {
     Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, N_COMPARTMENTS>> dx(
         &state_deriv[0], vec_size, N_COMPARTMENTS);
 
-    const auto rate_SE =
-        shared.beta * x.col(0).array() * (shared.conmat * x.col(2)).array() / shared.N;
+    const auto rate_SE = shared.beta * x.col(0).array() *
+                         (shared.conmat * x.col(2)).array() / shared.N;
     const auto rate_EI = shared.sigma * x.col(1).array();
     const auto rate_IR = shared.gamma * x.col(2).array();
     dx.col(0) = -rate_SE;
