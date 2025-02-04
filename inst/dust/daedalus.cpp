@@ -70,24 +70,57 @@ class daedalus_ode {
   /// @param pars A list of parameters passed from R.
   /// @return A shared parameters object.
   static shared_state build_shared(cpp11::list pars) {
-    const real_type I0 = dust2::r::read_real(pars, "I0", 10);
-    const real_type N = dust2::r::read_real(pars, "N", 1000);
-    const real_type beta = dust2::r::read_real(pars, "beta", 0.2);
-    const real_type sigma = dust2::r::read_real(pars, "sigma", 0.2);
-    const real_type gamma = dust2::r::read_real(pars, "gamma", 0.1);
-    const int n_strata = dust2::r::read_int(pars, "n_strata", 3);
+    // NOTE: default values are all zero
+    const real_type beta = dust2::r::read_real(pars, "beta", 0.0);
+    const real_type sigma = dust2::r::read_real(pars, "sigma", 0.0);
+    const real_type p_sigma = dust2::r::read_real(pars, "p_sigma", 0.0);
+    const real_type epsilon = dust2::r::read_real(pars, "epsilon", 0.0);
+    const real_type rho = dust2::r::read_real(pars, "rho", 0.0);
+    const real_type gamma_Ia = dust2::r::read_real(pars, "gamma_Ia", 0.0);
+    const real_type gamma_Is = dust2::r::read_real(pars, "gamma_Is", 0.0);
 
-    // handling compartments to zero
-    const std::vector<size_t> i_to_zero =
-        daedalus::helpers::zero_which(seq_DATA_COMPARTMENTS, n_strata);
+    // related to number of groups
+    // defaults to daedalus fixed values
+    const int n_age_groups = dust2::r::read_int(pars, "n_age_groups", 4);
+    const int n_econ_groups = dust2::r::read_int(pars, "n_econ_groups", 45);
+    const int n_strata = n_age_groups + n_econ_groups;
+
+    // convert initial state - needs n_strata etc.
+    const std::vector<size_t> vec_state_dims = {
+        n_strata, daedalus::constants::N_COMPARTMENTS};  // for square matrix
+    const dust2::array::dimensions<2> state_dims(vec_state_dims.begin());
+    Eigen::MatrixXd initial_state(n_strata,
+                                  daedalus::constants::N_COMPARTMENTS);
+    dust2::r::read_real_array(pars, state_dims, initial_state.data(),
+                              "initial_state", true);
 
     // handling contact matrix
     const std::vector<size_t> vec_cm_dims(2, n_strata);  // for square matrix
     const dust2::array::dimensions<2> cm_dims(vec_cm_dims.begin());
-    Eigen::MatrixXd conmat(n_strata, n_strata);
-    dust2::r::read_real_array(pars, cm_dims, conmat.data(), "conmat", true);
+    Eigen::MatrixXd cm(n_strata, n_strata);
+    dust2::r::read_real_array(pars, cm_dims, cm.data(), "cm", false);
 
-    return shared_state{N, I0, beta, sigma, gamma, n_strata, i_to_zero, conmat};
+    // handling contacts from consumers to workers
+    const std::vector<size_t> vec_cm_cw_dims = {
+        n_econ_groups, n_age_groups};  // for rect matrix
+    const dust2::array::dimensions<2> cm_cw_dims(vec_cm_cw_dims.begin());
+    Eigen::MatrixXd cm_cw(n_econ_groups, n_age_groups);
+    dust2::r::read_real_array(pars, cm_cw_dims, cm_cw.data(), "cm_cons_work",
+                              false);
+
+    // handling within-sector contacts
+    Eigen::ArrayXd cm_work(n_econ_groups);
+    dust2::r::read_real_vector(pars, n_econ_groups, cm_work.data(), "cm_work",
+                               false);
+
+    // handling compartments to zero
+    const std::vector<size_t> i_to_zero = daedalus::helpers::zero_which(
+        daedalus::constants::seq_DATA_COMPARTMENTS, n_strata);
+
+    return shared_state{
+        initial_state, beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is,
+        // eta,       omega,   gamma_H,
+        n_strata, n_age_groups, n_econ_groups, i_to_zero, cm, cm_work, cm_cw};
   }
 
   /// @brief Updated shared parameters.
