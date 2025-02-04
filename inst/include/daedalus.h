@@ -5,6 +5,7 @@
 #define daedalus_daedalus_H_
 
 // paths relative to this file
+#include "daedalus_constants.h"
 #include "daedalus_helpers.h"
 
 #endif  // daedalus_daedalus_H_
