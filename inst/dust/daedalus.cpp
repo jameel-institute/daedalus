@@ -37,16 +37,15 @@ class daedalus_ode {
 
   using real_type = double;
 
-  /// @brief Shared parameters and values.
+  /// @brief Shared parameters and values. All const as not expected to update.
   struct shared_state {
-    real_type N;
-    real_type I0;
-    real_type beta;
-    real_type sigma;
-    real_type gamma;
-    int n_strata;
+    const Eigen::MatrixXd initial_state;
+    const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
+    // std::vector<real_type> eta, omega, gamma_H;
+
+    const int n_strata, n_age_groups, n_econ_groups;
     const std::vector<size_t> i_to_zero;
-    Eigen::MatrixXd conmat;
+    const Eigen::MatrixXd cm, cm_work, cm_cons_work;
   };
 
   /// @brief Internal state - unclear purpose.
@@ -61,11 +60,10 @@ class daedalus_ode {
   /// @return A custom packing specification object.
   static dust2::packing packing_state(const shared_state &shared) {
     const std::vector<size_t> dim_vec(1, static_cast<size_t>(shared.n_strata));
-    return dust2::packing{{"S", dim_vec},
-                          {"E", dim_vec},
-                          {"I", dim_vec},
-                          {"R", dim_vec},
-                          {"cases_inc", dim_vec}};
+    return dust2::packing{
+        {"S", dim_vec},  {"E", dim_vec},       {"Is", dim_vec},
+        {"Ia", dim_vec}, {"H", dim_vec},       {"R", dim_vec},
+        {"D", dim_vec},  {"new_inf", dim_vec}, {"new_hosp", dim_vec}};
   }
 
   /// @brief Initialise shared parameters.
