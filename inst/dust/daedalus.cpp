@@ -16,21 +16,31 @@
 // clang-format on
 
 // hardcoded as key to model structure
-const int N_EPI_COMPARTMENTS = 4;
-const int N_DATA_COMPARTMENTS = 1;
-const std::vector<size_t> i_DATA_COMPARTMENTS = {4};
-const std::vector<size_t> seq_DATA_COMPARTMENTS = {5};
-const int N_COMPARTMENTS = N_EPI_COMPARTMENTS + N_DATA_COMPARTMENTS;
+// const int N_EPI_COMPARTMENTS = 7;
+// const int N_DATA_COMPARTMENTS = 2;
+// const std::vector<size_t> i_DATA_COMPARTMENTS = {7, 8};
+const std::vector<size_t> seq_DATA_COMPARTMENTS = {8, 9};
+// const int N_COMPARTMENTS = N_EPI_COMPARTMENTS + N_DATA_COMPARTMENTS;
 
 // [[dust2::class(daedalus_ode)]]
 // [[dust2::time_type(continuous)]]
-// [[dust2::parameter(I0, constant = FALSE)]]
-// [[dust2::parameter(N, constant = TRUE)]]
-// [[dust2::parameter(beta, constant = FALSE)]]
-// [[dust2::parameter(sigma, constant = FALSE)]]
-// [[dust2::parameter(gamma, constant = FALSE)]]
-// [[dust2::parameter(n_strata, constant = FALSE, type = "int")]]
-// [[dust2::parameter(conmat, constant = TRUE)]]
+// [[dust2::parameter(initial_state, constant = TRUE)]]
+// [[dust2::parameter(beta, constant = TRUE)]]
+// [[dust2::parameter(sigma, constant = TRUE)]]
+// [[dust2::parameter(p_sigma, constant = TRUE)]]
+// [[dust2::parameter(epsilon, constant = TRUE)]]
+// [[dust2::parameter(rho, constant = TRUE)]]
+// [[dust2::parameter(eta, constant = TRUE)]]
+// [[dust2::parameter(omega, constant = TRUE)]]
+// [[dust2::parameter(gamma_Ia, constant = TRUE)]]
+// [[dust2::parameter(gamma_Is, constant = TRUE)]]
+// [[dust2::parameter(gamma_H, constant = TRUE)]]
+// [[dust2::parameter(n_age_groups, constant = TRUE, type = "int")]]
+// [[dust2::parameter(n_econ_groups, constant = TRUE, type = "int")]]
+// [[dust2::parameter(n_strata, constant = TRUE, type = "int")]]
+// [[dust2::parameter(cm, constant = TRUE)]]
+// [[dust2::parameter(cm_work, constant = TRUE)]]
+// [[dust2::parameter(cm_cons_work, constant = TRUE)]]
 class daedalus_ode {
  public:
   daedalus_ode() = delete;
@@ -126,12 +136,8 @@ class daedalus_ode {
   /// @brief Updated shared parameters.
   /// @param pars A list of parameters passed from R.
   /// @param shared A shared parameter object to update.
-  static void update_shared(cpp11::list pars, shared_state &shared) {  // NOLINT
-    shared.I0 = dust2::r::read_real(pars, "I0", shared.I0);
-    shared.beta = dust2::r::read_real(pars, "beta", shared.beta);
-    shared.sigma = dust2::r::read_real(pars, "sigma", shared.sigma);
-    shared.gamma = dust2::r::read_real(pars, "gamma", shared.gamma);
-    shared.n_strata = dust2::r::read_int(pars, "n_strata", shared.n_strata);
+  static void update_shared(cpp11::list pars, const shared_state &shared) {
+    // NOTE: we are setting these constant
   }
 
   /// @brief Set initial values of the IVP model.
