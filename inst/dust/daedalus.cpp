@@ -141,17 +141,11 @@ class daedalus_ode {
   static void initial(real_type time, const shared_state &shared,
                       const internal_state &internal,
                       const rng_state_type &rng_state, real_type *state_next) {
-    size_t vec_size = shared.n_strata;  // currently a single size_t
-
     // map an Eigen container
     // NOTE: default mapping is col major (epi/data compartments are cols)
-    Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, N_COMPARTMENTS>> dx(
-        &state_next[0], vec_size, N_COMPARTMENTS);
-
-    // initially all zero, modify S and E
-    dx.setZero();
-    dx.col(0).setConstant(shared.N - shared.I0);
-    dx.col(1).setConstant(shared.I0);
+    Eigen::Map<Eigen::MatrixXd>(state_next, shared.n_strata,
+                                daedalus::constants::N_COMPARTMENTS) =
+        shared.initial_state;
   }
 
   /// @brief RHS of the ODE model.
@@ -162,25 +156,27 @@ class daedalus_ode {
   static void rhs(real_type time, const real_type *state,
                   const shared_state &shared, const internal_state &internal,
                   real_type *state_deriv) {
-    size_t vec_size = shared.n_strata;  // currently a single size_t
-
+    const size_t vec_size = shared.n_strata;
     // map to Eigen containers
     // dx does not need to be set to zero as this is handled by zero_every()
     // seems like
-    Eigen::Map<const Eigen::Matrix<double, Eigen::Dynamic, N_COMPARTMENTS>> x(
-        &state[0], vec_size, N_COMPARTMENTS);
-    Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, N_COMPARTMENTS>> dx(
-        &state_deriv[0], vec_size, N_COMPARTMENTS);
+    Eigen::Map<const Eigen::Matrix<double, Eigen::Dynamic,
+                                   daedalus::constants::N_COMPARTMENTS>>
+        x(&state[0], vec_size, daedalus::constants::N_COMPARTMENTS);
+    Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic,
+                             daedalus::constants::N_COMPARTMENTS>>
+        dx(&state_deriv[0], vec_size, daedalus::constants::N_COMPARTMENTS);
 
-    const auto rate_SE = shared.beta * x.col(0).array() *
-                         (shared.conmat * x.col(2)).array() / shared.N;
-    const auto rate_EI = shared.sigma * x.col(1).array();
-    const auto rate_IR = shared.gamma * x.col(2).array();
-    dx.col(0) = -rate_SE;
-    dx.col(1) = rate_SE - rate_EI;
-    dx.col(2) = rate_EI - rate_IR;
-    dx.col(3) = rate_IR;
-    dx.col(4) = rate_SE;
+    const auto rate_SE = shared.beta * x.col(daedalus::constants::iS).array() *
+                         (shared.cm * x.col(daedalus::constants::iIs)).array();
+    const auto rate_EI = shared.sigma * x.col(daedalus::constants::iE).array();
+    const auto rate_IR =
+        shared.gamma_Is * x.col(daedalus::constants::iIs).array();
+    dx.col(daedalus::constants::iS) = -rate_SE;
+    dx.col(daedalus::constants::iE) = rate_SE - rate_EI;
+    dx.col(daedalus::constants::iIs) = rate_EI - rate_IR;
+    dx.col(daedalus::constants::iR) = rate_IR;
+    dx.col(daedalus::constants::idE) = rate_SE;
   }
 
   /// @brief Set every value to zero - unclear.
