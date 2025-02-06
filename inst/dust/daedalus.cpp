@@ -174,9 +174,10 @@ class daedalus_ode {
                   const shared_state &shared, const internal_state &internal,
                   real_type *state_deriv) {
     const size_t vec_size = shared.n_strata;
+    const size_t n_econ_groups = shared.n_econ_groups;
+    const size_t n_age_groups = shared.n_age_groups;
+
     // map to Eigen containers
-    // dx does not need to be set to zero as this is handled by zero_every()
-    // seems like
     Eigen::Map<const Eigen::Matrix<double, Eigen::Dynamic,
                                    daedalus::constants::N_COMPARTMENTS>>
         x(&state[0], vec_size, daedalus::constants::N_COMPARTMENTS);
