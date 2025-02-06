@@ -184,16 +184,27 @@ class daedalus_ode {
                              daedalus::constants::N_COMPARTMENTS>>
         dx(&state_deriv[0], vec_size, daedalus::constants::N_COMPARTMENTS);
 
-    const auto rate_SE = shared.beta * x.col(daedalus::constants::iS).array() *
-                         (shared.cm * x.col(daedalus::constants::iIs)).array();
-    const auto rate_EI = shared.sigma * x.col(daedalus::constants::iE).array();
-    const auto rate_IR =
-        shared.gamma_Is * x.col(daedalus::constants::iIs).array();
-    dx.col(daedalus::constants::iS) = -rate_SE;
-    dx.col(daedalus::constants::iE) = rate_SE - rate_EI;
-    dx.col(daedalus::constants::iIs) = rate_EI - rate_IR;
-    dx.col(daedalus::constants::iR) = rate_IR;
-    dx.col(daedalus::constants::idE) = rate_SE;
+    // compartmental transitions
+    // Susceptible (unvaccinated) to exposed
+    Eigen::VectorXd comm_inf =
+        x.col(iIs) + (x.col(iIa).array() * shared.epsilon).matrix();
+
+    // sToE comprises three parts - community, workplace, consumer-worker
+    // specify types vs using `auto` to clarify combined Vector/Array operations
+    Eigen::ArrayXd sToE =
+        shared.beta * x.col(iS).array() * (shared.cm * comm_inf).array();
+
+    // calculate C * I_w and C * I_cons for a n_econ_groups-length array
+    Eigen::ArrayXd workplace_infected =
+        shared.cm_work * comm_inf.tail(n_econ_groups).array();
+    Eigen::VectorXd consumer_worker_infections =
+        (shared.cm_cons_work * comm_inf.head(n_age_groups));
+
+    // add workplace infections within sectors as
+    // (β * S_w * (C_w * I_w and C_cons_wo * I_cons))
+    sToE.tail(n_econ_groups) +=
+        shared.beta * x.col(iS).array().tail(n_econ_groups) *
+        (workplace_infected + consumer_worker_infections.array());
   }
 
   /// @brief Set every value to zero - unclear.
