@@ -16,11 +16,11 @@
 // clang-format on
 
 // hardcoded as key to model structure
-// const int N_EPI_COMPARTMENTS = 7;
-// const int N_DATA_COMPARTMENTS = 2;
-// const std::vector<size_t> i_DATA_COMPARTMENTS = {7, 8};
-const std::vector<size_t> seq_DATA_COMPARTMENTS = {8, 9};
-// const int N_COMPARTMENTS = N_EPI_COMPARTMENTS + N_DATA_COMPARTMENTS;
+const size_t iS = daedalus::constants::iS, iE = daedalus::constants::iE,
+             iIs = daedalus::constants::iIs, iIa = daedalus::constants::iIa,
+             iH = daedalus::constants::iH, iR = daedalus::constants::iR,
+             iD = daedalus::constants::iD, idE = daedalus::constants::idE,
+             idH = daedalus::constants::idH;
 
 // [[dust2::class(daedalus_ode)]]
 // [[dust2::time_type(continuous)]]
