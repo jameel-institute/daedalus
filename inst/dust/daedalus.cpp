@@ -205,6 +205,33 @@ class daedalus_ode {
     sToE.tail(n_econ_groups) +=
         shared.beta * x.col(iS).array().tail(n_econ_groups) *
         (workplace_infected + consumer_worker_infections.array());
+
+    const auto eToIs = shared.sigma * shared.p_sigma * x.col(iE).array();
+    const auto eToIa =
+        shared.sigma * (1.0 - shared.p_sigma) * x.col(iE).array();
+
+    const auto isToR = shared.gamma_Is * x.col(iIs).array();
+    const auto iaToR = shared.gamma_Ia * x.col(iIa).array();
+
+    const auto isToH = shared.eta * x.col(iIs).array();
+
+    const auto hToR = shared.gamma_H * x.col(iH).array();
+    const auto hToD = shared.omega * x.col(iH).array();
+
+    const auto rToS = shared.rho * x.col(iR).array();
+
+    // update next step
+    // TODO: update with age-varying params
+    dx.col(iS) = -sToE + rToS;
+    dx.col(iE) = sToE - eToIs - eToIa;
+    dx.col(iIs) = eToIs - isToR - isToH;
+    dx.col(iIa) = eToIa - iaToR;
+    dx.col(iH) = isToH - hToD - hToR;
+    dx.col(iR) = isToR + iaToR + hToR - rToS;
+
+    dx.col(iD) = hToD;
+    dx.col(idE) = sToE;
+    dx.col(idH) = isToH;
   }
 
   /// @brief Set every value to zero - unclear.
