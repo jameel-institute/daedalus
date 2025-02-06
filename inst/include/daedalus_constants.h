@@ -15,9 +15,6 @@ constexpr int N_EPI_COMPARTMENTS = 7;
 constexpr int N_DATA_COMPARTMENTS = 2;
 constexpr int N_COMPARTMENTS = N_EPI_COMPARTMENTS + N_DATA_COMPARTMENTS;
 
-constexpr int N_AGE_GROUPS = 4L;
-constexpr int N_ECON_SECTORS = 45L;
-constexpr int N_GROUPS = N_AGE_GROUPS + N_ECON_SECTORS;
 constexpr int iS = 0, iE = 1, iIs = 2, iIa = 3, iH = 4, iR = 5, iD = 6, idE = 7,
               idH = 8;
 
