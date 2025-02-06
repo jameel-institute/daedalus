@@ -51,7 +51,7 @@ class daedalus_ode {
   struct shared_state {
     const Eigen::MatrixXd initial_state;
     const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
-    // std::vector<real_type> eta, omega, gamma_H;
+    const Eigen::ArrayXd eta, omega, gamma_H;
 
     const int n_strata, n_age_groups, n_econ_groups;
     const std::vector<size_t> i_to_zero;
@@ -94,6 +94,15 @@ class daedalus_ode {
     const int n_age_groups = dust2::r::read_int(pars, "n_age_groups", 4);
     const int n_econ_groups = dust2::r::read_int(pars, "n_econ_groups", 45);
     const int n_strata = n_age_groups + n_econ_groups;
+
+    // read vector values (all must have size n_strata)
+    Eigen::ArrayXd eta(n_strata);
+    Eigen::ArrayXd omega(n_strata);
+    Eigen::ArrayXd gamma_H(n_strata);
+
+    dust2::r::read_real_vector(pars, n_strata, eta.data(), "eta", true);
+    dust2::r::read_real_vector(pars, n_strata, omega.data(), "omega", true);
+    dust2::r::read_real_vector(pars, n_strata, gamma_H.data(), "gamma_H", true);
 
     // convert initial state - needs n_strata etc.
     const std::vector<size_t> vec_state_dims = {
