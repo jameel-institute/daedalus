@@ -49,13 +49,15 @@ class daedalus_ode {
 
   /// @brief Shared parameters and values. All const as not expected to update.
   struct shared_state {
+    // NOTE: n_strata unknown at compile time
     const Eigen::MatrixXd initial_state;
     const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
     const Eigen::ArrayXd eta, omega, gamma_H;
 
     const int n_strata, n_age_groups, n_econ_groups;
     const std::vector<size_t> i_to_zero;
-    const Eigen::MatrixXd cm, cm_work, cm_cons_work;
+    const Eigen::MatrixXd cm, cm_cons_work;
+    const Eigen::ArrayXd cm_work;  // only needed for element-wise mult
   };
 
   /// @brief Internal state - unclear purpose.
@@ -117,7 +119,7 @@ class daedalus_ode {
     const std::vector<size_t> vec_cm_dims(2, n_strata);  // for square matrix
     const dust2::array::dimensions<2> cm_dims(vec_cm_dims.begin());
     Eigen::MatrixXd cm(n_strata, n_strata);
-    dust2::r::read_real_array(pars, cm_dims, cm.data(), "cm", false);
+    dust2::r::read_real_array(pars, cm_dims, cm.data(), "cm", true);
 
     // handling contacts from consumers to workers
     const std::vector<size_t> vec_cm_cw_dims = {
@@ -125,21 +127,21 @@ class daedalus_ode {
     const dust2::array::dimensions<2> cm_cw_dims(vec_cm_cw_dims.begin());
     Eigen::MatrixXd cm_cw(n_econ_groups, n_age_groups);
     dust2::r::read_real_array(pars, cm_cw_dims, cm_cw.data(), "cm_cons_work",
-                              false);
+                              true);
 
     // handling within-sector contacts
     Eigen::ArrayXd cm_work(n_econ_groups);
     dust2::r::read_real_vector(pars, n_econ_groups, cm_work.data(), "cm_work",
-                               false);
+                               true);
 
     // handling compartments to zero
     const std::vector<size_t> i_to_zero = daedalus::helpers::zero_which(
         daedalus::constants::seq_DATA_COMPARTMENTS, n_strata);
 
     return shared_state{
-        initial_state, beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is,
-        // eta,       omega,   gamma_H,
-        n_strata, n_age_groups, n_econ_groups, i_to_zero, cm, cm_work, cm_cw};
+        initial_state, beta,          sigma,     p_sigma, epsilon, rho,
+        gamma_Ia,      gamma_Is,      eta,       omega,   gamma_H, n_strata,
+        n_age_groups,  n_econ_groups, i_to_zero, cm,      cm_cw,   cm_work};
   }
 
   /// @brief Updated shared parameters.
