@@ -6,6 +6,7 @@
 \alias{prepare_parameters.daedalus_country}
 \alias{prepare_parameters.daedalus_infection}
 \alias{prepare_parameters.daedalus_vaccination}
+\alias{prepare_parameters2}
 \title{Prepare country parameters for model}
 \usage{
 \method{prepare_parameters}{daedalus_country}(x, ...)
@@ -15,6 +16,8 @@
 \method{prepare_parameters}{daedalus_vaccination}(x, ...)
 
 prepare_parameters(x, ...)
+
+prepare_parameters2(x, ...)
 }
 \arguments{
 \item{x}{An S3 object with an appropriate method.}

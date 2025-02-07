@@ -452,3 +452,21 @@ prepare_parameters.daedalus_country <- function(x, ...) {
     contacts_consumer_worker = cmcw
   )
 }
+
+#' Replacement prepare_parameters()
+#'
+#' @keywords internal
+prepare_parameters2.daedalus_country <- function(x, ...) {
+  chkDots(...)
+  validate_daedalus_country(x)
+
+  cm <- make_conmat_large(x)
+  cm_work <- make_work_contacts(x)
+  cm_cons_work <- make_consumer_contacts(x)
+
+  list(
+    cm = cm,
+    cm_cons_work = cm_cons_work,
+    cm_work = cm_work
+  )
+}

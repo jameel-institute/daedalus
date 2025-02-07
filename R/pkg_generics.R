@@ -117,3 +117,11 @@ set_data <- function(x, ...) {
 prepare_parameters <- function(x, ...) {
   UseMethod("prepare_parameters")
 }
+
+#' @name prepare_parameters
+#' @rdname prepare_parameters
+#'
+#' @keywords internal
+prepare_parameters2 <- function(x, ...) {
+  UseMethod("prepare_parameters2")
+}
