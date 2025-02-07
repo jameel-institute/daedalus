@@ -33,3 +33,4 @@
 ^lint-cpp.sh$
 ^CPPLINT.cfg$
 ^touchstone$
+^format-R.sh$

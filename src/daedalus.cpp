@@ -95,9 +95,9 @@ class daedalus_ode {
 
     // related to number of groups
     // defaults to daedalus fixed values
-    const int n_age_groups = dust2::r::read_int(pars, "n_age_groups", 4);
-    const int n_econ_groups = dust2::r::read_int(pars, "n_econ_groups", 45);
-    const int n_strata = n_age_groups + n_econ_groups;
+    const size_t n_age_groups = dust2::r::read_size(pars, "n_age_groups", 4);
+    const size_t n_econ_groups = dust2::r::read_size(pars, "n_econ_groups", 45);
+    const size_t n_strata = n_age_groups + n_econ_groups;
 
     // read vector values (all must have size n_strata)
     Eigen::ArrayXd eta(n_strata);
@@ -224,7 +224,6 @@ class daedalus_ode {
     const auto rToS = shared.rho * x.col(iR).array();
 
     // update next step
-    // TODO: update with age-varying params
     dx.col(iS) = -sToE + rToS;
     dx.col(iE) = sToE - eToIs - eToIa;
     dx.col(iIs) = eToIs - isToR - isToH;

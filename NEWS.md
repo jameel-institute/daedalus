@@ -1,3 +1,17 @@
+# daedalus (development version)
+
+This is a development version, and the next version will be v0.2.3.
+
+1. Added full DAEDALUS ODE structure to `daedalus_ode` class -- except events, vaccination, and excess mortality; `daedalus2()` accepts `country` and `infection` similar to `daedalus()`.
+
+2. Added `inst/include/daedalus_constants.h` for model related constants.
+
+3. Added intermediate internal helper generic and methods `prepare_parameters2()` and `make_initial_state2()` for use with `daedalus2()`.
+
+4. Added more tests for output expectations and fixed population size for `daedalus2()`.
+
+5. Added function documentation and updated replacement DAEDALUS vignette.
+
 # daedalus 0.2.2
 
 This version adds support for including contact matrices in the `daedalus` class object and using them in the FOI calculation.
@@ -34,6 +48,14 @@ This is a patch version of {daedalus} that builds up to combining `daedalus::dae
 
 This is a minor version release of {daedalus} that adds real-time epidemic modelling functionality while removing the implementation of vaccination and vaccination-group infection pathways.
 There are no intervening versions between this and v0.1.0.
+
+**NOTE:** This version has the following identified errors:
+
+1. Consumer-to-worker infections are not correctly handled leading to later and lower epidemic peaks than expected.
+
+2. The number of recovered does not include recoveries from hospitalisation.
+
+**Changes**
 
 1. Added new function `daedalus_rtm()` (for real-time modelling) which returns either a `<daedalus_output>` object or a list of these.
     
@@ -92,6 +114,10 @@ There are no intervening versions between this and v0.1.0.
 # daedalus 0.1.0
 
 This is a minor version release of {daedalus} for use in the IDM conference in 2024.
+
+**NOTE:** This version has been found to have the following identified errors:
+
+1. Consumer-to-worker infections are not correctly handled leading to higher epidemic peaks which also occur sooner than expected.
 
 # daedalus 0.0.24
 
