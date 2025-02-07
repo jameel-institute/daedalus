@@ -139,6 +139,18 @@ make_initial_state <- function(
   initial_state
 }
 
+#' @title Generate initial state for daedalus2()
+#'
+#' @inheritParams make_initial_state
+#' @keywords internal
+make_initial_state2 <- function(
+    country,
+    initial_state_manual = list(p_infectious = 1e-7)) {
+  initial_state <- make_initial_state(country, initial_state_manual)
+
+  as.matrix(initial_state[, , i_UNVACCINATED_STRATUM])
+}
+
 #' Prepare mutable parameters for the DAEDALUS model
 #'
 #' @description Prepares closure start and end times for model output.
