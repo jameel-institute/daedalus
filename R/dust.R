@@ -8,12 +8,9 @@ daedalus_ode <- structure(
   parameters = data.frame(
     name = c("initial_state", "beta", "sigma", "p_sigma", "epsilon", "rho", "eta", "omega", "gamma_Ia", "gamma_Is", "gamma_H", "n_age_groups", "n_econ_groups", "n_strata", "cm", "cm_work", "cm_cons_work"),
     type = c("real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "int", "int", "int", "real_type", "real_type", "real_type"),
-    constant = c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE)
-  ),
+    constant = c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE)),
   properties = list(
     time_type = "continuous",
     has_compare = FALSE,
-    has_adjoint = FALSE
-  ),
-  default_dt = NULL
-)
+    has_adjoint = FALSE),
+  default_dt = NULL)

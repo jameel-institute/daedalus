@@ -49,6 +49,19 @@ list below.
 - IfG workshop 2025 (with real time modelling):
   `pak::pak("jameel-institute/daedalus@v0.2.0")`
 
+### Known issues
+
+We have found the following issues with released versions:
+
+1.  `v0.1.0`: Consumer-worker contacts are not correctly handled,
+    leading to higher and faster epidemic peaks.
+
+2.  `v0.2.0`: Consumer-worker contacts are not included in the model,
+    leading to lower and later epidemic peaks. The ‘recovered’
+    compartment does not include recoveries from hospitalisation. Please
+    use the helper function `get_epidemic_summary()` to get epidemic
+    sizes.
+
 ## Quick start
 
 The model can be run for any country or territory in the `country_names`
