@@ -21,14 +21,20 @@ library(daedalus)
 This vignette is intended as a visual check on _daedalus_ features in development.
 
 ```{r}
-output <- daedalus2(100, n_strata = 3)
+output <- daedalus2("GBR", "influenza_2009")
 
+plot(colSums(output$S))
 plot(colSums(output$E))
-plot(colSums(output$I))
+plot(colSums(output$Is))
+plot(colSums(output$Ia))
+plot(colSums(output$H))
+plot(colSums(output$R))
+plot(colSums(output$D))
 ```
 
 This should be a curve and not monotonically increasing.
 
 ```{r}
-plot(colSums(output$cases_inc))
+plot(colSums(output$new_inf))
+plot(colSums(output$new_hosp))
 ```
