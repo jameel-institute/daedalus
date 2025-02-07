@@ -4,37 +4,37 @@
 \alias{daedalus2}
 \title{DAEDALUS model implemented with dust}
 \usage{
-daedalus2(time_end = 100, n_strata = 3, ...)
+daedalus2(country, infection, time_end = 100)
 }
 \arguments{
+\item{country}{A country or territory object of class \verb{<daedalus_country>},
+\strong{or} a country or territory name from those included in the package;
+see \link{country_names}, \strong{or} a country ISO2 or ISO3 code; see
+\link{country_codes_iso2c} and \link{country_codes_iso3c} .
+Country-specific data such as the community and workplace contacts, the
+demography, and the distribution of the workforce into economic sectors is
+automatically accessed from package data for the relevant country name if it
+is passed as a string.
+To override package defaults for country characteristics, pass a
+\verb{<daedalus_country>} object instead. See \code{\link[=daedalus_country]{daedalus_country()}} for more.}
+
+\item{infection}{An infection parameter object of the class \verb{<infection>},
+\strong{or} an epidemic name for which data are provided in the package; see
+\link{epidemic_names} for parameters from a historical epidemic
+or epidemic wave.
+Passing the name as a string automatically accesses the default parameters
+of an infection. Create an pass a \verb{<daedalus_infection>} to tweak infection
+parameters.}
+
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
 returned for each day. Defaults to 300 days.}
-
-\item{n_strata}{A single integer for the number of age or demographic groups.
-To be replaced with \code{\link[=daedalus]{daedalus()}} like arguments in future.}
-
-\item{...}{Optional named parameters for the model. See \strong{Details} for more.}
 }
 \description{
 \code{daedalus::daedalus2()} will eventually replace \code{daedalus::daedalus()} with
 the model implemented in C++ to integrate with \pkg{dust2}
 (and in future \pkg{dust}). \emph{This is a work in progress!}
 }
-\details{
-\subsection{Optional parameters}{
-
-Pass any of the following as named values (see example). This is a work in
-progress.
-\itemize{
-\item "I0": Initial number of exposed.
-\item "N": Initial population size assumed to be uniform for all strata.
-\item "beta": The transmission rate of the infection.
-\item "sigma": The infectiousness rate.
-\item "gamma": The recovery rate.
-}
-}
-}
 \examples{
-daedalus2(5, n_strata = 4)
+daedalus2("GBR", "sars_cov_1")
 }

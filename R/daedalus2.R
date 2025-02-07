@@ -22,45 +22,48 @@ daedalus2_internal <- function(time_end, params) {
 #' (and in future \pkg{dust}). *This is a work in progress!*
 #'
 #' @inheritParams daedalus
-#' @param n_strata A single integer for the number of age or demographic groups.
-#' To be replaced with [daedalus()] like arguments in future.
-#' @param ... Optional named parameters for the model. See **Details** for more.
 #' @export
 #'
-#' @details
-#'
-#' ## Optional parameters
-#'
-#' Pass any of the following as named values (see example). This is a work in
-#' progress.
-#'
-#' - "I0": Initial number of exposed.
-#'
-#' - "N": Initial population size assumed to be uniform for all strata.
-#'
-#' - "beta": The transmission rate of the infection.
-#'
-#' - "sigma": The infectiousness rate.
-#'
-#' - "gamma": The recovery rate.
-#'
 #' @examples
-#' daedalus2(5, n_strata = 4)
-daedalus2 <- function(time_end = 100, n_strata = 3, ...) {
-  # NOTE: input checking
-  # NOTE: parameter filtering
-  params <- rlang::list2(...)
+#' daedalus2("GBR", "sars_cov_1")
+daedalus2 <- function(
+    country, infection,
+    time_end = 100) {
+  # input checking
+  # NOTE: names are case sensitive
+  checkmate::assert_multi_class(country, c("daedalus_country", "character"))
+  if (is.character(country)) {
+    country <- daedalus_country(country)
+  }
+  checkmate::assert_multi_class(infection, c("daedalus_infection", "character"))
+  if (is.character(infection)) {
+    infection <- rlang::arg_match(infection, daedalus::epidemic_names)
+    infection <- daedalus_infection(infection)
+  }
 
-  # all-ones matrix to make eigenvalue scaling easier
-  # demography scaling is in internal code
-  conmat <- matrix(1, n_strata, n_strata)
-  conmat <- conmat / n_strata
+  is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
+  if (!is_good_time_end) {
+    cli::cli_abort(
+      c(
+        "Expected `time_end` to be a single positive integer-like number.",
+        i = "E.g. `time_end = 100`, but not `time_end = 100.5`"
+      )
+    )
+  }
 
-  params <- c(
-    list(n_strata = n_strata, conmat = conmat), params
+  #### Prepare initial state and parameters ####
+  initial_state <- make_initial_state2(country)
+
+  parameters <- c(
+    prepare_parameters2.daedalus_country(country),
+    prepare_parameters.daedalus_infection(infection),
+    list(
+      initial_state = initial_state,
+      beta = get_beta(infection, country)
+    )
   )
 
-  output <- daedalus2_internal(time_end, params)
+  output <- daedalus2_internal(time_end, parameters)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
