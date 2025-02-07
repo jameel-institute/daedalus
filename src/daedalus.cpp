@@ -56,7 +56,7 @@ class daedalus_ode {
     const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
     const Eigen::ArrayXd eta, omega, gamma_H;
 
-    const int n_strata, n_age_groups, n_econ_groups;
+    const size_t n_strata, n_age_groups, n_econ_groups;
     const std::vector<size_t> i_to_zero;
     const Eigen::MatrixXd cm, cm_cons_work;
     const Eigen::ArrayXd cm_work;  // only needed for element-wise mult
