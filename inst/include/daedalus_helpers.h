@@ -1,8 +1,7 @@
 // Copyright 2025 Imperial College of Science, Technology and Medicine.
 // See repository licence in LICENSE.md.
 
-#ifndef INST_INCLUDE_DAEDALUS_HELPERS_H_
-#define INST_INCLUDE_DAEDALUS_HELPERS_H_
+#pragma once
 
 #include <numeric>
 #include <vector>
@@ -35,5 +34,3 @@ inline std::vector<size_t> zero_which(
 }  // namespace helpers
 
 }  // namespace daedalus
-
-#endif  // INST_INCLUDE_DAEDALUS_HELPERS_H_

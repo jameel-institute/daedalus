@@ -1,8 +1,7 @@
 // Copyright 2025 Imperial College of Science, Technology and Medicine.
 // See repository licence in LICENSE.md.
 
-#ifndef INST_INCLUDE_DAEDALUS_CONSTANTS_H_
-#define INST_INCLUDE_DAEDALUS_CONSTANTS_H_
+#pragma once
 
 #include <vector>
 
@@ -24,5 +23,3 @@ inline const std::vector<size_t> seq_DATA_COMPARTMENTS = {8, 9};
 }  // namespace constants
 
 }  // namespace daedalus
-
-#endif  // INST_INCLUDE_DAEDALUS_CONSTANTS_H_
