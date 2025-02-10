@@ -24,7 +24,6 @@ const size_t iS = daedalus::constants::iS, iE = daedalus::constants::iE,
 
 // [[dust2::class(daedalus_ode)]]
 // [[dust2::time_type(continuous)]]
-// [[dust2::parameter(initial_state, constant = TRUE)]]
 // [[dust2::parameter(beta, constant = TRUE)]]
 // [[dust2::parameter(sigma, constant = TRUE)]]
 // [[dust2::parameter(p_sigma, constant = TRUE)]]
@@ -50,7 +49,6 @@ class daedalus_ode {
   /// @brief Shared parameters and values. All const as not expected to update.
   struct shared_state {
     // NOTE: n_strata unknown at compile time
-    const Eigen::MatrixXd initial_state;
     const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
     const Eigen::ArrayXd eta, omega, gamma_H;
 
@@ -71,7 +69,7 @@ class daedalus_ode {
   /// @param shared A `shared_state` object, unclear why needed.
   /// @return A custom packing specification object.
   static dust2::packing packing_state(const shared_state &shared) {
-    const std::vector<size_t> dim_vec(1, static_cast<size_t>(shared.n_strata));
+    const std::vector<size_t> dim_vec(1, shared.n_strata);
     return dust2::packing{
         {"S", dim_vec},  {"E", dim_vec},       {"Is", dim_vec},
         {"Ia", dim_vec}, {"H", dim_vec},       {"R", dim_vec},
@@ -106,15 +104,6 @@ class daedalus_ode {
     dust2::r::read_real_vector(pars, n_strata, omega.data(), "omega", true);
     dust2::r::read_real_vector(pars, n_strata, gamma_H.data(), "gamma_H", true);
 
-    // convert initial state - needs n_strata etc.
-    const std::vector<size_t> vec_state_dims = {
-        n_strata, daedalus::constants::N_COMPARTMENTS};  // for square matrix
-    const dust2::array::dimensions<2> state_dims(vec_state_dims.begin());
-    Eigen::MatrixXd initial_state(n_strata,
-                                  daedalus::constants::N_COMPARTMENTS);
-    dust2::r::read_real_array(pars, state_dims, initial_state.data(),
-                              "initial_state", true);
-
     // handling contact matrix
     const std::vector<size_t> vec_cm_dims(2, n_strata);  // for square matrix
     const dust2::array::dimensions<2> cm_dims(vec_cm_dims.begin());
@@ -139,9 +128,9 @@ class daedalus_ode {
         daedalus::constants::seq_DATA_COMPARTMENTS, n_strata);
 
     return shared_state{
-        initial_state, beta,          sigma,     p_sigma, epsilon, rho,
-        gamma_Ia,      gamma_Is,      eta,       omega,   gamma_H, n_strata,
-        n_age_groups,  n_econ_groups, i_to_zero, cm,      cm_cw,   cm_work};
+        beta,          sigma,     p_sigma, epsilon, rho,      gamma_Ia,
+        gamma_Is,      eta,       omega,   gamma_H, n_strata, n_age_groups,
+        n_econ_groups, i_to_zero, cm,      cm_cw,   cm_work};
   }
 
   /// @brief Updated shared parameters.
@@ -158,11 +147,7 @@ class daedalus_ode {
   static void initial(real_type time, const shared_state &shared,
                       const internal_state &internal,
                       const rng_state_type &rng_state, real_type *state_next) {
-    // map an Eigen container
-    // NOTE: default mapping is col major (epi/data compartments are cols)
-    Eigen::Map<Eigen::MatrixXd>(state_next, shared.n_strata,
-                                daedalus::constants::N_COMPARTMENTS) =
-        shared.initial_state;
+    state_next[0] = 0.0;  // dummy state, see `R/daedalus2.R` for state setting
   }
 
   /// @brief RHS of the ODE model.

@@ -2,14 +2,14 @@
 #'
 #' @return A list of state values as returned by `dust2::dust_unpack_state()`.
 #' @keywords internal
-daedalus2_internal <- function(time_end, params) {
+daedalus2_internal <- function(time_end, params, state) {
   # NOTE: sys params assumed suitable for `do.call()`
   sys_params <- list(daedalus_ode, pars = params)
   sys <- do.call(
     dust2::dust_system_create, sys_params
   )
 
-  dust2::dust_system_set_state_initial(sys)
+  dust2::dust_system_set_state(sys, as.vector(state))
 
   state <- dust2::dust_system_simulate(sys, seq(0, time_end))
   dust2::dust_unpack_state(sys, state)
@@ -58,12 +58,11 @@ daedalus2 <- function(
     prepare_parameters2.daedalus_country(country),
     prepare_parameters.daedalus_infection(infection),
     list(
-      initial_state = initial_state,
       beta = get_beta(infection, country)
     )
   )
 
-  output <- daedalus2_internal(time_end, parameters)
+  output <- daedalus2_internal(time_end, parameters, initial_state)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
