@@ -46,8 +46,8 @@ make_work_contacts <- function(country) {
 
 #' @name prepare_contacts
 make_consumer_contacts <- function(country) {
-  # row-wise divison
-  country$contacts_consumer_worker / country$workers
+  # col-wise divison by demography
+  country$contacts_consumer_worker %*% diag(1 / country$demography)
 }
 
 #' @title Generate a default initial state for DAEDALUS
