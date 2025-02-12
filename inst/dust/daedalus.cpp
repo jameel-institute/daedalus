@@ -31,16 +31,16 @@ const size_t i_GRPS = daedalus::constants::i_GRPS,
              i_COMPS = daedalus::constants::i_COMPS,
              i_VAX_GRPS = daedalus::constants::i_VAX_GRPS;
 
+// product dimensions for Eigen Tensor contraction
+const std::array<Eigen::IndexPair<int>, 1> product_dims = {
+    Eigen::IndexPair<int>(1, 0)};
+
 // define types for Tensors of known dims
-// TODO: remove type as we always use doubles
 template <typename T>
 using TensorVec = Eigen::Tensor<T, 1>;
 
 template <typename T>
 using TensorMat = Eigen::Tensor<T, 2>;
-
-template <typename T>
-using TensorAry = Eigen::Tensor<T, 3>;
 
 // [[dust2::class(daedalus_ode)]]
 // [[dust2::time_type(continuous)]]
@@ -187,35 +187,40 @@ class daedalus_ode {
     Eigen::TensorMap<const TensorMat<double>> t_dx(
         state_deriv, vec_size, daedalus::constants::N_COMPARTMENTS);
 
-    // prepare matrix product dimensions
-    std::array<Eigen::IndexPair<int>, 1> product_dims = {
-        Eigen::IndexPair<int>(1, 0)};
-
     // all chip ops on dim N have dim N-1
     // compartmental transitions
     // Susceptible (unvaccinated) to exposed
-    // // sToE comprises three parts - community, workplace, consumer-worker
-    const auto t_comm_inf =
+    // sToE comprises three parts - community, workplace, consumer-worker
+    TensorVec<double> t_comm_inf =
         t_x.chip(iIs, i_COMPS) + (t_x.chip(iIa, i_COMPS) * shared.epsilon);
     const auto t_foi =
         shared.cm.contract(t_comm_inf, product_dims) * shared.beta;
 
-    const auto sToE =
-        t_x.chip(iS, i_COMPS) * t_foi;  // dims (n_strata, i_COMPS)
-
-    // TODO: add workplace infections etc.
-
     // calculate C * I_w and C * I_cons for a n_econ_groups-length array
-    // Eigen::ArrayXd workplace_infected =
-    //     shared.cm_work * comm_inf.tail(n_econ_groups).array();
-    // Eigen::VectorXd consumer_worker_infections =
-    //     (shared.cm_cons_work * comm_inf.head(n_age_groups));
+    const auto workplace_infected =
+        shared.beta * shared.cm_work *  // already a 1D tensor
+        t_comm_inf.slice(Eigen::array<int, 1>{vec_size - n_econ_groups},
+                         Eigen::array<int, 1>{n_econ_groups});
 
-    // // add workplace infections within sectors as
-    // // (β * S_w * (C_w * I_w and C_cons_wo * I_cons))
-    // sToE.tail(n_econ_groups) +=
-    //     shared.beta * x.col(iS).array().tail(n_econ_groups) *
-    //     (workplace_infected + consumer_worker_infections.array());
+    auto t_comm_inf_age = t_comm_inf.slice(Eigen::array<int, 1>{0},
+                                           Eigen::array<int, 1>{n_age_groups});
+
+    auto consumer_worker_infections =
+        shared.beta *
+        shared.cm_cons_work.contract(t_comm_inf_age, product_dims);
+
+    auto susc_workers =
+        t_x.slice(Eigen::array<int, 1>{vec_size - n_econ_groups},
+                  Eigen::array<int, 1>{n_econ_groups});
+
+    // NOTE: sToE must have a declared type as auto TensorOp has no method `+=`
+    TensorVec<double> sToE =
+        t_x.chip(iS, i_COMPS) * t_foi;  // dims (n_strata, i_COMPS)
+    // add workplace infections within sectors as
+    // (S_w * (C_w * I_w and C_cons_wo * I_cons))
+    sToE.slice(Eigen::array<int, 1>{vec_size - n_econ_groups},
+               Eigen::array<int, 1>{n_econ_groups}) +=
+        (susc_workers * (workplace_infected + consumer_worker_infections));
 
     const auto eToIs = shared.sigma * shared.p_sigma * t_x.chip(iE, i_COMPS);
     const auto eToIa =
