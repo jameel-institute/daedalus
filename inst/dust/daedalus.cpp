@@ -78,8 +78,42 @@ class daedalus_ode {
     const TensorVec<double> cm_work;  // only needed for element-wise mult
   };
 
-  /// @brief Internal state - unclear purpose.
-  struct internal_state {};
+  /// @brief Intermediate data.
+  struct internal_state {
+    TensorVec<double> t_comm_inf, t_foi, workplace_infected, t_comm_inf_age,
+        consumer_worker_infections, susc_workers, sToE, eToIs, eToIa, isToR,
+        iaToR, isToH, hToR, hToD, rToS;
+  };
+
+  static internal_state build_internal(const shared_state &shared) {
+    // transition states
+    TensorVec<double> sToE(shared.n_strata);
+    TensorVec<double> eToIs(shared.n_strata);
+    TensorVec<double> eToIa(shared.n_strata);
+    TensorVec<double> isToR(shared.n_strata);
+    TensorVec<double> iaToR(shared.n_strata);
+    TensorVec<double> isToH(shared.n_strata);
+    TensorVec<double> hToR(shared.n_strata);
+    TensorVec<double> hToD(shared.n_strata);
+    TensorVec<double> rToS(shared.n_strata);
+
+    // infection related
+    TensorVec<double> t_comm_inf(shared.n_strata);
+    TensorVec<double> t_foi(shared.n_strata);
+    TensorVec<double> workplace_infected(shared.n_econ_groups);
+    TensorVec<double> t_comm_inf_age(shared.n_age_groups);
+    TensorVec<double> consumer_worker_infections(shared.n_econ_groups);
+    TensorVec<double> susc_workers(shared.n_econ_groups);
+
+    // clang-format off
+    return internal_state{
+      t_comm_inf, t_foi, workplace_infected,
+      t_comm_inf_age,
+      consumer_worker_infections,
+      susc_workers,
+      sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS};
+    // clang-format on
+  }
 
   // unclear whether dust2/common.hpp links to monty - probably
   // NOTE: do not remove, causes compilation errors
@@ -173,10 +207,13 @@ class daedalus_ode {
   /// @param time Time -- not used.
   /// @param state Pointer to state.
   /// @param shared Shared parameters.
+  /// @param internal Intermediate containers.
   /// @param state_deriv State change or dX.
   static void rhs(real_type time, const real_type *state,
-                  const shared_state &shared, const internal_state &internal,
+                  const shared_state &shared,
+                  internal_state &internal,  // NOLINT
                   real_type *state_deriv) {
+    // TODO: prefer to not use these
     const size_t vec_size = shared.n_strata;
     const size_t n_econ_groups = shared.n_econ_groups;
     const size_t n_age_groups = shared.n_age_groups;
@@ -184,69 +221,71 @@ class daedalus_ode {
     // map to Eigen Tensor
     Eigen::TensorMap<const TensorMat<double>> t_x(
         state, vec_size, daedalus::constants::N_COMPARTMENTS);
-    Eigen::TensorMap<const TensorMat<double>> t_dx(
+    Eigen::TensorMap<TensorMat<double>> t_dx(
         state_deriv, vec_size, daedalus::constants::N_COMPARTMENTS);
 
     // all chip ops on dim N have dim N-1
     // compartmental transitions
     // Susceptible (unvaccinated) to exposed
     // sToE comprises three parts - community, workplace, consumer-worker
-    TensorVec<double> t_comm_inf =
+    internal.t_comm_inf =
         t_x.chip(iIs, i_COMPS) + (t_x.chip(iIa, i_COMPS) * shared.epsilon);
-    const auto t_foi =
-        shared.cm.contract(t_comm_inf, product_dims) * shared.beta;
+    internal.t_foi =
+        shared.cm.contract(internal.t_comm_inf, product_dims) * shared.beta;
 
     // calculate C * I_w and C * I_cons for a n_econ_groups-length array
-    const auto workplace_infected =
+    internal.workplace_infected =
         shared.beta * shared.cm_work *  // already a 1D tensor
-        t_comm_inf.slice(Eigen::array<int, 1>{vec_size - n_econ_groups},
-                         Eigen::array<int, 1>{n_econ_groups});
+        internal.t_comm_inf.slice(
+            Eigen::array<int, 1>{vec_size - n_econ_groups},
+            Eigen::array<int, 1>{n_econ_groups});
 
-    auto t_comm_inf_age = t_comm_inf.slice(Eigen::array<int, 1>{0},
-                                           Eigen::array<int, 1>{n_age_groups});
+    internal.t_comm_inf_age = internal.t_comm_inf.slice(
+        Eigen::array<int, 1>{0}, Eigen::array<int, 1>{n_age_groups});
 
-    auto consumer_worker_infections =
+    internal.consumer_worker_infections =
         shared.beta *
-        shared.cm_cons_work.contract(t_comm_inf_age, product_dims);
+        shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
 
-    auto susc_workers =
-        t_x.slice(Eigen::array<int, 1>{vec_size - n_econ_groups},
-                  Eigen::array<int, 1>{n_econ_groups});
+    internal.susc_workers = t_x.chip(iS, i_COMPS)
+                                .slice(Eigen::array<int, 1>{n_age_groups},
+                                       Eigen::array<int, 1>{n_econ_groups});
 
-    // NOTE: sToE must have a declared type as auto TensorOp has no method `+=`
-    TensorVec<double> sToE =
-        t_x.chip(iS, i_COMPS) * t_foi;  // dims (n_strata, i_COMPS)
+    internal.sToE =
+        t_x.chip(iS, i_COMPS) * internal.t_foi;  // dims (n_strata, i_COMPS)
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
-    sToE.slice(Eigen::array<int, 1>{vec_size - n_econ_groups},
-               Eigen::array<int, 1>{n_econ_groups}) +=
-        (susc_workers * (workplace_infected + consumer_worker_infections));
+    internal.sToE.slice(Eigen::array<int, 1>{vec_size - n_econ_groups},
+                        Eigen::array<int, 1>{n_econ_groups}) +=
+        (internal.susc_workers *
+         (internal.workplace_infected + internal.consumer_worker_infections));
 
-    const auto eToIs = shared.sigma * shared.p_sigma * t_x.chip(iE, i_COMPS);
-    const auto eToIa =
+    internal.eToIs = shared.sigma * shared.p_sigma * t_x.chip(iE, i_COMPS);
+    internal.eToIa =
         shared.sigma * (1.0 - shared.p_sigma) * t_x.chip(iE, i_COMPS);
 
-    const auto isToR = shared.gamma_Is * t_x.chip(iIs, i_COMPS);
-    const auto iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
+    internal.isToR = shared.gamma_Is * t_x.chip(iIs, i_COMPS);
+    internal.iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
 
-    const auto isToH = shared.eta * t_x.chip(iIs, i_COMPS);
+    internal.isToH = shared.eta * t_x.chip(iIs, i_COMPS);
 
-    const auto hToR = shared.gamma_H * t_x.chip(iH, i_COMPS);
-    const auto hToD = shared.omega * t_x.chip(iH, i_COMPS);
+    internal.hToR = shared.gamma_H * t_x.chip(iH, i_COMPS);
+    internal.hToD = shared.omega * t_x.chip(iH, i_COMPS);
 
-    const auto rToS = shared.rho * t_x.chip(iR, i_COMPS);
+    internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
 
     // update next step
-    t_dx.chip(iS, i_COMPS) = -sToE + rToS;
-    t_dx.chip(iE, i_COMPS) = sToE - eToIs - eToIa;
-    t_dx.chip(iIs, i_COMPS) = eToIs - isToR - isToH;
-    t_dx.chip(iIa, i_COMPS) = eToIa - iaToR;
-    t_dx.chip(iH, i_COMPS) = isToH - hToD - hToR;
-    t_dx.chip(iR, i_COMPS) = isToR + iaToR + hToR - rToS;
+    t_dx.chip(iS, i_COMPS) = -internal.sToE + internal.rToS;
+    t_dx.chip(iE, i_COMPS) = internal.sToE - internal.eToIs - internal.eToIa;
+    t_dx.chip(iIs, i_COMPS) = internal.eToIs - internal.isToR - internal.isToH;
+    t_dx.chip(iIa, i_COMPS) = internal.eToIa - internal.iaToR;
+    t_dx.chip(iH, i_COMPS) = internal.isToH - internal.hToD - internal.hToR;
+    t_dx.chip(iR, i_COMPS) =
+        internal.isToR + internal.iaToR + internal.hToR - internal.rToS;
 
-    t_dx.chip(iD, i_COMPS) = hToD;
-    t_dx.chip(idE, i_COMPS) = sToE;
-    t_dx.chip(idH, i_COMPS) = isToH;
+    t_dx.chip(iD, i_COMPS) = internal.hToD;
+    t_dx.chip(idE, i_COMPS) = internal.sToE;
+    t_dx.chip(idH, i_COMPS) = internal.isToH;
   }
 
   /// @brief Set every value to zero - unclear.
