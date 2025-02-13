@@ -125,10 +125,34 @@ class daedalus_ode {
   /// @return A custom packing specification object.
   static dust2::packing packing_state(const shared_state &shared) {
     const std::vector<size_t> dim_vec(1, shared.n_strata);
-    return dust2::packing{
-        {"S", dim_vec},  {"E", dim_vec},       {"Is", dim_vec},
-        {"Ia", dim_vec}, {"H", dim_vec},       {"R", dim_vec},
-        {"D", dim_vec},  {"new_inf", dim_vec}, {"new_hosp", dim_vec}};
+    // TODO(pratik): write a function to return this
+    return dust2::packing{{"S", dim_vec},
+                          {"E", dim_vec},
+                          {"Is", dim_vec},
+                          {"Ia", dim_vec},
+                          {"H", dim_vec},
+                          {"R", dim_vec},
+                          {"D", dim_vec},
+                          {"new_inf", dim_vec},
+                          {"new_hosp", dim_vec},
+                          {"S_vax", dim_vec},
+                          {"E_vax", dim_vec},
+                          {"Is_vax", dim_vec},
+                          {"Ia_vax", dim_vec},
+                          {"H_vax", dim_vec},
+                          {"R_vax", dim_vec},
+                          {"D_vax", dim_vec},
+                          {"new_inf_vax", dim_vec},
+                          {"new_hosp_vax", dim_vec},
+                          {"S_dvax", dim_vec},
+                          {"E_dvax", dim_vec},
+                          {"Is_dvax", dim_vec},
+                          {"Ia_dvax", dim_vec},
+                          {"H_dvax", dim_vec},
+                          {"R_dvax", dim_vec},
+                          {"D_dvax", dim_vec},
+                          {"new_inf_dvax", dim_vec},
+                          {"new_hosp_dvax", dim_vec}};
   }
 
   /// @brief Initialise shared parameters.
