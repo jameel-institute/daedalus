@@ -148,7 +148,7 @@ make_initial_state2 <- function(
     initial_state_manual = list(p_infectious = 1e-7)) {
   initial_state <- make_initial_state(country, initial_state_manual)
 
-  as.matrix(initial_state[, , i_UNVACCINATED_STRATUM])
+  initial_state
 }
 
 #' Prepare mutable parameters for the DAEDALUS model
