@@ -80,30 +80,31 @@ class daedalus_ode {
 
   /// @brief Intermediate data.
   struct internal_state {
-    TensorVec<double> t_comm_inf, t_foi, workplace_infected, t_comm_inf_age,
+    TensorMat<double> t_comm_inf, t_foi, workplace_infected, t_comm_inf_age,
         consumer_worker_infections, susc_workers, sToE, eToIs, eToIa, isToR,
         iaToR, isToH, hToR, hToD, rToS;
   };
 
   static internal_state build_internal(const shared_state &shared) {
     // transition states
-    TensorVec<double> sToE(shared.n_strata);
-    TensorVec<double> eToIs(shared.n_strata);
-    TensorVec<double> eToIa(shared.n_strata);
-    TensorVec<double> isToR(shared.n_strata);
-    TensorVec<double> iaToR(shared.n_strata);
-    TensorVec<double> isToH(shared.n_strata);
-    TensorVec<double> hToR(shared.n_strata);
-    TensorVec<double> hToD(shared.n_strata);
-    TensorVec<double> rToS(shared.n_strata);
+    TensorMat<double> mat2d(shared.n_strata, daedalus::constants::N_VAX_STRATA);
+    mat2d.setZero();
+    TensorMat<double> sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
+                      iaToR = mat2d, isToH = mat2d, hToR = mat2d, hToD = mat2d,
+                      rToS = mat2d, t_comm_inf = mat2d, t_foi = mat2d;
 
     // infection related
-    TensorVec<double> t_comm_inf(shared.n_strata);
-    TensorVec<double> t_foi(shared.n_strata);
-    TensorVec<double> workplace_infected(shared.n_econ_groups);
-    TensorVec<double> t_comm_inf_age(shared.n_age_groups);
-    TensorVec<double> consumer_worker_infections(shared.n_econ_groups);
-    TensorVec<double> susc_workers(shared.n_econ_groups);
+
+    TensorMat<double> mat2d_econ(shared.n_econ_groups,
+                                 daedalus::constants::N_VAX_STRATA);
+    mat2d_econ.setZero();
+    TensorMat<double> workplace_infected = mat2d_econ,
+                      consumer_worker_infections = mat2d_econ,
+                      susc_workers = mat2d_econ;
+
+    TensorMat<double> t_comm_inf_age(shared.n_age_groups,
+                                     daedalus::constants::N_VAX_STRATA);
+    t_comm_inf_age.setZero();
 
     // clang-format off
     return internal_state{
