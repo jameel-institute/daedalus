@@ -203,7 +203,8 @@ class daedalus_ode {
 
     // handling compartments to zero
     const std::vector<size_t> i_to_zero = daedalus::helpers::zero_which(
-        daedalus::constants::seq_DATA_COMPARTMENTS, n_strata);
+        daedalus::constants::seq_DATA_COMPARTMENTS, n_strata,
+        daedalus::constants::N_VAX_STRATA);
 
     return shared_state{
         beta,          sigma,     p_sigma, epsilon, rho,      gamma_Ia,
