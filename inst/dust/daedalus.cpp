@@ -42,6 +42,9 @@ using TensorVec = Eigen::Tensor<T, 1>;
 template <typename T>
 using TensorMat = Eigen::Tensor<T, 2>;
 
+template <typename T>
+using TensorAry = Eigen::Tensor<T, 3>;
+
 // [[dust2::class(daedalus_ode)]]
 // [[dust2::time_type(continuous)]]
 // [[dust2::parameter(beta, constant = TRUE)]]
@@ -239,16 +242,18 @@ class daedalus_ode {
                   const shared_state &shared,
                   internal_state &internal,  // NOLINT
                   real_type *state_deriv) {
-    // TODO: prefer to not use these
+    // TODO(pratik): prefer to not use these
     const size_t vec_size = shared.n_strata;
     const size_t n_econ_groups = shared.n_econ_groups;
     const size_t n_age_groups = shared.n_age_groups;
 
     // map to Eigen Tensor
-    Eigen::TensorMap<const TensorMat<double>> t_x(
-        state, vec_size, daedalus::constants::N_COMPARTMENTS);
-    Eigen::TensorMap<TensorMat<double>> t_dx(
-        state_deriv, vec_size, daedalus::constants::N_COMPARTMENTS);
+    Eigen::TensorMap<const TensorAry<double>> t_x(
+        state, vec_size, daedalus::constants::N_COMPARTMENTS,
+        daedalus::constants::N_VAX_STRATA);
+    Eigen::TensorMap<TensorAry<double>> t_dx(
+        state_deriv, vec_size, daedalus::constants::N_COMPARTMENTS,
+        daedalus::constants::N_VAX_STRATA);
 
     // all chip ops on dim N have dim N-1
     // compartmental transitions
@@ -260,29 +265,45 @@ class daedalus_ode {
         shared.cm.contract(internal.t_comm_inf, product_dims) * shared.beta;
 
     // calculate C * I_w and C * I_cons for a n_econ_groups-length array
+
+    // reshape and broadcast to 2D for element-wise mult
+    // TODO(pratik): shift to shared state builder
+    const Eigen::array<int, 2> bcast({1, daedalus::constants::N_VAX_STRATA});
+    auto work_contacts =
+        shared.cm_work.reshape(std::array<int, 2>{shared.n_econ_groups, 1})
+            .broadcast(bcast);
+
     internal.workplace_infected =
-        shared.beta * shared.cm_work *  // already a 1D tensor
+        shared.beta *
+        work_contacts *  // this is a 2D tensor with dims (n_econ_grps, n_vax)
         internal.t_comm_inf.slice(
-            Eigen::array<int, 1>{vec_size - n_econ_groups},
-            Eigen::array<int, 1>{n_econ_groups});
+            Eigen::array<int, 2>{vec_size - n_econ_groups, 0},
+            Eigen::array<int, 2>{n_econ_groups,
+                                 daedalus::constants::N_VAX_STRATA});
 
     internal.t_comm_inf_age = internal.t_comm_inf.slice(
-        Eigen::array<int, 1>{0}, Eigen::array<int, 1>{n_age_groups});
+        Eigen::array<int, 2>{0, 0},
+        Eigen::array<int, 2>{n_age_groups, daedalus::constants::N_VAX_STRATA});
 
     internal.consumer_worker_infections =
         shared.beta *
         shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
 
-    internal.susc_workers = t_x.chip(iS, i_COMPS)
-                                .slice(Eigen::array<int, 1>{n_age_groups},
-                                       Eigen::array<int, 1>{n_econ_groups});
+    internal.susc_workers =
+        t_x.chip(iS, i_COMPS)
+            .slice(Eigen::array<int, 2>{n_age_groups, 0},
+                   Eigen::array<int, 2>{n_econ_groups,
+                                        daedalus::constants::N_VAX_STRATA});
 
     internal.sToE =
         t_x.chip(iS, i_COMPS) * internal.t_foi;  // dims (n_strata, i_COMPS)
+
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
-    internal.sToE.slice(Eigen::array<int, 1>{vec_size - n_econ_groups},
-                        Eigen::array<int, 1>{n_econ_groups}) +=
+    internal.sToE.slice(
+        Eigen::array<int, 2>{n_age_groups, 0},
+        Eigen::array<int, 2>{n_econ_groups,
+                             daedalus::constants::N_VAX_STRATA}) +=
         (internal.susc_workers *
          (internal.workplace_infected + internal.consumer_worker_infections));
 
@@ -293,10 +314,15 @@ class daedalus_ode {
     internal.isToR = shared.gamma_Is * t_x.chip(iIs, i_COMPS);
     internal.iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
 
-    internal.isToH = shared.eta * t_x.chip(iIs, i_COMPS);
-
-    internal.hToR = shared.gamma_H * t_x.chip(iH, i_COMPS);
-    internal.hToD = shared.omega * t_x.chip(iH, i_COMPS);
+    internal.isToH =
+        shared.eta.reshape(std::array<int, 2>{vec_size, 1}).broadcast(bcast) *
+        t_x.chip(iIs, i_COMPS);
+    internal.hToR = shared.gamma_H.reshape(std::array<int, 2>{vec_size, 1})
+                        .broadcast(bcast) *
+                    t_x.chip(iH, i_COMPS);
+    internal.hToD =
+        shared.omega.reshape(std::array<int, 2>{vec_size, 1}).broadcast(bcast) *
+        t_x.chip(iH, i_COMPS);
 
     internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
 
