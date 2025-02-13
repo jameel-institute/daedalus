@@ -73,12 +73,11 @@ class daedalus_ode {
   struct shared_state {
     // NOTE: n_strata unknown at compile time
     const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
-    const TensorVec<double> eta, omega, gamma_H;
+    const TensorMat<double> eta, omega, gamma_H;
 
     const size_t n_strata, n_age_groups, n_econ_groups;
     const std::vector<size_t> i_to_zero;
-    const TensorMat<double> cm, cm_cons_work;
-    const TensorVec<double> cm_work;  // only needed for element-wise mult
+    const TensorMat<double> cm, cm_cons_work, cm_work;
   };
 
   /// @brief Intermediate data.
@@ -177,14 +176,23 @@ class daedalus_ode {
     const size_t n_econ_groups = dust2::r::read_size(pars, "n_econ_groups", 45);
     const size_t n_strata = n_age_groups + n_econ_groups;
 
-    // read vector values (all must have size n_strata)
-    TensorVec<double> eta(n_strata);
-    TensorVec<double> omega(n_strata);
-    TensorVec<double> gamma_H(n_strata);
+    // broadcasting dims
+    const Eigen::array<int, 2> bcast({1, daedalus::constants::N_VAX_STRATA});
 
-    dust2::r::read_real_vector(pars, n_strata, eta.data(), "eta", true);
-    dust2::r::read_real_vector(pars, n_strata, omega.data(), "omega", true);
-    dust2::r::read_real_vector(pars, n_strata, gamma_H.data(), "gamma_H", true);
+    // read vector values (all must have size n_strata)
+    TensorMat<double> eta_temp(n_strata, 1);
+    TensorMat<double> omega_temp(n_strata, 1);
+    TensorMat<double> gamma_H_temp(n_strata, 1);
+
+    dust2::r::read_real_vector(pars, n_strata, eta_temp.data(), "eta", true);
+    dust2::r::read_real_vector(pars, n_strata, omega_temp.data(), "omega",
+                               true);
+    dust2::r::read_real_vector(pars, n_strata, gamma_H_temp.data(), "gamma_H",
+                               true);
+
+    TensorMat<double> eta = eta_temp.broadcast(bcast);
+    TensorMat<double> omega = omega_temp.broadcast(bcast);
+    TensorMat<double> gamma_H = gamma_H_temp.broadcast(bcast);
 
     // handling contact matrix
     const std::vector<size_t> vec_cm_dims(2, n_strata);  // for square matrix
@@ -200,9 +208,10 @@ class daedalus_ode {
                               true);
 
     // handling within-sector contacts
-    TensorVec<double> cm_work(n_econ_groups);
-    dust2::r::read_real_vector(pars, n_econ_groups, cm_work.data(), "cm_work",
-                               true);
+    TensorMat<double> cm_work_temp(n_econ_groups, 1);
+    dust2::r::read_real_vector(pars, n_econ_groups, cm_work_temp.data(),
+                               "cm_work", true);
+    TensorMat<double> cm_work = cm_work_temp.broadcast(bcast);
 
     // handling compartments to zero
     const std::vector<size_t> i_to_zero = daedalus::helpers::zero_which(
@@ -266,16 +275,9 @@ class daedalus_ode {
 
     // calculate C * I_w and C * I_cons for a n_econ_groups-length array
 
-    // reshape and broadcast to 2D for element-wise mult
-    // TODO(pratik): shift to shared state builder
-    const Eigen::array<int, 2> bcast({1, daedalus::constants::N_VAX_STRATA});
-    auto work_contacts =
-        shared.cm_work.reshape(std::array<int, 2>{shared.n_econ_groups, 1})
-            .broadcast(bcast);
-
     internal.workplace_infected =
         shared.beta *
-        work_contacts *  // this is a 2D tensor with dims (n_econ_grps, n_vax)
+        shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, n_vax)
         internal.t_comm_inf.slice(
             Eigen::array<int, 2>{vec_size - n_econ_groups, 0},
             Eigen::array<int, 2>{n_econ_groups,
@@ -314,15 +316,9 @@ class daedalus_ode {
     internal.isToR = shared.gamma_Is * t_x.chip(iIs, i_COMPS);
     internal.iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
 
-    internal.isToH =
-        shared.eta.reshape(std::array<int, 2>{vec_size, 1}).broadcast(bcast) *
-        t_x.chip(iIs, i_COMPS);
-    internal.hToR = shared.gamma_H.reshape(std::array<int, 2>{vec_size, 1})
-                        .broadcast(bcast) *
-                    t_x.chip(iH, i_COMPS);
-    internal.hToD =
-        shared.omega.reshape(std::array<int, 2>{vec_size, 1}).broadcast(bcast) *
-        t_x.chip(iH, i_COMPS);
+    internal.isToH = shared.eta * t_x.chip(iIs, i_COMPS);
+    internal.hToR = shared.gamma_H * t_x.chip(iH, i_COMPS);
+    internal.hToD = shared.omega * t_x.chip(iH, i_COMPS);
 
     internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
 
