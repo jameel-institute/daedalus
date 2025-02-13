@@ -9,7 +9,10 @@ test_that("daedalus2: basic expectations", {
   output <- daedalus2(country_canada, "influenza_1918")
 
   # expect list is type double and non-negative
-  checkmate::expect_list(output, "numeric", len = N_MODEL_COMPARTMENTS)
+  checkmate::expect_list(
+    output, "numeric",
+    len = N_MODEL_COMPARTMENTS * N_VACCINE_DATA_GROUPS
+  )
   expect_true(
     all(
       vapply(output, function(x) all(x >= 0.0), FUN.VALUE = logical(1))
@@ -37,7 +40,10 @@ test_that("Can run with ISO2 country parameter", {
   output <- daedalus2("CA", "influenza_1918")
 
   # expect list is type double and non-negative
-  checkmate::expect_list(output, "numeric", len = N_MODEL_COMPARTMENTS)
+  checkmate::expect_list(
+    output, "numeric",
+    len = N_MODEL_COMPARTMENTS * N_VACCINE_DATA_GROUPS
+  )
   expect_true(
     all(
       vapply(output, function(x) all(x >= 0.0), FUN.VALUE = logical(1))
@@ -53,7 +59,10 @@ test_that("Can run with ISO3 country parameter", {
   output <- daedalus2("CAN", "influenza_1918")
 
   # expect list is type double and non-negative
-  checkmate::expect_list(output, "numeric", len = N_MODEL_COMPARTMENTS)
+  checkmate::expect_list(
+    output, "numeric",
+    len = N_MODEL_COMPARTMENTS * N_VACCINE_DATA_GROUPS
+  )
   expect_true(
     all(
       vapply(output, function(x) all(x >= 0.0), FUN.VALUE = logical(1))
