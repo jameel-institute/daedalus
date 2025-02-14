@@ -99,13 +99,6 @@ daedalus_rhs <- function(t, state, parameters) {
   # as described in https://github.com/robj411/p2_drivers
   new_deaths <- state_[, i_H, ] * omega # row i by element i
   d_state[, i_D, ] <- new_deaths
-  new_deaths_total <- sum(new_deaths)
-
-  beta <- beta * if (switch) {
-    get_distancing_coefficient(new_deaths_total)
-  } else {
-    1.0
-  }
 
   #### Force of infection calculations ####
   # NOTE: get total number in each age group infectious
