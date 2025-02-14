@@ -24,11 +24,10 @@ daedalus2_internal <- function(time_end, params, state) {
 #' @inheritParams daedalus
 #'
 #' @param vaccination_rate The population-wide **percentage** that can be
-#' vaccinated per day. The model automatically corrects for decreasing
-#' availability of vaccination candidates. Defaults to 0.0 for no vaccination.
+#' vaccinated per day. Defaults to 0.0 for no vaccination.
 #'
 #' @param waning_rate The rate at which vaccinated individuals return to the
-#' susceptible compartment. Defauls to 1 / 180, for waning after 180 days.
+#' susceptible compartment. Defaults to 1 / 180, for waning after 180 days.
 #' @export
 #'
 #' @examples

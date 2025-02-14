@@ -33,11 +33,10 @@ of an infection. Create an pass a \verb{<daedalus_infection>} to tweak infection
 parameters.}
 
 \item{vaccination_rate}{The population-wide \strong{percentage} that can be
-vaccinated per day. The model automatically corrects for decreasing
-availability of vaccination candidates. Defaults to 0.0 for no vaccination.}
+vaccinated per day. Defaults to 0.0 for no vaccination.}
 
 \item{waning_rate}{The rate at which vaccinated individuals return to the
-susceptible compartment. Defauls to 1 / 180, for waning after 180 days.}
+susceptible compartment. Defaults to 1 / 180, for waning after 180 days.}
 
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
