@@ -75,6 +75,8 @@ class daedalus_ode {
     const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
     const TensorMat<double> eta, omega, gamma_H;
 
+    const real_type nu, psi;
+
     const size_t n_strata, n_age_groups, n_econ_groups;
     const std::vector<size_t> i_to_zero;
     const TensorMat<double> cm, cm_cons_work, cm_work;
@@ -127,34 +129,17 @@ class daedalus_ode {
   /// @return A custom packing specification object.
   static dust2::packing packing_state(const shared_state &shared) {
     const std::vector<size_t> dim_vec(1, shared.n_strata);
-    // TODO(pratik): write a function to return this
-    return dust2::packing{{"S", dim_vec},
-                          {"E", dim_vec},
-                          {"Is", dim_vec},
-                          {"Ia", dim_vec},
-                          {"H", dim_vec},
-                          {"R", dim_vec},
-                          {"D", dim_vec},
-                          {"new_inf", dim_vec},
-                          {"new_hosp", dim_vec},
-                          {"S_vax", dim_vec},
-                          {"E_vax", dim_vec},
-                          {"Is_vax", dim_vec},
-                          {"Ia_vax", dim_vec},
-                          {"H_vax", dim_vec},
-                          {"R_vax", dim_vec},
-                          {"D_vax", dim_vec},
-                          {"new_inf_vax", dim_vec},
-                          {"new_hosp_vax", dim_vec},
-                          {"S_dvax", dim_vec},
-                          {"E_dvax", dim_vec},
-                          {"Is_dvax", dim_vec},
-                          {"Ia_dvax", dim_vec},
-                          {"H_dvax", dim_vec},
-                          {"R_dvax", dim_vec},
-                          {"D_dvax", dim_vec},
-                          {"new_inf_dvax", dim_vec},
-                          {"new_hosp_dvax", dim_vec}};
+    // TODO(pratik): write a function to return this - names may need to be
+    // more generic
+    return dust2::packing{{"S", dim_vec},           {"E", dim_vec},
+                          {"Is", dim_vec},          {"Ia", dim_vec},
+                          {"H", dim_vec},           {"R", dim_vec},
+                          {"D", dim_vec},           {"new_inf", dim_vec},
+                          {"new_hosp", dim_vec},    {"S_vax", dim_vec},
+                          {"E_vax", dim_vec},       {"Is_vax", dim_vec},
+                          {"Ia_vax", dim_vec},      {"H_vax", dim_vec},
+                          {"R_vax", dim_vec},       {"D_vax", dim_vec},
+                          {"new_inf_vax", dim_vec}, {"new_hosp_vax", dim_vec}};
   }
 
   /// @brief Initialise shared parameters.
@@ -169,6 +154,8 @@ class daedalus_ode {
     const real_type rho = dust2::r::read_real(pars, "rho", 0.0);
     const real_type gamma_Ia = dust2::r::read_real(pars, "gamma_Ia", 0.0);
     const real_type gamma_Is = dust2::r::read_real(pars, "gamma_Is", 0.0);
+    const real_type nu = dust2::r::read_real(pars, "nu", 0.0);
+    const real_type psi = dust2::r::read_real(pars, "psi", 0.0);
 
     // related to number of groups
     // defaults to daedalus fixed values
@@ -219,9 +206,10 @@ class daedalus_ode {
         daedalus::constants::N_VAX_STRATA);
 
     return shared_state{
-        beta,          sigma,     p_sigma, epsilon, rho,      gamma_Ia,
-        gamma_Is,      eta,       omega,   gamma_H, n_strata, n_age_groups,
-        n_econ_groups, i_to_zero, cm,      cm_cw,   cm_work};
+        beta,      sigma,    p_sigma,  epsilon,      rho,
+        gamma_Ia,  gamma_Is, eta,      omega,        gamma_H,
+        nu,        psi,      n_strata, n_age_groups, n_econ_groups,
+        i_to_zero, cm,       cm_cw,    cm_work};
   }
 
   /// @brief Updated shared parameters.
@@ -274,7 +262,6 @@ class daedalus_ode {
         shared.cm.contract(internal.t_comm_inf, product_dims) * shared.beta;
 
     // calculate C * I_w and C * I_cons for a n_econ_groups-length array
-
     internal.workplace_infected =
         shared.beta *
         shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, n_vax)
@@ -298,7 +285,7 @@ class daedalus_ode {
                                         daedalus::constants::N_VAX_STRATA});
 
     internal.sToE =
-        t_x.chip(iS, i_COMPS) * internal.t_foi;  // dims (n_strata, i_COMPS)
+        t_x.chip(iS, i_COMPS) * internal.t_foi;  // dims (n_strata, 2)
 
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
@@ -334,6 +321,25 @@ class daedalus_ode {
     t_dx.chip(iD, i_COMPS) = internal.hToD;
     t_dx.chip(idE, i_COMPS) = internal.sToE;
     t_dx.chip(idH, i_COMPS) = internal.isToH;
+
+    // vaccination related changes
+    // TODO(pratik): flexible way of selecting multiple cols from i-th layer
+    // .stride() operator limited by start point
+    // S => S_v
+    t_dx.chip(iS, i_COMPS).chip(0, 1) +=
+        -shared.nu * t_x.chip(iS, i_COMPS).chip(0, 1) +
+        shared.psi * t_x.chip(iS, i_COMPS).chip(1, 1);
+    t_dx.chip(iS, i_COMPS).chip(1, 1) +=
+        shared.nu * t_x.chip(iS, i_COMPS).chip(0, 1) -
+        shared.psi * t_x.chip(iS, i_COMPS).chip(1, 1);
+
+    // R => R_v
+    t_dx.chip(iR, i_COMPS).chip(0, 1) +=
+        -shared.nu * t_x.chip(iR, i_COMPS).chip(0, 1) +
+        shared.psi * t_x.chip(iR, i_COMPS).chip(1, 1);
+    t_dx.chip(iR, i_COMPS).chip(1, 1) +=
+        shared.nu * t_x.chip(iR, i_COMPS).chip(0, 1) -
+        shared.psi * t_x.chip(iR, i_COMPS).chip(1, 1);
   }
 
   /// @brief Set every value to zero - unclear.

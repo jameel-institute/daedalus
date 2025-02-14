@@ -10,10 +10,11 @@ namespace daedalus {
 /// @brief Model constants similar to R/constants.R
 namespace constants {
 // hardcoded as this would only change with model structure changes
+// TODO(pratik): consider whether N_VAX_STRATA can be flexible
 constexpr int N_EPI_COMPARTMENTS = 7;
 constexpr int N_DATA_COMPARTMENTS = 2;
 constexpr int N_COMPARTMENTS = N_EPI_COMPARTMENTS + N_DATA_COMPARTMENTS;
-constexpr int N_VAX_STRATA = 3;
+constexpr int N_VAX_STRATA = 2;  // not including new vaccinations as a layer
 
 constexpr int iS = 0, iE = 1, iIs = 2, iIa = 3, iH = 4, iR = 5, iD = 6, idE = 7,
               idH = 8;
