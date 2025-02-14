@@ -11,12 +11,18 @@ test_that("daedalus2: basic expectations", {
   # expect list is type double and non-negative
   checkmate::expect_list(
     output, "numeric",
-    len = N_MODEL_COMPARTMENTS * N_VACCINE_DATA_GROUPS
+    len = N_MODEL_COMPARTMENTS * N_VACCINE_STRATA
   )
   expect_true(
     all(
       vapply(output, function(x) all(x >= 0.0), FUN.VALUE = logical(1))
     )
+  )
+
+  # expect vaccination groups are zero
+  checkmate::expect_numeric(
+    output$S_vax,
+    lower = 0, upper = 0
   )
 
   # expect closed population with no change in total size
@@ -32,7 +38,7 @@ test_that("daedalus2: basic expectations", {
   )
 })
 
-test_that("Can run with ISO2 country parameter", {
+test_that("daedalus2: Can run with ISO2 country parameter", {
   expect_no_condition({
     daedalus2("CA", "influenza_1918")
   })
@@ -42,7 +48,7 @@ test_that("Can run with ISO2 country parameter", {
   # expect list is type double and non-negative
   checkmate::expect_list(
     output, "numeric",
-    len = N_MODEL_COMPARTMENTS * N_VACCINE_DATA_GROUPS
+    len = N_MODEL_COMPARTMENTS * N_VACCINE_STRATA
   )
   expect_true(
     all(
@@ -51,7 +57,7 @@ test_that("Can run with ISO2 country parameter", {
   )
 })
 
-test_that("Can run with ISO3 country parameter", {
+test_that("daedalus2: Can run with ISO3 country parameter", {
   expect_no_condition({
     daedalus2("CAN", "influenza_1918")
   })
@@ -61,7 +67,7 @@ test_that("Can run with ISO3 country parameter", {
   # expect list is type double and non-negative
   checkmate::expect_list(
     output, "numeric",
-    len = N_MODEL_COMPARTMENTS * N_VACCINE_DATA_GROUPS
+    len = N_MODEL_COMPARTMENTS * N_VACCINE_STRATA
   )
   expect_true(
     all(
@@ -71,7 +77,7 @@ test_that("Can run with ISO3 country parameter", {
 })
 
 # test that daedalus runs for all epidemic infection parameter sets
-test_that("daedalus: Runs for all country x infection x response", {
+test_that("daedalus2: Runs for all country x infection x response", {
   country_infection_combos <- data.table::CJ(
     country = daedalus::country_names,
     infection = daedalus::epidemic_names
@@ -94,4 +100,20 @@ test_that("daedalus: Runs for all country x infection x response", {
       }
     )
   )
+})
+
+# check for vaccination mechanism
+test_that("daedalus2: vaccination works", {
+  expect_no_condition(
+    daedalus2("THA", "sars_cov_1", 0.1)
+  )
+  output <- daedalus2("THA", "sars_cov_1", 0.1)
+
+  # expect vaccination group is non-zero
+  expect_false(
+    all(output$S_vax <= 0)
+  )
+
+  # NOTE: tests for flows in the vaccination stratum are ommitted
+  # as this doesn't work yet
 })

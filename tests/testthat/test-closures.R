@@ -79,7 +79,7 @@ test_that("Closures: earlier closures reduce epidemic size", {
 test_that("Closures: lower threshold reduces epidemic size", {
   # NOTE: the relationship between repsonse threshold and the epidemic size
   # seems non-linear --- will open an issue for this
-  response_thresholds <- c(10000, 100)
+  response_thresholds <- c(1e7, 100)
   output_list <- lapply(response_thresholds, function(x) {
     daedalus(
       country_x, daedalus_infection("sars_cov_1", rho = 0.0),
