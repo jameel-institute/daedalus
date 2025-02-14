@@ -34,6 +34,8 @@ Imports:
     data.table,
     deSolve,
     dust2,
+    Rcpp,
+    RcppEigen,
     rlang
 Suggests:
     countrycode,
@@ -51,7 +53,9 @@ LinkingTo:
     cpp11,
     cpp11eigen,
     dust2,
-    monty
+    monty,
+    Rcpp,
+    RcppEigen
 VignetteBuilder: 
     knitr
 Remotes:
