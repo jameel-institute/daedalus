@@ -4,7 +4,13 @@
 \alias{daedalus2}
 \title{DAEDALUS model implemented with dust}
 \usage{
-daedalus2(country, infection, time_end = 100)
+daedalus2(
+  country,
+  infection,
+  vaccination_rate = 0,
+  waning_rate = 1/180,
+  time_end = 100
+)
 }
 \arguments{
 \item{country}{A country or territory object of class \verb{<daedalus_country>},
@@ -25,6 +31,13 @@ or epidemic wave.
 Passing the name as a string automatically accesses the default parameters
 of an infection. Create an pass a \verb{<daedalus_infection>} to tweak infection
 parameters.}
+
+\item{vaccination_rate}{The population-wide \strong{percentage} that can be
+vaccinated per day. The model automatically corrects for decreasing
+availability of vaccination candidates. Defaults to 0.0 for no vaccination.}
+
+\item{waning_rate}{The rate at which vaccinated individuals return to the
+susceptible compartment. Defauls to 1 / 180, for waning after 180 days.}
 
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data

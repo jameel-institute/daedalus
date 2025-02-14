@@ -57,6 +57,8 @@ using TensorAry = Eigen::Tensor<T, 3>;
 // [[dust2::parameter(gamma_Ia, constant = TRUE)]]
 // [[dust2::parameter(gamma_Is, constant = TRUE)]]
 // [[dust2::parameter(gamma_H, constant = TRUE)]]
+// [[dust2::parameter(nu, constant = TRUE)]]
+// [[dust2::parameter(psi, constant = TRUE)]]
 // [[dust2::parameter(n_age_groups, constant = TRUE, type = "int")]]
 // [[dust2::parameter(n_econ_groups, constant = TRUE, type = "int")]]
 // [[dust2::parameter(n_strata, constant = TRUE, type = "int")]]

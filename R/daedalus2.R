@@ -22,12 +22,21 @@ daedalus2_internal <- function(time_end, params, state) {
 #' (and in future \pkg{dust}). *This is a work in progress!*
 #'
 #' @inheritParams daedalus
+#'
+#' @param vaccination_rate The population-wide **percentage** that can be
+#' vaccinated per day. The model automatically corrects for decreasing
+#' availability of vaccination candidates. Defaults to 0.0 for no vaccination.
+#'
+#' @param waning_rate The rate at which vaccinated individuals return to the
+#' susceptible compartment. Defauls to 1 / 180, for waning after 180 days.
 #' @export
 #'
 #' @examples
 #' daedalus2("GBR", "sars_cov_1")
 daedalus2 <- function(
     country, infection,
+    vaccination_rate = 0.0,
+    waning_rate = 1 / 180,
     time_end = 100) {
   # input checking
   # NOTE: names are case sensitive
@@ -58,7 +67,9 @@ daedalus2 <- function(
     prepare_parameters2.daedalus_country(country),
     prepare_parameters.daedalus_infection(infection),
     list(
-      beta = get_beta(infection, country)
+      beta = get_beta(infection, country),
+      nu = vaccination_rate / 100,
+      psi = waning_rate
     )
   )
 
