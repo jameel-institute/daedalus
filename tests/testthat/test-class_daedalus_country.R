@@ -111,7 +111,10 @@ test_that("class <daedalus_country>`: setting parameters", {
   # expect that validator prevents setting data that invalidates class
   # the exact error is not very important and could change
   expect_error(
-    set_data(country_x, contact_matrix = rep(1, N_AGE_GROUPS - 1, N_AGE_GROUPS))
+    set_data(
+      country_x,
+      contact_matrix = matrix(1, N_AGE_GROUPS - 1, N_AGE_GROUPS)
+    )
   )
 })
 

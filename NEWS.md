@@ -1,16 +1,44 @@
-# daedalus (development version)
+# daedalus 0.2.3
 
-This is a development version, and the next version will be v0.2.3.
+## Breaking changes
 
-1. Added full DAEDALUS ODE structure to `daedalus_ode` class -- except events, vaccination, and excess mortality; `daedalus2()` accepts `country` and `infection` similar to `daedalus()`.
+- `daedalus()` no longer includes auto-social distancing; this is to check for equivalence with `daedalus2()`. This will be re-added once the event-trigger mapping feature is developed.
 
-2. Added `inst/include/daedalus_constants.h` for model related constants.
+- `daedalus2()` implementation of vaccination is very basic: vaccination begins at model start time and does not end, vaccination does not correct for reducing eligible population, vaccination is non-leaky
 
-3. Added intermediate internal helper generic and methods `prepare_parameters2()` and `make_initial_state2()` for use with `daedalus2()`.
+## Model changes
 
-4. Added more tests for output expectations and fixed population size for `daedalus2()`.
+1. Added full DAEDALUS ODE structure to `daedalus_ode` class for `daedalus2()` -- except events, auto-social distancing, and excess mortality; `daedalus2()` accepts `country` and `infection` similar to `daedalus()`.
 
-5. Added function documentation and updated replacement DAEDALUS vignette.
+    - `daedalus2()` takes vaccination arguments for vaccination rate and waning rate.
+
+2. Fixes consumer-worker contact scaling in `daedalus2()`.
+
+3. `daedalus_ode` class uses `Eigen::Tensor` over `Eigen::Matrix` for numerical operations.
+
+## C++ code
+
+1. Added `inst/include/daedalus_constants.h` for model related constants;
+
+2. Added `inst/include/daedalus_helpers.h` with function `zero_which()` to return compartments to zero.
+
+## R code
+
+1. Added intermediate internal helper generic and methods `prepare_parameters2()` and `make_initial_state2()` for use with `daedalus2()`.
+
+## Other
+
+1. Added more tests for output expectations and fixed population size for `daedalus2()`.
+
+2. Added tests for equivalence between `daedalus()` and `daedalus2()`.
+
+3. Added function documentation and updated replacement DAEDALUS vignette.
+
+4. Update `.lintr` for _lintr_ v3.2.0.
+
+## Dependencies
+
+- Now linking to _Rcpp_ and _RcppEigen_ over _cpp11eigen_.
 
 # daedalus 0.2.2
 

@@ -1,6 +1,6 @@
 linters: all_linters(
     indentation_linter = NULL, # unstable as of lintr 3.1.0
-    extraction_operator_linter = NULL, # lints auto-generated vignette setup chunks
+    object_overwrite_linter = NULL, # lints too many useful variable names
     implicit_integer_linter = NULL, # turn off due to multiple integerish values used
     duplicate_argument_linter = NULL, # due to cli_bullets
     object_name_linter = NULL, # due to S3 methods
