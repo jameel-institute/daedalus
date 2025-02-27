@@ -8,7 +8,7 @@ message: 'To cite package "daedalus" in publications use:'
 type: software
 license: MIT
 title: 'daedalus: Model Health, Social, and Economic Costs of a Pandemic'
-version: 0.2.0
+version: 0.2.3
 abstract: Model the health, education, and economic costs of directly transmitted
   respiratory virus pandemics, under different scenarios of prior vaccine investment
   and reactive interventions, using the 'DAEDALUS' integrated health-economics model
@@ -84,7 +84,7 @@ references:
   authors:
   - family-names: Csárdi
     given-names: Gábor
-    email: csardi.gabor@gmail.com
+    email: gabor@posit.co
   year: '2025'
   doi: 10.32614/CRAN.package.cli
 - type: software
@@ -115,6 +115,10 @@ references:
   - family-names: Schwendinger
     given-names: Benjamin
     orcid: https://orcid.org/0000-0003-3315-8114
+  - family-names: Krylov
+    given-names: Ivan
+    email: ikrylov@disroot.org
+    orcid: https://orcid.org/0000-0002-0172-3812
   year: '2025'
   doi: 10.32614/CRAN.package.data.table
 - type: software
@@ -139,6 +143,16 @@ references:
     orcid: https://orcid.org/0000-0002-6709-9186
   year: '2025'
   doi: 10.32614/CRAN.package.deSolve
+- type: software
+  title: dust2
+  abstract: 'dust2: Next Generation dust'
+  notes: Imports
+  url: https://mrc-ide.github.io/dust2
+  authors:
+  - family-names: FitzJohn
+    given-names: Rich
+    email: rich.fitzjohn@gmail.com
+  year: '2025'
 - type: software
   title: Rcpp
   abstract: 'Rcpp: Seamless R and C++ Integration'
@@ -174,29 +188,6 @@ references:
     given-names: John
   year: '2025'
   doi: 10.32614/CRAN.package.Rcpp
-- type: software
-  title: RcppEigen
-  abstract: 'RcppEigen: ''Rcpp'' Integration for the ''Eigen'' Templated Linear Algebra
-    Library'
-  notes: Imports
-  url: https://dirk.eddelbuettel.com/code/rcpp.eigen.html
-  repository: https://CRAN.R-project.org/package=RcppEigen
-  authors:
-  - family-names: Bates
-    given-names: Doug
-    orcid: https://orcid.org/0000-0001-8316-9503
-  - family-names: Eddelbuettel
-    given-names: Dirk
-    email: edd@debian.org
-    orcid: https://orcid.org/0000-0001-6419-907X
-  - family-names: Francois
-    given-names: Romain
-    orcid: https://orcid.org/0000-0002-2444-4226
-  - family-names: Qiu
-    given-names: Yixuan
-    orcid: https://orcid.org/0000-0003-0109-6692
-  year: '2025'
-  doi: 10.32614/CRAN.package.RcppEigen
 - type: software
   title: rlang
   abstract: 'rlang: Functions for Base Types and Core R and ''Tidyverse'' Features'
@@ -441,4 +432,62 @@ references:
     orcid: https://orcid.org/0000-0003-1899-6662
   year: '2025'
   doi: 10.32614/CRAN.package.BH
+- type: software
+  title: cpp11
+  abstract: 'cpp11: A C++11 Interface for R''s C Interface'
+  notes: LinkingTo
+  url: https://cpp11.r-lib.org
+  repository: https://CRAN.R-project.org/package=cpp11
+  authors:
+  - family-names: Vaughan
+    given-names: Davis
+    email: davis@posit.co
+    orcid: https://orcid.org/0000-0003-4777-038X
+  - family-names: Hester
+    given-names: Jim
+    orcid: https://orcid.org/0000-0002-2739-7082
+  - family-names: François
+    given-names: Romain
+    orcid: https://orcid.org/0000-0002-2444-4226
+  year: '2025'
+  doi: 10.32614/CRAN.package.cpp11
+- type: software
+  title: monty
+  abstract: 'monty: Monte Carlo Models'
+  notes: LinkingTo
+  url: https://mrc-ide.github.io/monty
+  authors:
+  - family-names: FitzJohn
+    given-names: Rich
+    email: rich.fitzjohn@gmail.com
+  - family-names: Hinsley
+    given-names: Wes
+  - family-names: Knock
+    given-names: Ed
+  - family-names: Baguelin
+    given-names: Marc
+  year: '2025'
+- type: software
+  title: RcppEigen
+  abstract: 'RcppEigen: ''Rcpp'' Integration for the ''Eigen'' Templated Linear Algebra
+    Library'
+  notes: LinkingTo
+  url: https://dirk.eddelbuettel.com/code/rcpp.eigen.html
+  repository: https://CRAN.R-project.org/package=RcppEigen
+  authors:
+  - family-names: Bates
+    given-names: Doug
+    orcid: https://orcid.org/0000-0001-8316-9503
+  - family-names: Eddelbuettel
+    given-names: Dirk
+    email: edd@debian.org
+    orcid: https://orcid.org/0000-0001-6419-907X
+  - family-names: Francois
+    given-names: Romain
+    orcid: https://orcid.org/0000-0002-2444-4226
+  - family-names: Qiu
+    given-names: Yixuan
+    orcid: https://orcid.org/0000-0003-0109-6692
+  year: '2025'
+  doi: 10.32614/CRAN.package.RcppEigen
 
