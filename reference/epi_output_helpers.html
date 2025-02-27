@@ -11,7 +11,7 @@ vaccinations, while allowing grouping by different strata."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -132,19 +132,19 @@ Columns for the <code>groups</code> are added when <code>groups</code> are speci
 <span class="r-in"><span>  <span class="va">data</span>,</span></span>
 <span class="r-in"><span>  groups <span class="op">=</span> <span class="st">"age_group"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    age_group      value                measure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        0-4    35281.3           total_deaths</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       5-19   257959.3           total_deaths</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      20-65   245213.3           total_deaths</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4        65+   288830.2           total_deaths</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5        0-4  2478956.1          epidemic_size</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       5-19  4870458.3          epidemic_size</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      20-65 17143379.3          epidemic_size</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8        65+  2718611.4          epidemic_size</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9        0-4   141507.7 total_hospitalisations</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10      5-19  1036057.1 total_hospitalisations</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11     20-65   979956.8 total_hospitalisations</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12       65+  1161234.8 total_hospitalisations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    age_group       value                measure</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        0-4    69689.78           total_deaths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       5-19   677156.48           total_deaths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      20-65   560493.97           total_deaths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        65+  1137536.39           total_deaths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        0-4  3525893.21          epidemic_size</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6       5-19  9130632.61          epidemic_size</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      20-65 27982223.87          epidemic_size</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8        65+  7585058.30          epidemic_size</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9        0-4   202377.02 total_hospitalisations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10      5-19  1954014.23 total_hospitalisations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11     20-65  1607468.60 total_hospitalisations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12       65+  3258961.60 total_hospitalisations</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># get daily vaccinations</span></span></span>
 <span class="r-in"><span><span class="va">daily_vaccinations</span> <span class="op">&lt;-</span> <span class="fu">get_new_vaccinations</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>

@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,6 +54,44 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.3" id="daedalus-023">daedalus 0.2.3<a class="anchor" aria-label="anchor" href="#daedalus-023"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-2-3">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-3"></a></h3>
+<ul><li><p><code><a href="../reference/daedalus.html">daedalus()</a></code> no longer includes auto-social distancing; this is to check for equivalence with <code><a href="../reference/daedalus2.html">daedalus2()</a></code>. This will be re-added once the event-trigger mapping feature is developed.</p></li>
+<li><p><code><a href="../reference/daedalus2.html">daedalus2()</a></code> implementation of vaccination is very basic: vaccination begins at model start time and does not end, vaccination does not correct for reducing eligible population, vaccination is non-leaky</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="model-changes-0-2-3">Model changes<a class="anchor" aria-label="anchor" href="#model-changes-0-2-3"></a></h3>
+<ol style="list-style-type: decimal"><li>
+<p>Added full DAEDALUS ODE structure to <code>daedalus_ode</code> class for <code><a href="../reference/daedalus2.html">daedalus2()</a></code> – except events, auto-social distancing, and excess mortality; <code><a href="../reference/daedalus2.html">daedalus2()</a></code> accepts <code>country</code> and <code>infection</code> similar to <code><a href="../reference/daedalus.html">daedalus()</a></code>.</p>
+<ul><li>
+<code><a href="../reference/daedalus2.html">daedalus2()</a></code> takes vaccination arguments for vaccination rate and waning rate.</li>
+</ul></li>
+<li><p>Fixes consumer-worker contact scaling in <code><a href="../reference/daedalus2.html">daedalus2()</a></code>.</p></li>
+<li><p><code>daedalus_ode</code> class uses <code>Eigen::Tensor</code> over <code>Eigen::Matrix</code> for numerical operations.</p></li>
+</ol></div>
+<div class="section level3">
+<h3 id="c-code-0-2-3">C++ code<a class="anchor" aria-label="anchor" href="#c-code-0-2-3"></a></h3>
+<ol style="list-style-type: decimal"><li><p>Added <code>inst/include/daedalus_constants.h</code> for model related constants;</p></li>
+<li><p>Added <code>inst/include/daedalus_helpers.h</code> with function <code>zero_which()</code> to return compartments to zero.</p></li>
+</ol></div>
+<div class="section level3">
+<h3 id="r-code-0-2-3">R code<a class="anchor" aria-label="anchor" href="#r-code-0-2-3"></a></h3>
+<ol style="list-style-type: decimal"><li>Added intermediate internal helper generic and methods <code><a href="../reference/prepare_parameters.html">prepare_parameters2()</a></code> and <code><a href="../reference/make_initial_state2.html">make_initial_state2()</a></code> for use with <code><a href="../reference/daedalus2.html">daedalus2()</a></code>.</li>
+</ol></div>
+<div class="section level3">
+<h3 id="other-0-2-3">Other<a class="anchor" aria-label="anchor" href="#other-0-2-3"></a></h3>
+<ol style="list-style-type: decimal"><li><p>Added more tests for output expectations and fixed population size for <code><a href="../reference/daedalus2.html">daedalus2()</a></code>.</p></li>
+<li><p>Added tests for equivalence between <code><a href="../reference/daedalus.html">daedalus()</a></code> and <code><a href="../reference/daedalus2.html">daedalus2()</a></code>.</p></li>
+<li><p>Added function documentation and updated replacement DAEDALUS vignette.</p></li>
+<li><p>Update <code>.lintr</code> for <em>lintr</em> v3.2.0.</p></li>
+</ol></div>
+<div class="section level3">
+<h3 id="dependencies-0-2-3">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies-0-2-3"></a></h3>
+<ul><li>Now linking to <em>Rcpp</em> and <em>RcppEigen</em> over <em>cpp11eigen</em>.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.2" id="daedalus-022">daedalus 0.2.2<a class="anchor" aria-label="anchor" href="#daedalus-022"></a></h2>
 <p>This version adds support for including contact matrices in the <code>daedalus</code> class object and using them in the FOI calculation.</p>
 </div>
@@ -76,6 +114,10 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="daedalus-020">daedalus 0.2.0<a class="anchor" aria-label="anchor" href="#daedalus-020"></a></h2>
 <p>This is a minor version release of {daedalus} that adds real-time epidemic modelling functionality while removing the implementation of vaccination and vaccination-group infection pathways. There are no intervening versions between this and v0.1.0.</p>
+<p><strong>NOTE:</strong> This version has the following identified errors:</p>
+<ol style="list-style-type: decimal"><li><p>Consumer-to-worker infections are not correctly handled leading to later and lower epidemic peaks than expected.</p></li>
+<li><p>The number of recovered does not include recoveries from hospitalisation.</p></li>
+</ol><p><strong>Changes</strong></p>
 <ol style="list-style-type: decimal"><li>
 <p>Added new function <code>daedalus_rtm()</code> (for real-time modelling) which returns either a <code>&lt;daedalus_output&gt;</code> object or a list of these.</p>
 <ul><li><p>Has an Rcpp backed using RcppEigen and Boost Headers {BH} for Boost <em>odeint</em> solvers; added Rcpp, RcppEigen, and BH as dependencies;</p></li>
@@ -120,7 +162,9 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="daedalus-010">daedalus 0.1.0<a class="anchor" aria-label="anchor" href="#daedalus-010"></a></h2>
 <p>This is a minor version release of {daedalus} for use in the IDM conference in 2024.</p>
-</div>
+<p><strong>NOTE:</strong> This version has been found to have the following identified errors:</p>
+<ol style="list-style-type: decimal"><li>Consumer-to-worker infections are not correctly handled leading to higher epidemic peaks which also occur sooner than expected.</li>
+</ol></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.24" id="daedalus-0024">daedalus 0.0.24<a class="anchor" aria-label="anchor" href="#daedalus-0024"></a></h2>
 <p>This patch version adds a vignette on exploring the effect of parameter uncertainty on overall pandemic costs, and updates other vignettes and improves documentation.</p>

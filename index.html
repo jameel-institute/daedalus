@@ -24,7 +24,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,6 +102,15 @@
 <li><p>IDM Thailand 2024: <code>pak::pak("jameel-institute/daedalus@v0.1.0")</code></p></li>
 <li><p>IfG workshop 2025 (with real time modelling): <code>pak::pak("jameel-institute/daedalus@v0.2.0")</code></p></li>
 </ul>
+</div>
+<div class="section level3">
+<h3 id="known-issues">Known issues<a class="anchor" aria-label="anchor" href="#known-issues"></a>
+</h3>
+<p>We have found the following issues with released versions:</p>
+<ol style="list-style-type: decimal">
+<li><p><code>v0.1.0</code>: Consumer-worker contacts are not correctly handled, leading to higher and faster epidemic peaks.</p></li>
+<li><p><code>v0.2.0</code>: Consumer-worker contacts are not included in the model, leading to lower and later epidemic peaks. The ‘recovered’ compartment does not include recoveries from hospitalisation. Please use the helper function <code><a href="reference/epi_output_helpers.html">get_epidemic_summary()</a></code> to get epidemic sizes.</p></li>
+</ol>
 </div>
 </div>
 <div class="section level2">
