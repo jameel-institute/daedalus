@@ -24,7 +24,14 @@ daedalus2_internal <- function(time_end, params, state) {
 #' @inheritParams daedalus
 #'
 #' @param vaccination_rate The population-wide **percentage** that can be
-#' vaccinated per day. Defaults to 0.0 for no vaccination.
+#' vaccinated per day. Defaults to 0.0 for no vaccination. Note that this is not
+#' a proportion.
+#' 
+#' @param vaccine_efficacy The proportional reduction in infection
+#' probability for vaccinated individuals; this scales the transmissibility
+#' parameter \eqn{\beta}. Defaults to 0.0, for no reduction in infection
+#' probability due to vaccination. A value of 1.0 would represent 'non-leaky'
+#' vaccination, where no vaccinated individuals can be infected.
 #'
 #' @param waning_rate The rate at which vaccinated individuals return to the
 #' susceptible compartment. Defaults to 1 / 180, for waning after 180 days.
@@ -35,6 +42,7 @@ daedalus2_internal <- function(time_end, params, state) {
 daedalus2 <- function(
     country, infection,
     vaccination_rate = 0.0,
+    vaccine_efficacy = 0.0,
     waning_rate = 1 / 180,
     time_end = 100) {
   # input checking
@@ -68,6 +76,7 @@ daedalus2 <- function(
     list(
       beta = get_beta(infection, country),
       nu = vaccination_rate / 100,
+      nu_eff = 1.0 - vaccine_efficacy,
       psi = waning_rate
     )
   )
