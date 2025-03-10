@@ -31,9 +31,14 @@ const size_t i_GRPS = daedalus::constants::i_GRPS,
              i_COMPS = daedalus::constants::i_COMPS,
              i_VAX_GRPS = daedalus::constants::i_VAX_GRPS;
 
+const size_t N_VAX_STRATA = daedalus::constants::N_VAX_STRATA;
+
 // product dimensions for Eigen Tensor contraction
 const std::array<Eigen::IndexPair<int>, 1> product_dims = {
     Eigen::IndexPair<int>(1, 0)};
+
+// broadcasting dims
+const Eigen::array<Eigen::Index, 2> bcast({1, N_VAX_STRATA});
 
 // define types for Tensors of known dims
 template <typename T>
@@ -93,7 +98,7 @@ class daedalus_ode {
 
   static internal_state build_internal(const shared_state &shared) {
     // transition states
-    TensorMat<double> mat2d(shared.n_strata, daedalus::constants::N_VAX_STRATA);
+    TensorMat<double> mat2d(shared.n_strata, N_VAX_STRATA);
     mat2d.setZero();
     TensorMat<double> sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
                       iaToR = mat2d, isToH = mat2d, hToR = mat2d, hToD = mat2d,
@@ -101,15 +106,13 @@ class daedalus_ode {
 
     // infection related
 
-    TensorMat<double> mat2d_econ(shared.n_econ_groups,
-                                 daedalus::constants::N_VAX_STRATA);
+    TensorMat<double> mat2d_econ(shared.n_econ_groups, N_VAX_STRATA);
     mat2d_econ.setZero();
     TensorMat<double> workplace_infected = mat2d_econ,
                       consumer_worker_infections = mat2d_econ,
                       susc_workers = mat2d_econ;
 
-    TensorMat<double> t_comm_inf_age(shared.n_age_groups,
-                                     daedalus::constants::N_VAX_STRATA);
+    TensorMat<double> t_comm_inf_age(shared.n_age_groups, N_VAX_STRATA);
     t_comm_inf_age.setZero();
 
     // clang-format off
@@ -165,10 +168,6 @@ class daedalus_ode {
     const size_t n_econ_groups = dust2::r::read_size(pars, "n_econ_groups", 45);
     const size_t n_strata = n_age_groups + n_econ_groups;
 
-    // broadcasting dims
-    const Eigen::array<Eigen::Index, 2> bcast(
-        {1, daedalus::constants::N_VAX_STRATA});
-
     // read vector values (all must have size n_strata)
     TensorMat<double> eta_temp(n_strata, 1);
     TensorMat<double> omega_temp(n_strata, 1);
@@ -198,15 +197,13 @@ class daedalus_ode {
                               true);
 
     // handling within-sector contacts
-    TensorMat<double> cm_work_temp(n_econ_groups, 1);
-    dust2::r::read_real_vector(pars, n_econ_groups, cm_work_temp.data(),
-                               "cm_work", true);
-    TensorMat<double> cm_work = cm_work_temp.broadcast(bcast);
+    TensorMat<double> cm_work(n_econ_groups, 1);
+    dust2::r::read_real_vector(pars, n_econ_groups, cm_work.data(), "cm_work",
+                               true);
 
     // handling compartments to zero
     const std::vector<size_t> i_to_zero = daedalus::helpers::zero_which(
-        daedalus::constants::seq_DATA_COMPARTMENTS, n_strata,
-        daedalus::constants::N_VAX_STRATA);
+        daedalus::constants::seq_DATA_COMPARTMENTS, n_strata, N_VAX_STRATA);
 
     return shared_state{
         beta,      sigma,    p_sigma,  epsilon,      rho,
@@ -249,34 +246,36 @@ class daedalus_ode {
 
     // map to Eigen Tensor
     Eigen::TensorMap<const TensorAry<double>> t_x(
-        state, vec_size, daedalus::constants::N_COMPARTMENTS,
-        daedalus::constants::N_VAX_STRATA);
+        state, vec_size, daedalus::constants::N_COMPARTMENTS, N_VAX_STRATA);
     Eigen::TensorMap<TensorAry<double>> t_dx(
         state_deriv, vec_size, daedalus::constants::N_COMPARTMENTS,
-        daedalus::constants::N_VAX_STRATA);
+        N_VAX_STRATA);
 
     // all chip ops on dim N have dim N-1
     // compartmental transitions
     // Susceptible (unvaccinated) to exposed
     // sToE comprises three parts - community, workplace, consumer-worker
+    // need rowsums for FOI
     internal.t_comm_inf =
-        t_x.chip(iIs, i_COMPS) + (t_x.chip(iIa, i_COMPS) * shared.epsilon);
+        (t_x.chip(iIs, i_COMPS) + (t_x.chip(iIa, i_COMPS) * shared.epsilon))
+            .sum(Eigen::array<int, 1>{1})
+            .reshape(Eigen::array<int, 2>{vec_size, 1});
+
+    // FOI must be broadcast for element-wise tensor mult
     internal.t_foi =
-        shared.cm.contract(internal.t_comm_inf, product_dims) * shared.beta;
+        shared.cm.contract(internal.t_comm_inf, product_dims).broadcast(bcast);
 
     // calculate C * I_w and C * I_cons for a n_econ_groups-length array
     internal.workplace_infected =
         shared.beta *
-        shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, n_vax)
+        shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, 1)
         internal.t_comm_inf.slice(
             Eigen::array<Eigen::Index, 2>{vec_size - n_econ_groups, 0},
-            Eigen::array<Eigen::Index, 2>{n_econ_groups,
-                                          daedalus::constants::N_VAX_STRATA});
+            Eigen::array<Eigen::Index, 2>{n_econ_groups, 1});
 
     internal.t_comm_inf_age = internal.t_comm_inf.slice(
         Eigen::array<Eigen::Index, 2>{0, 0},
-        Eigen::array<Eigen::Index, 2>{n_age_groups,
-                                      daedalus::constants::N_VAX_STRATA});
+        Eigen::array<Eigen::Index, 2>{n_age_groups, 1});
 
     internal.consumer_worker_infections =
         shared.beta *
@@ -285,20 +284,20 @@ class daedalus_ode {
     internal.susc_workers =
         t_x.chip(iS, i_COMPS)
             .slice(Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
-                   Eigen::array<Eigen::Index, 2>{
-                       n_econ_groups, daedalus::constants::N_VAX_STRATA});
+                   Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA});
 
-    internal.sToE =
-        t_x.chip(iS, i_COMPS) * internal.t_foi;  // dims (n_strata, 2)
+    internal.sToE = t_x.chip(iS, i_COMPS) * internal.t_foi *
+                    shared.beta;  // dims (n_strata, 2)
 
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
+    // NOTE: broadcasting for element-wise tensor mult
     internal.sToE.slice(
         Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
-        Eigen::array<Eigen::Index, 2>{n_econ_groups,
-                                      daedalus::constants::N_VAX_STRATA}) +=
+        Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA}) +=
         (internal.susc_workers *
-         (internal.workplace_infected + internal.consumer_worker_infections));
+         (internal.workplace_infected.broadcast(bcast) +
+          internal.consumer_worker_infections.broadcast(bcast)));
 
     internal.eToIs = shared.sigma * shared.p_sigma * t_x.chip(iE, i_COMPS);
     internal.eToIa =

@@ -110,10 +110,12 @@ test_that("daedalus2: vaccination works", {
   output <- daedalus2("THA", "sars_cov_1", 0.1)
 
   # expect vaccination group is non-zero
-  expect_false(
-    all(output$S_vax <= 0)
+  expect_true(
+    any(output$S_vax > 0)
   )
 
-  # NOTE: tests for flows in the vaccination stratum are ommitted
-  # as this doesn't work yet
+  # test that vaccination infection pathways are active
+  expect_true(
+    any(output$E_vax > 0)
+  )
 })
