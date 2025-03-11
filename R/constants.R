@@ -146,9 +146,15 @@ N_OUTPUT_COLS <- 6L
 #'
 #' @keywords epi_constant
 COMPARTMENTS <- c(
-  "susceptible", "exposed", "infect_symp", "infect_asymp",
-  "hospitalised", "recovered", "dead",
-  "new_infections", "new_hosp"
+  "susceptible",
+  "exposed",
+  "infect_symp",
+  "infect_asymp",
+  "hospitalised",
+  "recovered",
+  "dead",
+  "new_infections",
+  "new_hosp"
 )
 
 #' @name epi_constants
@@ -207,9 +213,7 @@ N_INFECTION_SUBSYSTEM <- 3L # compartments in the infectious subsystem
 #' @rdname summary_constants
 #'
 #' @keywords summary_constants
-SUMMARY_MEASURES <- c(
-  "infections", "hospitalisations", "deaths"
-)
+SUMMARY_MEASURES <- c("infections", "hospitalisations", "deaths")
 
 #' @name summary_constants
 SUMMARY_GROUPS <- c("age_group", "vaccine_group", "econ_sector")

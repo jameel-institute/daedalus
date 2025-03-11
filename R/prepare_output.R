@@ -37,9 +37,7 @@ prepare_output <- function(output) {
     c(rep("sector_00", N_AGE_GROUPS), econ_sectors),
     each = n_times
   )
-  econ_labels <- rep(
-    econ_labels, N_MODEL_COMPARTMENTS * N_VACCINE_DATA_GROUPS
-  )
+  econ_labels <- rep(econ_labels, N_MODEL_COMPARTMENTS * N_VACCINE_DATA_GROUPS)
 
   # age group labels
   age_labels <- rep(
@@ -58,13 +56,14 @@ prepare_output <- function(output) {
   data <- as.data.frame(output)
   data.table::setDT(data)
   data <- data.table::melt(data, id.vars = "time")
-  data[, c(
-    "age_group", "econ_sector", "vaccine_group",
-    "compartment"
-  ) := list(
-    age_labels, econ_labels, vaccine_labels,
-    compartment_labels
-  )]
+  data[,
+    c("age_group", "econ_sector", "vaccine_group", "compartment") := list(
+      age_labels,
+      econ_labels,
+      vaccine_labels,
+      compartment_labels
+    )
+  ]
   data$variable <- NULL
 
   # reset to DF and return data
@@ -85,8 +84,15 @@ prepare_output <- function(output) {
 #' @keywords epi_constant
 #' @return A vector of compartment names used in the C++ model.
 COMPARTMENTS_cpp <- c(
-  "susceptible", "exposed", "infect_symp", "infect_asymp",
-  "hospitalised", "recovered", "dead", "vaccinated", "new_infections",
+  "susceptible",
+  "exposed",
+  "infect_symp",
+  "infect_asymp",
+  "hospitalised",
+  "recovered",
+  "dead",
+  "vaccinated",
+  "new_infections",
   "new_hosp"
 )
 
@@ -102,7 +108,8 @@ prepare_output_cpp <- function(output) {
   data <- do.call(rbind, output[["x"]])
 
   age_group_labels <- c(
-    AGE_GROUPS, rep(AGE_GROUPS[i_WORKING_AGE], N_ECON_SECTORS)
+    AGE_GROUPS,
+    rep(AGE_GROUPS[i_WORKING_AGE], N_ECON_SECTORS)
   )
   econ_group_labels <- sprintf("sector_%02i", seq.int(N_ECON_SECTORS))
   non_working_label <- rep("sector_00", N_AGE_GROUPS)

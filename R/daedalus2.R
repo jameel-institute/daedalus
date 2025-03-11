@@ -5,9 +5,7 @@
 daedalus2_internal <- function(time_end, params, state) {
   # NOTE: sys params assumed suitable for `do.call()`
   sys_params <- list(daedalus_ode, pars = params)
-  sys <- do.call(
-    dust2::dust_system_create, sys_params
-  )
+  sys <- do.call(dust2::dust_system_create, sys_params)
 
   dust2::dust_system_set_state(sys, as.vector(state))
 
@@ -41,9 +39,11 @@ daedalus2_internal <- function(time_end, params, state) {
 #'
 #' names(output)
 daedalus2 <- function(
-    country, infection,
-    vaccine_investment = NULL,
-    time_end = 100) {
+  country,
+  infection,
+  vaccine_investment = NULL,
+  time_end = 100
+) {
   # input checking
   # NOTE: names are case sensitive
   checkmate::assert_multi_class(country, c("daedalus_country", "character"))
@@ -57,7 +57,8 @@ daedalus2 <- function(
   }
 
   checkmate::assert_multi_class(
-    vaccine_investment, c("daedalus_vaccination", "character"),
+    vaccine_investment,
+    c("daedalus_vaccination", "character"),
     null.ok = TRUE
   )
   if (is.null(vaccine_investment)) {
@@ -65,20 +66,18 @@ daedalus2 <- function(
   }
   if (is.character(vaccine_investment)) {
     vaccine_investment <- rlang::arg_match(
-      vaccine_investment, daedalus::vaccination_scenario_names
+      vaccine_investment,
+      daedalus::vaccination_scenario_names
     )
     vaccine_investment <- daedalus_vaccination(vaccine_investment)
   }
 
-
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
   if (!is_good_time_end) {
-    cli::cli_abort(
-      c(
-        "Expected `time_end` to be a single positive integer-like number.",
-        i = "E.g. `time_end = 100`, but not `time_end = 100.5`"
-      )
-    )
+    cli::cli_abort(c(
+      "Expected `time_end` to be a single positive integer-like number.",
+      i = "E.g. `time_end = 100`, but not `time_end = 100.5`"
+    ))
   }
 
   #### Prepare initial state and parameters ####
@@ -91,10 +90,7 @@ daedalus2 <- function(
     prepare_parameters2.daedalus_country(country),
     prepare_parameters.daedalus_infection(infection),
     prepare_parameters2.daedalus_vaccination(vaccine_investment),
-    list(
-      beta = get_beta(infection, country),
-      susc = susc
-    )
+    list(beta = get_beta(infection, country), susc = susc)
   )
 
   output <- daedalus2_internal(time_end, parameters, initial_state)

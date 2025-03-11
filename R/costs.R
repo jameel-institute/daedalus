@@ -73,8 +73,11 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   economic_cost_closures <- sum(sector_cost_closures)
 
   education_cost_closures <- sum(
-    vsd * n_students * (1 - openness[i_EDUCATION_SECTOR]) *
-      (1 - edu_effectiveness_remote) * closure_duration
+    vsd *
+      n_students *
+      (1 - openness[i_EDUCATION_SECTOR]) *
+      (1 - edu_effectiveness_remote) *
+      closure_duration
   )
 
   # absences due to infection, hospitalisation, death
@@ -96,22 +99,21 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   # assuming no working from home
   gva_loss <- worker_absences %*% diag(gva / workforce)
 
-  gva_loss[seq(closure_start, closure_end), ] <-
-    gva_loss[seq(closure_start, closure_end), ] %*% diag(openness)
+  gva_loss[seq(closure_start, closure_end), ] <- gva_loss[
+    seq(closure_start, closure_end),
+  ] %*%
+    diag(openness)
 
   gva_loss <- colSums(gva_loss)
 
   # NOTE: education costs of absences are ONLY related to the absence of
   # educational workers, not students - may need to be updated
   education_cost_absences <- gva_loss[i_EDUCATION_SECTOR]
-  economic_cost_absences <- sum(
-    gva_loss[-i_EDUCATION_SECTOR]
-  )
+  economic_cost_absences <- sum(gva_loss[-i_EDUCATION_SECTOR])
 
   # calculate total deaths and multiply by VSL
   total_deaths <- model_data[
-    model_data$compartment == "dead" &
-      model_data$time == max(model_data$time),
+    model_data$compartment == "dead" & model_data$time == max(model_data$time),
   ]
 
   # set factor levels to keep order
@@ -150,14 +152,17 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   )
 
   # probably a neater way of doing this
-  cost_list$total_cost <- economic_cost_closures + economic_cost_absences +
-    education_cost_closures + education_cost_absences +
+  cost_list$total_cost <- economic_cost_closures +
+    economic_cost_absences +
+    education_cost_closures +
+    education_cost_absences +
     sum(life_value_lost)
 
   # return summary if requested, defaults to no summary
   summarise_as <- rlang::arg_match(summarise_as)
 
-  costs <- switch(summarise_as,
+  costs <- switch(
+    summarise_as,
     none = cost_list,
     total = cost_list[["total_cost"]],
     domain = {

@@ -7,13 +7,18 @@ test_that("daedalus() and daedalus2() are equivalent", {
   # modify vaccination to fit needs
   vax <- daedalus_vaccination(
     "none",
-    rate = 0.0, start_time = 5, uptake_limit = 0
+    rate = 0.0,
+    start_time = 5,
+    uptake_limit = 0
   )
 
   # get outputs
   output_daedalus2 <- daedalus2(ct, x, time_end = 399) # one less timestep
   output_daedalus <- daedalus(
-    ct, x, "none", vax,
+    ct,
+    x,
+    "none",
+    vax,
     response_time = 2,
     time_end = 400,
     initial_state_manual = list(p_infectious = 1e-7)
@@ -24,8 +29,5 @@ test_that("daedalus() and daedalus2() are equivalent", {
   fs_daedalus2 <- sum(output_daedalus2$new_inf)
 
   # a small difference is okay
-  expect_identical(
-    fs_daedalus2, fs_daedalus$value,
-    tolerance = 1e-6
-  )
+  expect_identical(fs_daedalus2, fs_daedalus$value, tolerance = 1e-6)
 })

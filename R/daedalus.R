@@ -106,20 +106,22 @@
 #'   initial_state_manual = list(p_infectious = 1e-3)
 #' )
 #' @export
-daedalus <- function(country,
-                     infection,
-                     response_strategy = c(
-                       "none", "elimination", "economic_closures",
-                       "school_closures"
-                     ),
-                     vaccine_investment = c(
-                       "none", "low", "medium", "high"
-                     ),
-                     response_time = 30,
-                     response_threshold = NULL,
-                     initial_state_manual = list(),
-                     time_end = 600,
-                     ...) {
+daedalus <- function(
+  country,
+  infection,
+  response_strategy = c(
+    "none",
+    "elimination",
+    "economic_closures",
+    "school_closures"
+  ),
+  vaccine_investment = c("none", "low", "medium", "high"),
+  response_time = 30,
+  response_threshold = NULL,
+  initial_state_manual = list(),
+  time_end = 600,
+  ...
+) {
   # input checking
   # NOTE: names are case sensitive
   checkmate::assert_multi_class(country, c("daedalus_country", "character"))
@@ -136,17 +138,17 @@ daedalus <- function(country,
 
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
   if (!is_good_time_end) {
-    cli::cli_abort(
-      c(
-        "Expected `time_end` to be a single positive integer-like number.",
-        i = "E.g. `time_end = 100`, but not `time_end = 100.5`"
-      )
-    )
+    cli::cli_abort(c(
+      "Expected `time_end` to be a single positive integer-like number.",
+      i = "E.g. `time_end = 100`, but not `time_end = 100.5`"
+    ))
   }
 
   is_good_response_time <- checkmate::test_integerish(
     response_time,
-    upper = time_end - 2L, lower = 2L, any.missing = FALSE
+    upper = time_end - 2L,
+    lower = 2L,
+    any.missing = FALSE
   )
   if (!is_good_response_time) {
     cli::cli_abort(
@@ -171,11 +173,13 @@ daedalus <- function(country,
 
   #### Vaccination parameters ####
   checkmate::assert_multi_class(
-    vaccine_investment, c("daedalus_vaccination", "character")
+    vaccine_investment,
+    c("daedalus_vaccination", "character")
   )
   if (!is_daedalus_vaccination(vaccine_investment)) {
     vaccine_investment <- rlang::arg_match(
-      vaccine_investment, daedalus::vaccination_scenario_names
+      vaccine_investment,
+      daedalus::vaccination_scenario_names
     )
     vaccine_investment <- daedalus_vaccination(vaccine_investment)
   }
@@ -184,18 +188,17 @@ daedalus <- function(country,
   is_good_vax_time <- checkmate::test_integerish(
     get_data(vaccine_investment, "start_time"),
     lower = response_time + 2L,
-    upper = time_end - 2L, null.ok = TRUE
+    upper = time_end - 2L,
+    null.ok = TRUE
   )
   if (!is_good_vax_time) {
-    cli::cli_abort(
-      c(
-        "Vaccination start time can only take an integer-like value between
+    cli::cli_abort(c(
+      "Vaccination start time can only take an integer-like value between
         {response_time + 2L} and {time_end - 2L}",
-        i = "Vaccination must start after the overall pandemic response,
+      i = "Vaccination must start after the overall pandemic response,
         and before the model end time. Set the `vax_start_time` parameter in
         the {.cls daedalus_vaccination} passsed to `vaccine_investment`."
-      )
-    )
+    ))
   }
 
   #### Prepare initial state and parameters ####
@@ -241,8 +244,10 @@ daedalus <- function(country,
 
   #### Stage 1 - day one to response time ####
   data_stage_01 <- deSolve::ode(
-    y = initial_state, times = times_stage_01,
-    func = daedalus_rhs, parms = parameters,
+    y = initial_state,
+    times = times_stage_01,
+    func = daedalus_rhs,
+    parms = parameters,
     rootfunc = activation_event[["root_function"]],
     events = list(func = activation_event[["event_function"]], root = TRUE),
     ...
@@ -251,9 +256,10 @@ daedalus <- function(country,
   # set switch parameter and log closure start time if not 0.0/FALSE
   rlang::env_poke(parameters[["mutables"]], "switch", TRUE)
 
-  is_response_active <- as.logical(
-    rlang::env_get(parameters[["mutables"]], "closure_time_start")
-  ) # coerce to logical; automatically FALSE as default value is 0.0
+  is_response_active <- as.logical(rlang::env_get(
+    parameters[["mutables"]],
+    "closure_time_start"
+  )) # coerce to logical; automatically FALSE as default value is 0.0
 
   if (!is_response_active) {
     # set switch parameter and log closure start time if not 0.0 or FALSE
@@ -267,7 +273,8 @@ daedalus <- function(country,
   #### Stage 2 - response time to vaccination start time ####
   # carry over initial state; could be named more clearly?
   initial_state <- data_stage_01[
-    nrow(data_stage_01), colnames(data_stage_01) != "time"
+    nrow(data_stage_01),
+    colnames(data_stage_01) != "time"
   ]
   initial_state <- as.numeric(initial_state)
 
@@ -291,8 +298,10 @@ daedalus <- function(country,
   parameters[["min_time"]] <- response_time
 
   data_stage_02 <- deSolve::ode(
-    initial_state, times_stage_02,
-    daedalus_rhs, parameters,
+    initial_state,
+    times_stage_02,
+    daedalus_rhs,
+    parameters,
     rootfunc = termination_event[["root_function"]],
     events = list(func = termination_event[["event_function"]], root = TRUE),
     ...
@@ -301,7 +310,8 @@ daedalus <- function(country,
   #### Stage 3 - vaccination start time to sim end time ####
   # carry over initial state
   initial_state <- data_stage_02[
-    nrow(data_stage_02), colnames(data_stage_02) != "time"
+    nrow(data_stage_02),
+    colnames(data_stage_02) != "time"
   ]
   initial_state <- as.numeric(initial_state)
 
@@ -309,26 +319,25 @@ daedalus <- function(country,
   parameters[["min_time"]] <- vaccination_start
 
   # turn vax_switch on
-  rlang::env_poke(
-    parameters[["mutables"]], "vax_switch", TRUE
-  )
+  rlang::env_poke(parameters[["mutables"]], "vax_switch", TRUE)
 
   data_stage_03 <- deSolve::ode(
-    initial_state, times_stage_03,
-    daedalus_rhs, parameters,
+    initial_state,
+    times_stage_03,
+    daedalus_rhs,
+    parameters,
     rootfunc = termination_event[["root_function"]],
     events = list(func = termination_event[["event_function"]], root = TRUE),
     ...
   )
 
   # log simulation end time as closure end time if not already ended
-  is_response_ended <- as.logical(
-    rlang::env_get(parameters[["mutables"]], "closure_time_end")
-  ) # coerce to logical; automatically FALSE as default value is 0.0
+  is_response_ended <- as.logical(rlang::env_get(
+    parameters[["mutables"]],
+    "closure_time_end"
+  )) # coerce to logical; automatically FALSE as default value is 0.0
   if (!is_response_ended) {
-    rlang::env_poke(
-      parameters[["mutables"]], "closure_time_end", time_end
-    )
+    rlang::env_poke(parameters[["mutables"]], "closure_time_end", time_end)
   }
 
   data <- rbind(data_stage_01, data_stage_02[-1L, ], data_stage_03[-1L, ])
