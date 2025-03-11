@@ -16,15 +16,15 @@ contacts_workplace <- contacts_workplace[["n_cnt"]]
 
 assert_numeric(
   contacts_workplace,
-  lower = 0, any.missing = FALSE, all.missing = FALSE,
+  lower = 0,
+  any.missing = FALSE,
+  all.missing = FALSE,
   len = 45L
 )
 
 #### worker-to-worker contacts between sectors ####
 # prepare dummy values with low to no effect
-contacts_between_sectors <- matrix(
-  0.0, N_ECON_SECTORS, N_ECON_SECTORS
-)
+contacts_between_sectors <- matrix(0.0, N_ECON_SECTORS, N_ECON_SECTORS)
 diag(contacts_between_sectors) <- 0.0
 
 economic_contacts <- list(

@@ -13,10 +13,7 @@
 #' @noRd
 new_daedalus_country <- function(name, parameters) {
   # all input checking at top level
-  x <- c(
-    list(name = name),
-    parameters
-  )
+  x <- c(list(name = name), parameters)
   class(x) <- "daedalus_country"
 
   x
@@ -73,26 +70,28 @@ new_daedalus_country <- function(name, parameters) {
 #' # using assignment operators
 #' x$contact_matrix <- matrix(99, 4, 4)
 #' x
-daedalus_country <- function(country,
-                             parameters = list(
-                               contact_matrix = NULL,
-                               contacts_workplace = NULL,
-                               contacts_consumer_worker = NULL
-                             )) {
+daedalus_country <- function(
+  country,
+  parameters = list(
+    contact_matrix = NULL,
+    contacts_workplace = NULL,
+    contacts_consumer_worker = NULL
+  )
+) {
   # input checking
   name <- country_name_from_arg(country)
   # check list but allow missing and NULL
-  checkmate::assert_list(
-    parameters, c("numeric", "matrix", "NULL")
-  )
+  checkmate::assert_list(parameters, c("numeric", "matrix", "NULL"))
   # NOTE: not allowed to change demography, worker distribution, or
   # contacts between economic sectors (modelled as zero)
   allowed_params <- c(
-    "contact_matrix", "contacts_workplace",
+    "contact_matrix",
+    "contacts_workplace",
     "contacts_consumer_worker"
   )
   has_good_names <- checkmate::test_subset(
-    names(parameters), allowed_params,
+    names(parameters),
+    allowed_params,
     empty.ok = TRUE
   )
   if (!has_good_names) {
@@ -104,56 +103,65 @@ daedalus_country <- function(country,
 
   # check user-passed parameters
   is_good_contact_matrix <- checkmate::test_matrix(
-    parameters$contact_matrix, "numeric",
-    any.missing = FALSE, ncols = N_AGE_GROUPS, nrows = N_AGE_GROUPS,
-    null.ok = TRUE
-  ) && checkmate::test_numeric(
     parameters$contact_matrix,
-    lower = 0, finite = TRUE, null.ok = TRUE
-  )
+    "numeric",
+    any.missing = FALSE,
+    ncols = N_AGE_GROUPS,
+    nrows = N_AGE_GROUPS,
+    null.ok = TRUE
+  ) &&
+    checkmate::test_numeric(
+      parameters$contact_matrix,
+      lower = 0,
+      finite = TRUE,
+      null.ok = TRUE
+    )
 
   is_good_contacts_workplace <- checkmate::test_numeric(
     parameters$contacts_workplace,
-    lower = 0, finite = TRUE,
-    any.missing = FALSE, len = N_ECON_SECTORS, null.ok = TRUE
+    lower = 0,
+    finite = TRUE,
+    any.missing = FALSE,
+    len = N_ECON_SECTORS,
+    null.ok = TRUE
   )
 
   is_good_contacts_cons_worker <- checkmate::test_matrix(
-    parameters$contacts_consumer_worker, "numeric",
-    any.missing = FALSE, nrows = N_ECON_SECTORS, ncols = N_AGE_GROUPS,
-    null.ok = TRUE
-  ) && checkmate::test_numeric(
     parameters$contacts_consumer_worker,
-    lower = 0, finite = TRUE, null.ok = TRUE
-  )
+    "numeric",
+    any.missing = FALSE,
+    nrows = N_ECON_SECTORS,
+    ncols = N_AGE_GROUPS,
+    null.ok = TRUE
+  ) &&
+    checkmate::test_numeric(
+      parameters$contacts_consumer_worker,
+      lower = 0,
+      finite = TRUE,
+      null.ok = TRUE
+    )
 
   if (!is_good_contact_matrix) {
-    cli::cli_abort(
-      c(
-        "Expected `parameters$contact_matrix` to be a 4x4 numeric matrix with
+    cli::cli_abort(c(
+      "Expected `parameters$contact_matrix` to be a 4x4 numeric matrix with
          positive, finite values.",
-        i = "The number of rows and colums is the number of age groups."
-      )
-    )
+      i = "The number of rows and colums is the number of age groups."
+    ))
   }
   if (!is_good_contacts_workplace) {
-    cli::cli_abort(
-      c(
-        "Expected `parameters$contacts_workplace` to be a 45-element numeric
+    cli::cli_abort(c(
+      "Expected `parameters$contacts_workplace` to be a 45-element numeric
         vector with positive, finite values.",
-        i = "The number of elements is the number of economic sectors."
-      )
-    )
+      i = "The number of elements is the number of economic sectors."
+    ))
   }
   if (!is_good_contacts_cons_worker) {
-    cli::cli_abort(
-      c(
-        "Expected `parameters$contacts_consumer_worker` to be a 45x4 numeric
+    cli::cli_abort(c(
+      "Expected `parameters$contacts_consumer_worker` to be a 45x4 numeric
         matrix with positive, finite values.",
-        i = "The number of rows is the number of economic sectors and the number
+      i = "The number of rows is the number of economic sectors and the number
         of columns is the number of age groups."
-      )
-    )
+    ))
   }
 
   # substitute defaults with non-NULL elements of parameters
@@ -169,17 +177,20 @@ daedalus_country <- function(country,
   # calculate consumer-worker contacts
   contacts_consumer_worker <- matrix(
     daedalus::economic_contacts[["contacts_workplace"]],
-    N_ECON_SECTORS, N_AGE_GROUPS
-  ) * params[["demography"]] / sum(params[["demography"]])
+    N_ECON_SECTORS,
+    N_AGE_GROUPS
+  ) *
+    params[["demography"]] /
+    sum(params[["demography"]])
 
   params <- c(
     params,
     list(
-      contacts_workplace =
-        daedalus::economic_contacts[["contacts_workplace"]],
+      contacts_workplace = daedalus::economic_contacts[["contacts_workplace"]],
       contacts_consumer_worker = contacts_consumer_worker,
-      contacts_between_sectors =
-        daedalus::economic_contacts[["contacts_between_sectors"]],
+      contacts_between_sectors = daedalus::economic_contacts[[
+        "contacts_between_sectors"
+      ]],
       vsl = vsl,
       gni = gni,
       life_expectancy = life_expectancy
@@ -191,10 +202,7 @@ daedalus_country <- function(country,
   # add total number of groups
   params["n_strata"] <- length(params$demography) + length(params$workers)
 
-  x <- new_daedalus_country(
-    name,
-    params
-  )
+  x <- new_daedalus_country(name, params)
 
   validate_daedalus_country(x)
 
@@ -218,10 +226,18 @@ validate_daedalus_country <- function(x) {
   # check class members
   # NOTE: gva = gross value added; vsl = value of statistical life
   expected_invariants <- c(
-    "name", "demography", "contact_matrix",
-    "contacts_workplace", "contacts_consumer_worker",
-    "contacts_between_sectors", "workers", "gva",
-    "vsl", "hospital_capacity", "gni", "life_expectancy",
+    "name",
+    "demography",
+    "contact_matrix",
+    "contacts_workplace",
+    "contacts_consumer_worker",
+    "contacts_between_sectors",
+    "workers",
+    "gva",
+    "vsl",
+    "hospital_capacity",
+    "gni",
+    "life_expectancy",
     "n_strata"
   )
   has_invariants <- checkmate::test_names(
@@ -229,13 +245,12 @@ validate_daedalus_country <- function(x) {
     permutation.of = expected_invariants
   )
   if (!has_invariants) {
-    cli::cli_abort(
-      "{.cls country} does not have the correct attributes"
-    )
+    cli::cli_abort("{.cls country} does not have the correct attributes")
   }
 
   # check class members, using asserts as this doesn't need to be
   # super informative
+  # fmt: skip
   stopifnot(
     "Country `name` must be a string from `daedalus::country_names`" =
       checkmate::test_string(x$name) &&
@@ -358,24 +373,18 @@ format.daedalus_country <- function(x, ...) {
 
   # NOTE: rough implementations, better scaling e.g. to millions could be added
   cli::cli_text("{.cls {class(x)}}")
-  cli::cli_bullets(
-    c(
-      "*" = "Name: {cli::col_red(x$name)}",
-      "*" = "Demography: {cli::cli_vec(x$demography)}",
-      "*" = "Community contact matrix:"
-    )
-  )
+  cli::cli_bullets(c(
+    "*" = "Name: {cli::col_red(x$name)}",
+    "*" = "Demography: {cli::cli_vec(x$demography)}",
+    "*" = "Community contact matrix:"
+  ))
   # No good way to print using {cli}
-  print(
-    get_data(x, "contact_matrix")
-  )
+  print(get_data(x, "contact_matrix"))
 
-  cli::cli_bullets(
-    c(
-      "*" = "GNI (PPP $): {cli::col_blue(x$gni)}",
-      "*" = "Hospital capacity: {cli::col_green(x$hospital_capacity)}"
-    )
-  )
+  cli::cli_bullets(c(
+    "*" = "GNI (PPP $): {cli::col_blue(x$gni)}",
+    "*" = "Hospital capacity: {cli::col_green(x$hospital_capacity)}"
+  ))
   invisible(x)
 }
 
@@ -389,12 +398,10 @@ get_data.daedalus_country <- function(x, to_get, ...) {
     checkmate::test_subset(to_get, names(x))
 
   if (!good_to_get) {
-    cli::cli_abort(
-      c(
-        "`to_get` must be a string naming an element of {.cls {class(x)}}",
-        i = "Allowed values are {.str {names(x)}}"
-      )
-    )
+    cli::cli_abort(c(
+      "`to_get` must be a string naming an element of {.cls {class(x)}}",
+      i = "Allowed values are {.str {names(x)}}"
+    ))
   }
 
   x[[to_get]]
@@ -406,22 +413,19 @@ set_data.daedalus_country <- function(x, ...) {
   to_set <- rlang::list2(...)
   checkmate::assert_list(to_set, "numeric", any.missing = FALSE)
   allowed_params <- c(
-    "contact_matrix", "contacts_workplace",
+    "contact_matrix",
+    "contacts_workplace",
     "contacts_consumer_worker"
   )
 
-  is_good_subs <- checkmate::test_subset(
-    names(to_set), allowed_params
-  )
+  is_good_subs <- checkmate::test_subset(names(to_set), allowed_params)
   if (!is_good_subs) {
-    cli::cli_abort(
-      c(
-        "Found a disallowed parameter substitution in `set_data()`.",
-        i = "Only the following country parameters can be set using
+    cli::cli_abort(c(
+      "Found a disallowed parameter substitution in `set_data()`.",
+      i = "Only the following country parameters can be set using
         `set_data()`: {.str {allowed_params}}. To set other parameters
         use standard assignment with `$<-` or `[[<-`."
-      )
-    )
+    ))
   }
 
   x[names(to_set)] <- to_set

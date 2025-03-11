@@ -34,7 +34,8 @@ data_hosp_capacity$spare_capacity <- data_hosp_capacity$capacity *
   (1 - data_hosp_capacity$bor / 100)
 
 write.csv(
-  data_hosp_capacity, "inst/extdata/hospital_capacity.csv",
+  data_hosp_capacity,
+  "inst/extdata/hospital_capacity.csv",
   row.names = FALSE
 )
 
