@@ -13,13 +13,14 @@
 #' To override package defaults for country characteristics, pass a
 #' `<daedalus_country>` object instead. See [daedalus_country()] for more.
 #'
-#' @param infection An infection parameter object of the class `<infection>`,
-#' **or** an epidemic name for which data are provided in the package; see
-#' [daedalus::epidemic_names] for parameters from a historical epidemic
-#' or epidemic wave.
+#' @param infection An infection parameter object of the class
+#' `<daedalus_infection>`, **or** an epidemic name for which data are provided
+#' in the package; see [daedalus::epidemic_names] for historical epidemics
+#' or epidemic waves for which parameters are available.
+#'
 #' Passing the name as a string automatically accesses the default parameters
-#' of an infection. Create an pass a `<daedalus_infection>` to tweak infection
-#' parameters.
+#' of an infection. Create and pass a `<daedalus_infection>` to tweak infection
+#' parameters using [daedalus_infection()].
 #'
 #' @param response_strategy A string for the name of response strategy followed;
 #' defaults to "none". The response strategy determines the country-specific

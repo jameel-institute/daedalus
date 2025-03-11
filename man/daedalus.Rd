@@ -28,13 +28,14 @@ is passed as a string.
 To override package defaults for country characteristics, pass a
 \verb{<daedalus_country>} object instead. See \code{\link[=daedalus_country]{daedalus_country()}} for more.}
 
-\item{infection}{An infection parameter object of the class \verb{<infection>},
-\strong{or} an epidemic name for which data are provided in the package; see
-\link{epidemic_names} for parameters from a historical epidemic
-or epidemic wave.
+\item{infection}{An infection parameter object of the class
+\verb{<daedalus_infection>}, \strong{or} an epidemic name for which data are provided
+in the package; see \link{epidemic_names} for historical epidemics
+or epidemic waves for which parameters are available.
+
 Passing the name as a string automatically accesses the default parameters
-of an infection. Create an pass a \verb{<daedalus_infection>} to tweak infection
-parameters.}
+of an infection. Create and pass a \verb{<daedalus_infection>} to tweak infection
+parameters using \code{\link[=daedalus_infection]{daedalus_infection()}}.}
 
 \item{response_strategy}{A string for the name of response strategy followed;
 defaults to "none". The response strategy determines the country-specific

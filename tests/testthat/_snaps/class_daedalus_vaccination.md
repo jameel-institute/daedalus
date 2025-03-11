@@ -5,9 +5,9 @@
     Message
       <daedalus_vaccination>
       Advance vaccine investment: medium
-      * Start time (days):
+      * Start time (days): 200
       * Rate (% per day): 0.429
-      * Uptake limit (%):
+      * Uptake limit (%): 60
       * Efficacy (%): 5000
       * Waning period (mean, days): 180
 
