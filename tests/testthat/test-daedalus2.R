@@ -104,10 +104,13 @@ test_that("daedalus2: Runs for all country x infection x response", {
 
 # check for vaccination mechanism
 test_that("daedalus2: vaccination works", {
-  expect_no_condition(
-    daedalus2("THA", "sars_cov_1", 0.1)
+  vax <- daedalus_vaccination(
+    "none", 0, 0.1, 100
   )
-  output <- daedalus2("THA", "sars_cov_1", 0.1)
+  expect_no_condition(
+    daedalus2("THA", "sars_cov_1", vax)
+  )
+  output <- daedalus2("THA", "sars_cov_1", vax)
 
   # expect vaccination group is non-zero
   expect_true(
@@ -118,4 +121,16 @@ test_that("daedalus2: vaccination works", {
   expect_true(
     any(output$E_vax > 0)
   )
+
+  # expect that vaccination reduces final size
+  output_novax <- daedalus2("THA", "sars_cov_1")
+  fs_daedalus2 <- sum(output$new_inf)
+  fs_daedalus2_novax <- sum(output_novax$new_inf)
+
+  expect_lt(
+    fs_daedalus2, fs_daedalus2_novax
+  )
+
+  # see `../test-equivalence.R` for tests that no vaccination in
+  # `daedalus2()` is equivalent to no vaccination in `daedalus()`
 })
