@@ -23,27 +23,26 @@ daedalus2_internal <- function(time_end, params, state) {
 #'
 #' @inheritParams daedalus
 #'
-#' @param vaccination_rate The population-wide **percentage** that can be
-#' vaccinated per day. Defaults to 0.0 for no vaccination. Note that this is not
-#' a proportion.
-#' 
-#' @param vaccine_efficacy The proportional reduction in infection
-#' probability for vaccinated individuals; this scales the transmissibility
-#' parameter \eqn{\beta}. Defaults to 0.0, for no reduction in infection
-#' probability due to vaccination. A value of 1.0 would represent 'non-leaky'
-#' vaccination, where no vaccinated individuals can be infected.
+#' @details
+#' **Note that** `daedalus2()` currently uses a default vaccination strategy of
+#' _no vaccination_, using the internal helper function [dummy_vaccination()].
+#' This is expected to become the default for [daedalus()] when it is replaced
+#' with `daedalus2()`.
 #'
-#' @param waning_rate The rate at which vaccinated individuals return to the
-#' susceptible compartment. Defaults to 1 / 180, for waning after 180 days.
+#' **Note also** that `daedalus2()` vaccination begins at the model start time,
+#' and not at the time specified in `vaccine_investment`. This functionality
+#' will be updated soon.
+#'
 #' @export
 #'
 #' @examples
-#' daedalus2("GBR", "sars_cov_1")
+#' # not yet ready for conversion to `<daedalus_output>`
+#' output <- daedalus2("GBR", "sars_cov_1")
+#'
+#' names(output)
 daedalus2 <- function(
     country, infection,
-    vaccination_rate = 0.0,
-    vaccine_efficacy = 0.0,
-    waning_rate = 1 / 180,
+    vaccine_investment = NULL,
     time_end = 100) {
   # input checking
   # NOTE: names are case sensitive
@@ -56,6 +55,21 @@ daedalus2 <- function(
     infection <- rlang::arg_match(infection, daedalus::epidemic_names)
     infection <- daedalus_infection(infection)
   }
+
+  checkmate::assert_multi_class(
+    vaccine_investment, c("daedalus_vaccination", "character"),
+    null.ok = TRUE
+  )
+  if (is.null(vaccine_investment)) {
+    vaccine_investment <- dummy_vaccination()
+  }
+  if (is.character(vaccine_investment)) {
+    vaccine_investment <- rlang::arg_match(
+      vaccine_investment, daedalus::vaccination_scenario_names
+    )
+    vaccine_investment <- daedalus_vaccination(vaccine_investment)
+  }
+
 
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
   if (!is_good_time_end) {
@@ -70,14 +84,16 @@ daedalus2 <- function(
   #### Prepare initial state and parameters ####
   initial_state <- make_initial_state2(country)
 
+  # prepare susceptibility matrix for vaccination
+  susc <- make_susc_matrix(vaccine_investment, country)
+
   parameters <- c(
     prepare_parameters2.daedalus_country(country),
     prepare_parameters.daedalus_infection(infection),
+    prepare_parameters2.daedalus_vaccination(vaccine_investment),
     list(
       beta = get_beta(infection, country),
-      nu = vaccination_rate / 100,
-      nu_eff = 1.0 - vaccine_efficacy,
-      psi = waning_rate
+      susc = susc
     )
   )
 

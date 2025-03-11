@@ -4,13 +4,7 @@
 \alias{daedalus2}
 \title{DAEDALUS model implemented with dust}
 \usage{
-daedalus2(
-  country,
-  infection,
-  vaccination_rate = 0,
-  waning_rate = 1/180,
-  time_end = 100
-)
+daedalus2(country, infection, vaccine_investment = NULL, time_end = 100)
 }
 \arguments{
 \item{country}{A country or territory object of class \verb{<daedalus_country>},
@@ -24,19 +18,22 @@ is passed as a string.
 To override package defaults for country characteristics, pass a
 \verb{<daedalus_country>} object instead. See \code{\link[=daedalus_country]{daedalus_country()}} for more.}
 
-\item{infection}{An infection parameter object of the class \verb{<infection>},
-\strong{or} an epidemic name for which data are provided in the package; see
-\link{epidemic_names} for parameters from a historical epidemic
-or epidemic wave.
+\item{infection}{An infection parameter object of the class
+\verb{<daedalus_infection>}, \strong{or} an epidemic name for which data are provided
+in the package; see \link{epidemic_names} for historical epidemics
+or epidemic waves for which parameters are available.
+
 Passing the name as a string automatically accesses the default parameters
-of an infection. Create an pass a \verb{<daedalus_infection>} to tweak infection
-parameters.}
+of an infection. Create and pass a \verb{<daedalus_infection>} to tweak infection
+parameters using \code{\link[=daedalus_infection]{daedalus_infection()}}.}
 
-\item{vaccination_rate}{The population-wide \strong{percentage} that can be
-vaccinated per day. Defaults to 0.0 for no vaccination.}
-
-\item{waning_rate}{The rate at which vaccinated individuals return to the
-susceptible compartment. Defaults to 1 / 180, for waning after 180 days.}
+\item{vaccine_investment}{Either a single string or a
+\verb{<daedalus_vaccination>} object specifying the vaccination parameters
+associated with an advance vaccine-investment scenario. Defaults to \code{"none"},
+for no advance vaccine investment. In this case, vaccination begins 365 days
+(1 year) after the simulation begins, at a low rate across all age groups.
+Other accepted values are \code{"low"}, \code{"medium"} and \code{"high"}. See
+\code{\link[=daedalus_vaccination]{daedalus_vaccination()}} for more information.}
 
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
@@ -47,6 +44,19 @@ returned for each day. Defaults to 300 days.}
 the model implemented in C++ to integrate with \pkg{dust2}
 (and in future \pkg{dust}). \emph{This is a work in progress!}
 }
+\details{
+\strong{Note that} \code{daedalus2()} currently uses a default vaccination strategy of
+\emph{no vaccination}, using the internal helper function \code{\link[=dummy_vaccination]{dummy_vaccination()}}.
+This is expected to become the default for \code{\link[=daedalus]{daedalus()}} when it is replaced
+with \code{daedalus2()}.
+
+\strong{Note also} that \code{daedalus2()} vaccination begins at the model start time,
+and not at the time specified in \code{vaccine_investment}. This functionality
+will be updated soon.
+}
 \examples{
-daedalus2("GBR", "sars_cov_1")
+# not yet ready for conversion to `<daedalus_output>`
+output <- daedalus2("GBR", "sars_cov_1")
+
+names(output)
 }
