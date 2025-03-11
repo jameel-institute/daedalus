@@ -16,6 +16,10 @@ constexpr int N_DATA_COMPARTMENTS = 2;
 constexpr int N_COMPARTMENTS = N_EPI_COMPARTMENTS + N_DATA_COMPARTMENTS;
 constexpr int N_VAX_STRATA = 2;  // not including new vaccinations as a layer
 
+// initial daedalus model specific constants
+constexpr int DDL_N_AGE_GROUPS = 4;
+constexpr int DDL_N_ECON_GROUPS = 45;
+
 constexpr int iS = 0, iE = 1, iIs = 2, iIa = 3, iH = 4, iR = 5, iD = 6, idE = 7,
               idH = 8;
 

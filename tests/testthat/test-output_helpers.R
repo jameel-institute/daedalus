@@ -64,7 +64,7 @@ test_that("Epidemic summary: basic expectations", {
 # vaccinations before the scenario-specific start time
 test_that("New vaccinations: basic expectations", {
   vaccine_level <- daedalus_vaccination("medium")
-  vax_time <- get_data(vaccine_level, "vax_start_time")
+  vax_time <- get_data(vaccine_level, "start_time")
   time_end <- 600
   data <- daedalus(
     "Canada",

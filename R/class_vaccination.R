@@ -38,66 +38,73 @@ new_daedalus_vaccination <- function(name, parameters) {
 #' [daedalus::vaccination_scenario_names].
 #' Selecting an epidemic automatically pulls in vaccination parameters
 #' associated with the epidemic; these are stored as packaged data in
-#' `daedalus::vaccination_scenario_data`. Default vaccination parameters can be
-#' over-ridden by passing them as a named list to `...`.
+#' `daedalus::vaccination_scenario_data`.
 #'
-#' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Manually specified values for
-#' any of the vaccination parameters. See **Details** for which vaccination
-#' parameters are supported.
+#' @param start_time The number of days after the start of the epidemic that
+#' vaccination begins. Must be a single number. Defaults to `NULL` and the start
+#' time is taken from the vaccination scenarios specified by `name`.
 #'
-#' @details
-#'
-#' # Vaccination parameters
-#'
-#' - `vax_start_time`: The number of days after the start of the epidemic that
-#' vaccination begins. Must be a single number.
-#'
-#' - `nu`: A single number for the percentage of the total population that can
-#' be vaccinated each day. This is converted into a proportion automatically
+#' @param rate A single number for the _percentage_ of the total population that
+#' can be vaccinated each day. This is converted into a proportion automatically
 #' within [daedalus()].
 #'
-#' - `vax_uptake_limit`: A single number giving the upper limit for the
-#' percentage of the population that can be vaccinated. When this limit is
-#' reached, the vaccination rate `nu` is set to zero.
+#' @param uptake_limit A single number giving the upper limit for the
+#' _percentage_ of the population that can be vaccinated. When this limit is
+#' reached, vaccination ends.
+#'
+#' @param efficacy A single number in the range `[0, 100]` giving the efficacy
+#' of vaccination in preventing infection. A value of 0 indicates that
+#' vaccinated individuals are as susceptible to infection as unvaccinated ones,
+#' while 100 would indicate completely non-leaky vaccination that completely
+#' protects against infection.
+#'
+#' @param waning_period A single number representing the number of days over
+#' which the average individual wanes out of the vaccinated stratum to the
+#' unvaccinated stratum. Only individuals in the susceptible and recovered
+#' compartments can wane out of being vaccinated.
+#'
+#' @param x An object to be tested or printed as a `<daedalus_vaccination>`.
+#'
+#' @param ... For the `print` method, other parameters passed to [print()].
+#'
+#' @details
+#' Note that vaccination once ended by reaching the `uptake_limit` does not
+#' restart once individuals wane out of the vaccinated compartment.
 #'
 #' @export
-daedalus_vaccination <- function(name, ...) {
+#' @examples
+#' # for no advance vaccine investment
+#' daedalus_vaccination("none")
+#'
+#' # modifying parameters during initialisation
+#' # set daily vaccination rate to 1.5% of population
+#' daedalus_vaccination("low", rate = 1.5)
+daedalus_vaccination <- function(
+    name, start_time = NULL,
+    rate = NULL, uptake_limit = NULL, efficacy = 50, waning_period = 180) {
   # input checking
   name <- rlang::arg_match(name, daedalus::vaccination_scenario_names)
-  parameters <- rlang::list2(...)
 
-  is_empty_list <- checkmate::test_list(parameters, len = 0)
+  checkmate::assert_integerish(start_time, lower = 0, null.ok = TRUE)
+  checkmate::assert_number(
+    rate,
+    null.ok = TRUE, finite = TRUE,
+    lower = 0, upper = 10 # arbitrary upper-limit on daily vaccination rate
+  )
+  checkmate::assert_number(
+    efficacy,
+    lower = 0, upper = 100, null.ok = TRUE
+  )
 
-  if (!is_empty_list) {
-    has_good_names <- checkmate::test_subset(
-      names(parameters), daedalus::vaccination_parameter_names,
-      empty.ok = TRUE
-    )
-    if (!has_good_names) {
-      cli::cli_abort(
-        "Found unexpected values in `...`; the only allowed parameters are:
-        {.str {daedalus::vaccination_parameter_names}}"
-      )
-    }
-
-    # check list
-    is_each_number <- all(
-      vapply(
-        parameters, checkmate::test_number, logical(1L),
-        lower = 0.0, finite = TRUE
-      )
-    )
-
-    if (!is_each_number) {
-      cli::cli_abort(
-        "Expected each parameters passed in `...` to be a single positive and
-        finite number."
-      )
-    }
-  }
+  # filter out NULLs for optional parameters
+  user_params <- list(
+    start_time = start_time, rate = rate, uptake_limit = uptake_limit,
+    efficacy = efficacy, waning_period = waning_period
+  )
+  user_params <- Filter(Negate(is.null), user_params)
 
   params <- daedalus::vaccination_scenario_data[[name]]
-  params[names(parameters)] <- parameters
+  params[names(user_params)] <- user_params
 
   x <- new_daedalus_vaccination(
     name, params
@@ -170,8 +177,6 @@ is_daedalus_vaccination <- function(x) {
 
 #' Print a `<daedalus_vaccination>` object
 #' @name class_vaccination
-#' @param x An object of the `<daedalus_vaccination>` class.
-#' @param ... Other parameters passed to [print()].
 #' @export
 print.daedalus_vaccination <- function(x, ...) {
   validate_daedalus_vaccination(x)
@@ -198,9 +203,11 @@ format.daedalus_vaccination <- function(x, ...) {
   cli::cli_bullets(
     class = divid,
     c(
-      "*" = "Start time (days): {.val {x$vax_start_time}}",
-      "*" = "Rate (% per day): {.val {x$nu}}",
-      "*" = "Uptake limit (%): {x$vax_uptake_limit}"
+      "*" = "Start time (days): {.val {x$start_time}}",
+      "*" = "Rate (% per day): {.val {x$rate}}",
+      "*" = "Uptake limit (%): {x$uptake_limit}",
+      "*" = "Efficacy (%): {x$efficacy * 100}",
+      "*" = "Waning period (mean, days): {x$waning_period}"
     )
   )
   cli::cli_end(divid)
@@ -264,11 +271,16 @@ prepare_parameters.daedalus_vaccination <- function(x, ...) {
   validate_daedalus_vaccination(x)
   x <- unclass(x)
 
-  # convert percentages to proportions
-  x[["nu"]] <- x[["nu"]] / 100.0
-  x[["vax_uptake_limit"]] <- x[["vax_uptake_limit"]] / 100.0
+  # convert percentages to proportions, and times to rates
+  x[["nu"]] <- x[["rate"]] / 100.0
+  x[["vax_uptake_limit"]] <- x[["uptake_limit"]] / 100.0
+  x[["tau"]] <- c(1, x[["efficacy"]] / 100.0)
+  x[["psi"]] <- 1 / x[["waning_period"]]
+  x[["vax_start_time"]] <- x[["start_time"]]
 
-  x[names(x) != "name"]
+  x[!names(x) %in% c(
+    "name", "rate", "waning_period", "start_time", "uptake_limit"
+  )]
 }
 
 #' Scale vaccination rate by remaining eligibles
@@ -303,4 +315,33 @@ scale_nu <- function(state, nu, uptake_limit) {
   } else {
     0.0
   }
+}
+
+#' Replace prepare_parameters() for vaccinations
+#'
+#' @name prepare_parameters
+#'
+#' @keywords internal
+prepare_parameters2.daedalus_vaccination <- function(x, ...) {
+  chkDots(...)
+  validate_daedalus_vaccination(x)
+
+  # only need rates for nu and psi for now
+  list(
+    nu = get_data(x, "rate"),
+    psi = 1 / get_data(x, "waning_period")
+  )
+}
+
+#' Dummy vaccination
+#'
+#' @return A `daedalus_vaccination` object intended to have no effect;
+#' vaccination rate and efficacy are set to zero.
+#'
+#' @keywords internal
+dummy_vaccination <- function() {
+  daedalus_vaccination(
+    "none",
+    rate = 0, efficacy = 0
+  )
 }

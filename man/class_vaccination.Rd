@@ -7,7 +7,14 @@
 \alias{print.daedalus_vaccination}
 \title{Represent vaccine investment scenarios for DAEDALUS}
 \usage{
-daedalus_vaccination(name, ...)
+daedalus_vaccination(
+  name,
+  start_time = NULL,
+  rate = NULL,
+  uptake_limit = NULL,
+  efficacy = 50,
+  waning_period = 180
+)
 
 is_daedalus_vaccination(x)
 
@@ -18,12 +25,34 @@ is_daedalus_vaccination(x)
 \link{vaccination_scenario_names}.
 Selecting an epidemic automatically pulls in vaccination parameters
 associated with the epidemic; these are stored as packaged data in
-\code{daedalus::vaccination_scenario_data}. Default vaccination parameters can be
-over-ridden by passing them as a named list to \code{...}.}
+\code{daedalus::vaccination_scenario_data}.}
 
-\item{...}{Other parameters passed to \code{\link[=print]{print()}}.}
+\item{start_time}{The number of days after the start of the epidemic that
+vaccination begins. Must be a single number. Defaults to \code{NULL} and the start
+time is taken from the vaccination scenarios specified by \code{name}.}
 
-\item{x}{An object of the \verb{<daedalus_vaccination>} class.}
+\item{rate}{A single number for the \emph{percentage} of the total population that
+can be vaccinated each day. This is converted into a proportion automatically
+within \code{\link[=daedalus]{daedalus()}}.}
+
+\item{uptake_limit}{A single number giving the upper limit for the
+\emph{percentage} of the population that can be vaccinated. When this limit is
+reached, vaccination ends.}
+
+\item{efficacy}{A single number in the range \verb{[0, 100]} giving the efficacy
+of vaccination in preventing infection. A value of 0 indicates that
+vaccinated individuals are as susceptible to infection as unvaccinated ones,
+while 100 would indicate completely non-leaky vaccination that completely
+protects against infection.}
+
+\item{waning_period}{A single number representing the number of days over
+which the average individual wanes out of the vaccinated stratum to the
+unvaccinated stratum. Only individuals in the susceptible and recovered
+compartments can wane out of being vaccinated.}
+
+\item{x}{An object to be tested or printed as a \verb{<daedalus_vaccination>}.}
+
+\item{...}{For the \code{print} method, other parameters passed to \code{\link[=print]{print()}}.}
 }
 \description{
 Helper functions to create and work with S3 class
@@ -32,16 +61,15 @@ These objects store vaccination parameters for reuse and have methods for
 easy parameter access and editing, as well as processing raw vaccination
 characteristics for the DAEDALUS model.
 }
-\section{Vaccination parameters}{
-\itemize{
-\item \code{vax_start_time}: The number of days after the start of the epidemic that
-vaccination begins. Must be a single number.
-\item \code{nu}: A single number for the percentage of the total population that can
-be vaccinated each day. This is converted into a proportion automatically
-within \code{\link[=daedalus]{daedalus()}}.
-\item \code{vax_uptake_limit}: A single number giving the upper limit for the
-percentage of the population that can be vaccinated. When this limit is
-reached, the vaccination rate \code{nu} is set to zero.
+\details{
+Note that vaccination once ended by reaching the \code{uptake_limit} does not
+restart once individuals wane out of the vaccinated compartment.
 }
-}
+\examples{
+# for no advance vaccine investment
+daedalus_vaccination("none")
 
+# modifying parameters during initialisation
+# set daily vaccination rate to 1.5\% of population
+daedalus_vaccination("low", rate = 1.5)
+}

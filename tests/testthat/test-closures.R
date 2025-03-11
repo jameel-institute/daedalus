@@ -108,7 +108,7 @@ test_that("Closures: correct logging of time limits", {
   response_threshold <- 1e9 # artificially large
   response_time <- 10 # arbitrary value
   time_end <- 25 # low to prematurely end simulation
-  dummy_vax <- daedalus_vaccination("none", vax_start_time = 15)
+  dummy_vax <- daedalus_vaccination("none", start_time = 15)
   output <- daedalus(
     "Thailand", daedalus_infection("influenza_1918", r0 = 1.1),
     response_strategy = "elimination",
@@ -131,7 +131,7 @@ test_that("Closures: correct logging of time limits", {
 
   # Check that closures are terminated at the start time when
   # the epidemic is not growing
-  dvx <- daedalus_vaccination("low", vax_start_time = 90)
+  dvx <- daedalus_vaccination("low", start_time = 90)
   tend <- 100
   response_time <- seq(10, 80, 10)
 

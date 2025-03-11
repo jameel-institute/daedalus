@@ -12,7 +12,7 @@ test_that("Vaccination: basic expectations", {
   )
 
   # expect that there are no vaccinations before the vaccination start time
-  t_vax <- get_data(vax_level, "vax_start_time")
+  t_vax <- get_data(vax_level, "start_time")
   vax_per_day <- tapply(data_vaccinated$value, data_vaccinated$time, sum)
   expect_identical(
     max(vax_per_day[seq_len(t_vax)]), 0.0

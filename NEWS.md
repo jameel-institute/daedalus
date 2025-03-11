@@ -1,3 +1,31 @@
+# daedalus 0.2.4
+
+## Breaking changes
+
+The vaccination class `<daedalus_vaccination>` has renamed invariants. Workflows using custom vaccination regimes will break. No issues are expected for the dashboard.
+
+_daedalus_ now requires R > v3.5 (due to use of package data) --- this is a belated update.
+
+## Model changes
+
+- `daedalus2()` supports infections for the vaccinated stratum similar to `daedalus()`; vaccination is now leaky. The default is absolutely no vaccination, which differs from `daedalus()` where 'none' refers to advance investment;
+
+- `daedalus()` takes vaccine efficacy and waning period from the `vaccine_investment` argument, see below;
+
+## Class changes
+
+- `<daedalus_vaccination>` has been updated with shorter invariants that drop prefix `vax` from names;
+
+- `<daedalus_vaccination>`s now hold information on the vaccine efficacy (single value) and waning period (single value); these can be modified using the construction helper `daedalus_vaccination()` or the `set_data()` method;
+
+- A new `prepare_parameters2()` method for the vaccination class to satisfy `daedalus2()`;
+
+## Other changes
+
+- Tests for vaccination working in `daedalus2()`;
+
+- Updated to function documentation for changes to vaccination class.
+
 # daedalus 0.2.3
 
 ## Breaking changes

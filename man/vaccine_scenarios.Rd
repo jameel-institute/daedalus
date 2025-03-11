@@ -34,7 +34,7 @@ parameters.
 
 An object of class \code{character} of length 4.
 
-An object of class \code{character} of length 3.
+An object of class \code{character} of length 5.
 }
 \source{
 See processing details in `data-raw/vaccination_data.R

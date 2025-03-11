@@ -13,13 +13,14 @@
 #' To override package defaults for country characteristics, pass a
 #' `<daedalus_country>` object instead. See [daedalus_country()] for more.
 #'
-#' @param infection An infection parameter object of the class `<infection>`,
-#' **or** an epidemic name for which data are provided in the package; see
-#' [daedalus::epidemic_names] for parameters from a historical epidemic
-#' or epidemic wave.
+#' @param infection An infection parameter object of the class
+#' `<daedalus_infection>`, **or** an epidemic name for which data are provided
+#' in the package; see [daedalus::epidemic_names] for historical epidemics
+#' or epidemic waves for which parameters are available.
+#'
 #' Passing the name as a string automatically accesses the default parameters
-#' of an infection. Create an pass a `<daedalus_infection>` to tweak infection
-#' parameters.
+#' of an infection. Create and pass a `<daedalus_infection>` to tweak infection
+#' parameters using [daedalus_infection()].
 #'
 #' @param response_strategy A string for the name of response strategy followed;
 #' defaults to "none". The response strategy determines the country-specific
@@ -181,7 +182,7 @@ daedalus <- function(country,
 
   # check that `response_time` <= vaccination_start <= `time_end` or NULL
   is_good_vax_time <- checkmate::test_integerish(
-    get_data(vaccine_investment, "vax_start_time"),
+    get_data(vaccine_investment, "start_time"),
     lower = response_time + 2L,
     upper = time_end - 2L, null.ok = TRUE
   )
@@ -218,8 +219,6 @@ daedalus <- function(country,
     parameters,
     list(
       hospital_capacity = response_threshold, # to increase HFR if crossed
-      psi = 1 / 270,
-      tau = c(1.0, 0.5),
       beta = get_beta(infection, country),
       openness = openness,
       mutables = mutables,
@@ -235,7 +234,7 @@ daedalus <- function(country,
   # from response_time:time_end run with switch = 1.0, or on
   # NOTE: state is carried over. This looks ugly and might not scale if
   # parameter uncertainty is needed in future.
-  vaccination_start <- get_data(vaccine_investment, "vax_start_time")
+  vaccination_start <- get_data(vaccine_investment, "start_time")
   times_stage_01 <- seq(1, response_time)
   times_stage_02 <- seq(response_time, vaccination_start)
   times_stage_03 <- seq(vaccination_start, time_end)

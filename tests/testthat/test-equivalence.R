@@ -7,7 +7,7 @@ test_that("daedalus() and daedalus2() are equivalent", {
   # modify vaccination to fit needs
   vax <- daedalus_vaccination(
     "none",
-    nu = 0.0, vax_start_time = 5, vax_uptake_limit = 0
+    rate = 0.0, start_time = 5, uptake_limit = 0
   )
 
   # get outputs

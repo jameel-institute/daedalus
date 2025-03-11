@@ -188,6 +188,9 @@ daedalus_country <- function(country,
   parameters <- Filter(parameters, f = function(x) !is.null(x))
   params[names(parameters)] <- parameters
 
+  # add total number of groups
+  params["n_strata"] <- length(params$demography) + length(params$workers)
+
   x <- new_daedalus_country(
     name,
     params
@@ -218,7 +221,8 @@ validate_daedalus_country <- function(x) {
     "name", "demography", "contact_matrix",
     "contacts_workplace", "contacts_consumer_worker",
     "contacts_between_sectors", "workers", "gva",
-    "vsl", "hospital_capacity", "gni", "life_expectancy"
+    "vsl", "hospital_capacity", "gni", "life_expectancy",
+    "n_strata"
   )
   has_invariants <- checkmate::test_names(
     attributes(x)$names,
@@ -455,6 +459,8 @@ prepare_parameters.daedalus_country <- function(x, ...) {
 
 #' Replacement prepare_parameters()
 #'
+#' @name prepare_parameters
+#'
 #' @keywords internal
 prepare_parameters2.daedalus_country <- function(x, ...) {
   chkDots(...)
@@ -464,9 +470,14 @@ prepare_parameters2.daedalus_country <- function(x, ...) {
   cm_work <- make_work_contacts(x)
   cm_cons_work <- make_consumer_contacts(x)
 
+  n_age_groups <- length(get_data(x, "demography"))
+  n_econ_groups <- length(get_data(x, "workers"))
+
   list(
     cm = cm,
     cm_cons_work = cm_cons_work,
-    cm_work = cm_work
+    cm_work = cm_work,
+    n_age_groups = n_age_groups,
+    n_econ_groups = n_econ_groups
   )
 }
