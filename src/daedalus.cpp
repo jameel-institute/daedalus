@@ -33,7 +33,7 @@ const size_t i_GRPS = daedalus::constants::i_GRPS,
              i_COMPS = daedalus::constants::i_COMPS,
              i_VAX_GRPS = daedalus::constants::i_VAX_GRPS;
 
-const size_t N_VAX_STRATA = daedalus::constants::N_VAX_STRATA;
+const int N_VAX_STRATA = daedalus::constants::N_VAX_STRATA;
 
 // product dimensions for Eigen Tensor contraction
 const std::array<Eigen::IndexPair<int>, 1> product_dims = {
@@ -269,8 +269,8 @@ class daedalus_ode {
     // need rowsums for FOI
     internal.t_comm_inf =
         (t_x.chip(iIs, i_COMPS) + (t_x.chip(iIa, i_COMPS) * shared.epsilon))
-            .sum(Eigen::array<int, 1>{1})
-            .reshape(Eigen::array<int, 2>{vec_size, 1});
+            .sum(Eigen::array<Eigen::Index, 1>{1})
+            .reshape(Eigen::array<Eigen::Index, 2>{vec_size, 1});
 
     // FOI must be broadcast for element-wise tensor mult
     internal.t_foi =
