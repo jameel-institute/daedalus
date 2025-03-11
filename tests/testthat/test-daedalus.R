@@ -94,7 +94,7 @@ test_that("daedalus: Runs for all country x infection x response", {
     infection = daedalus::epidemic_names
   )
 
-  dummy_vax <- daedalus_vaccination("low", vax_start_time = 5)
+  dummy_vax <- daedalus_vaccination("low", start_time = 5)
   time_end <- 10
 
   # expect no conditions
