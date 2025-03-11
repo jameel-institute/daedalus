@@ -26,6 +26,8 @@ _daedalus_ now requires R > v3.5 (due to use of package data) --- this is a bela
 
 - Updated to function documentation for changes to vaccination class.
 
+- Code formatting using [Air](https://posit-dev.github.io/air/), added `air.toml` and disabled `commas_linter` as it conflicts with Air.
+
 # daedalus 0.2.3
 
 ## Breaking changes
