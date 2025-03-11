@@ -31,7 +31,7 @@ const size_t i_GRPS = daedalus::constants::i_GRPS,
              i_COMPS = daedalus::constants::i_COMPS,
              i_VAX_GRPS = daedalus::constants::i_VAX_GRPS;
 
-const size_t N_VAX_STRATA = daedalus::constants::N_VAX_STRATA;
+const int N_VAX_STRATA = daedalus::constants::N_VAX_STRATA;
 
 // product dimensions for Eigen Tensor contraction
 const std::array<Eigen::IndexPair<int>, 1> product_dims = {
@@ -63,10 +63,10 @@ using TensorAry = Eigen::Tensor<T, 3>;
 // [[dust2::parameter(gamma_Is, constant = TRUE)]]
 // [[dust2::parameter(gamma_H, constant = TRUE)]]
 // [[dust2::parameter(nu, constant = TRUE)]]
+// [[dust2::parameter(susc, constant = TRUE)]]
 // [[dust2::parameter(psi, constant = TRUE)]]
 // [[dust2::parameter(n_age_groups, constant = TRUE, type = "int")]]
 // [[dust2::parameter(n_econ_groups, constant = TRUE, type = "int")]]
-// [[dust2::parameter(n_strata, constant = TRUE, type = "int")]]
 // [[dust2::parameter(cm, constant = TRUE)]]
 // [[dust2::parameter(cm_work, constant = TRUE)]]
 // [[dust2::parameter(cm_cons_work, constant = TRUE)]]
@@ -87,6 +87,7 @@ class daedalus_ode {
     const size_t n_strata, n_age_groups, n_econ_groups;
     const std::vector<size_t> i_to_zero;
     const TensorMat<double> cm, cm_cons_work, cm_work;
+    const TensorMat<double> susc;
   };
 
   /// @brief Intermediate data.
@@ -164,8 +165,10 @@ class daedalus_ode {
 
     // related to number of groups
     // defaults to daedalus fixed values
-    const size_t n_age_groups = dust2::r::read_size(pars, "n_age_groups", 4);
-    const size_t n_econ_groups = dust2::r::read_size(pars, "n_econ_groups", 45);
+    const size_t n_age_groups = dust2::r::read_size(
+        pars, "n_age_groups", daedalus::constants::DDL_N_AGE_GROUPS);
+    const size_t n_econ_groups = dust2::r::read_size(
+        pars, "n_econ_groups", daedalus::constants::DDL_N_ECON_GROUPS);
     const size_t n_strata = n_age_groups + n_econ_groups;
 
     // read vector values (all must have size n_strata)
@@ -205,11 +208,17 @@ class daedalus_ode {
     const std::vector<size_t> i_to_zero = daedalus::helpers::zero_which(
         daedalus::constants::seq_DATA_COMPARTMENTS, n_strata, N_VAX_STRATA);
 
+    // handling susceptibility matrix: rows are age+econ grps, cols are vax grps
+    const std::vector<size_t> vec_susc_dims = {n_strata, N_VAX_STRATA};
+    const dust2::array::dimensions<2> susc_dims(vec_susc_dims.begin());
+    TensorMat<double> susc(n_strata, N_VAX_STRATA);
+    dust2::r::read_real_array(pars, susc_dims, susc.data(), "susc", true);
+
     return shared_state{
         beta,      sigma,    p_sigma,  epsilon,      rho,
         gamma_Ia,  gamma_Is, eta,      omega,        gamma_H,
         nu,        psi,      n_strata, n_age_groups, n_econ_groups,
-        i_to_zero, cm,       cm_cw,    cm_work};
+        i_to_zero, cm,       cm_cw,    cm_work,      susc};
   }
 
   /// @brief Updated shared parameters.
@@ -258,8 +267,8 @@ class daedalus_ode {
     // need rowsums for FOI
     internal.t_comm_inf =
         (t_x.chip(iIs, i_COMPS) + (t_x.chip(iIa, i_COMPS) * shared.epsilon))
-            .sum(Eigen::array<int, 1>{1})
-            .reshape(Eigen::array<int, 2>{vec_size, 1});
+            .sum(Eigen::array<Eigen::Index, 1>{1})
+            .reshape(Eigen::array<Eigen::Index, 2>{vec_size, 1});
 
     // FOI must be broadcast for element-wise tensor mult
     internal.t_foi =
@@ -298,6 +307,10 @@ class daedalus_ode {
         (internal.susc_workers *
          (internal.workplace_infected.broadcast(bcast) +
           internal.consumer_worker_infections.broadcast(bcast)));
+
+    // element-wise mult with susceptibility matrix to reduce number of
+    // vaccinated infected S => E
+    internal.sToE = internal.sToE * shared.susc;
 
     internal.eToIs = shared.sigma * shared.p_sigma * t_x.chip(iE, i_COMPS);
     internal.eToIa =
