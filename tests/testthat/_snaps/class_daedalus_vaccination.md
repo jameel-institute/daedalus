@@ -5,9 +5,11 @@
     Message
       <daedalus_vaccination>
       Advance vaccine investment: medium
-      * Start time (days): 200
+      * Start time (days):
       * Rate (% per day): 0.429
-      * Uptake limit (%): 60
+      * Uptake limit (%):
+      * Efficacy (%): 5000
+      * Waning period (mean, days): 180
 
 ---
 
@@ -15,47 +17,71 @@
       daedalus::vaccination_scenario_data
     Output
       $none
-      $none$vax_start_time
+      $none$start_time
       [1] 365
       
-      $none$nu
+      $none$rate
       [1] 0.1428571
       
-      $none$vax_uptake_limit
+      $none$uptake_limit
       [1] 40
+      
+      $none$efficacy
+      [1] 50
+      
+      $none$waning_period
+      [1] 270
       
       
       $low
-      $low$vax_start_time
+      $low$start_time
       [1] 300
       
-      $low$nu
+      $low$rate
       [1] 0.2857143
       
-      $low$vax_uptake_limit
+      $low$uptake_limit
       [1] 50
+      
+      $low$efficacy
+      [1] 50
+      
+      $low$waning_period
+      [1] 270
       
       
       $medium
-      $medium$vax_start_time
+      $medium$start_time
       [1] 200
       
-      $medium$nu
+      $medium$rate
       [1] 0.4285714
       
-      $medium$vax_uptake_limit
+      $medium$uptake_limit
       [1] 60
+      
+      $medium$efficacy
+      [1] 50
+      
+      $medium$waning_period
+      [1] 270
       
       
       $high
-      $high$vax_start_time
+      $high$start_time
       [1] 100
       
-      $high$nu
+      $high$rate
       [1] 0.5
       
-      $high$vax_uptake_limit
+      $high$uptake_limit
       [1] 80
+      
+      $high$efficacy
+      [1] 50
+      
+      $high$waning_period
+      [1] 270
       
       
 

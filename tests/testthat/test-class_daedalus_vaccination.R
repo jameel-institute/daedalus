@@ -9,15 +9,15 @@ test_that("class <daedalus_vaccination>: basic expectations", {
   expect_no_condition(
     lapply(
       daedalus::vaccination_scenario_names, daedalus_vaccination,
-      nu = 0.3
+      rate = 0.3
     )
   )
 
   new_nu <- 0.467
   expect_identical(
     get_data(
-      daedalus_vaccination("low", nu = new_nu),
-      "nu"
+      daedalus_vaccination("low", rate = new_nu),
+      "rate"
     ),
     new_nu
   )
@@ -88,10 +88,10 @@ test_that("class <daedalus_vaccination>: access and assignment", {
   x <- daedalus_vaccination("medium")
 
   expect_no_condition({
-    new_vax <- set_data(x, nu = new_rate)
+    new_vax <- set_data(x, rate = new_rate)
   })
   expect_identical(
-    get_data(new_vax, "nu"),
+    get_data(new_vax, "rate"),
     new_rate
   )
 
@@ -112,19 +112,16 @@ test_that("class <daedalus_vaccination>: errors", {
     daedalus_vaccination("dummy")
   )
   expect_error(
-    daedalus_vaccination("medium", nu = "0.01")
+    daedalus_vaccination("medium", rate = "0.01")
   )
   expect_error(
-    daedalus_vaccination("medium", nu = c(0.01, 0.01))
+    daedalus_vaccination("medium", rate = c(0.01, 0.01))
   )
   expect_error(
-    daedalus_vaccination("medium", nu = -0.01)
+    daedalus_vaccination("medium", rate = -0.01)
   )
   expect_error(
-    daedalus_vaccination("medium", nu = NULL)
-  )
-  expect_error(
-    daedalus_vaccination("medium", nu = NA_real_)
+    daedalus_vaccination("medium", rate = NA_real_)
   )
   expect_error(
     daedalus_vaccination("medium", dummy_param = 0.01)

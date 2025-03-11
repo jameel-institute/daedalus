@@ -22,9 +22,14 @@ uptake_limit <- list(
 # save names and combine data
 vaccination_scenario_names <- c("none", "low", "medium", "high")
 
+# NOTE: efficacy and waning rate are not scenario specific
 vaccination_parameter_names <- c(
-  "vax_start_time", "nu", "vax_uptake_limit"
+  "start_time", "rate", "uptake_limit", "efficacy", "waning_period"
 )
+
+# default efficacy and waning period
+efficacy <- 50 # 50% efficacy
+waning_period <- 270 # waning period in days
 
 vaccination_scenario_data <- Map(
   start_times, vaccination_rate, uptake_limit,
@@ -32,7 +37,9 @@ vaccination_scenario_data <- Map(
     x <- list(
       t,
       nu / vaccination_rate_time_unit,
-      limit
+      limit,
+      efficacy,
+      waning_period
     )
     names(x) <- vaccination_parameter_names
 
