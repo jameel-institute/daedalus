@@ -114,3 +114,24 @@ test_that("daedalus2: vaccination works", {
   # see `../test-equivalence.R` for tests that no vaccination in
   # `daedalus2()` is equivalent to no vaccination in `daedalus()`
 })
+
+test_that("daedalus2: advanced vaccination features", {
+  # use dummy scenarios to check that vaccination uptake limit is respected
+  x <- daedalus_country("THA")
+  disease_x <- daedalus_infection("sars_cov_1", r0 = 0)
+
+  uptake_limit <- 40
+  popsize <- sum(get_data(x, "demography"))
+  vax <- daedalus_vaccination("high", uptake_limit = uptake_limit)
+  # final size is zero
+  output <- daedalus2("THA", disease_x, vax, time_end = 600)
+
+  n_vax <- tail(colSums(output$S_vax) + colSums(output$R_vax), 1)
+
+  # higher tolerance as vaccination is expected to be asymptotic
+  expect_identical(
+    n_vax,
+    uptake_limit * popsize / 100,
+    tolerance = 1
+  )
+})
