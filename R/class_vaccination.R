@@ -325,7 +325,11 @@ prepare_parameters2.daedalus_vaccination <- function(x, ...) {
   validate_daedalus_vaccination(x)
 
   # only need rates for nu and psi for now
-  list(nu = get_data(x, "rate"), psi = 1 / get_data(x, "waning_period"))
+  list(
+    nu = get_data(x, "rate") / 100,
+    psi = 1 / get_data(x, "waning_period"),
+    uptake_limit = get_data(x, "uptake_limit") / 100
+  )
 }
 
 #' Dummy vaccination
