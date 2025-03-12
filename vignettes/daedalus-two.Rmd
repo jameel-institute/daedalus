@@ -38,3 +38,25 @@ This should be a curve and not monotonically increasing.
 plot(colSums(output$new_inf))
 plot(colSums(output$new_hosp))
 ```
+
+## Vaccination
+
+This section aims to be a visual check on vaccination in `daedalus2()` as the return type is not fully compatible with `daedalus()` output.
+
+```{r}
+# high vaccination rate but low uptake limit
+vax <- daedalus_vaccination("high", uptake_limit = 40)
+output <- daedalus2("GBR", "influenza_2009", vax)
+
+# unvaccinated
+plot(colSums(output$S))
+plot(colSums(output$E))
+plot(colSums(output$new_inf))
+plot(colSums(output$new_hosp))
+
+# vaccinated
+plot(colSums(output$S_vax))
+plot(colSums(output$E_vax))
+plot(colSums(output$new_inf_vax))
+plot(colSums(output$new_hosp_vax))
+```
