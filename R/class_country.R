@@ -482,6 +482,7 @@ prepare_parameters2.daedalus_country <- function(x, ...) {
     cm_cons_work = cm_cons_work,
     cm_work = cm_work,
     n_age_groups = n_age_groups,
-    n_econ_groups = n_econ_groups
+    n_econ_groups = n_econ_groups,
+    popsize = sum(get_data(x, "demography"))
   )
 }
