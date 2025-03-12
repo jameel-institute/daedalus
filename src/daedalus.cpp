@@ -35,22 +35,14 @@ const size_t i_GRPS = daedalus::constants::i_GRPS,
 
 const int N_VAX_STRATA = daedalus::constants::N_VAX_STRATA;
 
-// product dimensions for Eigen Tensor contraction
-const std::array<Eigen::IndexPair<int>, 1> product_dims = {
-    Eigen::IndexPair<int>(1, 0)};
+// broadcasting and contraction dims
+const daedalus::types::bcast_dim_type bcast = daedalus::dims::dim_bcast_vax;
+const daedalus::types::prod_dim_type product_dims = daedalus::dims::dim_product;
 
-// broadcasting dims
-const Eigen::array<Eigen::Index, 2> bcast({1, N_VAX_STRATA});
-
-// define types for Tensors of known dims
-template <typename T>
-using TensorVec = Eigen::Tensor<T, 1>;
-
-template <typename T>
-using TensorMat = Eigen::Tensor<T, 2>;
-
-template <typename T>
-using TensorAry = Eigen::Tensor<T, 3>;
+// Tensor types for local use
+using TensorVec = daedalus::types::TensorVec<double>;
+using TensorMat = daedalus::types::TensorMat<double>;
+using TensorAry = daedalus::types::TensorAry<double>;
 
 // [[dust2::class(daedalus_ode)]]
 // [[dust2::time_type(continuous)]]
@@ -65,10 +57,12 @@ using TensorAry = Eigen::Tensor<T, 3>;
 // [[dust2::parameter(gamma_Is, constant = TRUE)]]
 // [[dust2::parameter(gamma_H, constant = TRUE)]]
 // [[dust2::parameter(nu, constant = TRUE)]]
+// [[dust2::parameter(uptake_limit, constant = TRUE)]]
 // [[dust2::parameter(susc, constant = TRUE)]]
 // [[dust2::parameter(psi, constant = TRUE)]]
 // [[dust2::parameter(n_age_groups, constant = TRUE, type = "int")]]
 // [[dust2::parameter(n_econ_groups, constant = TRUE, type = "int")]]
+// [[dust2::parameter(popsize, constant = TRUE, type = "int")]]
 // [[dust2::parameter(cm, constant = TRUE)]]
 // [[dust2::parameter(cm_work, constant = TRUE)]]
 // [[dust2::parameter(cm_cons_work, constant = TRUE)]]
@@ -82,41 +76,45 @@ class daedalus_ode {
   struct shared_state {
     // NOTE: n_strata unknown at compile time
     const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
-    const TensorMat<double> eta, omega, gamma_H;
+    const TensorMat eta, omega, gamma_H;
 
-    const real_type nu, psi;
+    const real_type nu, psi, uptake_limit;
 
-    const size_t n_strata, n_age_groups, n_econ_groups;
+    const size_t n_strata, n_age_groups, n_econ_groups, popsize;
     const std::vector<size_t> i_to_zero;
-    const TensorMat<double> cm, cm_cons_work, cm_work;
-    const TensorMat<double> susc;
+    const TensorMat cm, cm_cons_work, cm_work;
+    const TensorMat susc;
   };
 
   /// @brief Intermediate data.
   struct internal_state {
-    TensorMat<double> t_comm_inf, t_foi, workplace_infected, t_comm_inf_age,
+    TensorMat t_comm_inf, t_foi, workplace_infected, t_comm_inf_age,
         consumer_worker_infections, susc_workers, sToE, eToIs, eToIa, isToR,
         iaToR, isToH, hToR, hToD, rToS;
+    double nu_eff;
   };
 
   static internal_state build_internal(const shared_state &shared) {
     // transition states
-    TensorMat<double> mat2d(shared.n_strata, N_VAX_STRATA);
+    TensorMat mat2d(shared.n_strata, N_VAX_STRATA);
     mat2d.setZero();
-    TensorMat<double> sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
-                      iaToR = mat2d, isToH = mat2d, hToR = mat2d, hToD = mat2d,
-                      rToS = mat2d, t_comm_inf = mat2d, t_foi = mat2d;
+    TensorMat sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
+              iaToR = mat2d, isToH = mat2d, hToR = mat2d, hToD = mat2d,
+              rToS = mat2d, t_comm_inf = mat2d, t_foi = mat2d;
 
     // infection related
 
-    TensorMat<double> mat2d_econ(shared.n_econ_groups, N_VAX_STRATA);
+    TensorMat mat2d_econ(shared.n_econ_groups, N_VAX_STRATA);
     mat2d_econ.setZero();
-    TensorMat<double> workplace_infected = mat2d_econ,
-                      consumer_worker_infections = mat2d_econ,
-                      susc_workers = mat2d_econ;
+    TensorMat workplace_infected = mat2d_econ,
+              consumer_worker_infections = mat2d_econ,
+              susc_workers = mat2d_econ;
 
-    TensorMat<double> t_comm_inf_age(shared.n_age_groups, N_VAX_STRATA);
+    TensorMat t_comm_inf_age(shared.n_age_groups, N_VAX_STRATA);
     t_comm_inf_age.setZero();
+
+    // effective vaccination rate is initially the vaccination rate
+    double nu_eff = shared.nu;
 
     // clang-format off
     return internal_state{
@@ -124,7 +122,8 @@ class daedalus_ode {
       t_comm_inf_age,
       consumer_worker_infections,
       susc_workers,
-      sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS};
+      sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS,
+      nu_eff};
     // clang-format on
   }
 
@@ -164,6 +163,8 @@ class daedalus_ode {
     const real_type gamma_Is = dust2::r::read_real(pars, "gamma_Is", 0.0);
     const real_type nu = dust2::r::read_real(pars, "nu", 0.0);
     const real_type psi = dust2::r::read_real(pars, "psi", 0.0);
+    const real_type uptake_limit =
+        dust2::r::read_real(pars, "uptake_limit", 0.0);
 
     // related to number of groups
     // defaults to daedalus fixed values
@@ -172,11 +173,12 @@ class daedalus_ode {
     const size_t n_econ_groups = dust2::r::read_size(
         pars, "n_econ_groups", daedalus::constants::DDL_N_ECON_GROUPS);
     const size_t n_strata = n_age_groups + n_econ_groups;
+    const size_t popsize = dust2::r::read_size(pars, "popsize", 0.0);
 
     // read vector values (all must have size n_strata)
-    TensorMat<double> eta_temp(n_strata, 1);
-    TensorMat<double> omega_temp(n_strata, 1);
-    TensorMat<double> gamma_H_temp(n_strata, 1);
+    TensorMat eta_temp(n_strata, 1);
+    TensorMat omega_temp(n_strata, 1);
+    TensorMat gamma_H_temp(n_strata, 1);
 
     dust2::r::read_real_vector(pars, n_strata, eta_temp.data(), "eta", true);
     dust2::r::read_real_vector(pars, n_strata, omega_temp.data(), "omega",
@@ -184,25 +186,25 @@ class daedalus_ode {
     dust2::r::read_real_vector(pars, n_strata, gamma_H_temp.data(), "gamma_H",
                                true);
 
-    TensorMat<double> eta = eta_temp.broadcast(bcast);
-    TensorMat<double> omega = omega_temp.broadcast(bcast);
-    TensorMat<double> gamma_H = gamma_H_temp.broadcast(bcast);
+    TensorMat eta = eta_temp.broadcast(bcast);
+    TensorMat omega = omega_temp.broadcast(bcast);
+    TensorMat gamma_H = gamma_H_temp.broadcast(bcast);
 
     // handling contact matrix
     const std::vector<size_t> vec_cm_dims(2, n_strata);  // for square matrix
     const dust2::array::dimensions<2> cm_dims(vec_cm_dims.begin());
-    TensorMat<double> cm(n_strata, n_strata);
+    TensorMat cm(n_strata, n_strata);
     dust2::r::read_real_array(pars, cm_dims, cm.data(), "cm", true);
 
     // handling contacts from consumers to workers
     const std::vector<size_t> vec_cm_cw_dims = {n_econ_groups, n_age_groups};
     const dust2::array::dimensions<2> cm_cw_dims(vec_cm_cw_dims.begin());
-    TensorMat<double> cm_cw(n_econ_groups, n_age_groups);
+    TensorMat cm_cw(n_econ_groups, n_age_groups);
     dust2::r::read_real_array(pars, cm_cw_dims, cm_cw.data(), "cm_cons_work",
                               true);
 
     // handling within-sector contacts
-    TensorMat<double> cm_work(n_econ_groups, 1);
+    TensorMat cm_work(n_econ_groups, 1);
     dust2::r::read_real_vector(pars, n_econ_groups, cm_work.data(), "cm_work",
                                true);
 
@@ -213,14 +215,14 @@ class daedalus_ode {
     // handling susceptibility matrix: rows are age+econ grps, cols are vax grps
     const std::vector<size_t> vec_susc_dims = {n_strata, N_VAX_STRATA};
     const dust2::array::dimensions<2> susc_dims(vec_susc_dims.begin());
-    TensorMat<double> susc(n_strata, N_VAX_STRATA);
+    TensorMat susc(n_strata, N_VAX_STRATA);
     dust2::r::read_real_array(pars, susc_dims, susc.data(), "susc", true);
 
     return shared_state{
-        beta,      sigma,    p_sigma,  epsilon,      rho,
-        gamma_Ia,  gamma_Is, eta,      omega,        gamma_H,
-        nu,        psi,      n_strata, n_age_groups, n_econ_groups,
-        i_to_zero, cm,       cm_cw,    cm_work,      susc};
+        beta,         sigma,    p_sigma,      epsilon,       rho,     gamma_Ia,
+        gamma_Is,     eta,      omega,        gamma_H,       nu,      psi,
+        uptake_limit, n_strata, n_age_groups, n_econ_groups, popsize, i_to_zero,
+        cm,           cm_cw,    cm_work,      susc};
   }
 
   /// @brief Updated shared parameters.
@@ -251,16 +253,16 @@ class daedalus_ode {
                   internal_state &internal,  // NOLINT
                   real_type *state_deriv) {
     // TODO(pratik): prefer to not use these
-    const int vec_size = shared.n_strata;
+    const int n_strata = shared.n_strata;
     const int n_econ_groups = shared.n_econ_groups;
     const int n_age_groups = shared.n_age_groups;
 
     // map to Eigen Tensor
-    Eigen::TensorMap<const TensorAry<double>> t_x(
-        state, vec_size, daedalus::constants::N_COMPARTMENTS, N_VAX_STRATA);
-    Eigen::TensorMap<TensorAry<double>> t_dx(
-        state_deriv, vec_size, daedalus::constants::N_COMPARTMENTS,
-        N_VAX_STRATA);
+    Eigen::TensorMap<const TensorAry> t_x(
+        state, n_strata, daedalus::constants::N_COMPARTMENTS, N_VAX_STRATA);
+    Eigen::TensorMap<TensorAry> t_dx(state_deriv, n_strata,
+                                     daedalus::constants::N_COMPARTMENTS,
+                                     N_VAX_STRATA);
 
     // all chip ops on dim N have dim N-1
     // compartmental transitions
@@ -270,7 +272,7 @@ class daedalus_ode {
     internal.t_comm_inf =
         (t_x.chip(iIs, i_COMPS) + (t_x.chip(iIa, i_COMPS) * shared.epsilon))
             .sum(Eigen::array<Eigen::Index, 1>{1})
-            .reshape(Eigen::array<Eigen::Index, 2>{vec_size, 1});
+            .reshape(Eigen::array<Eigen::Index, 2>{n_strata, 1});
 
     // FOI must be broadcast for element-wise tensor mult
     internal.t_foi =
@@ -281,7 +283,7 @@ class daedalus_ode {
         shared.beta *
         shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, 1)
         internal.t_comm_inf.slice(
-            Eigen::array<Eigen::Index, 2>{vec_size - n_econ_groups, 0},
+            Eigen::array<Eigen::Index, 2>{n_strata - n_econ_groups, 0},
             Eigen::array<Eigen::Index, 2>{n_econ_groups, 1});
 
     internal.t_comm_inf_age = internal.t_comm_inf.slice(
@@ -341,22 +343,26 @@ class daedalus_ode {
     t_dx.chip(idH, i_COMPS) = internal.isToH;
 
     // vaccination related changes
+    // calculate vaccination rate
+    internal.nu_eff = daedalus::helpers::scale_nu(
+        t_x, shared.nu, shared.uptake_limit, shared.popsize, n_strata);
+
     // TODO(pratik): flexible way of selecting multiple cols from i-th layer
     // .stride() operator limited by start point
     // S => S_v
     t_dx.chip(iS, i_COMPS).chip(0, 1) +=
-        -shared.nu * t_x.chip(iS, i_COMPS).chip(0, 1) +
+        -internal.nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) +
         shared.psi * t_x.chip(iS, i_COMPS).chip(1, 1);
     t_dx.chip(iS, i_COMPS).chip(1, 1) +=
-        shared.nu * t_x.chip(iS, i_COMPS).chip(0, 1) -
+        internal.nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) -
         shared.psi * t_x.chip(iS, i_COMPS).chip(1, 1);
 
     // R => R_v
     t_dx.chip(iR, i_COMPS).chip(0, 1) +=
-        -shared.nu * t_x.chip(iR, i_COMPS).chip(0, 1) +
+        -internal.nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1) +
         shared.psi * t_x.chip(iR, i_COMPS).chip(1, 1);
     t_dx.chip(iR, i_COMPS).chip(1, 1) +=
-        shared.nu * t_x.chip(iR, i_COMPS).chip(0, 1) -
+        internal.nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1) -
         shared.psi * t_x.chip(iR, i_COMPS).chip(1, 1);
   }
 

@@ -6,9 +6,9 @@ daedalus_ode <- structure(
   package = "daedalus",
   path = NULL,
   parameters = data.frame(
-    name = c("beta", "sigma", "p_sigma", "epsilon", "rho", "eta", "omega", "gamma_Ia", "gamma_Is", "gamma_H", "nu", "susc", "psi", "n_age_groups", "n_econ_groups", "cm", "cm_work", "cm_cons_work"),
-    type = c("real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "int", "int", "real_type", "real_type", "real_type"),
-    constant = c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE)
+    name = c("beta", "sigma", "p_sigma", "epsilon", "rho", "eta", "omega", "gamma_Ia", "gamma_Is", "gamma_H", "nu", "uptake_limit", "susc", "psi", "n_age_groups", "n_econ_groups", "popsize", "cm", "cm_work", "cm_cons_work"),
+    type = c("real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "int", "int", "int", "real_type", "real_type", "real_type"),
+    constant = c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE)
   ),
   properties = list(
     time_type = "continuous",
