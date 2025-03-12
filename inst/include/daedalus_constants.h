@@ -14,7 +14,8 @@ namespace constants {
 constexpr int N_EPI_COMPARTMENTS = 7;
 constexpr int N_DATA_COMPARTMENTS = 2;
 constexpr int N_COMPARTMENTS = N_EPI_COMPARTMENTS + N_DATA_COMPARTMENTS;
-constexpr int N_VAX_STRATA = 2;  // not including new vaccinations as a layer
+constexpr int N_VAX_STRATA = 2;   // not including new vaccinations as a layer
+constexpr int i_VAX_STRATUM = 1;  // C++ index, second layer in a tensor
 
 // initial daedalus model specific constants
 constexpr int DDL_N_AGE_GROUPS = 4;
