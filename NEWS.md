@@ -1,3 +1,9 @@
+# daedalus 0.2.5
+
+- Adds a correction for reducing eligibles to vaccination in `daedalus2()` by re-implementing `scale_nu()` in C++. Adds a simple test for vaccination uptake limit.
+
+- Adds C++ headers for types and dimensions.
+
 # daedalus 0.2.4
 
 ## Breaking changes
