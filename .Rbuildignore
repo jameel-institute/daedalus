@@ -34,3 +34,4 @@
 ^CPPLINT.cfg$
 ^touchstone$
 ^format-R.sh$
+^air.toml$
