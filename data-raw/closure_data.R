@@ -22,14 +22,18 @@ setnames(closures, new_colnames)
 
 # round all coefficient values to two significant figures
 coefficients <- setdiff(colnames(closures), "sector")
-closures[, (coefficients) := lapply(.SD, function(x) round(x, 2)),
+closures[,
+  (coefficients) := lapply(.SD, function(x) round(x, 2)),
   .SDcols = coefficients
 ]
 
 # replace previous magic numbers with column names (configurations/strategies)
 configuration <- c(
-  "lockdown", "elimination", "lockdown",
-  "economic_closures", "lockdown_school_closures",
+  "lockdown",
+  "elimination",
+  "lockdown",
+  "economic_closures",
+  "lockdown_school_closures",
   "school_closures"
 )
 
@@ -65,7 +69,8 @@ levels_to_keep <- c("heavy", rep("light", 3L))
 strategies <- c(strategies, "none")
 
 closure_data <- Map(
-  closure_data[strategies], levels_to_keep,
+  closure_data[strategies],
+  levels_to_keep,
   f = function(s, l) {
     s[[l]]
   }

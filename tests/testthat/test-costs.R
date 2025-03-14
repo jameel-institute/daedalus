@@ -15,15 +15,22 @@ test_that("Costs: basic expectations", {
   checkmate::expect_number(costs_total, lower = 0, finite = TRUE)
   checkmate::expect_numeric(
     costs_domain,
-    lower = 0, finite = TRUE, any.missing = FALSE
+    lower = 0,
+    finite = TRUE,
+    any.missing = FALSE
   )
 
   expected_names <- c(
-    "total_cost", "economic_cost", "education_cost", "life_years_lost"
+    "total_cost",
+    "economic_cost",
+    "education_cost",
+    "life_years_lost"
   )
   checkmate::expect_numeric(
     unlist(costs),
-    lower = 0, finite = TRUE, any.missing = FALSE
+    lower = 0,
+    finite = TRUE,
+    any.missing = FALSE
   )
 })
 
@@ -32,19 +39,17 @@ test_that("Costs: scenario expectations", {
   output <- daedalus("Canada", "influenza_2009", time_end = 400)
   costs <- get_costs(output)
 
-  expect_identical(
-    costs$economic_costs$economic_cost_closures, 0
-  )
-  expect_identical(
-    costs$education_costs$education_cost_closures, 0
-  )
+  expect_identical(costs$economic_costs$economic_cost_closures, 0)
+  expect_identical(costs$education_costs$education_cost_closures, 0)
 
   # expect life years lost costs in response scenarios are higher than no resp.
   x <- c("none", "school_closures", "economic_closures", "elimination")
 
   o <- lapply(
-    x, daedalus,
-    country = "United Kingdom", infection = "influenza_1957",
+    x,
+    daedalus,
+    country = "United Kingdom",
+    infection = "influenza_1957",
     response_time = 10
   )
 
@@ -52,9 +57,7 @@ test_that("Costs: scenario expectations", {
 
   v <- vapply(a, `[[`, FUN.VALUE = 1, "life_years")
 
-  expect_true(
-    all(v[-1] < v[1])
-  )
+  expect_true(all(v[-1] < v[1]))
 
   ## expect that closure costs are non-zero
   response_names <- c("elimination", "economic_closures", "school_closures")
@@ -67,7 +70,6 @@ test_that("Costs: scenario expectations", {
       expected_cost_closures <- output$country_parameters$gva *
         (1 - output$response_data$openness) *
         output$response_data$closure_info$closure_duration
-
 
       expect_identical(
         costs$economic_costs$economic_cost_closures,
@@ -83,15 +85,20 @@ test_that("Expectations on schooling costs", {
   x <- c("none", "school_closures", "elimination")
 
   o <- lapply(
-    x, daedalus,
+    x,
+    daedalus,
     country = "United Kingdom",
     infection = daedalus_infection("sars_cov_1")
   )
 
-  a <- vapply(o, function(x) {
-    y <- get_costs(x)
-    y[["education_costs"]][["education_cost_closures"]]
-  }, 1)
+  a <- vapply(
+    o,
+    function(x) {
+      y <- get_costs(x)
+      y[["education_costs"]][["education_cost_closures"]]
+    },
+    1
+  )
   names(a) <- x
 
   checkmate::expect_numeric(

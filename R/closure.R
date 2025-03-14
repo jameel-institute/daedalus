@@ -24,9 +24,7 @@ make_response_threshold_event <- function(response_threshold) {
     is_hosp_switch_on <- rlang::env_get(parameters[["mutables"]], "hosp_switch")
 
     if (time != parameters[["min_time"]] && !is_hosp_switch_on) {
-      rlang::env_poke(
-        parameters[["mutables"]], "hosp_switch", TRUE
-      )
+      rlang::env_poke(parameters[["mutables"]], "hosp_switch", TRUE)
 
       # NOTE: trigger response and log closure start time only if
       # epidemic is growing
@@ -79,13 +77,9 @@ make_rt_end_event <- function() {
       total_hosp <- get_hospitalisations(state)
 
       if (total_hosp > parameters[["hospital_capacity"]]) {
-        rlang::env_poke(
-          parameters[["mutables"]], "hosp_switch", TRUE
-        )
+        rlang::env_poke(parameters[["mutables"]], "hosp_switch", TRUE)
       } else {
-        rlang::env_poke(
-          parameters[["mutables"]], "hosp_switch", FALSE
-        )
+        rlang::env_poke(parameters[["mutables"]], "hosp_switch", FALSE)
       }
     }
 

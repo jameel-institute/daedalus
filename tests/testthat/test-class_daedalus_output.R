@@ -5,23 +5,15 @@ test_that("class <daedalus_output>: basic expectations", {
   })
   expect_s3_class(output, "daedalus_output")
   checkmate::expect_list(
-    output, c("data.frame", "list", "numeric"),
+    output,
+    c("data.frame", "list", "numeric"),
     any.missing = FALSE
   )
-  expect_snapshot(
-    output
-  )
+  expect_snapshot(output)
 
-  checkmate::expect_data_frame(
-    get_data(output),
-    ncols = N_OUTPUT_COLS
-  )
-  checkmate::expect_list(
-    get_data(output, "response_data")
-  )
-  checkmate::expect_list(
-    get_data(output, "country_parameters")
-  )
+  checkmate::expect_data_frame(get_data(output), ncols = N_OUTPUT_COLS)
+  checkmate::expect_list(get_data(output, "response_data"))
+  checkmate::expect_list(get_data(output, "country_parameters"))
   # NOTE: tests pass but get_data.daedalus_output() is flagged as not tested
   expect_error(
     get_data(output, c("model_data", "response_data")),

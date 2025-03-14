@@ -16,13 +16,17 @@ country_name_from_arg <- function(country) {
     daedalus::country_names[[idx]]
   }
 
-  if (any(grep("^[A-Z]{2}$", country))) { # regex check for ISO2
+  if (any(grep("^[A-Z]{2}$", country))) {
+    # regex check for ISO2
     country <- lookup_country_name_from_code(
-      country, daedalus::country_codes_iso2c
+      country,
+      daedalus::country_codes_iso2c
     )
-  } else if (any(grep("^[A-Z]{3}$", country))) { # regex check for ISO3
+  } else if (any(grep("^[A-Z]{3}$", country))) {
+    # regex check for ISO3
     country <- lookup_country_name_from_code(
-      country, daedalus::country_codes_iso3c
+      country,
+      daedalus::country_codes_iso3c
     )
   } else {
     # check country name is known

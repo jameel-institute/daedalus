@@ -22,29 +22,35 @@ life_expectancy <- life_expectancy[,
 bin_size <- 5L
 n_age_groups <- 4L
 
-life_expectancy[, c("age_lower", "age_upper") :=
-  transpose(
-    str_split(
-      str_extract(life_expectancy$age_group, "\\d+-\\d+"),
-      "-"
-    )
-  )]
+life_expectancy[,
+  c("age_lower", "age_upper") := transpose(str_split(
+    str_extract(life_expectancy$age_group, "\\d+-\\d+"),
+    "-"
+  ))
+]
 life_expectancy[
   age_group %in% c("85+ years", "<1 year"),
   c("age_lower", "age_upper") := str_extract(age_group, "\\d+")
 ]
 
-life_expectancy[, c("age_lower", "age_upper") := lapply(
-  .SD, as.numeric
-), .SDcols = c("age_lower", "age_upper")]
+life_expectancy[,
+  c("age_lower", "age_upper") := lapply(.SD, as.numeric),
+  .SDcols = c("age_lower", "age_upper")
+]
 
 # assign new age groups
-life_expectancy[, age_group := fcase(
-  age_upper <= 5L, "0-4",
-  age_lower >= 5L & age_upper <= 20L, "5-19",
-  age_lower >= 20L & age_upper <= 65, "20-65",
-  age_lower >= 65, "65+"
-)]
+life_expectancy[,
+  age_group := fcase(
+    age_upper <= 5L,
+    "0-4",
+    age_lower >= 5L & age_upper <= 20L,
+    "5-19",
+    age_lower >= 20L & age_upper <= 65,
+    "20-65",
+    age_lower >= 65,
+    "65+"
+  )
+]
 
 # average life expectancy over new age groups
 life_expectancy <- life_expectancy[,
@@ -83,10 +89,7 @@ usethis::use_data(country_gni, overwrite = TRUE)
 
 life_expectancy <- life_expectancy[names(life_value)]
 
-life_value <- Map(
-  life_expectancy, life_value,
-  f = function(x, y) x * y
-)
+life_value <- Map(life_expectancy, life_value, f = function(x, y) x * y)
 
 usethis::use_data(life_expectancy, overwrite = TRUE)
 usethis::use_data(life_value, overwrite = TRUE)

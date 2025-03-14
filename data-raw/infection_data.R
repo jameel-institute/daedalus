@@ -25,39 +25,47 @@ n_age_groups <- 4
 n_pathogens <- 7
 n_measures <- 2
 
-data_ifr_ihr[, c("age_lower", "age_upper") := list(
-  as.numeric(str_extract(code_label, "\\d+")) * bin_size - bin_size,
-  as.numeric(str_extract(code_label, "\\d+")) * bin_size
-)]
+data_ifr_ihr[,
+  c("age_lower", "age_upper") := list(
+    as.numeric(str_extract(code_label, "\\d+")) * bin_size - bin_size,
+    as.numeric(str_extract(code_label, "\\d+")) * bin_size
+  )
+]
 
-data_ifr_ihr[, age_group := fcase(
-  age_upper <= 5L, "0-4",
-  age_lower >= 5L & age_upper <= 20L, "5-19",
-  age_lower >= 20L & age_upper <= 65, "20-64",
-  age_lower >= 65, "65+"
-)]
+data_ifr_ihr[,
+  age_group := fcase(
+    age_upper <= 5L,
+    "0-4",
+    age_lower >= 5L & age_upper <= 20L,
+    "5-19",
+    age_lower >= 20L & age_upper <= 65,
+    "20-64",
+    age_lower >= 65,
+    "65+"
+  )
+]
 
 data_ifr_ihr[, measure := str_extract(code_label, "\\w{3}")]
 
 # summarise IFR and IHR for group wise rates
-data_ifr_ihr <- data_ifr_ihr[, list(
-  value = mean(value)
-), by = c("measure", "age_group", "epidemic")]
+data_ifr_ihr <- data_ifr_ihr[,
+  list(value = mean(value)),
+  by = c("measure", "age_group", "epidemic")
+]
 
 # check data
 assert_data_frame(
   data_ifr_ihr,
   types = c("character", "factor", "character", "numeric"),
-  any.missing = FALSE, all.missing = FALSE,
-  nrows = n_age_groups * n_pathogens * n_measures, ncols = 4L
+  any.missing = FALSE,
+  all.missing = FALSE,
+  nrows = n_age_groups * n_pathogens * n_measures,
+  ncols = 4L
 )
 
 #### Calculate model rates ####
 data_params <- data[!code_label %like% "(ifr\\d+)|(ihr\\d+)", ] |>
-  melt(
-    id.vars = c("code_label", "definition"),
-    variable.name = "epidemic"
-  )
+  melt(id.vars = c("code_label", "definition"), variable.name = "epidemic")
 data_params$definition <- NULL
 
 #### R0 ####
@@ -85,10 +93,7 @@ data_ifr_ihr <- dcast(
   value.var = "value"
 )
 data_hosp <- data_params[code_label %in% c("Tsh", "Thd", "Threc", "ps"), ] |>
-  dcast(
-    epidemic ~ code_label,
-    value.var = "value"
-  )
+  dcast(epidemic ~ code_label, value.var = "value")
 
 data_omega_eta <- merge(data_ifr_ihr, data_hosp)
 
@@ -98,18 +103,19 @@ data_omega_eta <- merge(data_ifr_ihr, data_hosp)
 # T{hosp} = p(death) * Thd + (1 - p(death)) * Threc
 # omega = p(death) / T{hosp}
 # gamma_H = (1 - p(death)) / T{hosp}
-data_omega_eta[, c("eta", "p_death") := list(
-  (ihr / ps) / Tsh,
-  ifr / ihr
-)]
+data_omega_eta[, c("eta", "p_death") := list((ihr / ps) / Tsh, ifr / ihr)]
 data_omega_eta[, t_hosp := p_death * Thd + (1 - p_death) * Threc]
-data_omega_eta[, c("omega", "gamma_H") := list(
-  p_death / t_hosp,
-  (1 - p_death) / t_hosp
-)]
+data_omega_eta[,
+  c("omega", "gamma_H") := list(p_death / t_hosp, (1 - p_death) / t_hosp)
+]
 
 data_omega_eta <- data_omega_eta[, c(
-  "epidemic", "age_group", "ifr", "eta", "omega", "gamma_H"
+  "epidemic",
+  "age_group",
+  "ifr",
+  "eta",
+  "omega",
+  "gamma_H"
 )]
 
 ## epsilon: relative contribution of asymptomatics
@@ -135,12 +141,15 @@ data_rho[, value := 1 / value][, measure := "rho"]
 data_rho <- data_rho[, c("measure", "epidemic", "value")]
 
 ## combine pathogen data and convert to named list of lists
-infection_data <- rbindlist(
-  list(
-    data_r0, data_sigma, data_psigma, data_epsilon, data_rho,
-    data_gamma_ia, data_gamma_is
-  )
-)
+infection_data <- rbindlist(list(
+  data_r0,
+  data_sigma,
+  data_psigma,
+  data_epsilon,
+  data_rho,
+  data_gamma_ia,
+  data_gamma_is
+))
 infection_data <- split(infection_data, by = "epidemic") |>
   lapply(function(dt) {
     l <- as.list(dt[["value"]])
@@ -161,7 +170,8 @@ data_omega_eta <- split(data_omega_eta, by = c("epidemic")) |>
   })
 
 infection_data <- Map(
-  infection_data, data_omega_eta[names(infection_data)],
+  infection_data,
+  data_omega_eta[names(infection_data)],
   f = function(x, y) {
     c(x, y)
   }

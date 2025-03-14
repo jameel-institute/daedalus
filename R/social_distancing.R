@@ -19,7 +19,10 @@
 #' coefficient.
 #' @keywords internal
 get_distancing_coefficient <- function(
-    new_deaths, rate = 0.001, lower_limit = 0.2) {
+  new_deaths,
+  rate = 0.001,
+  lower_limit = 0.2
+) {
   # NOTE: no input checks on this internal function
   (1 - rate)^new_deaths * (1 - lower_limit) + lower_limit
 }

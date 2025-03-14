@@ -13,10 +13,7 @@
 #' @noRd
 new_daedalus_infection <- function(name, parameters) {
   # all input checking at top level
-  x <- c(
-    list(name = name),
-    parameters
-  )
+  x <- c(list(name = name), parameters)
   class(x) <- "daedalus_infection"
 
   x
@@ -136,13 +133,15 @@ daedalus_infection <- function(name, ...) {
   if (!is_empty_list) {
     # check list
     checkmate::assert_list(
-      parameters, "numeric",
+      parameters,
+      "numeric",
       min.len = 0,
       max.len = length(daedalus::infection_parameter_names)
     )
 
     has_good_names <- checkmate::test_subset(
-      names(parameters), daedalus::infection_parameter_names,
+      names(parameters),
+      daedalus::infection_parameter_names,
       empty.ok = TRUE
     )
     if (!has_good_names) {
@@ -153,54 +152,48 @@ daedalus_infection <- function(name, ...) {
     }
 
     allowed_numerics_names <- c("ifr", "eta", "gamma_H", "omega")
-    is_each_number <- all(
-      vapply(
-        parameters[!names(parameters) %in%
-          allowed_numerics_names],
-        checkmate::test_number,
-        logical(1L),
-        # NOTE: rate parameter limits allowed may need to be tweaked
-        lower = 0.0,
-        finite = TRUE
-      )
-    )
+    is_each_number <- all(vapply(
+      parameters[!names(parameters) %in% allowed_numerics_names],
+      checkmate::test_number,
+      logical(1L),
+      # NOTE: rate parameter limits allowed may need to be tweaked
+      lower = 0.0,
+      finite = TRUE
+    ))
 
-    is_numeric_good <- all(
-      vapply(
-        parameters[allowed_numerics_names], checkmate::test_numeric,
-        logical(1L),
-        len = N_AGE_GROUPS, lower = 0.0,
-        finite = TRUE, null.ok = TRUE
-      )
-    )
+    is_numeric_good <- all(vapply(
+      parameters[allowed_numerics_names],
+      checkmate::test_numeric,
+      logical(1L),
+      len = N_AGE_GROUPS,
+      lower = 0.0,
+      finite = TRUE,
+      null.ok = TRUE
+    ))
 
     if (!is_each_number) {
-      cli::cli_abort(
-        c(
-          "Expected the following parameters passed in `...`
+      cli::cli_abort(c(
+        "Expected the following parameters passed in `...`
           to be a single positive and finite number:
           {.str {
             setdiff(daedalus::infection_parameter_names,
             allowed_numerics_names)
           }}",
-          i = "Only {.str {allowed_numerics_names}} may be numeric vectors.
+        i = "Only {.str {allowed_numerics_names}} may be numeric vectors.
           See the Help page for {.help daedalus::daedalus} for parameters that
           can be numerics."
-        )
-      )
+      ))
     }
 
     if (!is_numeric_good) {
-      cli::cli_abort(
-        c(
-          "Expected the following parameters passed in `infect_params_manual`
+      cli::cli_abort(c(
+        "Expected the following parameters passed in `infect_params_manual`
           to be numeric vectors of length {N_AGE_GROUPS} with positive and
           finite values:
           {.str {intersect(names(parameters), allowed_numerics_names)}}",
-          i = "See the Help page for {.help daedalus::daedalus} for parameters
+        i = "See the Help page for {.help daedalus::daedalus} for parameters
           that can be numerics."
-        )
-      )
+      ))
     }
   }
 
@@ -208,10 +201,7 @@ daedalus_infection <- function(name, ...) {
   params <- daedalus::infection_data[[name]]
   params[names(parameters)] <- parameters
 
-  x <- new_daedalus_infection(
-    name,
-    params
-  )
+  x <- new_daedalus_infection(name, params)
 
   validate_daedalus_infection(x)
 
@@ -233,9 +223,7 @@ validate_daedalus_infection <- function(x) {
   }
 
   # check class members
-  expected_invariants <- c(
-    "name", daedalus::infection_parameter_names
-  )
+  expected_invariants <- c("name", daedalus::infection_parameter_names)
   has_invariants <- checkmate::test_names(
     attributes(x)$names,
     must.include = expected_invariants
@@ -250,9 +238,11 @@ validate_daedalus_infection <- function(x) {
   # check class members
   allowed_numerics_names <- c("ifr", "eta", "gamma_H", "omega")
   expected_number <- setdiff(
-    daedalus::infection_parameter_names, allowed_numerics_names
+    daedalus::infection_parameter_names,
+    allowed_numerics_names
   )
 
+  # fmt: skip
   stopifnot(
     "Infection `name` must be a string from `daedalus::epidemic_names`" =
       checkmate::test_string(x$name) &&
@@ -260,31 +250,29 @@ validate_daedalus_infection <- function(x) {
           x$name, daedalus::epidemic_names
         )
   )
-  invisible(
-    lapply(expected_number, function(n) {
-      lgl <- checkmate::test_number(x[[n]], lower = 0.0, finite = TRUE)
-      if (!lgl) {
-        cli::cli_abort(
-          "<daedalus_infection> member {.str {n}} must be a single finite
+  invisible(lapply(expected_number, function(n) {
+    lgl <- checkmate::test_number(x[[n]], lower = 0.0, finite = TRUE)
+    if (!lgl) {
+      cli::cli_abort(
+        "<daedalus_infection> member {.str {n}} must be a single finite
           positive number"
-        )
-      }
-    })
-  )
-  invisible(
-    lapply(allowed_numerics_names, function(n) {
-      lgl <- checkmate::test_numeric(
-        x[[n]],
-        lower = 0.0, finite = TRUE, len = N_AGE_GROUPS
       )
-      if (!lgl) {
-        cli::cli_abort(
-          "<daedalus_infection> member {.str {n}} must be a numeric vector of
+    }
+  }))
+  invisible(lapply(allowed_numerics_names, function(n) {
+    lgl <- checkmate::test_numeric(
+      x[[n]],
+      lower = 0.0,
+      finite = TRUE,
+      len = N_AGE_GROUPS
+    )
+    if (!lgl) {
+      cli::cli_abort(
+        "<daedalus_infection> member {.str {n}} must be a numeric vector of
           length 4 (number of age groups)"
-        )
-      }
-    })
-  )
+      )
+    }
+  }))
 
   invisible(x)
 }
@@ -353,12 +341,10 @@ get_data.daedalus_infection <- function(x, to_get, ...) {
     checkmate::test_subset(to_get, names(x))
 
   if (!good_to_get) {
-    cli::cli_abort(
-      c(
-        "`to_get` must be a string available in the {.cls class(x)}",
-        i = "Allowed values are {.str {names(x)}}"
-      )
-    )
+    cli::cli_abort(c(
+      "`to_get` must be a string available in the {.cls class(x)}",
+      i = "Allowed values are {.str {names(x)}}"
+    ))
   }
 
   x[[to_get]]
@@ -371,7 +357,8 @@ set_data.daedalus_infection <- function(x, ...) {
   checkmate::assert_list(to_set, "numeric", any.missing = FALSE)
 
   is_good_subs <- checkmate::test_subset(
-    names(to_set), daedalus::infection_parameter_names
+    names(to_set),
+    daedalus::infection_parameter_names
   )
   if (!is_good_subs) {
     cli::cli_abort(
@@ -401,12 +388,10 @@ prepare_parameters.daedalus_infection <- function(x, ...) {
 
   age_varying_params <- c("eta", "omega", "gamma_H")
 
-  x[age_varying_params] <- lapply(
-    x[age_varying_params], function(p) {
-      p <- c(p, rep(p[i_WORKING_AGE], N_ECON_SECTORS))
-      p
-    }
-  )
+  x[age_varying_params] <- lapply(x[age_varying_params], function(p) {
+    p <- c(p, rep(p[i_WORKING_AGE], N_ECON_SECTORS))
+    p
+  })
 
   x[names(x) != "name"]
 }

@@ -55,22 +55,19 @@
 #' daily_vaccinations <- get_new_vaccinations(data)
 #'
 #' @export
-get_incidence <- function(data,
-                          measures = c(
-                            "infections", "hospitalisations",
-                            "deaths"
-                          ),
-                          groups = NULL) {
+get_incidence <- function(
+  data,
+  measures = c("infections", "hospitalisations", "deaths"),
+  groups = NULL
+) {
   # set global variables to NULL
   value <- NULL
   compartment <- NULL
   measure <- NULL
 
   # check data
-  is_good_data <- checkmate::test_data_frame(
-    data,
-    any.missing = FALSE
-  ) || checkmate::test_class(data, "daedalus_output")
+  is_good_data <- checkmate::test_data_frame(data, any.missing = FALSE) ||
+    checkmate::test_class(data, "daedalus_output")
 
   if (!is_good_data) {
     cli::cli_abort(
@@ -84,9 +81,7 @@ get_incidence <- function(data,
   # check measures and groups
   measures <- rlang::arg_match(measures, SUMMARY_MEASURES, multiple = TRUE)
 
-  is_good_groups <- checkmate::test_subset(
-    groups, SUMMARY_GROUPS
-  )
+  is_good_groups <- checkmate::test_subset(groups, SUMMARY_GROUPS)
   if (!is_good_groups) {
     cli::cli_abort(
       "Expected `groups` to be either `NULL` or one or more of
@@ -111,16 +106,19 @@ get_incidence <- function(data,
     list(value = sum(value)),
     by = c("time", "compartment", groups)
   ]
-  dt_new[, value := c(0, diff(value)),
-    by = c(groups, "compartment")
-  ]
+  dt_new[, value := c(0, diff(value)), by = c(groups, "compartment")]
 
   # rename compartments
-  dt_new[, measure := data.table::fcase(
-    compartment == "dead", "daily_deaths",
-    compartment == "new_infections", "daily_infections",
-    compartment == "new_hosp", "daily_hospitalisations"
-  )]
+  dt_new[,
+    measure := data.table::fcase(
+      compartment == "dead",
+      "daily_deaths",
+      compartment == "new_infections",
+      "daily_infections",
+      compartment == "new_hosp",
+      "daily_hospitalisations"
+    )
+  ]
 
   data.table::setDF(dt_new)
   dt_new[, setdiff(colnames(dt_new), "compartment")]
@@ -128,21 +126,18 @@ get_incidence <- function(data,
 
 #' @name epi_output_helpers
 #' @export
-get_epidemic_summary <- function(data,
-                                 measures = c(
-                                   "infections", "hospitalisations",
-                                   "deaths"
-                                 ),
-                                 groups = NULL) {
+get_epidemic_summary <- function(
+  data,
+  measures = c("infections", "hospitalisations", "deaths"),
+  groups = NULL
+) {
   # set global variables to NULL
   value <- NULL
   compartment <- NULL
   measure <- NULL
 
-  is_good_data <- checkmate::test_data_frame(
-    data,
-    any.missing = FALSE
-  ) || checkmate::test_class(data, "daedalus_output")
+  is_good_data <- checkmate::test_data_frame(data, any.missing = FALSE) ||
+    checkmate::test_class(data, "daedalus_output")
 
   if (!is_good_data) {
     cli::cli_abort(
@@ -156,17 +151,13 @@ get_epidemic_summary <- function(data,
   # check measures and groups
   measures <- rlang::arg_match(measures, SUMMARY_MEASURES, multiple = TRUE)
 
-  is_good_groups <- checkmate::test_subset(
-    groups, SUMMARY_GROUPS
-  )
+  is_good_groups <- checkmate::test_subset(groups, SUMMARY_GROUPS)
   if (!is_good_groups) {
-    cli::cli_abort(
-      c(
-        "Expected `groups` to be either `NULL` or a character vector of
+    cli::cli_abort(c(
+      "Expected `groups` to be either `NULL` or a character vector of
         model groups.",
-        i = "Allowed groups are {.str {SUMMARY_GROUPS}}."
-      )
-    )
+      i = "Allowed groups are {.str {SUMMARY_GROUPS}}."
+    ))
   }
 
   # subset compartments needed
@@ -182,19 +173,26 @@ get_epidemic_summary <- function(data,
   data.table::setDT(dt_summary)
 
   # aggregate over grouping variables and get the final value
-  dt_summary <- dt_summary[, list(value = sum(value)),
+  dt_summary <- dt_summary[,
+    list(value = sum(value)),
     by = c("time", "compartment", groups)
   ]
 
-  dt_summary <- dt_summary[, list(value = data.table::last(value)),
+  dt_summary <- dt_summary[,
+    list(value = data.table::last(value)),
     by = c("compartment", groups)
   ]
 
-  dt_summary[, measure := data.table::fcase(
-    compartment == "dead", "total_deaths",
-    compartment == "new_infections", "epidemic_size",
-    compartment == "new_hosp", "total_hospitalisations"
-  )]
+  dt_summary[,
+    measure := data.table::fcase(
+      compartment == "dead",
+      "total_deaths",
+      compartment == "new_infections",
+      "epidemic_size",
+      compartment == "new_hosp",
+      "total_hospitalisations"
+    )
+  ]
 
   data.table::setDF(dt_summary)
   dt_summary[, setdiff(colnames(dt_summary), "compartment")]
@@ -207,10 +205,8 @@ get_new_vaccinations <- function(data, groups = NULL) {
   value <- NULL
 
   # check data
-  is_good_data <- checkmate::test_data_frame(
-    data,
-    any.missing = FALSE
-  ) || checkmate::test_class(data, "daedalus_output")
+  is_good_data <- checkmate::test_data_frame(data, any.missing = FALSE) ||
+    checkmate::test_class(data, "daedalus_output")
 
   if (!is_good_data) {
     cli::cli_abort(
@@ -225,17 +221,13 @@ get_new_vaccinations <- function(data, groups = NULL) {
   # is not allowed
   allowed_groups <- setdiff(SUMMARY_GROUPS, "vaccine_group")
 
-  is_good_groups <- checkmate::test_subset(
-    groups, allowed_groups
-  )
+  is_good_groups <- checkmate::test_subset(groups, allowed_groups)
   if (!is_good_groups) {
-    cli::cli_abort(
-      c(
-        "Expected `groups` to be either `NULL` or a character vector of
+    cli::cli_abort(c(
+      "Expected `groups` to be either `NULL` or a character vector of
         model groups.",
-        i = "Allowed groups are {.str {allowed_groups}}."
-      )
-    )
+      i = "Allowed groups are {.str {allowed_groups}}."
+    ))
   }
 
   dt_new <- data[data$vaccine_group == "new_vaccinations", ]
@@ -268,12 +260,10 @@ get_life_years_lost <- function(output, groups = c("none", "age_group")) {
   df$value <- df$value * life_expectancy
   df$measure <- "life_years_lost"
 
-  switch(groups,
+  switch(
+    groups,
     none = {
-      data.frame(
-        value = sum(df$value),
-        measure = factor("life_years_lost")
-      )
+      data.frame(value = sum(df$value), measure = factor("life_years_lost"))
     },
     age_group = df
   )

@@ -5,12 +5,11 @@ test_that("class <daedalus_infection>: basic expectations", {
   })
   expect_s3_class(infection_x, "daedalus_infection")
   checkmate::expect_list(
-    infection_x, c("character", "numeric"),
+    infection_x,
+    c("character", "numeric"),
     any.missing = FALSE
   )
-  expect_snapshot(
-    infection_x
-  )
+  expect_snapshot(infection_x)
 
   # model function can handle either string or class input
   expect_identical(
@@ -63,10 +62,7 @@ test_that("class <daedalus_infection>: getting parameters", {
     y <- get_data(infection_x, "omega") # nolint
   })
   checkmate::expect_number(x, lower = 0, finite = TRUE)
-  checkmate::expect_numeric(
-    y,
-    len = N_AGE_GROUPS, lower = 0, finite = TRUE
-  )
+  checkmate::expect_numeric(y, len = N_AGE_GROUPS, lower = 0, finite = TRUE)
 
   expect_error(
     get_data(infection_x, c("r0", "omega")),
@@ -78,10 +74,7 @@ test_that("class <daedalus_infection>: setting parameters", {
   infection_x <- daedalus_infection("sars_cov_2_pre_alpha")
   expect_no_condition({
     # nolint begin
-    infection_x <- set_data(
-      infection_x,
-      r0 = 3.0, rho = 1 / 60
-    )
+    infection_x <- set_data(infection_x, r0 = 3.0, rho = 1 / 60)
     # nolint end
   })
   expect_s3_class(infection_x, "daedalus_infection")
@@ -89,15 +82,10 @@ test_that("class <daedalus_infection>: setting parameters", {
   # expect that validator prevents setting data that invalidates class
   # the exact error is not very important and could change
   infection_x <- daedalus_infection("sars_cov_2_pre_alpha")
-  expect_error(
-    set_data(infection_x, r0 = rep(1.3, N_AGE_GROUPS))
-  )
+  expect_error(set_data(infection_x, r0 = rep(1.3, N_AGE_GROUPS)))
 
   expect_error(
-    set_data(
-      daedalus_infection("influenza_1918"),
-      beta = 0.018
-    ),
+    set_data(daedalus_infection("influenza_1918"), beta = 0.018),
     regexp = "Found a disallowed parameter substitution"
   )
 })
@@ -106,9 +94,7 @@ test_that("class <daedalus_infection>: setting parameters", {
 test_that("class <daedalus_infection>: validator", {
   x <- daedalus_infection("influenza_1918")
   x <- unclass(x)
-  expect_error(
-    validate_daedalus_infection(x)
-  )
+  expect_error(validate_daedalus_infection(x))
 
   x <- list(name = "influenza_1918")
   class(x) <- "daedalus_infection"
@@ -121,17 +107,12 @@ test_that("class <daedalus_infection>: validator", {
   x <- unclass(x)
   x$omega <- rep(1, N_AGE_GROUPS - 1)
   class(x) <- "daedalus_infection"
-  expect_error(
-    validate_daedalus_infection(x)
-  )
+  expect_error(validate_daedalus_infection(x))
 })
 
 test_that("class <daedalus_infection>: errors", {
   # invalid name
-  expect_error(
-    daedalus_infection("dummy"),
-    regexp = "`name` must be one of"
-  )
+  expect_error(daedalus_infection("dummy"), regexp = "`name` must be one of")
 
   # invalid `...` types
   expect_error(
@@ -139,16 +120,11 @@ test_that("class <daedalus_infection>: errors", {
     regexp = "May only contain the following types:.*numeric"
   )
   expect_error(
-    daedalus_infection(
-      "influenza_1918", list(r0 = "dummy values")
-    ),
+    daedalus_infection("influenza_1918", list(r0 = "dummy values")),
     regexp = "May only contain the following types:.*numeric"
   )
   expect_error(
-    daedalus_infection(
-      "influenza_1918",
-      dummy_param = 1.3
-    ),
+    daedalus_infection("influenza_1918", dummy_param = 1.3),
     regexp = "Found unexpected values in `...`"
   )
 

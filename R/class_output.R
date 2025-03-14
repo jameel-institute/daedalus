@@ -8,7 +8,8 @@
 #' An object of the `<daedalus_output>` class.
 as_daedalus_output <- function(x) {
   checkmate::assert_list(
-    x, c("data.frame", "list", "numeric"),
+    x,
+    c("data.frame", "list", "numeric"),
     any.missing = FALSE
   )
   class(x) <- "daedalus_output"
@@ -27,18 +28,17 @@ validate_daedalus_output <- function(x) {
   expected_invariants <- c(
     "model_data",
     # NOTE: reserving 'parameters' for values fixed before model run
-    "country_parameters", "infection_parameters",
+    "country_parameters",
+    "infection_parameters",
     "response_data" # includes response strategy
   )
 
   stopifnot(
-    "Object should be of class `daedalus_output`" =
-      is_daedalus_output(x),
-    "Object does not have expected members" =
-      checkmate::test_names(
-        names(x),
-        must.include = expected_invariants
-      )
+    "Object should be of class `daedalus_output`" = is_daedalus_output(x),
+    "Object does not have expected members" = checkmate::test_names(
+      names(x),
+      must.include = expected_invariants
+    )
   )
 
   invisible(x)
@@ -84,12 +84,10 @@ get_data.daedalus_output <- function(x, to_get = NULL, ...) {
     checkmate::test_subset(to_get, names(x))
 
   if (!good_to_get) {
-    cli::cli_abort(
-      c(
-        "`to_get` must be a single string naming an element of `x`.",
-        i = "Allowed values are {.str {names(x)}}"
-      )
-    )
+    cli::cli_abort(c(
+      "`to_get` must be a single string naming an element of `x`.",
+      i = "Allowed values are {.str {names(x)}}"
+    ))
   }
 
   # Return model timeseries on get_data(x) to reduce friction to use

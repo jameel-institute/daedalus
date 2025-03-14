@@ -4,7 +4,8 @@ linters: all_linters(
     implicit_integer_linter = NULL, # turn off due to multiple integerish values used
     duplicate_argument_linter = NULL, # due to cli_bullets
     object_name_linter = NULL, # due to S3 methods
-    object_length_linter = NULL # due to length of method names
+    object_length_linter = NULL, # due to length of method names
+    commas_linter = NULL # due to disagreement with air
     )
 exclusions: list(
     "R/parameters.R" = list(

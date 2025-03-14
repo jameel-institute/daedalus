@@ -23,10 +23,14 @@ make_conmat_large <- function(country) {
   cm <- matrix(NA, cm_nrow, cm_nrow)
   cm[i_AGE_GROUPS, i_AGE_GROUPS] <- country$contact_matrix
   cm[i_AGE_GROUPS, i_ECON_SECTORS] <- matrix(
-    cm[i_AGE_GROUPS, i_WORKING_AGE], N_AGE_GROUPS, N_ECON_SECTORS
+    cm[i_AGE_GROUPS, i_WORKING_AGE],
+    N_AGE_GROUPS,
+    N_ECON_SECTORS
   )
   cm[i_ECON_SECTORS, i_AGE_GROUPS] <- matrix(
-    cm[i_WORKING_AGE, i_AGE_GROUPS], N_ECON_SECTORS, N_AGE_GROUPS,
+    cm[i_WORKING_AGE, i_AGE_GROUPS],
+    N_ECON_SECTORS,
+    N_AGE_GROUPS,
     byrow = TRUE
   )
 
@@ -65,14 +69,9 @@ make_consumer_contacts <- function(country) {
 #' and array layers hold information on vaccination status (including new
 #' vaccinations).
 #' @keywords internal
-make_initial_state <- function(
-    country,
-    initial_state_manual) {
+make_initial_state <- function(country, initial_state_manual) {
   # NOTE: country checked in daedalus()
-  initial_infect_state <- list(
-    p_infectious = 1e-6,
-    p_asymptomatic = 0.0
-  )
+  initial_infect_state <- list(p_infectious = 1e-6, p_asymptomatic = 0.0)
   initial_infect_state[names(initial_state_manual)] <- initial_state_manual
 
   p_infectious <- initial_infect_state[["p_infectious"]]
@@ -82,7 +81,8 @@ make_initial_state <- function(
   # check other inputs
   is_good_p_infectious <- checkmate::test_number(
     p_infectious,
-    lower = 0.0, upper = 1.0
+    lower = 0.0,
+    upper = 1.0
   )
   if (!is_good_p_infectious) {
     cli::cli_abort(
@@ -93,7 +93,8 @@ make_initial_state <- function(
 
   is_good_p_asymp <- checkmate::test_number(
     p_asymptomatic,
-    lower = 0.0, upper = 1.0
+    lower = 0.0,
+    upper = 1.0
   )
   if (!is_good_p_asymp) {
     cli::cli_abort(
@@ -102,11 +103,15 @@ make_initial_state <- function(
   }
 
   initial_state <- c(
-    S = 1.0 - p_infectious, E = 0.0,
+    S = 1.0 - p_infectious,
+    E = 0.0,
     Is = p_infectious * (1.0 - p_asymptomatic),
     Ia = p_infectious * p_asymptomatic,
-    H = 0.0, R = 0.0, D = 0.0,
-    dE = 0.0, dH = 0.0
+    H = 0.0,
+    R = 0.0,
+    D = 0.0,
+    dE = 0.0,
+    dH = 0.0
   )
 
   # build for all age groups and economic sectors (working age only)
@@ -124,17 +129,22 @@ make_initial_state <- function(
   demography[i_WORKING_AGE] <- inactive_workers
 
   # multiply by demography and sector workforce, row-wise
-  initial_state[seq_len(N_AGE_GROUPS), ] <-
-    initial_state[seq_len(N_AGE_GROUPS), ] * demography
+  initial_state[seq_len(N_AGE_GROUPS), ] <- initial_state[
+    seq_len(N_AGE_GROUPS),
+  ] *
+    demography
 
-  initial_state[(N_AGE_GROUPS + 1):nrow(initial_state), ] <-
-    initial_state[(N_AGE_GROUPS + 1):nrow(initial_state), ] * sector_workforce
+  initial_state[(N_AGE_GROUPS + 1):nrow(initial_state), ] <- initial_state[
+    (N_AGE_GROUPS + 1):nrow(initial_state),
+  ] *
+    sector_workforce
 
   # add strata for vaccination groups and set to zero
   initial_state <- array(
-    initial_state, c(dim(initial_state), N_VACCINE_DATA_GROUPS)
+    initial_state,
+    c(dim(initial_state), N_VACCINE_DATA_GROUPS)
   )
-  initial_state[, , -i_UNVACCINATED_STRATUM] <- 0
+  initial_state[,, -i_UNVACCINATED_STRATUM] <- 0
 
   initial_state
 }
@@ -144,11 +154,12 @@ make_initial_state <- function(
 #' @inheritParams make_initial_state
 #' @keywords internal
 make_initial_state2 <- function(
-    country,
-    initial_state_manual = list(p_infectious = 1e-7)) {
+  country,
+  initial_state_manual = list(p_infectious = 1e-7)
+) {
   initial_state <- make_initial_state(country, initial_state_manual)
 
-  initial_state[, , c(i_UNVACCINATED_STRATUM, i_VACCINATED_STRATUM)]
+  initial_state[,, c(i_UNVACCINATED_STRATUM, i_VACCINATED_STRATUM)]
 }
 
 #' Prepare mutable parameters for the DAEDALUS model
@@ -197,7 +208,8 @@ prepare_mutable_parameters <- function() {
 #' @keywords internal
 get_closure_info <- function(mutables) {
   closure_times <- rlang::env_get_list(
-    mutables, c("closure_time_start", "closure_time_end")
+    mutables,
+    c("closure_time_start", "closure_time_end")
   )
   closure_times[["closure_duration"]] <- unname(diff(unlist(closure_times)))
 
@@ -212,7 +224,9 @@ get_closure_info <- function(mutables) {
 #' @keywords internal
 values_to_state <- function(x) {
   dim(x) <- c(
-    N_AGE_GROUPS + N_ECON_SECTORS, N_MODEL_COMPARTMENTS, N_VACCINE_DATA_GROUPS
+    N_AGE_GROUPS + N_ECON_SECTORS,
+    N_MODEL_COMPARTMENTS,
+    N_VACCINE_DATA_GROUPS
   )
 
   x
