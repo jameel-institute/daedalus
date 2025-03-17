@@ -15,7 +15,7 @@ characteristics for the DAEDALUS model."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,7 +72,14 @@ characteristics for the DAEDALUS model.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus_vaccination</span><span class="op">(</span><span class="va">name</span>, <span class="va">...</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus_vaccination</span><span class="op">(</span></span>
+<span>  <span class="va">name</span>,</span>
+<span>  start_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  rate <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  uptake_limit <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  efficacy <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  waning_period <span class="op">=</span> <span class="fl">180</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">is_daedalus_vaccination</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
@@ -89,31 +96,80 @@ characteristics for the DAEDALUS model.</p>
 <a href="vaccine_scenarios.html">vaccination_scenario_names</a>.
 Selecting an epidemic automatically pulls in vaccination parameters
 associated with the epidemic; these are stored as packaged data in
-<code><a href="vaccine_scenarios.html">daedalus::vaccination_scenario_data</a></code>. Default vaccination parameters can be
-over-ridden by passing them as a named list to <code>...</code>.</p></dd>
+<code><a href="vaccine_scenarios.html">daedalus::vaccination_scenario_data</a></code>.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other parameters passed to <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>.</p></dd>
+<dt id="arg-start-time">start_time<a class="anchor" aria-label="anchor" href="#arg-start-time"></a></dt>
+<dd><p>The number of days after the start of the epidemic that
+vaccination begins. Must be a single number. Defaults to <code>NULL</code> and the start
+time is taken from the vaccination scenarios specified by <code>name</code>.</p></dd>
+
+
+<dt id="arg-rate">rate<a class="anchor" aria-label="anchor" href="#arg-rate"></a></dt>
+<dd><p>A single number for the <em>percentage</em> of the total population that
+can be vaccinated each day. This is converted into a proportion automatically
+within <code><a href="daedalus.html">daedalus()</a></code>.</p></dd>
+
+
+<dt id="arg-uptake-limit">uptake_limit<a class="anchor" aria-label="anchor" href="#arg-uptake-limit"></a></dt>
+<dd><p>A single number giving the upper limit for the
+<em>percentage</em> of the population that can be vaccinated. When this limit is
+reached, vaccination ends.</p></dd>
+
+
+<dt id="arg-efficacy">efficacy<a class="anchor" aria-label="anchor" href="#arg-efficacy"></a></dt>
+<dd><p>A single number in the range <code>[0, 100]</code> giving the efficacy
+of vaccination in preventing infection. A value of 0 indicates that
+vaccinated individuals are as susceptible to infection as unvaccinated ones,
+while 100 would indicate completely non-leaky vaccination that completely
+protects against infection.</p></dd>
+
+
+<dt id="arg-waning-period">waning_period<a class="anchor" aria-label="anchor" href="#arg-waning-period"></a></dt>
+<dd><p>A single number representing the number of days over
+which the average individual wanes out of the vaccinated stratum to the
+unvaccinated stratum. Only individuals in the susceptible and recovered
+compartments can wane out of being vaccinated.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>An object of the <code>&lt;daedalus_vaccination&gt;</code> class.</p></dd>
+<dd><p>An object to be tested or printed as a <code>&lt;daedalus_vaccination&gt;</code>.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>For the <code>print</code> method, other parameters passed to <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
-    <h2 id="vaccination-parameters">Vaccination parameters<a class="anchor" aria-label="anchor" href="#vaccination-parameters"></a></h2>
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Note that vaccination once ended by reaching the <code>uptake_limit</code> does not
+restart once individuals wane out of the vaccinated compartment.</p>
+    </div>
 
-<ul><li><p><code>vax_start_time</code>: The number of days after the start of the epidemic that
-vaccination begins. Must be a single number.</p></li>
-<li><p><code>nu</code>: A single number for the percentage of the total population that can
-be vaccinated each day. This is converted into a proportion automatically
-within <code><a href="daedalus.html">daedalus()</a></code>.</p></li>
-<li><p><code>vax_uptake_limit</code>: A single number giving the upper limit for the
-percentage of the population that can be vaccinated. When this limit is
-reached, the vaccination rate <code>nu</code> is set to zero.</p></li>
-</ul></div>
-
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># for no advance vaccine investment</span></span></span>
+<span class="r-in"><span><span class="fu">daedalus_vaccination</span><span class="op">(</span><span class="st">"none"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;daedalus_vaccination&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Advance vaccine investment: <span style="font-weight: bold;">none</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Start time (days): <span style="color: #0000BB;">365</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Rate (% per day): <span style="color: #0000BB;">0.143</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Uptake limit (%): 40</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Efficacy (%): 5000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Waning period (mean, days): 180</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># modifying parameters during initialisation</span></span></span>
+<span class="r-in"><span><span class="co"># set daily vaccination rate to 1.5% of population</span></span></span>
+<span class="r-in"><span><span class="fu">daedalus_vaccination</span><span class="op">(</span><span class="st">"low"</span>, rate <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;daedalus_vaccination&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Advance vaccine investment: <span style="font-weight: bold;">low</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Start time (days): <span style="color: #0000BB;">300</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Rate (% per day): <span style="color: #0000BB;">1.5</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Uptake limit (%): 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Efficacy (%): 5000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Waning period (mean, days): 180</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

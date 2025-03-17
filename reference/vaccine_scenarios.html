@@ -13,7 +13,7 @@ investment scenarios are known."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -107,7 +107,7 @@ parameters.</p>
 </div>
 
 <p>An object of class <code>character</code> of length 4.</p>
-<p>An object of class <code>character</code> of length 3.</p>
+<p>An object of class <code>character</code> of length 5.</p>
     </div>
     <div class="section level2">
     <h2 id="source">Source<a class="anchor" aria-label="anchor" href="#source"></a></h2>
@@ -131,47 +131,71 @@ to accept vaccination.</p></li>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">vaccination_scenario_data</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $none</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $none$vax_start_time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $none$start_time</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 365</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $none$nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $none$rate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1428571</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $none$vax_uptake_limit</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $none$uptake_limit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $none$efficacy</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $none$waning_period</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 270</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $low$vax_start_time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $low$start_time</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 300</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $low$nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $low$rate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2857143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $low$vax_uptake_limit</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $low$uptake_limit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $low$efficacy</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $low$waning_period</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 270</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $medium</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $medium$vax_start_time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $medium$start_time</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 200</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $medium$nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $medium$rate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4285714</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $medium$vax_uptake_limit</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $medium$uptake_limit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $medium$efficacy</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $medium$waning_period</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 270</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $high$vax_start_time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $high$start_time</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 100</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $high$nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $high$rate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $high$vax_uptake_limit</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $high$uptake_limit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $high$efficacy</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $high$waning_period</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 270</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>

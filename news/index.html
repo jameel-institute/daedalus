@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,31 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.4" id="daedalus-024">daedalus 0.2.4<a class="anchor" aria-label="anchor" href="#daedalus-024"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-2-4">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-4"></a></h3>
+<p>The vaccination class <code>&lt;daedalus_vaccination&gt;</code> has renamed invariants. Workflows using custom vaccination regimes will break. No issues are expected for the dashboard.</p>
+<p><em>daedalus</em> now requires R &gt; v3.5 (due to use of package data) — this is a belated update.</p>
+</div>
+<div class="section level3">
+<h3 id="model-changes-0-2-4">Model changes<a class="anchor" aria-label="anchor" href="#model-changes-0-2-4"></a></h3>
+<ul><li><p><code><a href="../reference/daedalus2.html">daedalus2()</a></code> supports infections for the vaccinated stratum similar to <code><a href="../reference/daedalus.html">daedalus()</a></code>; vaccination is now leaky. The default is absolutely no vaccination, which differs from <code><a href="../reference/daedalus.html">daedalus()</a></code> where ‘none’ refers to advance investment;</p></li>
+<li><p><code><a href="../reference/daedalus.html">daedalus()</a></code> takes vaccine efficacy and waning period from the <code>vaccine_investment</code> argument, see below;</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="class-changes-0-2-4">Class changes<a class="anchor" aria-label="anchor" href="#class-changes-0-2-4"></a></h3>
+<ul><li><p><code>&lt;daedalus_vaccination&gt;</code> has been updated with shorter invariants that drop prefix <code>vax</code> from names;</p></li>
+<li><p><code>&lt;daedalus_vaccination&gt;</code>s now hold information on the vaccine efficacy (single value) and waning period (single value); these can be modified using the construction helper <code><a href="../reference/class_vaccination.html">daedalus_vaccination()</a></code> or the <code><a href="../reference/set_data.html">set_data()</a></code> method;</p></li>
+<li><p>A new <code><a href="../reference/prepare_parameters.html">prepare_parameters2()</a></code> method for the vaccination class to satisfy <code><a href="../reference/daedalus2.html">daedalus2()</a></code>;</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="other-changes-0-2-4">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-2-4"></a></h3>
+<ul><li><p>Tests for vaccination working in <code><a href="../reference/daedalus2.html">daedalus2()</a></code>;</p></li>
+<li><p>Updated to function documentation for changes to vaccination class.</p></li>
+<li><p>Code formatting using <a href="https://posit-dev.github.io/air/" class="external-link">Air</a>, added <code>air.toml</code> and disabled <code>commas_linter</code> as it conflicts with Air.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.3" id="daedalus-023">daedalus 0.2.3<a class="anchor" aria-label="anchor" href="#daedalus-023"></a></h2>
 <div class="section level3">

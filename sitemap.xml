@@ -25,6 +25,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus2.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus2_internal.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus_rhs.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/dummy_vaccination.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/econ_constants.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/econ_sector_names.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/economic_contacts.html</loc></url>
@@ -46,12 +47,12 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/make_initial_state2.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/make_response_threshold_event.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/make_rt_end_event.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/make_susc_matrix.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/model_constants.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/prepare_contacts.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/prepare_mutable_parameters.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/prepare_output.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/prepare_parameters.html</loc></url>
-<url><loc>https://jameel-institute.github.io/daedalus/reference/prepare_parameters2.daedalus_country.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/reff_calculation.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/scale_nu.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/set_data.html</loc></url>
