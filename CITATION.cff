@@ -8,7 +8,7 @@ message: 'To cite package "daedalus" in publications use:'
 type: software
 license: MIT
 title: 'daedalus: Model Health, Social, and Economic Costs of a Pandemic'
-version: 0.2.3
+version: 0.2.5
 abstract: Model the health, education, and economic costs of directly transmitted
   respiratory virus pandemics, under different scenarios of prior vaccine investment
   and reactive interventions, using the 'DAEDALUS' integrated health-economics model
@@ -61,7 +61,7 @@ references:
     name: R Foundation for Statistical Computing
     address: Vienna, Austria
   year: '2025'
-  version: '>= 2.10'
+  version: '>= 3.5'
 - type: software
   title: checkmate
   abstract: 'checkmate: Fast and Versatile Argument Checks'
