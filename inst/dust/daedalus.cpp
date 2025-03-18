@@ -81,7 +81,9 @@ class daedalus_ode {
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
     const std::vector<size_t> i_to_zero;
     const TensorMat cm, cm_cons_work, cm_work;
-    const TensorMat susc;
+
+    // flag positions
+    const size_t i_growth_flag, i_resp_flag, i_vax_flag;
   };
 
   /// @brief Intermediate data.
@@ -134,6 +136,7 @@ class daedalus_ode {
   /// @return A custom packing specification object.
   static dust2::packing packing_state(const shared_state &shared) {
     const std::vector<size_t> dim_vec(1, shared.n_strata);
+    const std::vector<size_t> dim_flag(1, 1);
     // TODO(pratik): write a function to return this - names may need to be
     // more generic
     return dust2::packing{{"S", dim_vec},           {"E", dim_vec},
@@ -144,7 +147,9 @@ class daedalus_ode {
                           {"E_vax", dim_vec},       {"Is_vax", dim_vec},
                           {"Ia_vax", dim_vec},      {"H_vax", dim_vec},
                           {"R_vax", dim_vec},       {"D_vax", dim_vec},
-                          {"new_inf_vax", dim_vec}, {"new_hosp_vax", dim_vec}};
+                          {"new_inf_vax", dim_vec}, {"new_hosp_vax", dim_vec},
+                          {"resp_flag", dim_flag},  {"vax_flag", dim_flag},
+                          {"growth_flag", dim_flag}};
   }
 
   /// @brief Initialise shared parameters.
@@ -216,11 +221,23 @@ class daedalus_ode {
     TensorMat susc(n_strata, N_VAX_STRATA);
     dust2::r::read_real_array(pars, susc_dims, susc.data(), "susc", true);
 
+
+    // locations of response flags
+    const size_t i_growth_flag = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
+                                 daedalus::constants::i_rel_GROWTH_FLAG;
+    const size_t i_resp_flag = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
+                               daedalus::constants::i_rel_RESP_FLAG;
+    const size_t i_vax_flag = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
+                              daedalus::constants::i_rel_VAX_FLAG;
+
+    // clang-format off
     return shared_state{
         beta,         sigma,    p_sigma,      epsilon,       rho,     gamma_Ia,
         gamma_Is,     eta,      omega,        gamma_H,       nu,      psi,
         uptake_limit, n_strata, n_age_groups, n_econ_groups, popsize, i_to_zero,
-        cm,           cm_cw,    cm_work,      susc};
+        cm,           cm_cw,    cm_work,      susc,          openness,
+        hospital_capacity, i_growth_flag, i_resp_flag, i_vax_flag};
+    // clang-format on
   }
 
   /// @brief Updated shared parameters.
