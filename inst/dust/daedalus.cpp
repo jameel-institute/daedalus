@@ -32,6 +32,7 @@ const size_t i_GRPS = daedalus::constants::i_GRPS,
              i_VAX_GRPS = daedalus::constants::i_VAX_GRPS;
 
 const int N_VAX_STRATA = daedalus::constants::N_VAX_STRATA;
+const int N_COMPARTMENTS = daedalus::constants::N_COMPARTMENTS;
 
 // broadcasting and contraction dims
 const daedalus::types::bcast_dim_type bcast = daedalus::dims::dim_bcast_vax;
@@ -64,6 +65,8 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(cm, constant = TRUE)]]
 // [[dust2::parameter(cm_work, constant = TRUE)]]
 // [[dust2::parameter(cm_cons_work, constant = TRUE)]]
+// [[dust2::parameter(hospital_capacity, type = "real_type", constant = TRUE)]]
+// [[dust2::parameter(openness, constant = TRUE)]]
 class daedalus_ode {
  public:
   daedalus_ode() = delete;
@@ -81,6 +84,8 @@ class daedalus_ode {
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
     const std::vector<size_t> i_to_zero;
     const TensorMat cm, cm_cons_work, cm_work;
+    const TensorMat susc, openness;
+    const double hospital_capacity;
 
     // flag positions
     const size_t i_growth_flag, i_resp_flag, i_vax_flag;
@@ -122,8 +127,8 @@ class daedalus_ode {
       t_comm_inf_age,
       consumer_worker_infections,
       susc_workers,
-      sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS,
-      nu_eff};
+      sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS, nu_eff
+    };
     // clang-format on
   }
 
@@ -305,6 +310,9 @@ class daedalus_ode {
     internal.workplace_infected =
         shared.beta *
         shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, 1)
+        daedalus::interventions::switch_by_flag(
+            shared.openness,
+            state[shared.i_resp_flag]) *  // scale β
         internal.t_comm_inf.slice(
             Eigen::array<Eigen::Index, 2>{n_strata - n_econ_groups, 0},
             Eigen::array<Eigen::Index, 2>{n_econ_groups, 1});
@@ -315,6 +323,9 @@ class daedalus_ode {
 
     internal.consumer_worker_infections =
         shared.beta *
+        daedalus::interventions::switch_by_flag(
+            shared.openness,
+            state[shared.i_resp_flag]) *  // scale β
         shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
 
     internal.susc_workers =
