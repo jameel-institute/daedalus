@@ -214,12 +214,11 @@ class daedalus_ode {
     // handling within-sector contacts
     TensorMat cm_work(n_econ_groups, 1);
     dust2::r::read_real_vector(pars, n_econ_groups, cm_work.data(), "cm_work",
-                               true);<
+                               true);
 
     // hospital capacity data
     const real_type hospital_capacity =
         dust2::r::read_real(pars, "hospital_capacity", 0.0);
->
     // handling compartments to zero
     const std::vector<size_t> i_to_zero = daedalus::helpers::get_state_idx(
         daedalus::constants::seq_DATA_COMPARTMENTS, n_strata, N_VAX_STRATA);
@@ -258,6 +257,34 @@ class daedalus_ode {
   /// @param shared A shared parameter object to update.
   static void update_shared(cpp11::list pars, const shared_state &shared) {
     // NOTE: we are setting these constant
+  }
+
+  /// @brief Events for daedalus.
+  /// @param shared Shared parameters.
+  /// @param internal Intermediate containers.
+  /// @return A container of events passed to the solver.
+  static auto events(const shared_state &shared, internal_state &internal) {
+    // events checking for hospital capacity trigger
+    // NOTE: iX + 1 gives the 1-indexed compartment
+    const std::vector<size_t> idx_hosp = daedalus::helpers::get_state_idx(
+        {daedalus::constants::iH + 1}, shared.n_strata, N_VAX_STRATA);
+
+    auto test_hosp_cap = [&](double t, const double *y) {
+      int size_n = shared.n_strata * N_VAX_STRATA;  // get size
+      double total_hosp = std::accumulate(y, y + size_n, 0);
+      double diff = total_hosp - shared.hospital_capacity;
+
+      return diff;
+    };
+
+    auto action_resp_flag = [&](const double t, const double sign,
+                                double *y) {  // NOLINT
+      y[shared.i_resp_flag] = 1.0;  // presumably y arg refers to full state
+    };
+
+    dust2::ode::event<real_type> e(idx_hosp, test_hosp_cap, action_resp_flag,
+                                   dust2::ode::root_type::increase);
+    return dust2::ode::events_type<real_type>({e});
   }
 
   /// @brief Set initial values of the IVP model.
