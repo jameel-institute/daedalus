@@ -209,10 +209,14 @@ class daedalus_ode {
     // handling within-sector contacts
     TensorMat cm_work(n_econ_groups, 1);
     dust2::r::read_real_vector(pars, n_econ_groups, cm_work.data(), "cm_work",
-                               true);
+                               true);<
 
+    // hospital capacity data
+    const real_type hospital_capacity =
+        dust2::r::read_real(pars, "hospital_capacity", 0.0);
+>
     // handling compartments to zero
-    const std::vector<size_t> i_to_zero = daedalus::helpers::zero_which(
+    const std::vector<size_t> i_to_zero = daedalus::helpers::get_state_idx(
         daedalus::constants::seq_DATA_COMPARTMENTS, n_strata, N_VAX_STRATA);
 
     // handling susceptibility matrix: rows are age+econ grps, cols are vax grps
@@ -221,6 +225,10 @@ class daedalus_ode {
     TensorMat susc(n_strata, N_VAX_STRATA);
     dust2::r::read_real_array(pars, susc_dims, susc.data(), "susc", true);
 
+    // handling openness vector
+    TensorMat openness(n_econ_groups, 1);
+    dust2::r::read_real_vector(pars, n_econ_groups, openness.data(), "openness",
+                               true);
 
     // locations of response flags
     const size_t i_growth_flag = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
