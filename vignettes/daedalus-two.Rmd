@@ -60,3 +60,27 @@ plot(colSums(output$E_vax))
 plot(colSums(output$new_inf_vax))
 plot(colSums(output$new_hosp_vax))
 ```
+
+## Events
+
+This section is a visual check on events.
+
+```{r}
+# trigger event on low hospital capacity
+x <- daedalus_country("GBR")
+x$hospital_capacity <- 1e4
+x
+
+output <- daedalus2(
+  x, "influenza_2009",
+  response_strategy = "elimination",
+  time_end = 100
+)
+
+# expect a sharp drop in new infections
+plot(colSums(output$E), type = "l")
+plot(colSums(output$new_inf), type = "l")
+
+plot(colSums(output$resp_flag), type = "l")
+plot(colSums(output$growth_flag), type = "l")
+```

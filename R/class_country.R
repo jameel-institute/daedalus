@@ -473,6 +473,7 @@ prepare_parameters2.daedalus_country <- function(x, ...) {
   cm <- make_conmat_large(x)
   cm_work <- make_work_contacts(x)
   cm_cons_work <- make_consumer_contacts(x)
+  hospital_capacity <- get_data(x, "hospital_capacity")
 
   n_age_groups <- length(get_data(x, "demography"))
   n_econ_groups <- length(get_data(x, "workers"))
@@ -483,6 +484,7 @@ prepare_parameters2.daedalus_country <- function(x, ...) {
     cm_work = cm_work,
     n_age_groups = n_age_groups,
     n_econ_groups = n_econ_groups,
-    popsize = sum(get_data(x, "demography"))
+    popsize = sum(get_data(x, "demography")),
+    hospital_capacity = hospital_capacity
   )
 }
