@@ -12,7 +12,7 @@ test_that("daedalus2: basic expectations", {
   checkmate::expect_list(
     output,
     "numeric",
-    len = N_MODEL_COMPARTMENTS * N_VACCINE_STRATA
+    len = N_MODEL_COMPARTMENTS * N_VACCINE_STRATA + N_FLAGS
   )
   expect_true(all(vapply(
     output,
@@ -44,7 +44,7 @@ test_that("daedalus2: Can run with ISO2 country parameter", {
   checkmate::expect_list(
     output,
     "numeric",
-    len = N_MODEL_COMPARTMENTS * N_VACCINE_STRATA
+    len = N_MODEL_COMPARTMENTS * N_VACCINE_STRATA + N_FLAGS
   )
   expect_true(all(vapply(
     output,
@@ -64,7 +64,7 @@ test_that("daedalus2: Can run with ISO3 country parameter", {
   checkmate::expect_list(
     output,
     "numeric",
-    len = N_MODEL_COMPARTMENTS * N_VACCINE_STRATA
+    len = N_MODEL_COMPARTMENTS * N_VACCINE_STRATA + N_FLAGS
   )
   expect_true(all(vapply(
     output,
@@ -95,8 +95,10 @@ test_that("daedalus2: Runs for all country x infection x response", {
 # check for vaccination mechanism
 test_that("daedalus2: vaccination works", {
   vax <- daedalus_vaccination("none", 0, 0.1, 100)
-  expect_no_condition(daedalus2("THA", "sars_cov_1", vax))
-  output <- daedalus2("THA", "sars_cov_1", vax)
+  expect_no_condition(
+    daedalus2("THA", "sars_cov_1", vaccine_investment = vax)
+  )
+  output <- daedalus2("THA", "sars_cov_1", vaccine_investment = vax)
 
   # expect vaccination group is non-zero
   expect_true(any(output$S_vax > 0))
@@ -124,7 +126,12 @@ test_that("daedalus2: advanced vaccination features", {
   popsize <- sum(get_data(x, "demography"))
   vax <- daedalus_vaccination("high", uptake_limit = uptake_limit)
   # final size is zero
-  output <- daedalus2("THA", disease_x, vax, time_end = 600)
+  output <- daedalus2(
+    "THA",
+    disease_x,
+    vaccine_investment = vax,
+    time_end = 600
+  )
 
   n_vax <- tail(colSums(output$S_vax) + colSums(output$R_vax), 1)
 
@@ -133,5 +140,54 @@ test_that("daedalus2: advanced vaccination features", {
     n_vax,
     uptake_limit * popsize / 100,
     tolerance = 1
+  )
+})
+
+test_that("daedalus2: responses triggered by hospital capacity event", {
+  # with absolutely no response
+  expect_no_condition(
+    daedalus2("GBR", "sars_cov_1")
+  )
+
+  # with named responses (none = absolutely no resp)
+  invisible(
+    lapply(
+      names(daedalus::closure_data),
+      function(x) {
+        expect_no_condition({
+          daedalus2("GBR", "sars_cov_1", x)
+        })
+      }
+    )
+  )
+
+  # expect lower final sizes for all interventions
+  # very low hosp capacity trigger
+  x <- daedalus_country("GBR")
+  x$hospital_capacity <- 1e4
+
+  output_list <- lapply(
+    names(daedalus::closure_data),
+    daedalus2,
+    country = x,
+    infection = "sars_cov_1"
+  )
+  resp_scenario_names <- names(daedalus::closure_data)
+  output_fs <- vapply(
+    output_list,
+    function(x) {
+      sum(x$new_inf)
+    },
+    FUN.VALUE = numeric(1)
+  )
+  names(output_fs) <- resp_scenario_names
+
+  invisible(
+    lapply(output_fs[names(output_fs) != "none"], function(x) {
+      expect_lt(
+        x,
+        output_fs["none"]
+      )
+    })
   )
 })
