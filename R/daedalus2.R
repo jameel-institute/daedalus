@@ -6,7 +6,7 @@
 initial_flags <- function() {
   vax_flag <- 0.0
   resp_flag <- 0.0
-  growth_flag <- 1.0 # initially set to 1.0, assumes R0 > 1.0
+  growth_flag <- 0.0
 
   c(growth_flag, resp_flag, vax_flag)
 }

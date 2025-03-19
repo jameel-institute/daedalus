@@ -4,7 +4,13 @@
 \alias{daedalus2}
 \title{DAEDALUS model implemented with dust}
 \usage{
-daedalus2(country, infection, vaccine_investment = NULL, time_end = 100)
+daedalus2(
+  country,
+  infection,
+  response_strategy = NULL,
+  vaccine_investment = NULL,
+  time_end = 100
+)
 }
 \arguments{
 \item{country}{A country or territory object of class \verb{<daedalus_country>},
@@ -26,6 +32,14 @@ or epidemic waves for which parameters are available.
 Passing the name as a string automatically accesses the default parameters
 of an infection. Create and pass a \verb{<daedalus_infection>} to tweak infection
 parameters using \code{\link[=daedalus_infection]{daedalus_infection()}}.}
+
+\item{response_strategy}{A string for the name of response strategy followed;
+defaults to "none". The response strategy determines the country-specific
+response threshold following which the response is activated. See
+\code{response_threshold}.
+
+While the response strategy is active, economic contacts are scaled using the
+package data object \code{daedalus::closure_data}.}
 
 \item{vaccine_investment}{Either a single string or a
 \verb{<daedalus_vaccination>} object specifying the vaccination parameters
