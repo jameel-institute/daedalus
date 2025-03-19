@@ -144,17 +144,20 @@ class daedalus_ode {
     const std::vector<size_t> dim_flag(1, 1);
     // TODO(pratik): write a function to return this - names may need to be
     // more generic
-    return dust2::packing{{"S", dim_vec},           {"E", dim_vec},
-                          {"Is", dim_vec},          {"Ia", dim_vec},
-                          {"H", dim_vec},           {"R", dim_vec},
-                          {"D", dim_vec},           {"new_inf", dim_vec},
-                          {"new_hosp", dim_vec},    {"S_vax", dim_vec},
-                          {"E_vax", dim_vec},       {"Is_vax", dim_vec},
-                          {"Ia_vax", dim_vec},      {"H_vax", dim_vec},
-                          {"R_vax", dim_vec},       {"D_vax", dim_vec},
-                          {"new_inf_vax", dim_vec}, {"new_hosp_vax", dim_vec},
-                          {"resp_flag", dim_flag},  {"vax_flag", dim_flag},
-                          {"growth_flag", dim_flag}};
+
+    // clang-format off
+    return dust2::packing{{"S", dim_vec},            {"E", dim_vec},
+                          {"Is", dim_vec},           {"Ia", dim_vec},
+                          {"H", dim_vec},            {"R", dim_vec},
+                          {"D", dim_vec},            {"new_inf", dim_vec},
+                          {"new_hosp", dim_vec},     {"S_vax", dim_vec},
+                          {"E_vax", dim_vec},        {"Is_vax", dim_vec},
+                          {"Ia_vax", dim_vec},       {"H_vax", dim_vec},
+                          {"R_vax", dim_vec},        {"D_vax", dim_vec},
+                          {"new_inf_vax", dim_vec},  {"new_hosp_vax", dim_vec},
+                          {"growth_flag", dim_flag}, {"resp_flag", dim_flag},
+                          {"vax_flag", dim_flag}};
+    // clang-format on
   }
 
   /// @brief Initialise shared parameters.
@@ -284,6 +287,7 @@ class daedalus_ode {
 
     dust2::ode::event<real_type> e(idx_hosp, test_hosp_cap, action_resp_flag,
                                    dust2::ode::root_type::increase);
+
     return dust2::ode::events_type<real_type>({e});
   }
 
