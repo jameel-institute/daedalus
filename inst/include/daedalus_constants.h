@@ -33,6 +33,7 @@ inline const std::vector<size_t> i_DATA_COMPARTMENTS = {7, 8};
 inline const std::vector<size_t> seq_DATA_COMPARTMENTS = {8, 9};
 
 // flag positions relative to state size
+// NOTE: GROWTH_FLAG may be continuous as use case changes
 constexpr int i_rel_GROWTH_FLAG = 0;
 constexpr int i_rel_RESP_FLAG = 1;
 constexpr int i_rel_VAX_FLAG = 2;
