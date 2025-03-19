@@ -122,6 +122,10 @@ VACCINE_GROUPS <- c("unvaccinated", "vaccinated", "new_vaccinations")
 #' @keywords model_constant
 N_OUTPUT_COLS <- 6L
 
+#' @name model_constants
+#' @keywords model_constant
+N_FLAGS <- 3L
+
 #' @title Epidemiological compartments and indices
 #' @description Names and indices for the epidemiological compartments used in
 #' DAEDALUS, for reuse in model code.
