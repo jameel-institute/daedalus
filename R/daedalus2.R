@@ -3,6 +3,7 @@
 #' @return A vector of initial flag values; all flags are initially set to 'off'
 #' or 0.0.
 #'
+#' @keywords internal
 initial_flags <- function() {
   vax_flag <- 0.0
   resp_flag <- 0.0

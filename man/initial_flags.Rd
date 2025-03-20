@@ -13,3 +13,4 @@ or 0.0.
 \description{
 Initial values for model flags
 }
+\keyword{internal}

@@ -46,7 +46,7 @@ This section aims to be a visual check on vaccination in `daedalus2()` as the re
 ```{r}
 # high vaccination rate but low uptake limit
 vax <- daedalus_vaccination("high", uptake_limit = 40)
-output <- daedalus2("GBR", "influenza_2009", vax)
+output <- daedalus2("GBR", "influenza_2009", vaccine_investment = vax)
 
 # unvaccinated
 plot(colSums(output$S))
