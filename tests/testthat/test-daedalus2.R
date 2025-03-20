@@ -205,9 +205,12 @@ test_that("daedalus2: responses ended by epidemic growth", {
     0.0
   )
 
-  # check that response is switched off once turned on
+  # find end idx
+  end_time <- which.min(abs(ipr - d$gamma_Ia)) + 1
+
+  # check that response is switched off at expected time
   expect_identical(
-    colSums(output$resp_flag)[time_end + 1],
-    0
+    max(round(output$resp_end)),
+    end_time
   )
 })
