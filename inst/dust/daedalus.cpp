@@ -89,7 +89,8 @@ class daedalus_ode {
     const double hospital_capacity;
 
     // flag positions
-    const size_t i_growth_flag, i_resp_flag, i_vax_flag;
+    const size_t i_growth_flag, i_resp_flag, i_vax_flag, i_resp_start,
+        i_resp_end;
   };
 
   /// @brief Intermediate data.
@@ -158,7 +159,8 @@ class daedalus_ode {
                           {"R_vax", dim_vec},        {"D_vax", dim_vec},
                           {"new_inf_vax", dim_vec},  {"new_hosp_vax", dim_vec},
                           {"growth_flag", dim_flag}, {"resp_flag", dim_flag},
-                          {"vax_flag", dim_flag}};
+                          {"vax_flag", dim_flag},    {"resp_start", dim_flag},
+                          {"resp_end", dim_flag}};
     // clang-format on
   }
 
@@ -248,6 +250,10 @@ class daedalus_ode {
                                daedalus::constants::i_rel_RESP_FLAG;
     const size_t i_vax_flag = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
                               daedalus::constants::i_rel_VAX_FLAG;
+    const size_t i_resp_start = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
+                                daedalus::constants::i_rel_RESP_START;
+    const size_t i_resp_end = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
+                              daedalus::constants::i_rel_RESP_END;
 
     // clang-format off
     return shared_state{
@@ -256,7 +262,8 @@ class daedalus_ode {
         uptake_limit, vax_start_time, n_strata, n_age_groups, n_econ_groups,
         popsize, i_to_zero,
         cm, cm_cw, cm_work, susc, openness,
-        hospital_capacity, i_growth_flag, i_resp_flag, i_vax_flag};
+        hospital_capacity, i_growth_flag, i_resp_flag, i_vax_flag,
+        i_resp_start, i_resp_end};
     // clang-format on
   }
 
@@ -293,6 +300,12 @@ class daedalus_ode {
       return diff;
     };
 
+    auto test_resp_dur = [&](double t, const double *y) {
+      double diff = t - y[0] - 60.0;  // dummy duration of 60 days
+
+      return diff;
+    };
+
     auto test_epi_growth = [&](double t, const double *y) {
       // NOTE: simple test of epidemic growth incidence-prevalence ratio > gamma
       // See 10.1097/01.aids.0000244213.23574.fa
@@ -305,9 +318,11 @@ class daedalus_ode {
     // presumably y arg refers to full state
     auto resp_on = [&](const double t, const double sign, double *y) {
       y[shared.i_resp_flag] = 1.0;
+      y[shared.i_resp_start] = t;
     };
     auto resp_off = [&](const double t, const double sign, double *y) {
       y[shared.i_resp_flag] = 0.0;
+      y[shared.i_resp_end] = t;
     };
     auto vax_on = [&](const double t, const double sign, double *y) {
       y[shared.i_vax_flag] = 1.0;
@@ -316,8 +331,14 @@ class daedalus_ode {
     // events
     dust2::ode::event<real_type> ev_hosp_trigger(
         idx_hosp, test_hosp, resp_on, dust2::ode::root_type::increase);
+
     dust2::ode::event<real_type> ev_vax_trigger({}, test_vax_time, vax_on,
                                                 dust2::ode::root_type::both);
+
+    dust2::ode::event<real_type> ev_resp_dur({shared.i_resp_start},
+                                             test_resp_dur, resp_off,
+                                             dust2::ode::root_type::both);
+
     dust2::ode::event<real_type> ev_growth_trigger(
         {shared.i_growth_flag}, test_epi_growth, resp_off,
         dust2::ode::root_type::decrease);
