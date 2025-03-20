@@ -183,11 +183,30 @@ test_that("daedalus2: responses triggered by hospital capacity event", {
   names(output_fs) <- resp_scenario_names
 
   invisible(
-    lapply(output_fs[names(output_fs) != "none"], function(x) {
-      expect_lt(
-        x,
-        output_fs["none"]
-      )
-    })
+    lapply(output_fs[names(output_fs) != "none"], expect_lt, output_fs["none"])
+  )
+})
+
+test_that("daedalus2: responses ended by epidemic growth", {
+  # start response early
+  time_end <- 100
+  x <- daedalus_country("GBR")
+  x$hospital_capacity <- 1e3
+
+  d <- daedalus_infection("influenza_2009")
+
+  output <- daedalus2(x, "influenza_2009", "elimination", time_end = time_end)
+
+  # check that epidemic stops growing by IPR method; IPR < gamma
+  ipr <- colSums(output$new_inf) / colSums(output$Is + output$Ia)
+  expect_lt(
+    min(ipr - d$gamma_Is),
+    0.0
+  )
+
+  # check that response is switched off once turned on
+  expect_identical(
+    colSums(output$resp_flag)[time_end + 1],
+    0
   )
 })
