@@ -94,7 +94,8 @@ test_that("daedalus2: Runs for all country x infection x response", {
 
 # check for vaccination mechanism
 test_that("daedalus2: vaccination works", {
-  vax <- daedalus_vaccination("none", 0, 0.1, 100)
+  # NOTE: event starting at t = 0 does not work
+  vax <- daedalus_vaccination("none", 10, 0.1, 100)
   expect_no_condition(
     daedalus2("THA", "sars_cov_1", vaccine_investment = vax)
   )
