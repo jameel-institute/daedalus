@@ -43,4 +43,8 @@ test_that("daedalus2: events end at defined time", {
     max(output$resp_end),
     0.0
   )
+  expect_identical(
+    max(output$resp_end),
+    max(output$resp_start) + 60.0 # arbitrary duration set internally
+  )
 })
