@@ -305,14 +305,14 @@ class daedalus_ode {
     auto test_resp_dur = [&](double t, const double *y) {
       double diff = t - y[0] - 60.0;  // dummy duration of 60 days
 
+      Rcpp::Rcout << "resp dur diff = " << diff << "\n";
+
       return diff;
     };
 
     auto test_epi_growth = [&](double t, const double *y) {
       // NOTE: simple test of epidemic growth incidence-prevalence ratio > gamma
       // See 10.1097/01.aids.0000244213.23574.fa
-      Rcpp::Rcout << "t = " << t
-                  << "; IPR - gamma = " << y[0] - (shared.gamma_Is) << "\n";
       return y[0] - (shared.gamma_Is);
     };
 
@@ -346,7 +346,7 @@ class daedalus_ode {
         dust2::ode::root_type::decrease);
 
     return dust2::ode::events_type<real_type>(
-        {ev_hosp_trigger, ev_vax_trigger, ev_growth_trigger});
+        {ev_hosp_trigger, ev_vax_trigger, ev_growth_trigger, ev_resp_dur});
   }
 
   /// @brief Set initial values of the IVP model.
