@@ -124,7 +124,7 @@ N_OUTPUT_COLS <- 6L
 
 #' @name model_constants
 #' @keywords model_constant
-N_FLAGS <- 3L
+N_FLAGS <- 5L
 
 #' @title Epidemiological compartments and indices
 #' @description Names and indices for the epidemiological compartments used in

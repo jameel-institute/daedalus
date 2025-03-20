@@ -7,8 +7,10 @@ initial_flags <- function() {
   vax_flag <- 0.0
   resp_flag <- 0.0
   growth_flag <- 0.0
+  resp_start <- 0.0
+  resp_end <- 0.0
 
-  c(growth_flag, resp_flag, vax_flag)
+  c(growth_flag, resp_flag, vax_flag, resp_start, resp_end)
 }
 
 #' Internal function for daedalus2
