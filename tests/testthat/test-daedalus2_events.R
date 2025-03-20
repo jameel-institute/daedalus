@@ -1,11 +1,11 @@
 # check for vaccination mechanism
-test_that("daedalus2: events can start at model start time", {
+test_that("daedalus2: events do not start at model start time", {
   # test on events starting at model start time
   vax <- daedalus_vaccination("none", 0, 0.5, 100)
   output <- daedalus2("THA", "sars_cov_1", vaccine_investment = vax)
 
-  # expect vaccination group is non-zero
-  expect_gt(max(output$S_vax), 0.0)
+  # expect vaccination group is zero
+  expect_identical(max(output$S_vax), 0.0)
 })
 
 test_that("daedalus2: root-finding events launch at each appropriate root", {

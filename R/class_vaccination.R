@@ -340,5 +340,5 @@ prepare_parameters2.daedalus_vaccination <- function(x, ...) {
 #'
 #' @keywords internal
 dummy_vaccination <- function() {
-  daedalus_vaccination("none", rate = 0, efficacy = 0, start_time = 1)
+  daedalus_vaccination("none", rate = 0, efficacy = 0, start_time = 0)
 }
