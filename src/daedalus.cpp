@@ -304,9 +304,6 @@ class daedalus_ode {
 
     auto test_resp_dur = [&](double t, const double *y) {
       double diff = t - y[0] - 60.0;  // dummy duration of 60 days
-
-      Rcpp::Rcout << "resp dur diff = " << diff << "\n";
-
       return diff;
     };
 
