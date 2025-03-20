@@ -57,7 +57,7 @@ LinkingTo:
 VignetteBuilder: 
     knitr
 Remotes:
-    mrc-ide/dust2,
+    mrc-ide/dust2@mrc-6351,
     mrc-ide/monty
 Config/Needs/website: jameel-institute/jameelinst.rpkg.theme
 Config/testthat/edition: 3
