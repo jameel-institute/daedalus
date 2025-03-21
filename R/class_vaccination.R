@@ -328,7 +328,8 @@ prepare_parameters2.daedalus_vaccination <- function(x, ...) {
   list(
     nu = get_data(x, "rate") / 100,
     psi = 1 / get_data(x, "waning_period"),
-    uptake_limit = get_data(x, "uptake_limit") / 100
+    uptake_limit = get_data(x, "uptake_limit") / 100,
+    vax_start_time = get_data(x, "start_time")
   )
 }
 
@@ -339,5 +340,5 @@ prepare_parameters2.daedalus_vaccination <- function(x, ...) {
 #'
 #' @keywords internal
 dummy_vaccination <- function() {
-  daedalus_vaccination("none", rate = 0, efficacy = 0)
+  daedalus_vaccination("none", rate = 0, efficacy = 0, start_time = 0)
 }

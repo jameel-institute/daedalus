@@ -1,3 +1,39 @@
+# daedalus 0.2.6
+
+This version adds the response strategy functionality, with response start and end implemented as {dust2} events.
+
+- Added dependency on {dust2} on branch `mrc-6531`;
+
+## Parameter preparation
+
+- Country class returns hospital capacity and population size;
+
+- Vaccination class returns uptake limit and start time.
+
+## Constants and flags
+
+- Added `N_FLAGS` constant and `initial_flags()`.
+
+- Flags are implemented as state variables.
+
+- Flag relative positions in state added to constants header.
+
+## Helper functions
+
+- Renamed helper function `daedalus::helpers::zero_which` to `get_state_idx`;
+
+- Helper function `daedalus::interventions::switch_by_flag` added to interventions helpers header; used to switch vaccination rate and implement NPIs.
+
+## Model state
+
+- Tracking the incidence-prevalence ratio as a measure of whether the epidemic is growing as a simpler alternative to $R_t$; tracked in state variable `growth_flag`.
+
+## Other
+
+- Added tests for events;
+
+- NOTE: Skipping test for response ended by epidemic shrinking as solver jumps over root; awaiting fix for this.
+
 # daedalus 0.2.5
 
 - Adds a correction for reducing eligibles to vaccination in `daedalus2()` by re-implementing `scale_nu()` in C++. Adds a simple test for vaccination uptake limit.
