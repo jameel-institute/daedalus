@@ -87,7 +87,7 @@ daedalus_vaccination <- function(
   # input checking
   name <- rlang::arg_match(name, daedalus::vaccination_scenario_names)
 
-  checkmate::assert_integerish(start_time, lower = 0, null.ok = TRUE)
+  checkmate::assert_integerish(start_time, lower = 1, null.ok = TRUE)
   checkmate::assert_number(
     rate,
     null.ok = TRUE,
@@ -149,7 +149,7 @@ validate_daedalus_vaccination <- function(x) {
     "Vaccination `name` must be among `daedalus::vaccination_scenario_names`" =
       checkmate::test_string(x$name) &&
         checkmate::test_subset(
-          x$name, daedalus::vaccination_scenario_names
+          x$name, c(daedalus::vaccination_scenario_names, "dummy")
         )
   )
 
@@ -340,5 +340,15 @@ prepare_parameters2.daedalus_vaccination <- function(x, ...) {
 #'
 #' @keywords internal
 dummy_vaccination <- function() {
-  daedalus_vaccination("none", rate = 0, efficacy = 0, start_time = 0)
+  # a dummy vaccination with rates and start set to zero
+  params <- list(
+    rate = 0,
+    efficacy = 0,
+    start_time = 0,
+    uptake_limit = 0,
+    waning_period = 1
+  )
+  x <- new_daedalus_vaccination("dummy", params)
+  validate_daedalus_vaccination(x)
+  x
 }

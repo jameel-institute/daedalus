@@ -1,3 +1,9 @@
+# daedalus (development version)
+
+Added a lower bound to vaccination start time that prevents users from starting vaccination at model start time; this is because {dust2} events cannot [root-find on time at `t = 0` --- see linked PR](https://github.com/mrc-ide/dust2/pull/152).
+
+- Internal function `dummy_vaccination()` allows creation of a `<daedalus_vaccination>` with start time = 0 using internal class constructor. Vaccination class validator now accepts `"dummy"` as a valid vaccination strategy name.
+
 # daedalus 0.2.6
 
 This version adds the response strategy functionality, with response start and end implemented as {dust2} events.
