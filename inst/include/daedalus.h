@@ -10,5 +10,6 @@
 #include "daedalus_types.h"
 #include "daedalus_dims.h"
 #include "daedalus_helpers.h"
+#include "daedalus_interventions.h"
 
 // clang-format on
