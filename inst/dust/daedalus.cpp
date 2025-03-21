@@ -293,7 +293,6 @@ class daedalus_ode {
       return diff;
     };
 
-    // NOTE: rootfinding on time does not appear to work
     auto test_vax_time = [&](double t, const double *y) {
       double diff = t - shared.vax_start_time;
 
