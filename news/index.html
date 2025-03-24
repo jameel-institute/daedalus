@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,36 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.6" id="daedalus-026">daedalus 0.2.6<a class="anchor" aria-label="anchor" href="#daedalus-026"></a></h2>
+<p>This version adds the response strategy functionality, with response start and end implemented as {dust2} events.</p>
+<ul><li>Added dependency on {dust2} on branch <code>mrc-6531</code>;</li>
+</ul><div class="section level3">
+<h3 id="parameter-preparation-0-2-6">Parameter preparation<a class="anchor" aria-label="anchor" href="#parameter-preparation-0-2-6"></a></h3>
+<ul><li><p>Country class returns hospital capacity and population size;</p></li>
+<li><p>Vaccination class returns uptake limit and start time.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="constants-and-flags-0-2-6">Constants and flags<a class="anchor" aria-label="anchor" href="#constants-and-flags-0-2-6"></a></h3>
+<ul><li><p>Added <code>N_FLAGS</code> constant and <code><a href="../reference/initial_flags.html">initial_flags()</a></code>.</p></li>
+<li><p>Flags are implemented as state variables.</p></li>
+<li><p>Flag relative positions in state added to constants header.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="helper-functions-0-2-6">Helper functions<a class="anchor" aria-label="anchor" href="#helper-functions-0-2-6"></a></h3>
+<ul><li><p>Renamed helper function <code>daedalus::helpers::zero_which</code> to <code>get_state_idx</code>;</p></li>
+<li><p>Helper function <code>daedalus::interventions::switch_by_flag</code> added to interventions helpers header; used to switch vaccination rate and implement NPIs.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="model-state-0-2-6">Model state<a class="anchor" aria-label="anchor" href="#model-state-0-2-6"></a></h3>
+<ul><li>Tracking the incidence-prevalence ratio as a measure of whether the epidemic is growing as a simpler alternative to <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mi>t</mi></msub><annotation encoding="application/x-tex">R_t</annotation></semantics></math>; tracked in state variable <code>growth_flag</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="other-0-2-6">Other<a class="anchor" aria-label="anchor" href="#other-0-2-6"></a></h3>
+<ul><li><p>Added tests for events;</p></li>
+<li><p>NOTE: Skipping test for response ended by epidemic shrinking as solver jumps over root; awaiting fix for this.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.5" id="daedalus-025">daedalus 0.2.5<a class="anchor" aria-label="anchor" href="#daedalus-025"></a></h2>
 <ul><li><p>Adds a correction for reducing eligibles to vaccination in <code><a href="../reference/daedalus2.html">daedalus2()</a></code> by re-implementing <code><a href="../reference/scale_nu.html">scale_nu()</a></code> in C++. Adds a simple test for vaccination uptake limit.</p></li>

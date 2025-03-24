@@ -11,7 +11,7 @@ the model implemented in C++ to integrate with dust2
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,13 @@ the model implemented in C++ to integrate with <span class="pkg">dust2</span>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus2</span><span class="op">(</span><span class="va">country</span>, <span class="va">infection</span>, vaccine_investment <span class="op">=</span> <span class="cn">NULL</span>, time_end <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus2</span><span class="op">(</span></span>
+<span>  <span class="va">country</span>,</span>
+<span>  <span class="va">infection</span>,</span>
+<span>  response_strategy <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  vaccine_investment <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  time_end <span class="op">=</span> <span class="fl">100</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -94,6 +100,15 @@ or epidemic waves for which parameters are available.</p>
 <p>Passing the name as a string automatically accesses the default parameters
 of an infection. Create and pass a <code>&lt;daedalus_infection&gt;</code> to tweak infection
 parameters using <code><a href="class_infection.html">daedalus_infection()</a></code>.</p></dd>
+
+
+<dt id="arg-response-strategy">response_strategy<a class="anchor" aria-label="anchor" href="#arg-response-strategy"></a></dt>
+<dd><p>A string for the name of response strategy followed;
+defaults to "none". The response strategy determines the country-specific
+response threshold following which the response is activated. See
+<code>response_threshold</code>.</p>
+<p>While the response strategy is active, economic contacts are scaled using the
+package data object <code><a href="closure_data.html">daedalus::closure_data</a></code>.</p></dd>
 
 
 <dt id="arg-vaccine-investment">vaccine_investment<a class="anchor" aria-label="anchor" href="#arg-vaccine-investment"></a></dt>
@@ -132,7 +147,8 @@ will be updated soon.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "S"            "E"            "Is"           "Ia"           "H"           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "R"            "D"            "new_inf"      "new_hosp"     "S_vax"       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11] "E_vax"        "Is_vax"       "Ia_vax"       "H_vax"        "R_vax"       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "D_vax"        "new_inf_vax"  "new_hosp_vax"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "D_vax"        "new_inf_vax"  "new_hosp_vax" "growth_flag"  "resp_flag"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "vax_flag"     "resp_start"   "resp_end"    </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
