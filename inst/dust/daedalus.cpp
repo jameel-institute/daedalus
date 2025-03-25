@@ -69,6 +69,7 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(cm_cons_work, constant = TRUE)]]
 // [[dust2::parameter(hospital_capacity, type = "real_type", constant = TRUE)]]
 // [[dust2::parameter(openness, constant = TRUE)]]
+// [[dust2::parameter(response_time, type = "real_type", constant = TRUE)]]
 class daedalus_ode {
  public:
   daedalus_ode() = delete;
@@ -87,11 +88,13 @@ class daedalus_ode {
     const std::vector<size_t> i_to_zero;
     const TensorMat cm, cm_cons_work, cm_work;
     const TensorMat susc, openness;
-    const double hospital_capacity;
 
     // flag positions
     const size_t i_growth_flag, i_resp_flag, i_vax_flag, i_resp_start,
         i_resp_end;
+
+    // event objects
+    daedalus::events::ddl_response response, vaccination;
   };
 
   /// @brief Intermediate data.
@@ -184,6 +187,10 @@ class daedalus_ode {
     const real_type vax_start_time =
         dust2::r::read_real(pars, "vax_start_time", 0.0);
 
+    // response start time passed to events
+    const real_type response_time =
+        dust2::r::read_real(pars, "response_time", 0.0);
+
     // related to number of groups
     // defaults to daedalus fixed values
     const size_t n_age_groups = dust2::r::read_size(
@@ -256,6 +263,19 @@ class daedalus_ode {
     const size_t i_resp_end = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
                               daedalus::constants::i_rel_RESP_END;
 
+    // responses: NPI and vaccination -- some values are manually set
+    // TODO: define constants and deal with potential default/NA values
+    std::vector<size_t> idx_hosp =
+        daedalus::helpers::get_state_idx({iH + 1}, n_strata, N_VAX_STRATA);
+
+    // NOTE: assume response ends after 60 days - awaiting better default
+    daedalus::events::ddl_response response(response_time, response_time + 60.0,
+                                            hospital_capacity, 0.0, i_resp_flag,
+                                            idx_hosp, 0);
+
+    daedalus::events::ddl_response vaccination(vax_start_time, 0.0, 0.0, 0.0,
+                                               i_vax_flag, {0}, 0);
+
     // clang-format off
     return shared_state{
         beta, sigma, p_sigma, epsilon, rho,
@@ -263,8 +283,10 @@ class daedalus_ode {
         uptake_limit, vax_start_time, n_strata, n_age_groups, n_econ_groups,
         popsize, i_to_zero,
         cm, cm_cw, cm_work, susc, openness,
-        hospital_capacity, i_growth_flag, i_resp_flag, i_vax_flag,
-        i_resp_start, i_resp_end};
+        i_growth_flag, i_resp_flag, i_vax_flag,
+        i_resp_start, i_resp_end,
+        response, vaccination
+      };
     // clang-format on
   }
 
@@ -281,69 +303,9 @@ class daedalus_ode {
   /// @return A container of events passed to the solver.
   static auto events(const shared_state &shared,
                      const internal_state &internal) {
-    // NOTE: for use with new dust2, upcoming changes in PR #80
-    std::string name = "event";
-    // root-finding tests
-    // NOTE: iX + 1 gives the 1-indexed compartment
-    const std::vector<size_t> idx_hosp = daedalus::helpers::get_state_idx(
-        {iH + 1}, shared.n_strata, N_VAX_STRATA);
-
-    auto test_hosp = [&](double t, const double *y) {
-      int size_n = shared.n_strata * N_VAX_STRATA;  // get size
-      double total_hosp = std::accumulate(y, y + size_n, 0);
-      double diff = total_hosp - shared.hospital_capacity;
-
-      return diff;
-    };
-
-    auto test_vax_time = [&](double t, const double *y) {
-      double diff = t - shared.vax_start_time;
-
-      return diff;
-    };
-
-    auto test_resp_dur = [&](double t, const double *y) {
-      double diff = t - y[0] - 60.0;  // dummy duration of 60 days
-      return diff;
-    };
-
-    auto test_epi_growth = [&](double t, const double *y) {
-      // NOTE: simple test of epidemic growth incidence-prevalence ratio > gamma
-      // See 10.1097/01.aids.0000244213.23574.fa
-      return y[0] - (shared.gamma_Is);
-    };
-
-    // actions
-    // presumably y arg refers to full state
-    auto resp_on = [&](const double t, const double sign, double *y) {
-      y[shared.i_resp_flag] = 1.0;
-      y[shared.i_resp_start] = t;
-    };
-    auto resp_off = [&](const double t, const double sign, double *y) {
-      y[shared.i_resp_flag] = 0.0;
-      y[shared.i_resp_end] = t;
-    };
-    auto vax_on = [&](const double t, const double sign, double *y) {
-      y[shared.i_vax_flag] = 1.0;
-    };
-
-    // events
-    dust2::ode::event<real_type> ev_hosp_trigger(
-        name, idx_hosp, test_hosp, resp_on, dust2::ode::root_type::increase);
-
-    dust2::ode::event<real_type> ev_vax_trigger(name, {}, test_vax_time, vax_on,
-                                                dust2::ode::root_type::both);
-
-    dust2::ode::event<real_type> ev_resp_dur(name, {shared.i_resp_start},
-                                             test_resp_dur, resp_off,
-                                             dust2::ode::root_type::both);
-
-    dust2::ode::event<real_type> ev_growth_trigger(
-        name, {shared.i_growth_flag}, test_epi_growth, resp_off,
-        dust2::ode::root_type::decrease);
-
-    return dust2::ode::events_type<real_type>(
-        {ev_hosp_trigger, ev_vax_trigger, ev_growth_trigger, ev_resp_dur});
+    // return events vector
+    return daedalus::events::get_combined_events(
+        {shared.vaccination.make_events(), shared.response.make_events()});
   }
 
   /// @brief Set initial values of the IVP model.
@@ -396,7 +358,7 @@ class daedalus_ode {
     internal.workplace_infected =
         shared.beta *
         shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, 1)
-        daedalus::interventions::switch_by_flag(
+        daedalus::events::switch_by_flag(
             shared.openness,
             state[shared.i_resp_flag]) *  // scale β
         internal.t_comm_inf.slice(
@@ -409,7 +371,7 @@ class daedalus_ode {
 
     internal.consumer_worker_infections =
         shared.beta *
-        daedalus::interventions::switch_by_flag(
+        daedalus::events::switch_by_flag(
             shared.openness,
             state[shared.i_resp_flag]) *  // scale β
         shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
