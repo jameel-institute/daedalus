@@ -89,6 +89,27 @@ class npi {
     return event;
   }
 
+  /// @brief Make a vector of events associated with this NPI.
+  /// @return A vector of events to be returned by the events function of a
+  /// dust2 ode class.
+  inline dust2::ode::events_type<double> make_events() const {
+    // 1. launch event by some threshold time
+    // 2. end event on time
+    // 3. launch event on state threshold
+    dust2::ode::event<double> ev_time_on =
+        make_event({}, make_time_test(time_on), make_flag_setter(i_flag, 1.0));
+
+    dust2::ode::event<double> ev_time_off =
+        make_event({}, make_time_test(time_off), make_flag_setter(i_flag, 0.0));
+
+    dust2::ode::event<double> ev_state_on = make_event(
+        {i_state_on}, make_state_test(i_state_on, state_on),
+        make_flag_setter(i_flag, 1.0), dust2::ode::root_type::increase);
+
+    return dust2::ode::events_type<double>(
+        {ev_time_on, ev_time_off, ev_state_on});
+  }
+};
 
 }  // namespace events
 }  // namespace daedalus
