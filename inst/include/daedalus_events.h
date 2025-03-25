@@ -7,6 +7,7 @@
 #include "daedalus_types.h"
 
 #include <functional>
+#include <vector>
 
 #include <dust2/common.hpp>
 // clang-format on
