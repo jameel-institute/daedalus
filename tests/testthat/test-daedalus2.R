@@ -87,7 +87,9 @@ test_that("daedalus2: Runs for all country x infection x response", {
     country_infection_combos$country,
     country_infection_combos$infection,
     f = function(x, y) {
-      expect_no_condition(daedalus2(x, y, time_end = time_end))
+      expect_no_condition(
+        daedalus2(x, y, time_end = time_end, response_time = 5)
+      )
     }
   ))
 })

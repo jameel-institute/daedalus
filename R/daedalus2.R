@@ -64,14 +64,17 @@ daedalus2_internal <- function(time_end, params, state, flags) {
 #'
 #' names(output)
 daedalus2 <- function(
-    country,
-    infection,
-    response_strategy = NULL,
-    vaccine_investment = NULL,
-    time_end = 100) {
+  country,
+  infection,
+  response_strategy = NULL,
+  vaccine_investment = NULL,
+  response_time = 30,
+  time_end = 100
+) {
+
   # prepare flags
   flags <- initial_flags()
-
+  
   # input checking
   # NOTE: names are case sensitive
   checkmate::assert_multi_class(country, c("daedalus_country", "character"))
@@ -125,6 +128,18 @@ daedalus2 <- function(
     vaccine_investment <- daedalus_vaccination(vaccine_investment)
   }
 
+  is_good_response_time <- checkmate::test_integerish(
+    response_time,
+    upper = time_end - 2L, # for compat with daedalus
+    lower = 1L, # responses cannot start at 0
+    any.missing = FALSE
+  )
+  if (!is_good_response_time) {
+    cli::cli_abort(
+      "Expected `response_time` to be between 1 and {time_end - 2L}."
+    )
+  }
+
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
   if (!is_good_time_end) {
     cli::cli_abort(c(
@@ -146,7 +161,8 @@ daedalus2 <- function(
     list(
       beta = get_beta(infection, country),
       susc = susc,
-      openness = openness
+      openness = openness,
+      response_time = response_time
     )
   )
 
