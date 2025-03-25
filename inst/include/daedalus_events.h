@@ -39,20 +39,25 @@ class npi {
   npi(const int &t_start, const int &t_end, const size_t &i_flag)
       : t_start(t_start), t_end(t_end), i_flag(i_flag) {}
 
-  /// @brief A function factory to make event test lambdas.
+  /// @brief Root-find on time.
   /// @return A lambda function suitable for creating a dust2::event test.
-  inline test_type make_event_test(
-      dust2::ode::root_type root_type = dust2::ode::root_type::both) const {
-    auto fn_test = [t_start = this->t_start, t_end = this->t_end](
-                       const double t, const double *y) {
-      // return 0 if t_start or t_end are hit
-      if (std::abs(t - t_start) < 1e-6) {
-        return 0.0;
-      } else if (std::abs(t - t_end) < 1e-6) {
-        return 0.0;
-      } else {
-        return 1.0;
-      }
+  inline test_type make_time_test(const double value) const {
+    auto fn_test = [value](const double t, const double *y) {
+      return t - value;
+    };
+
+    return fn_test;
+  }
+
+  /// @brief Root-find on a state value. Only offering state sum: we probably
+  /// won't need other operations.
+  /// @return A lambda function suitable for creating a dust2::event test.
+  inline test_type make_state_test(const std::vector<size_t> &idx_state,
+                                   const double value) const {
+    auto fn_test = [idx_state, value](const double t, const double *y) {
+      const int size_n = idx_state.size();
+      const double sum_state = std::accumulate(y, y + size_n, 0);
+      return sum_state - value;
     };
 
     return fn_test;
