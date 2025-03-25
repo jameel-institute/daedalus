@@ -28,16 +28,28 @@ inline T switch_by_flag(T value, const double flag) {
 
 /// @brief Class holding NPI related information. Intended to live inside
 /// `shared`.
-class npi {
-  // similar to dust2::ode
+class ddl_response {
+  // taken from to dust2::ode
   using test_type = std::function<double(const double, const double *)>;
   using action_type = std::function<void(const double, const double, double *)>;
 
  public:
-  const int t_start, t_end, i_flag;
+  const double time_on, time_off, state_on, state_off;
+  const size_t i_flag;
+  const std::vector<size_t> i_state_on;
+  const size_t i_state_off;
 
-  npi(const int &t_start, const int &t_end, const size_t &i_flag)
-      : t_start(t_start), t_end(t_end), i_flag(i_flag) {}
+  ddl_response(const double &time_on, const double &time_off,
+               const double &state_on, const double &state_off,
+               const size_t &i_flag, const std::vector<size_t> &i_state_on,
+               const size_t &i_state_off)
+      : time_on(time_on),
+        time_off(time_off),
+        state_on(state_on),
+        state_off(state_off),
+        i_flag(i_flag),
+        i_state_on(i_state_on),
+        i_state_off(i_state_off) {}
 
   /// @brief Root-find on time.
   /// @return A lambda function suitable for creating a dust2::event test.
