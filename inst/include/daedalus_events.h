@@ -63,11 +63,12 @@ class npi {
     return fn_test;
   }
 
-  /// @brief A function factory to make event action lambdas.
+  /// @brief Make event action lambda.
   /// @return A lambda suitable as an action in a dust2::event.
-  inline action_type make_event_action() const {
-    auto fn_action = [i_flag = this->i_flag](const double t, const double sign,
-                                             double *y) { y[i_flag] = 1.0; };
+  inline action_type make_flag_setter(const size_t &flag,
+                                      const double &value) const {
+    auto fn_action = [flag, value](const double t, const double sign,
+                                   double *y) { y[flag] = value; };
 
     return fn_action;
   }
