@@ -72,7 +72,23 @@ class npi {
 
     return fn_action;
   }
-};
+
+  /// @brief Make a dust2::ode::event
+  /// @param idx_state_test A vector of indices to access in the state.
+  /// @param test A lambda to check for a condition.
+  /// @param action A lambda to modify a state flag.
+  /// @param root_type Whether the diff is greater or less than 0.
+  /// @return An event for the `dust2` framework
+  inline dust2::ode::event<double> make_event(
+      const std::vector<size_t> &idx_state_test, const test_type test,
+      const action_type action,
+      const dust2::ode::root_type root_type =
+          dust2::ode::root_type::both) const {
+    dust2::ode::event<double> event(idx_state_test, test, action, root_type);
+
+    return event;
+  }
+
 
 }  // namespace events
 }  // namespace daedalus
