@@ -111,5 +111,24 @@ class npi {
   }
 };
 
+/// @brief Flattern multiple vectors of dust2 events into a single events vec.
+/// @param events_vecs A vector of event vectors.
+/// @return A combined vector of events.
+inline dust2::ode::events_type<double> get_combined_events(
+    const std::vector<dust2::ode::events_type<double>> &events_vecs) {
+  size_t size_n =
+      std::accumulate(events_vecs.begin(), events_vecs.end(), 0,
+                      [](size_t sum, const auto &v) { return sum + v.size(); });
+
+  dust2::ode::events_type<double> combined_events;
+  combined_events.reserve(size_n);
+
+  for (const auto &vec : events_vecs) {
+    combined_events.insert(combined_events.end(), vec.begin(), vec.end());
+  }
+
+  return combined_events;
+}
+
 }  // namespace events
 }  // namespace daedalus
