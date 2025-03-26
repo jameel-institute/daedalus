@@ -81,6 +81,6 @@ output <- daedalus2(
 plot(colSums(output$E), type = "l")
 plot(colSums(output$new_inf), type = "l")
 
-plot(colSums(output$resp_flag), type = "l")
-plot(colSums(output$growth_flag), type = "l")
+plot(colSums(output$npi_flag), type = "l")
+plot(colSums(output$ipr), type = "l")
 ```
