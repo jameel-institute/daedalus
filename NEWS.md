@@ -1,3 +1,25 @@
+# daedalus 0.2.8
+
+This patch version implements a `response` class to better organise event handling. All events can be launched and ended at specific times, or by specific state variables crossing threshold values. Only some of these triggers can be controlled by the user from R; others are hard-coded in C++:
+
+- NPI response start time is added as an argument to `daedalus2()` similar to `daedalus()`;
+
+- NPI response starts on `hospital_threshold` (a country parameters) being crossed;
+
+- NPI response is intended to end when the [incidence-prevalence ratio reaches the recovery rate](https://doi.org/10.1097/01.aids.0000244213.23574.fa) (for asymptomatic infections); this does not appear to work as the solver jumps over this root.
+
+- Vaccination start time can be specified by the user in the vaccination object or strategy; no specific end triggers are specified as vaccination rate $\nu$ is scaled within the ODE RHS to decline as the uptake limit is reached.
+
+## C++ code
+
+- Added class `response` under namespace `daedalus::events` to be a general data structure and lambda generator for NPI and vaccination events.
+
+- Added `response` objects to shared state to hold event parameters that were previously floating around; reorganised parameter reading.
+
+- Replaced contents of `events` struct in `daedalus_ode` class with `response` member functions for NPI and vaccination objects.
+
+- Removed state variables logging response start and end times.
+
 # daedalus 0.2.7
 
 Added a mechanism to have vaccination switched on from model start time if specified by users in a `<daedalus_vaccination>` object passed to the `vaccine_investment` argument; this is because {dust2} events cannot [root-find on time at `t = 0` --- see linked PR](https://github.com/mrc-ide/dust2/pull/152).
