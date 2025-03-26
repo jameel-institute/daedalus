@@ -9,6 +9,7 @@
 #include <RcppEigen.h>
 #include <unsupported/Eigen/CXX11/Tensor>
 
+#include <cmath>
 #include <iterator>
 #include <numeric>
 #include <string>
@@ -82,7 +83,7 @@ class daedalus_ode {
     const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
     const TensorMat eta, omega, gamma_H;
 
-    const real_type nu, psi, uptake_limit, vax_start_time;
+    const real_type nu, psi, uptake_limit;
 
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
     const std::vector<size_t> i_to_zero;
@@ -90,8 +91,7 @@ class daedalus_ode {
     const TensorMat susc, openness;
 
     // flag positions
-    const size_t i_growth_flag, i_resp_flag, i_vax_flag, i_resp_start,
-        i_resp_end;
+    const size_t i_ipr, i_npi_flag, i_vax_flag;
 
     // event objects
     daedalus::events::response npi, vaccination;
@@ -171,7 +171,7 @@ class daedalus_ode {
   /// @param pars A list of parameters passed from R.
   /// @return A shared parameters object.
   static shared_state build_shared(cpp11::list pars) {
-    // NOTE: default values are all zero
+    // EPI PARAMETERS
     const real_type beta = dust2::r::read_real(pars, "beta", 0.0);
     const real_type sigma = dust2::r::read_real(pars, "sigma", 0.0);
     const real_type p_sigma = dust2::r::read_real(pars, "p_sigma", 0.0);
@@ -179,27 +179,8 @@ class daedalus_ode {
     const real_type rho = dust2::r::read_real(pars, "rho", 0.0);
     const real_type gamma_Ia = dust2::r::read_real(pars, "gamma_Ia", 0.0);
     const real_type gamma_Is = dust2::r::read_real(pars, "gamma_Is", 0.0);
-    const real_type nu = dust2::r::read_real(pars, "nu", 0.0);
-    const real_type psi = dust2::r::read_real(pars, "psi", 0.0);
-    const real_type uptake_limit =
-        dust2::r::read_real(pars, "uptake_limit", 0.0);
-    const real_type vax_start_time =
-        dust2::r::read_real(pars, "vax_start_time", 0.0);
 
-    // response start time passed to events
-    const real_type response_time =
-        dust2::r::read_real(pars, "response_time", 0.0);
-
-    // related to number of groups
-    // defaults to daedalus fixed values
-    const size_t n_age_groups = dust2::r::read_size(
-        pars, "n_age_groups", daedalus::constants::DDL_N_AGE_GROUPS);
-    const size_t n_econ_groups = dust2::r::read_size(
-        pars, "n_econ_groups", daedalus::constants::DDL_N_ECON_GROUPS);
-    const size_t n_strata = n_age_groups + n_econ_groups;
-    const size_t popsize = dust2::r::read_size(pars, "popsize", 0.0);
-
-    // read vector values (all must have size n_strata)
+    // EPI PARAMETERS: AGE VARYING
     TensorMat eta_temp(n_strata, 1);
     TensorMat omega_temp(n_strata, 1);
     TensorMat gamma_H_temp(n_strata, 1);
@@ -209,60 +190,80 @@ class daedalus_ode {
                                true);
     dust2::r::read_real_vector(pars, n_strata, gamma_H_temp.data(), "gamma_H",
                                true);
-
     TensorMat eta = eta_temp.broadcast(bcast);
     TensorMat omega = omega_temp.broadcast(bcast);
     TensorMat gamma_H = gamma_H_temp.broadcast(bcast);
 
-    // handling contact matrix
+    // DEMOGRAPHY PARAMETERS
+    // defaults to daedalus fixed values
+    const size_t n_age_groups = dust2::r::read_size(
+        pars, "n_age_groups", daedalus::constants::DDL_N_AGE_GROUPS);
+    const size_t n_econ_groups = dust2::r::read_size(
+        pars, "n_econ_groups", daedalus::constants::DDL_N_ECON_GROUPS);
+    const size_t n_strata = n_age_groups + n_econ_groups;
+    const size_t popsize = dust2::r::read_size(pars, "popsize", 0.0);
+
+    // CONTACT PARAMETERS (MATRICES)
+    // contact matrix
     const std::vector<size_t> vec_cm_dims(2, n_strata);  // for square matrix
     const dust2::array::dimensions<2> cm_dims(vec_cm_dims.begin());
     TensorMat cm(n_strata, n_strata);
     dust2::r::read_real_array(pars, cm_dims, cm.data(), "cm", true);
 
-    // handling contacts from consumers to workers
+    // contacts from consumers to workers
     const std::vector<size_t> vec_cm_cw_dims = {n_econ_groups, n_age_groups};
     const dust2::array::dimensions<2> cm_cw_dims(vec_cm_cw_dims.begin());
     TensorMat cm_cw(n_econ_groups, n_age_groups);
     dust2::r::read_real_array(pars, cm_cw_dims, cm_cw.data(), "cm_cons_work",
                               true);
 
-    // handling within-sector contacts
+    // within-sector contacts
     TensorMat cm_work(n_econ_groups, 1);
     dust2::r::read_real_vector(pars, n_econ_groups, cm_work.data(), "cm_work",
                                true);
 
-    // hospital capacity data
-    const real_type hospital_capacity =
-        dust2::r::read_real(pars, "hospital_capacity", 0.0);
-    // handling compartments to zero
-    const std::vector<size_t> i_to_zero = daedalus::helpers::get_state_idx(
-        daedalus::constants::seq_DATA_COMPARTMENTS, n_strata, N_VAX_STRATA);
+    // VACCINATION PARAMETERS
+    const real_type nu = dust2::r::read_real(pars, "nu", 0.0);
+    const real_type psi = dust2::r::read_real(pars, "psi", 0.0);
+    const real_type uptake_limit =
+        dust2::r::read_real(pars, "uptake_limit", 0.0);
+    const real_type vax_start_time =
+        dust2::r::read_real(pars, "vax_start_time", 0.0);
 
-    // handling susceptibility matrix: rows are age+econ grps, cols are vax grps
+    // VACCINATION EFFECT PARAMETERS: rows are age+econ grps, cols are vax grps
     const std::vector<size_t> vec_susc_dims = {n_strata, N_VAX_STRATA};
     const dust2::array::dimensions<2> susc_dims(vec_susc_dims.begin());
     TensorMat susc(n_strata, N_VAX_STRATA);
     dust2::r::read_real_array(pars, susc_dims, susc.data(), "susc", true);
 
+    // EVENT/RESPONSE PARAMETERS
+    // response time is only 0.0 when response is NULL or 'none'
+    // this is used to set hosp capacity to NAN so the response is not triggered
+    const real_type response_time =
+        dust2::r::read_real(pars, "response_time", 0.0);
+    // hospital capacity data
+    const real_type hospital_capacity =
+        std::abs(response_time - 0.0) < 1e-6
+            ? NAN
+            : dust2::r::read_real(pars, "hospital_capacity", 0.0);
     // handling openness vector
     TensorMat openness(n_econ_groups, 1);
     dust2::r::read_real_vector(pars, n_econ_groups, openness.data(), "openness",
                                true);
 
-    // locations of response flags
-    const size_t i_growth_flag = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
-                                 daedalus::constants::i_rel_GROWTH_FLAG;
-    const size_t i_resp_flag = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
-                               daedalus::constants::i_rel_RESP_FLAG;
-    const size_t i_vax_flag = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
-                              daedalus::constants::i_rel_VAX_FLAG;
-    const size_t i_resp_start = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
-                                daedalus::constants::i_rel_RESP_START;
-    const size_t i_resp_end = n_strata * N_VAX_STRATA * N_COMPARTMENTS +
-                              daedalus::constants::i_rel_RESP_END;
+    // DATA COMPARTMENTS TO ZERO
+    const std::vector<size_t> i_to_zero = daedalus::helpers::get_state_idx(
+        daedalus::constants::seq_DATA_COMPARTMENTS, n_strata, N_VAX_STRATA);
 
-    // responses: NPI and vaccination -- some values are manually set
+    // RELATIVE LOCATIONS OF RESPONSE-RELATED FLAGS
+    const int total_compartments = n_strata * N_VAX_STRATA * N_COMPARTMENTS;
+    const size_t i_ipr = total_compartments + daedalus::constants::i_rel_IPR;
+    const size_t i_npi_flag =
+        total_compartments + daedalus::constants::i_rel_NPI_FLAG;
+    const size_t i_vax_flag =
+        total_compartments + daedalus::constants::i_rel_VAX_FLAG;
+
+    // RESPONSE AND VACCINATION CLASSES
     // TODO: define constants and deal with potential default/NA values
     std::vector<size_t> idx_hosp =
         daedalus::helpers::get_state_idx({iH + 1}, n_strata, N_VAX_STRATA);
@@ -272,7 +273,7 @@ class daedalus_ode {
                                    hospital_capacity, 0.0, i_npi_flag, idx_hosp,
                                    i_ipr);
     daedalus::events::response vaccination(vax_start_time, 0.0, 0.0, 0.0,
-                                               i_vax_flag, {0}, 0);
+                                           i_vax_flag, {0}, 0);
 
     // clang-format off
     return shared_state{
@@ -302,7 +303,7 @@ class daedalus_ode {
                      const internal_state &internal) {
     // return events vector
     return daedalus::events::get_combined_events(
-        {shared.vaccination.make_events(), shared.response.make_events()});
+        {shared.vaccination.make_events(), shared.npi.make_events()});
   }
 
   /// @brief Set initial values of the IVP model.
