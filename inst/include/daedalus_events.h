@@ -29,7 +29,7 @@ inline T switch_by_flag(T value, const double flag) {
 
 /// @brief Class holding NPI related information. Intended to live inside
 /// `shared`.
-class ddl_response {
+class response {
   // taken from to dust2::ode
   using test_type = std::function<double(const double, const double *)>;
   using action_type = std::function<void(const double, const double, double *)>;
@@ -40,7 +40,7 @@ class ddl_response {
   const std::vector<size_t> i_state_on;
   const size_t i_state_off;
 
-  ddl_response(const double &time_on, const double &time_off,
+  response(const double &time_on, const double &time_off,
                const double &state_on, const double &state_off,
                const size_t &i_flag, const std::vector<size_t> &i_state_on,
                const size_t &i_state_off)
@@ -116,7 +116,7 @@ class ddl_response {
         make_event({}, make_time_test(time_off), make_flag_setter(i_flag, 0.0));
 
     dust2::ode::event<double> ev_state_on = make_event(
-        {i_state_on}, make_state_test(i_state_on, state_on),
+        i_state_on, make_state_test(i_state_on, state_on),
         make_flag_setter(i_flag, 1.0), dust2::ode::root_type::increase);
 
     return dust2::ode::events_type<double>(
