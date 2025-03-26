@@ -162,9 +162,8 @@ class daedalus_ode {
                           {"Ia_vax", dim_vec},       {"H_vax", dim_vec},
                           {"R_vax", dim_vec},        {"D_vax", dim_vec},
                           {"new_inf_vax", dim_vec},  {"new_hosp_vax", dim_vec},
-                          {"growth_flag", dim_flag}, {"resp_flag", dim_flag},
-                          {"vax_flag", dim_flag},    {"resp_start", dim_flag},
-                          {"resp_end", dim_flag}};
+                          {"ipr_flag", dim_flag},    {"npi_flag", dim_flag},
+                          {"vax_flag", dim_flag}};
     // clang-format on
   }
 
@@ -277,15 +276,14 @@ class daedalus_ode {
 
     // clang-format off
     return shared_state{
-        beta, sigma, p_sigma, epsilon, rho,
-        gamma_Ia, gamma_Is, eta, omega, gamma_H, nu, psi,
-        uptake_limit, vax_start_time, n_strata, n_age_groups, n_econ_groups,
-        popsize, i_to_zero,
-        cm, cm_cw, cm_work, susc, openness,
-        i_growth_flag, i_resp_flag, i_vax_flag,
-        i_resp_start, i_resp_end,
-        response, vaccination
-      };
+        beta,         sigma,      p_sigma,      epsilon,
+        rho,          gamma_Ia,   gamma_Is,     eta,
+        omega,        gamma_H,    nu,           psi,
+        uptake_limit, n_strata,   n_age_groups, n_econ_groups,
+        popsize,      i_to_zero,  cm,           cm_cw,
+        cm_work,      susc,       openness,
+        i_ipr,  // state index holding incidence/prevalence ratio
+        i_npi_flag,   i_vax_flag, npi,          vaccination};
     // clang-format on
   }
 
@@ -357,9 +355,8 @@ class daedalus_ode {
     internal.workplace_infected =
         shared.beta *
         shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, 1)
-        daedalus::events::switch_by_flag(
-            shared.openness,
-            state[shared.i_resp_flag]) *  // scale β
+        daedalus::events::switch_by_flag(shared.openness,
+                                         state[shared.i_npi_flag]) *  // scale β
         internal.t_comm_inf.slice(
             Eigen::array<Eigen::Index, 2>{n_strata - n_econ_groups, 0},
             Eigen::array<Eigen::Index, 2>{n_econ_groups, 1});
@@ -370,9 +367,8 @@ class daedalus_ode {
 
     internal.consumer_worker_infections =
         shared.beta *
-        daedalus::events::switch_by_flag(
-            shared.openness,
-            state[shared.i_resp_flag]) *  // scale β
+        daedalus::events::switch_by_flag(shared.openness,
+                                         state[shared.i_npi_flag]) *  // scale β
         shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
 
     internal.susc_workers =
@@ -451,7 +447,7 @@ class daedalus_ode {
     // get IPR (incidence prevalence ratio) as growth flag
     const Eigen::Tensor<double, 0> incidence = internal.sToE.sum();
     const Eigen::Tensor<double, 0> prevalence = internal.t_comm_inf.sum();
-    state_deriv[shared.i_growth_flag] = incidence(0) / prevalence(0);
+    state_deriv[shared.i_ipr] = incidence(0) / prevalence(0);
   }
 
   /// @brief Set every value to zero - unclear.
@@ -460,6 +456,6 @@ class daedalus_ode {
   static auto zero_every(const shared_state &shared) {
     return dust2::zero_every_type<real_type>{
         {1, shared.i_to_zero},
-        {1, {shared.i_growth_flag}}};  // zero data and flag compartments
+        {1, {shared.i_ipr}}};  // zero data and flag compartments
   }
 };

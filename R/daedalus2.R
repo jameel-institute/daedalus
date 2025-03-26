@@ -6,18 +6,10 @@
 #' @keywords internal
 initial_flags <- function() {
   vax_flag <- 0.0
-  resp_flag <- 0.0
-  growth_flag <- 0.0
-  resp_start <- 0.0
-  resp_end <- 0.0
+  npi_flag <- 0.0
+  ipr <- 0.0
 
-  c(
-    growth_flag = growth_flag,
-    resp_flag = resp_flag,
-    vax_flag = vax_flag,
-    resp_start = resp_start,
-    resp_end = resp_end
-  )
+  c(ipr = ipr, npi_flag = npi_flag, vax_flag = vax_flag)
 }
 
 #' Internal function for daedalus2
@@ -74,7 +66,7 @@ daedalus2 <- function(
 
   # prepare flags
   flags <- initial_flags()
-  
+
   # input checking
   # NOTE: names are case sensitive
   checkmate::assert_multi_class(country, c("daedalus_country", "character"))
