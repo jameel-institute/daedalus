@@ -120,16 +120,18 @@ daedalus2 <- function(
     vaccine_investment <- daedalus_vaccination(vaccine_investment)
   }
 
-  is_good_response_time <- checkmate::test_integerish(
-    response_time,
-    upper = time_end - 2L, # for compat with daedalus
-    lower = 1L, # responses cannot start at 0
-    any.missing = FALSE
-  )
-  if (!is_good_response_time) {
-    cli::cli_abort(
-      "Expected `response_time` to be between 1 and {time_end - 2L}."
+  if (!(is.null(response_strategy) || response_strategy == "none")) {
+    is_good_response_time <- checkmate::test_integerish(
+      response_time,
+      upper = time_end - 2L, # for compat with daedalus
+      lower = 1L, # responses cannot start at 0, unless strategy is null
+      any.missing = FALSE
     )
+    if (!is_good_response_time) {
+      cli::cli_abort(
+        "Expected `response_time` to be between 1 and {time_end - 2L}."
+      )
+    }
   }
 
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)

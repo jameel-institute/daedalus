@@ -142,6 +142,7 @@ working age individuals.
 \item Array dimension of economic sectors: 3
 \item Array dimension of vaccination strata: 4
 \item Indices and numbers of key groups.
+\item Number of state variables that are flags, switches, or indicators.
 }
 }
 \keyword{datasets}

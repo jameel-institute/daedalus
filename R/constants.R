@@ -40,6 +40,8 @@
 #'
 #' - Indices and numbers of key groups.
 #'
+#' - Number of state variables that are flags, switches, or indicators.
+#'
 #' @keywords model_constant
 N_AGE_GROUPS <- 4L
 
@@ -124,7 +126,7 @@ N_OUTPUT_COLS <- 6L
 
 #' @name model_constants
 #' @keywords model_constant
-N_FLAGS <- 5L
+N_FLAGS <- 3L
 
 #' @title Epidemiological compartments and indices
 #' @description Names and indices for the epidemiological compartments used in

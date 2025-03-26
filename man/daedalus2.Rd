@@ -9,6 +9,7 @@ daedalus2(
   infection,
   response_strategy = NULL,
   vaccine_investment = NULL,
+  response_time = 30,
   time_end = 100
 )
 }
@@ -48,6 +49,11 @@ for no advance vaccine investment. In this case, vaccination begins 365 days
 (1 year) after the simulation begins, at a low rate across all age groups.
 Other accepted values are \code{"low"}, \code{"medium"} and \code{"high"}. See
 \code{\link[=daedalus_vaccination]{daedalus_vaccination()}} for more information.}
+
+\item{response_time}{A single numeric value for the time in days
+at which the selected response is activated. This is ignored if the response
+has already been activated by the hospitalisation threshold being reached.
+Defaults to 30 days.}
 
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
