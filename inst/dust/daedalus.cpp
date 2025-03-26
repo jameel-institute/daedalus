@@ -70,7 +70,7 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(cm_cons_work, constant = TRUE)]]
 // [[dust2::parameter(hospital_capacity, type = "real_type", constant = TRUE)]]
 // [[dust2::parameter(openness, constant = TRUE)]]
-// [[dust2::parameter(response_time, type = "real_type", constant = TRUE)]]
+// [[dust2::parameter(response_time, constant = TRUE)]]
 class daedalus_ode {
  public:
   daedalus_ode() = delete;
@@ -171,6 +171,15 @@ class daedalus_ode {
   /// @param pars A list of parameters passed from R.
   /// @return A shared parameters object.
   static shared_state build_shared(cpp11::list pars) {
+    // DEMOGRAPHY PARAMETERS
+    // defaults to daedalus fixed values
+    const size_t n_age_groups = dust2::r::read_size(
+        pars, "n_age_groups", daedalus::constants::DDL_N_AGE_GROUPS);
+    const size_t n_econ_groups = dust2::r::read_size(
+        pars, "n_econ_groups", daedalus::constants::DDL_N_ECON_GROUPS);
+    const size_t n_strata = n_age_groups + n_econ_groups;
+    const size_t popsize = dust2::r::read_size(pars, "popsize", 0.0);
+
     // EPI PARAMETERS
     const real_type beta = dust2::r::read_real(pars, "beta", 0.0);
     const real_type sigma = dust2::r::read_real(pars, "sigma", 0.0);
@@ -193,15 +202,6 @@ class daedalus_ode {
     TensorMat eta = eta_temp.broadcast(bcast);
     TensorMat omega = omega_temp.broadcast(bcast);
     TensorMat gamma_H = gamma_H_temp.broadcast(bcast);
-
-    // DEMOGRAPHY PARAMETERS
-    // defaults to daedalus fixed values
-    const size_t n_age_groups = dust2::r::read_size(
-        pars, "n_age_groups", daedalus::constants::DDL_N_AGE_GROUPS);
-    const size_t n_econ_groups = dust2::r::read_size(
-        pars, "n_econ_groups", daedalus::constants::DDL_N_ECON_GROUPS);
-    const size_t n_strata = n_age_groups + n_econ_groups;
-    const size_t popsize = dust2::r::read_size(pars, "popsize", 0.0);
 
     // CONTACT PARAMETERS (MATRICES)
     // contact matrix
@@ -243,9 +243,7 @@ class daedalus_ode {
         dust2::r::read_real(pars, "response_time", 0.0);
     // hospital capacity data
     const real_type hospital_capacity =
-        std::abs(response_time - 0.0) < 1e-6
-            ? NAN
-            : dust2::r::read_real(pars, "hospital_capacity", 0.0);
+        dust2::r::read_real(pars, "hospital_capacity", NAN);
     // handling openness vector
     TensorMat openness(n_econ_groups, 1);
     dust2::r::read_real_vector(pars, n_econ_groups, openness.data(), "openness",
