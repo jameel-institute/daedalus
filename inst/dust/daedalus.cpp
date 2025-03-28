@@ -11,6 +11,7 @@
 
 #include <iterator>
 #include <numeric>
+#include <string>
 #include <vector>
 
 #include <cpp11.hpp>
@@ -280,6 +281,8 @@ class daedalus_ode {
   /// @return A container of events passed to the solver.
   static auto events(const shared_state &shared,
                      const internal_state &internal) {
+    // NOTE: for use with new dust2, upcoming changes in PR #80
+    std::string name = "event";
     // root-finding tests
     // NOTE: iX + 1 gives the 1-indexed compartment
     const std::vector<size_t> idx_hosp = daedalus::helpers::get_state_idx(
@@ -326,17 +329,17 @@ class daedalus_ode {
 
     // events
     dust2::ode::event<real_type> ev_hosp_trigger(
-        idx_hosp, test_hosp, resp_on, dust2::ode::root_type::increase);
+        name, idx_hosp, test_hosp, resp_on, dust2::ode::root_type::increase);
 
-    dust2::ode::event<real_type> ev_vax_trigger({}, test_vax_time, vax_on,
+    dust2::ode::event<real_type> ev_vax_trigger(name, {}, test_vax_time, vax_on,
                                                 dust2::ode::root_type::both);
 
-    dust2::ode::event<real_type> ev_resp_dur({shared.i_resp_start},
+    dust2::ode::event<real_type> ev_resp_dur(name, {shared.i_resp_start},
                                              test_resp_dur, resp_off,
                                              dust2::ode::root_type::both);
 
     dust2::ode::event<real_type> ev_growth_trigger(
-        {shared.i_growth_flag}, test_epi_growth, resp_off,
+        name, {shared.i_growth_flag}, test_epi_growth, resp_off,
         dust2::ode::root_type::decrease);
 
     return dust2::ode::events_type<real_type>(
