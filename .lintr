@@ -17,6 +17,9 @@ exclusions: list(
     "R/ode.R" = list(
       object_name_linter = Inf # prevent parameter names being linted
     ),
+    "R/daedalus2.R" = list(
+      cyclocomp_linter = Inf # unavoidable due to input checking
+    ),
     "tests/testthat.R" = list(
       unused_import_linter = Inf
     ),

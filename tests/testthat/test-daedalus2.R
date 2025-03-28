@@ -14,7 +14,7 @@ test_that("daedalus2: basic expectations", {
   )
 
   # expect list is type double and non-negative
-  output = output$data
+  output <- output$data
   checkmate::expect_list(
     output,
     "numeric",
@@ -215,8 +215,8 @@ test_that("daedalus2: responses ended by epidemic growth", {
     response_time = 98,
   )
 
-  event_data = output$event_data
-  output = output$data
+  event_data <- output$event_data
+  output <- output$data
   # check that epidemic stops growing by IPR method; IPR < gamma
   ipr <- colSums(output$new_inf) / colSums(output$Is + output$Ia)
   expect_lt(

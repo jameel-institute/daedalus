@@ -17,7 +17,7 @@ test_that("daedalus2: root-finding events launch at each appropriate root", {
 
   checkmate::expect_subset(
     "npi_state_on",
-    output$event_data$name,
+    output$event_data$name
   )
 
   # expect no vaccination is launched
