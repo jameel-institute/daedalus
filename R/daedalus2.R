@@ -27,7 +27,11 @@ daedalus2_internal <- function(time_end, params, state, flags) {
   dust2::dust_system_set_state(sys, state)
 
   state <- dust2::dust_system_simulate(sys, seq(0, time_end))
-  dust2::dust_unpack_state(sys, state)
+
+  list(
+    data = dust2::dust_unpack_state(sys, state),
+    event_data = dust2::dust_system_internals(sys)[["events"]][[1]]
+  )
 }
 
 #' DAEDALUS model implemented with dust
@@ -63,7 +67,6 @@ daedalus2 <- function(
   response_time = 30,
   time_end = 100
 ) {
-
   # prepare flags
   flags <- initial_flags()
 
