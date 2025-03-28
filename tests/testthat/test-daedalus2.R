@@ -212,7 +212,7 @@ test_that("daedalus2: responses ended by epidemic growth", {
     "influenza_2009",
     "elimination",
     time_end = time_end,
-    response_time = 98,
+    response_time = 98
   )
 
   event_data <- output$event_data
