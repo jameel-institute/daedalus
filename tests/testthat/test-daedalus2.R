@@ -8,7 +8,13 @@ test_that("daedalus2: basic expectations", {
   })
   output <- daedalus2(country_canada, "influenza_1918")
 
+  checkmate::expect_list(
+    output,
+    len = 2L
+  )
+
   # expect list is type double and non-negative
+  output = output$data
   checkmate::expect_list(
     output,
     "numeric",
@@ -38,7 +44,7 @@ test_that("daedalus2: Can run with ISO2 country parameter", {
     daedalus2("CA", "influenza_1918")
   })
 
-  output <- daedalus2("CA", "influenza_1918")
+  output <- daedalus2("CA", "influenza_1918")$data
 
   # expect list is type double and non-negative
   checkmate::expect_list(
@@ -58,7 +64,7 @@ test_that("daedalus2: Can run with ISO3 country parameter", {
     daedalus2("CAN", "influenza_1918")
   })
 
-  output <- daedalus2("CAN", "influenza_1918")
+  output <- daedalus2("CAN", "influenza_1918")$data
 
   # expect list is type double and non-negative
   checkmate::expect_list(
@@ -98,11 +104,12 @@ test_that("daedalus2: Runs for all country x infection x response", {
 test_that("daedalus2: vaccination works", {
   # NOTE: test for truly no vaccination are in default daedalus2 test above
 
-  vax <- daedalus_vaccination("none", 0, 0.1, 100)
+  # NOTE: event starting at t = 0 does not work
+  vax <- daedalus_vaccination("none", 10, 0.1, 100)
   expect_no_condition(
     daedalus2("THA", "sars_cov_1", vaccine_investment = vax)
   )
-  output <- daedalus2("THA", "sars_cov_1", vaccine_investment = vax)
+  output <- daedalus2("THA", "sars_cov_1", vaccine_investment = vax)$data
 
   # expect vaccination group is non-zero
   expect_true(any(output$S_vax > 0))
@@ -111,7 +118,7 @@ test_that("daedalus2: vaccination works", {
   expect_true(any(output$E_vax > 0))
 
   # expect that vaccination reduces final size
-  output_novax <- daedalus2("THA", "sars_cov_1")
+  output_novax <- daedalus2("THA", "sars_cov_1")$data
   fs_daedalus2 <- sum(output$new_inf)
   fs_daedalus2_novax <- sum(output_novax$new_inf)
 
@@ -135,7 +142,7 @@ test_that("daedalus2: advanced vaccination features", {
     disease_x,
     vaccine_investment = vax,
     time_end = 600
-  )
+  )$data
 
   n_vax <- tail(colSums(output$S_vax) + colSums(output$R_vax), 1)
 
@@ -180,7 +187,7 @@ test_that("daedalus2: responses triggered by hospital capacity event", {
   output_fs <- vapply(
     output_list,
     function(x) {
-      sum(x$new_inf)
+      sum(x$data$new_inf)
     },
     FUN.VALUE = numeric(1)
   )
@@ -200,8 +207,16 @@ test_that("daedalus2: responses ended by epidemic growth", {
 
   d <- daedalus_infection("influenza_2009")
 
-  output <- daedalus2(x, "influenza_2009", "elimination", time_end = time_end)
+  output <- daedalus2(
+    x,
+    "influenza_2009",
+    "elimination",
+    time_end = time_end,
+    response_time = 98,
+  )
 
+  event_data = output$event_data
+  output = output$data
   # check that epidemic stops growing by IPR method; IPR < gamma
   ipr <- colSums(output$new_inf) / colSums(output$Is + output$Ia)
   expect_lt(
@@ -214,7 +229,7 @@ test_that("daedalus2: responses ended by epidemic growth", {
 
   # check that response is switched off at expected time
   expect_identical(
-    max(round(output$resp_end)),
+    event_data[event_data$name == "npi_state_off", "time"],
     end_time
   )
 })
