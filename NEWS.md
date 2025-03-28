@@ -1,4 +1,4 @@
-# daedalus (development version)
+# daedalus 0.2.7
 
 Added a mechanism to have vaccination switched on from model start time if specified by users in a `<daedalus_vaccination>` object passed to the `vaccine_investment` argument; this is because {dust2} events cannot [root-find on time at `t = 0` --- see linked PR](https://github.com/mrc-ide/dust2/pull/152).
 
