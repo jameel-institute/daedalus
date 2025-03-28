@@ -266,10 +266,11 @@ class daedalus_ode {
         daedalus::helpers::get_state_idx({iH + 1}, n_strata, N_VAX_STRATA);
 
     // NOTE: assume response ends after 60 days - awaiting better default
-    daedalus::events::response npi(response_time, response_time + 60.0,
-                                   hospital_capacity, gamma_Ia, i_npi_flag,
-                                   idx_hosp, i_ipr);
-    daedalus::events::response vaccination(vax_start_time, 0.0, 0.0, 0.0,
+    daedalus::events::response npi(std::string("npi"), response_time,
+                                   response_time + 60.0, hospital_capacity,
+                                   gamma_Ia, i_npi_flag, idx_hosp, i_ipr);
+    daedalus::events::response vaccination(std::string("vaccination"),
+                                           vax_start_time, 0.0, 0.0, 0.0,
                                            i_vax_flag, {0}, 0);
 
     // clang-format off
