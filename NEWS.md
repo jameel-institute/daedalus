@@ -1,5 +1,9 @@
 # daedalus 0.2.8
 
+## Breaking changes
+
+daedalus2() output type is now a two-element list with event data included. Time-series data are in `data`. This output type will be converted to `<daedalus_output>` in future versions.
+
 This patch version implements a `response` class to better organise event handling. All events can be launched and ended at specific times, or by specific state variables crossing threshold values. Only some of these triggers can be controlled by the user from R; others are hard-coded in C++:
 
 - NPI response start time is added as an argument to `daedalus2()` similar to `daedalus()`;
