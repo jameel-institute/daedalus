@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,11 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.7" id="daedalus-027">daedalus 0.2.7<a class="anchor" aria-label="anchor" href="#daedalus-027"></a></h2>
+<p>Added a mechanism to have vaccination switched on from model start time if specified by users in a <code>&lt;daedalus_vaccination&gt;</code> object passed to the <code>vaccine_investment</code> argument; this is because {dust2} events cannot <a href="https://github.com/mrc-ide/dust2/pull/152" class="external-link">root-find on time at <code>t = 0</code> — see linked PR</a>.</p>
+<ul><li>Internal function <code><a href="../reference/dummy_vaccination.html">dummy_vaccination()</a></code> allows creation of a <code>&lt;daedalus_vaccination&gt;</code> with start time = 0 using internal class constructor. Vaccination class validator now accepts <code>"dummy"</code> as a valid vaccination strategy name. This is not affected by the changes to the initial vaccination flag (all other parameters are also set to 0.0).</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.6" id="daedalus-026">daedalus 0.2.6<a class="anchor" aria-label="anchor" href="#daedalus-026"></a></h2>
 <p>This version adds the response strategy functionality, with response start and end implemented as {dust2} events.</p>
