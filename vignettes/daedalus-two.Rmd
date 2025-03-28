@@ -21,7 +21,7 @@ library(daedalus)
 This vignette is intended as a visual check on _daedalus_ features in development.
 
 ```{r}
-output <- daedalus2("GBR", "influenza_2009")
+output <- daedalus2("GBR", "influenza_2009")$data
 
 plot(colSums(output$S))
 plot(colSums(output$E))
@@ -46,7 +46,7 @@ This section aims to be a visual check on vaccination in `daedalus2()` as the re
 ```{r}
 # high vaccination rate but low uptake limit
 vax <- daedalus_vaccination("high", uptake_limit = 40)
-output <- daedalus2("GBR", "influenza_2009", vaccine_investment = vax)
+output <- daedalus2("GBR", "influenza_2009", vaccine_investment = vax)$data
 
 # unvaccinated
 plot(colSums(output$S))
@@ -75,7 +75,7 @@ output <- daedalus2(
   x, "influenza_2009",
   response_strategy = "elimination",
   time_end = 100
-)
+)$data
 
 # expect a sharp drop in new infections
 plot(colSums(output$E), type = "l")
