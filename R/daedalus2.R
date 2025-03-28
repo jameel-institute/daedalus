@@ -11,21 +11,27 @@ initial_flags <- function() {
   resp_start <- 0.0
   resp_end <- 0.0
 
-  c(growth_flag, resp_flag, vax_flag, resp_start, resp_end)
+  c(
+    growth_flag = growth_flag,
+    resp_flag = resp_flag,
+    vax_flag = vax_flag,
+    resp_start = resp_start,
+    resp_end = resp_end
+  )
 }
 
 #' Internal function for daedalus2
 #'
 #' @return A list of state values as returned by `dust2::dust_unpack_state()`.
 #' @keywords internal
-daedalus2_internal <- function(time_end, params, state) {
+daedalus2_internal <- function(time_end, params, state, flags) {
   # NOTE: sys params assumed suitable for `do.call()`
   sys_params <- list(daedalus_ode, pars = params)
   sys <- do.call(dust2::dust_system_create, sys_params)
 
   # convert state to vector and add initial flags
   state <- as.vector(state)
-  state <- c(state, initial_flags())
+  state <- c(state, flags)
   dust2::dust_system_set_state(sys, state)
 
   state <- dust2::dust_system_simulate(sys, seq(0, time_end))
@@ -58,12 +64,14 @@ daedalus2_internal <- function(time_end, params, state) {
 #'
 #' names(output)
 daedalus2 <- function(
-  country,
-  infection,
-  response_strategy = NULL,
-  vaccine_investment = NULL,
-  time_end = 100
-) {
+    country,
+    infection,
+    response_strategy = NULL,
+    vaccine_investment = NULL,
+    time_end = 100) {
+  # prepare flags
+  flags <- initial_flags()
+
   # input checking
   # NOTE: names are case sensitive
   checkmate::assert_multi_class(country, c("daedalus_country", "character"))
@@ -99,6 +107,13 @@ daedalus2 <- function(
     c("daedalus_vaccination", "character"),
     null.ok = TRUE
   )
+  if (
+    is_daedalus_vaccination(vaccine_investment) &&
+      get_data(vaccine_investment, "start_time") == 0.0
+  ) {
+    # check vaccination start time and set vaccination flag
+    flags["vax_flag"] <- 1.0
+  }
   if (is.null(vaccine_investment)) {
     vaccine_investment <- dummy_vaccination()
   }
@@ -135,7 +150,7 @@ daedalus2 <- function(
     )
   )
 
-  output <- daedalus2_internal(time_end, parameters, initial_state)
+  output <- daedalus2_internal(time_end, parameters, initial_state, flags)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`

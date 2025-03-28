@@ -87,7 +87,7 @@ daedalus_vaccination <- function(
   # input checking
   name <- rlang::arg_match(name, daedalus::vaccination_scenario_names)
 
-  checkmate::assert_integerish(start_time, lower = 1, null.ok = TRUE)
+  checkmate::assert_integerish(start_time, lower = 0, null.ok = TRUE)
   checkmate::assert_number(
     rate,
     null.ok = TRUE,
