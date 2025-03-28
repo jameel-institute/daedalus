@@ -2,7 +2,7 @@
 
 Added a mechanism to have vaccination switched on from model start time if specified by users in a `<daedalus_vaccination>` object passed to the `vaccine_investment` argument; this is because {dust2} events cannot [root-find on time at `t = 0` --- see linked PR](https://github.com/mrc-ide/dust2/pull/152).
 
-- Internal function `dummy_vaccination()` allows creation of a `<daedalus_vaccination>` with start time = 0 using internal class constructor. Vaccination class validator now accepts `"dummy"` as a valid vaccination strategy name. This is not affected by the changes to the intial vaccination flag (all other parameters are also set to 0.0).
+- Internal function `dummy_vaccination()` allows creation of a `<daedalus_vaccination>` with start time = 0 using internal class constructor. Vaccination class validator now accepts `"dummy"` as a valid vaccination strategy name. This is not affected by the changes to the initial vaccination flag (all other parameters are also set to 0.0).
 
 # daedalus 0.2.6
 
