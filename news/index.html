@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,25 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.8" id="daedalus-028">daedalus 0.2.8<a class="anchor" aria-label="anchor" href="#daedalus-028"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-2-8">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-8"></a></h3>
+<p>daedalus2() output type is now a two-element list with event data included. Time-series data are in <code>data</code>. This output type will be converted to <code>&lt;daedalus_output&gt;</code> in future versions.</p>
+<p>This patch version implements a <code>response</code> class to better organise event handling. All events can be launched and ended at specific times, or by specific state variables crossing threshold values. Only some of these triggers can be controlled by the user from R; others are hard-coded in C++:</p>
+<ul><li><p>NPI response start time is added as an argument to <code><a href="../reference/daedalus2.html">daedalus2()</a></code> similar to <code><a href="../reference/daedalus.html">daedalus()</a></code>;</p></li>
+<li><p>NPI response starts on <code>hospital_threshold</code> (a country parameters) being crossed;</p></li>
+<li><p>NPI response is intended to end when the <a href="https://doi.org/10.1097/01.aids.0000244213.23574.fa" class="external-link">incidence-prevalence ratio reaches the recovery rate</a> (for asymptomatic infections); this does not appear to work as the solver jumps over this root.</p></li>
+<li><p>Vaccination start time can be specified by the user in the vaccination object or strategy; no specific end triggers are specified as vaccination rate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ν</mi><annotation encoding="application/x-tex">\nu</annotation></semantics></math> is scaled within the ODE RHS to decline as the uptake limit is reached.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="c-code-0-2-8">C++ code<a class="anchor" aria-label="anchor" href="#c-code-0-2-8"></a></h3>
+<ul><li><p>Added class <code>response</code> under namespace <code>daedalus::events</code> to be a general data structure and lambda generator for NPI and vaccination events.</p></li>
+<li><p>Added <code>response</code> objects to shared state to hold event parameters that were previously floating around; reorganised parameter reading.</p></li>
+<li><p>Replaced contents of <code>events</code> struct in <code>daedalus_ode</code> class with <code>response</code> member functions for NPI and vaccination objects.</p></li>
+<li><p>Removed state variables logging response start and end times.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.7" id="daedalus-027">daedalus 0.2.7<a class="anchor" aria-label="anchor" href="#daedalus-027"></a></h2>
 <p>Added a mechanism to have vaccination switched on from model start time if specified by users in a <code>&lt;daedalus_vaccination&gt;</code> object passed to the <code>vaccine_investment</code> argument; this is because {dust2} events cannot <a href="https://github.com/mrc-ide/dust2/pull/152" class="external-link">root-find on time at <code>t = 0</code> — see linked PR</a>.</p>

@@ -11,7 +11,7 @@ the model implemented in C++ to integrate with dust2
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,6 +71,7 @@ the model implemented in C++ to integrate with <span class="pkg">dust2</span>
 <span>  <span class="va">infection</span>,</span>
 <span>  response_strategy <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  vaccine_investment <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  response_time <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  time_end <span class="op">=</span> <span class="fl">100</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -121,6 +122,13 @@ Other accepted values are <code>"low"</code>, <code>"medium"</code> and <code>"h
 <code><a href="class_vaccination.html">daedalus_vaccination()</a></code> for more information.</p></dd>
 
 
+<dt id="arg-response-time">response_time<a class="anchor" aria-label="anchor" href="#arg-response-time"></a></dt>
+<dd><p>A single numeric value for the time in days
+at which the selected response is activated. This is ignored if the response
+has already been activated by the hospitalisation threshold being reached.
+Defaults to 30 days.</p></dd>
+
+
 <dt id="arg-time-end">time_end<a class="anchor" aria-label="anchor" href="#arg-time-end"></a></dt>
 <dd><p>An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
@@ -144,11 +152,7 @@ will be updated soon.</p>
 <span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus2</span><span class="op">(</span><span class="st">"GBR"</span>, <span class="st">"sars_cov_1"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "S"            "E"            "Is"           "Ia"           "H"           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "R"            "D"            "new_inf"      "new_hosp"     "S_vax"       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "E_vax"        "Is_vax"       "Ia_vax"       "H_vax"        "R_vax"       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "D_vax"        "new_inf_vax"  "new_hosp_vax" "growth_flag"  "resp_flag"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "vax_flag"     "resp_start"   "resp_end"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "data"       "event_data"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

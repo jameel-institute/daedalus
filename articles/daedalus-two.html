@@ -22,7 +22,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,7 +91,7 @@
 <p>This vignette is intended as a visual check on <em>daedalus</em>
 features in development.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus2.html">daedalus2</a></span><span class="op">(</span><span class="st">"GBR"</span>, <span class="st">"influenza_2009"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus2.html">daedalus2</a></span><span class="op">(</span><span class="st">"GBR"</span>, <span class="st">"influenza_2009"</span><span class="op">)</span><span class="op">$</span><span class="va">data</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">S</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="daedalus-two_files/figure-html/unnamed-chunk-2-1.png" width="768"></p>
@@ -129,7 +129,7 @@ features in development.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># high vaccination rate but low uptake limit</span></span>
 <span><span class="va">vax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/class_vaccination.html">daedalus_vaccination</a></span><span class="op">(</span><span class="st">"high"</span>, uptake_limit <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
-<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus2.html">daedalus2</a></span><span class="op">(</span><span class="st">"GBR"</span>, <span class="st">"influenza_2009"</span>, vaccine_investment <span class="op">=</span> <span class="va">vax</span><span class="op">)</span></span>
+<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus2.html">daedalus2</a></span><span class="op">(</span><span class="st">"GBR"</span>, <span class="st">"influenza_2009"</span>, vaccine_investment <span class="op">=</span> <span class="va">vax</span><span class="op">)</span><span class="op">$</span><span class="va">data</span></span>
 <span></span>
 <span><span class="co"># unvaccinated</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">S</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -183,7 +183,7 @@ features in development.</p>
 <span>  <span class="va">x</span>, <span class="st">"influenza_2009"</span>,</span>
 <span>  response_strategy <span class="op">=</span> <span class="st">"elimination"</span>,</span>
 <span>  time_end <span class="op">=</span> <span class="fl">100</span></span>
-<span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">data</span></span>
 <span></span>
 <span><span class="co"># expect a sharp drop in new infections</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">E</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></code></pre></div>
@@ -193,10 +193,10 @@ features in development.</p>
 <p><img src="daedalus-two_files/figure-html/unnamed-chunk-5-2.png" width="768"></p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">resp_flag</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">npi_flag</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="daedalus-two_files/figure-html/unnamed-chunk-5-3.png" width="768"></p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">growth_flag</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">ipr</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="daedalus-two_files/figure-html/unnamed-chunk-5-4.png" width="768"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
