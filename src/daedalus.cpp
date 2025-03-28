@@ -164,7 +164,7 @@ class daedalus_ode {
                           {"Ia_vax", dim_vec},       {"H_vax", dim_vec},
                           {"R_vax", dim_vec},        {"D_vax", dim_vec},
                           {"new_inf_vax", dim_vec},  {"new_hosp_vax", dim_vec},
-                          {"ipr_flag", dim_flag},    {"npi_flag", dim_flag},
+                          {"ipr", dim_flag},    {"npi_flag", dim_flag},
                           {"vax_flag", dim_flag}};
     // clang-format on
   }
