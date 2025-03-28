@@ -7,7 +7,7 @@
 initial_flags <- function() {
   vax_flag <- 0.0
   npi_flag <- 0.0
-  ipr <- 0.0
+  ipr <- 0.0 # incidence-prevalence ratio
 
   c(ipr = ipr, npi_flag = npi_flag, vax_flag = vax_flag)
 }
@@ -60,13 +60,12 @@ daedalus2_internal <- function(time_end, params, state, flags) {
 #'
 #' names(output)
 daedalus2 <- function(
-  country,
-  infection,
-  response_strategy = NULL,
-  vaccine_investment = NULL,
-  response_time = 30,
-  time_end = 100
-) {
+    country,
+    infection,
+    response_strategy = NULL,
+    vaccine_investment = NULL,
+    response_time = 30,
+    time_end = 100) {
   # prepare flags
   flags <- initial_flags()
 
