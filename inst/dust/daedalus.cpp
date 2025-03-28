@@ -102,7 +102,7 @@ class daedalus_ode {
     TensorMat t_comm_inf, t_foi, workplace_infected, t_comm_inf_age,
         consumer_worker_infections, susc_workers, sToE, eToIs, eToIa, isToR,
         iaToR, isToH, hToR, hToD, rToS;
-    double nu_eff;
+    double nu_eff, beta_tmp;
   };
 
   static internal_state build_internal(const shared_state &shared) {
@@ -127,6 +127,9 @@ class daedalus_ode {
     // effective vaccination rate is initially the vaccination rate
     double nu_eff = shared.nu;
 
+    // initial temporary beta is original beta
+    double beta_tmp = shared.beta;
+
     // clang-format off
     return internal_state{
       t_comm_inf, t_foi, workplace_infected,
@@ -134,7 +137,7 @@ class daedalus_ode {
       consumer_worker_infections,
       susc_workers,
       sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS,
-      nu_eff
+      nu_eff, beta_tmp
     };
     // clang-format on
   }
@@ -240,10 +243,12 @@ class daedalus_ode {
     // response time is only 0.0 when response is NULL or 'none'
     // this is used to set hosp capacity to NAN so the response is not triggered
     const real_type response_time =
-        dust2::r::read_real(pars, "response_time", 0.0);
+        dust2::r::read_real(pars, "response_time", NAN);
     // hospital capacity data
     const real_type hospital_capacity =
-        dust2::r::read_real(pars, "hospital_capacity", NAN);
+        std::isnan(response_time)
+            ? NAN
+            : dust2::r::read_real(pars, "hospital_capacity", NAN);
     // handling openness vector
     TensorMat openness(n_econ_groups, 1);
     dust2::r::read_real_vector(pars, n_econ_groups, openness.data(), "openness",
@@ -336,6 +341,17 @@ class daedalus_ode {
                                      daedalus::constants::N_COMPARTMENTS,
                                      N_VAX_STRATA);
 
+    // calculate total deaths and scale beta by concern, but only if an
+    // NPI is active
+    // TODO(pratik): change in future so public-concern is independent of NPIs
+    internal.hToD = shared.omega * t_x.chip(iH, i_COMPS);  // new deaths
+    Eigen::Tensor<double, 0> total_deaths = internal.hToD.sum();
+    internal.beta_tmp =
+        shared.beta *
+        daedalus::events::switch_by_flag(
+            daedalus::helpers::get_concern_coefficient(total_deaths(0)),
+            state[shared.i_npi_flag]);
+
     // all chip ops on dim N have dim N-1
     // compartmental transitions
     // Susceptible (unvaccinated) to exposed
@@ -352,7 +368,7 @@ class daedalus_ode {
 
     // calculate C * I_w and C * I_cons for a n_econ_groups-length array
     internal.workplace_infected =
-        shared.beta *
+        internal.beta_tmp *
         shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, 1)
         daedalus::events::switch_by_flag(shared.openness,
                                          state[shared.i_npi_flag]) *  // scale β
@@ -365,7 +381,7 @@ class daedalus_ode {
         Eigen::array<Eigen::Index, 2>{n_age_groups, 1});
 
     internal.consumer_worker_infections =
-        shared.beta *
+        internal.beta_tmp *
         daedalus::events::switch_by_flag(shared.openness,
                                          state[shared.i_npi_flag]) *  // scale β
         shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
@@ -376,7 +392,7 @@ class daedalus_ode {
                    Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA});
 
     internal.sToE = t_x.chip(iS, i_COMPS) * internal.t_foi *
-                    shared.beta;  // dims (n_strata, 2)
+                    internal.beta_tmp;  // dims (n_strata, 2)
 
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
@@ -401,7 +417,6 @@ class daedalus_ode {
 
     internal.isToH = shared.eta * t_x.chip(iIs, i_COMPS);
     internal.hToR = shared.gamma_H * t_x.chip(iH, i_COMPS);
-    internal.hToD = shared.omega * t_x.chip(iH, i_COMPS);
 
     internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
 
