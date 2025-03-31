@@ -1,3 +1,11 @@
+# daedalus 0.2.9
+
+- Added public-concern social distancing to `daedalus2()`, and re-added it to `daedalus()`; this reverses the removal in v0.2.3. The functions are equivalent: social-distancing is active only when an NPI is active.
+
+- Added a filter on `NULL` to `daedalus2()` parameter collection step - this helps remove parameters and allows treating missing values as a meaningful indicator in the C++ code (as 0.0 can be a valid value in many cases).
+
+- **Removed** default response duration of 60 days in `daedalus2()` as this is not present in `daedalus()` leading to non-equivalence in tests.
+
 # daedalus 0.2.8
 
 ## Breaking changes

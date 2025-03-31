@@ -21,3 +21,4 @@ scratch*
 format-cpp.sh
 lint-cpp.sh
 format-R.sh
+.vscode
