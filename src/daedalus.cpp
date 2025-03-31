@@ -248,8 +248,9 @@ class daedalus_ode {
         dust2::r::read_real(pars, "response_time", NAN);
     // hospital capacity data
     const real_type hospital_capacity =
-        std::isnan(response_time) ? NAN :
-        dust2::r::read_real(pars, "hospital_capacity", NAN);
+        std::isnan(response_time)
+            ? NAN
+            : dust2::r::read_real(pars, "hospital_capacity", NAN);
     // handling openness vector
     TensorMat openness(n_econ_groups, 1);
     dust2::r::read_real_vector(pars, n_econ_groups, openness.data(), "openness",
@@ -271,10 +272,10 @@ class daedalus_ode {
     std::vector<size_t> idx_hosp =
         daedalus::helpers::get_state_idx({iH + 1}, n_strata, N_VAX_STRATA);
 
-    // NOTE: assume response ends after 60 days - awaiting better default
-    daedalus::events::response npi(std::string("npi"), response_time,
-                                   response_time + 60.0, hospital_capacity,
-                                   gamma_Ia, i_npi_flag, idx_hosp, i_ipr);
+    // NOTE: no response end time specified for now; represented by 0.0
+    daedalus::events::response npi(std::string("npi"), response_time, 0.0,
+                                   hospital_capacity, gamma_Ia, i_npi_flag,
+                                   idx_hosp, i_ipr);
     daedalus::events::response vaccination(std::string("vaccination"),
                                            vax_start_time, 0.0, 0.0, 0.0,
                                            i_vax_flag, {0}, 0);
@@ -352,7 +353,7 @@ class daedalus_ode {
         daedalus::events::switch_by_flag(
             daedalus::helpers::get_concern_coefficient(total_deaths(0)),
             state[shared.i_npi_flag]);
-    
+
     // all chip ops on dim N have dim N-1
     // compartmental transitions
     // Susceptible (unvaccinated) to exposed
