@@ -60,12 +60,13 @@ daedalus2_internal <- function(time_end, params, state, flags) {
 #'
 #' names(output)
 daedalus2 <- function(
-    country,
-    infection,
-    response_strategy = NULL,
-    vaccine_investment = NULL,
-    response_time = 30,
-    time_end = 100) {
+  country,
+  infection,
+  response_strategy = NULL,
+  vaccine_investment = NULL,
+  response_time = 30,
+  time_end = 100
+) {
   # prepare flags
   flags <- initial_flags()
 
@@ -83,9 +84,10 @@ daedalus2 <- function(
 
   # checks on interventions
   # also prepare the appropriate economic openness vectors
-  # allowing for a numeric vector, or NULL for no response
+  # allowing for a numeric vector, or NULL for truly response
   if (is.null(response_strategy)) {
     openness <- rep(1.0, N_ECON_SECTORS)
+    response_time <- NULL # to be filtered out later
   } else if (is.numeric(response_strategy)) {
     checkmate::assert_numeric(
       response_strategy,
@@ -161,6 +163,9 @@ daedalus2 <- function(
       response_time = response_time
     )
   )
+
+  # filter out NULLs so missing values can be read as NAN in C++
+  parameters <- Filter(function(x) !is.null(x), parameters)
 
   output <- daedalus2_internal(time_end, parameters, initial_state, flags)
 
