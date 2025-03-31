@@ -42,7 +42,7 @@ daedalus_rhs <- function(t, state, parameters) {
   state_ <- values_to_state(state)
 
   # remove delta vaccinations layer
-  state_ <- state_[, , -i_NEW_VAX_STRATUM]
+  state_ <- state_[,, -i_NEW_VAX_STRATUM]
 
   #### Parameter preparation ####
   beta <- parameters[["beta"]]
@@ -101,11 +101,12 @@ daedalus_rhs <- function(t, state, parameters) {
   d_state[, i_D, ] <- new_deaths
   new_deaths_total <- sum(new_deaths)
 
-  beta <- beta * if (switch) {
-    get_distancing_coefficient(new_deaths_total)
-  } else {
-    1.0
-  }
+  beta <- beta *
+    if (switch) {
+      get_distancing_coefficient(new_deaths_total)
+    } else {
+      1.0
+    }
 
   #### Force of infection calculations ####
   # NOTE: get total number in each age group infectious
@@ -203,8 +204,7 @@ daedalus_rhs <- function(t, state, parameters) {
   d_state <- values_to_state(c(d_state, d_vax_temp))
 
   # log new vaccinations
-  d_state[, c(i_S, i_R), i_NEW_VAX_STRATUM] <- state_[
-    ,
+  d_state[, c(i_S, i_R), i_NEW_VAX_STRATUM] <- state_[,
     c(i_S, i_R),
     i_UNVACCINATED_STRATUM
   ] *
@@ -213,8 +213,7 @@ daedalus_rhs <- function(t, state, parameters) {
   # NOTE: changes in S and R are on top of previous changes due to infection,
   # recovery, and waning
   # change in vaccinated: only susceptible and recovered are vaccinated
-  d_state[, c(i_S, i_R), i_VACCINATED_STRATUM] <- d_state[
-    ,
+  d_state[, c(i_S, i_R), i_VACCINATED_STRATUM] <- d_state[,
     c(i_S, i_R),
     i_VACCINATED_STRATUM
   ] +
@@ -222,8 +221,7 @@ daedalus_rhs <- function(t, state, parameters) {
     state_[, c(i_S, i_R), i_VACCINATED_STRATUM] * psi
 
   # change in unvaccinated: assume waning only for susceptible and recovered
-  d_state[, c(i_S, i_R), i_UNVACCINATED_STRATUM] <- d_state[
-    ,
+  d_state[, c(i_S, i_R), i_UNVACCINATED_STRATUM] <- d_state[,
     c(i_S, i_R),
     i_UNVACCINATED_STRATUM
   ] +
