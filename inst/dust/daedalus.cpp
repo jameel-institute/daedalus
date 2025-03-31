@@ -147,19 +147,27 @@ class daedalus_ode {
     // TODO(pratik): write a function to return this - names may need to be
     // more generic
 
-    // clang-format off
-    return dust2::packing{{"S", dim_vec},            {"E", dim_vec},
-                          {"Is", dim_vec},           {"Ia", dim_vec},
-                          {"H", dim_vec},            {"R", dim_vec},
-                          {"D", dim_vec},            {"new_inf", dim_vec},
-                          {"new_hosp", dim_vec},     {"S_vax", dim_vec},
-                          {"E_vax", dim_vec},        {"Is_vax", dim_vec},
-                          {"Ia_vax", dim_vec},       {"H_vax", dim_vec},
-                          {"R_vax", dim_vec},        {"D_vax", dim_vec},
-                          {"new_inf_vax", dim_vec},  {"new_hosp_vax", dim_vec},
-                          {"ipr", dim_flag},    {"npi_flag", dim_flag},
+    return dust2::packing{{"susceptible", dim_vec},
+                          {"exposed", dim_vec},
+                          {"infect_symp", dim_vec},
+                          {"infect_asymp", dim_vec},
+                          {"hospitalised", dim_vec},
+                          {"recovered", dim_vec},
+                          {"dead", dim_vec},
+                          {"new_infections", dim_vec},
+                          {"new_hosp", dim_vec},
+                          {"susceptible_vax", dim_vec},
+                          {"exposed_vax", dim_vec},
+                          {"infect_symp_vax", dim_vec},
+                          {"infect_asymp_vax", dim_vec},
+                          {"hospitalised_vax", dim_vec},
+                          {"recovered_vax", dim_vec},
+                          {"dead_vax", dim_vec},
+                          {"new_infections_vax", dim_vec},
+                          {"new_hosp_vax", dim_vec},
+                          {"ipr", dim_flag},
+                          {"npi_flag", dim_flag},
                           {"vax_flag", dim_flag}};
-    // clang-format on
   }
 
   /// @brief Initialise shared parameters.
