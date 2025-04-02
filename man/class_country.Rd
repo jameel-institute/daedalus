@@ -11,7 +11,7 @@ daedalus_country(
   country,
   parameters = list(contact_matrix = NULL, contacts_workplace = NULL,
     contacts_consumer_worker = NULL),
-  group_working_age = NULL
+  group_working_age = i_WORKING_AGE
 )
 
 is_daedalus_country(x)
@@ -27,6 +27,9 @@ ISO3 code; must be from among \link{country_codes_iso2c} or
 allowed to be modified. Currently, users may only pass their own contact
 matrix, workplace contacts, and consumer-worker contact matrix. If these are
 not passed, default values are accessed from stored package data.}
+
+\item{group_working_age}{An optional value for the age-group that is
+considered to be the working-age group. Defaults to \code{i_WORKING_AGE = 3}.}
 
 \item{x}{An object of the \verb{<daedalus_country>} class.}
 

@@ -39,6 +39,9 @@ new_daedalus_country <- function(name, parameters) {
 #' matrix, workplace contacts, and consumer-worker contact matrix. If these are
 #' not passed, default values are accessed from stored package data.
 #'
+#' @param group_working_age An optional value for the age-group that is
+#' considered to be the working-age group. Defaults to `i_WORKING_AGE = 3`.
+#'
 #' @export
 #' @return
 #'
@@ -77,7 +80,7 @@ daedalus_country <- function(
     contacts_workplace = NULL,
     contacts_consumer_worker = NULL
   ),
-  group_working_age = NULL
+  group_working_age = i_WORKING_AGE
 ) {
   # input checking
   name <- country_name_from_arg(country)
