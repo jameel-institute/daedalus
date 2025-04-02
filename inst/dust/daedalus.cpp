@@ -86,7 +86,6 @@ class daedalus_ode {
     const real_type nu, psi, uptake_limit;
 
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
-    const std::vector<size_t> i_to_zero;
     const TensorMat cm, cm_cons_work, cm_work;
     const TensorMat susc, openness;
 
@@ -262,10 +261,6 @@ class daedalus_ode {
     dust2::r::read_real_vector(pars, n_econ_groups, openness.data(), "openness",
                                true);
 
-    // DATA COMPARTMENTS TO ZERO
-    const std::vector<size_t> i_to_zero = daedalus::helpers::get_state_idx(
-        daedalus::constants::seq_DATA_COMPARTMENTS, n_strata, N_VAX_STRATA);
-
     // RELATIVE LOCATIONS OF RESPONSE-RELATED FLAGS
     const int total_compartments = n_strata * N_VAX_STRATA * N_COMPARTMENTS;
     const size_t i_ipr = total_compartments + daedalus::constants::i_rel_IPR;
@@ -292,7 +287,7 @@ class daedalus_ode {
         rho,          gamma_Ia,   gamma_Is,     eta,
         omega,        gamma_H,    nu,           psi,
         uptake_limit, n_strata,   n_age_groups, n_econ_groups,
-        popsize,      i_to_zero,  cm,           cm_cw,
+        popsize,      cm,           cm_cw,
         cm_work,      susc,       openness,
         i_ipr,  // state index holding incidence/prevalence ratio
         i_npi_flag,   i_vax_flag, npi,          vaccination};
@@ -477,7 +472,6 @@ class daedalus_ode {
   /// @return Probably an array of zeros.
   static auto zero_every(const shared_state &shared) {
     return dust2::zero_every_type<real_type>{
-        {1, shared.i_to_zero},
-        {1, {shared.i_ipr}}};  // zero data and flag compartments
+        {1, {shared.i_ipr}}};  // zero IPR value
   }
 };
