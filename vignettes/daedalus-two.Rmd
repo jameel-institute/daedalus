@@ -16,49 +16,79 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(daedalus)
+library(ggplot2)
+library(dplyr)
 ```
 
 This vignette is intended as a visual check on _daedalus_ features in development.
 
-```{r}
-output <- daedalus2("GBR", "influenza_2009")$data
+## Basic `daedalus2()` usage
 
-plot(colSums(output$S))
-plot(colSums(output$E))
-plot(colSums(output$Is))
-plot(colSums(output$Ia))
-plot(colSums(output$H))
-plot(colSums(output$R))
-plot(colSums(output$D))
-```
-
-This should be a curve and not monotonically increasing.
+This example shows (checks) that `daedalus2()` output works with pre-built function `get_incidence()` written for `daedalus()`.
 
 ```{r}
-plot(colSums(output$new_inf))
-plot(colSums(output$new_hosp))
+output <- daedalus2("GBR", "influenza_2009")
+
+# get incidence data using function developed for daedalus()
+data <- get_incidence(output, "infections")
+
+ggplot(data) +
+  geom_line(
+    aes(time, value)
+  ) +
+  labs(x = "Time", y = "New infections")
 ```
 
 ## Vaccination
 
-This section aims to be a visual check on vaccination in `daedalus2()` as the return type is not fully compatible with `daedalus()` output.
+This section aims to be a visual check on vaccination in `daedalus2()` as this function does not currently log new vaccinations.
 
 ```{r}
 # high vaccination rate but low uptake limit
-vax <- daedalus_vaccination("high", uptake_limit = 40)
-output <- daedalus2("GBR", "influenza_2009", vaccine_investment = vax)$data
+vax <- daedalus_vaccination("high", uptake_limit = 40, start_time = 30)
+output <- daedalus2("GBR", "influenza_2009", vaccine_investment = vax)
 
-# unvaccinated
-plot(colSums(output$S))
-plot(colSums(output$E))
-plot(colSums(output$new_inf))
-plot(colSums(output$new_hosp))
+data <- get_data(output) %>%
+  filter(vaccine_group == "vaccinated", compartment == "susceptible") %>%
+  group_by(time) %>%
+  summarise(
+    value = sum(value)
+  )
 
-# vaccinated
-plot(colSums(output$S_vax))
-plot(colSums(output$E_vax))
-plot(colSums(output$new_inf_vax))
-plot(colSums(output$new_hosp_vax))
+# check that vaccinations begin at time = 100
+ggplot(data, aes(time, value)) +
+  geom_line() +
+  labs(
+    x = "Time", y = "Vaccinated susceptibles (prevalence)",
+    caption = "Vaccinated susceptibles decrease due to infections."
+  )
+```
+
+Check that fully protective (non-leaky) vaccination does not see a mid-epidemic reduction in vaccinated susceptibles.
+
+```{r}
+# efficacy is 100 for non-leaky vaccination
+vax <- daedalus_vaccination(
+  "high",
+  start_time = 30, efficacy = 100,
+  uptake_limit = 40
+)
+output <- daedalus2("GBR", "influenza_2009", vaccine_investment = vax)
+
+data <- get_data(output) %>%
+  filter(vaccine_group == "vaccinated", compartment == "susceptible") %>%
+  group_by(time) %>%
+  summarise(
+    value = sum(value)
+  )
+
+# check that vaccinations begin at time = 100
+ggplot(data, aes(time, value)) +
+  geom_line() +
+  labs(
+    x = "Time", y = "Vaccinated susceptibles (prevalence)",
+    caption = "Vaccinated susceptibles do not decrease due to infections."
+  )
 ```
 
 ## Events
@@ -68,19 +98,30 @@ This section is a visual check on events.
 ```{r}
 # trigger event on low hospital capacity
 x <- daedalus_country("GBR")
-x$hospital_capacity <- 1e4
+x$hospital_capacity <- 1e3
 x
 
-output <- daedalus2(
+output_npi <- daedalus2(
   x, "influenza_2009",
-  response_strategy = "elimination",
-  time_end = 100
-)$data
+  response_strategy = "elimination"
+)
+output_no_npi <- daedalus2(
+  x, "influenza_2009"
+)
 
-# expect a sharp drop in new infections
-plot(colSums(output$E), type = "l")
-plot(colSums(output$new_inf), type = "l")
+# get incidence data and check for differences
+data_npi <- get_incidence(output_npi, "infections")
+data_no_npi <- get_incidence(output_no_npi, "infections")
 
-plot(colSums(output$npi_flag), type = "l")
-plot(colSums(output$ipr), type = "l")
+# add scenario marker and plot comparison
+data_npi$scenario <- "npi"
+data_no_npi$scenario <- "no_npi"
+
+data <- bind_rows(data_npi, data_no_npi)
+
+ggplot(data, aes(time, value, col = scenario)) +
+  geom_line() +
+  labs(
+    x = "Time", y = "Incidence"
+  )
 ```
