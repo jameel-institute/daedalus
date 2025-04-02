@@ -88,7 +88,6 @@ class daedalus_ode {
     const real_type nu, psi, uptake_limit;
 
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
-    const std::vector<size_t> i_to_zero;
     const TensorMat cm, cm_cons_work, cm_work;
     const TensorMat susc, openness;
 
@@ -149,19 +148,27 @@ class daedalus_ode {
     // TODO(pratik): write a function to return this - names may need to be
     // more generic
 
-    // clang-format off
-    return dust2::packing{{"S", dim_vec},            {"E", dim_vec},
-                          {"Is", dim_vec},           {"Ia", dim_vec},
-                          {"H", dim_vec},            {"R", dim_vec},
-                          {"D", dim_vec},            {"new_inf", dim_vec},
-                          {"new_hosp", dim_vec},     {"S_vax", dim_vec},
-                          {"E_vax", dim_vec},        {"Is_vax", dim_vec},
-                          {"Ia_vax", dim_vec},       {"H_vax", dim_vec},
-                          {"R_vax", dim_vec},        {"D_vax", dim_vec},
-                          {"new_inf_vax", dim_vec},  {"new_hosp_vax", dim_vec},
-                          {"ipr", dim_flag},    {"npi_flag", dim_flag},
+    return dust2::packing{{"susceptible", dim_vec},
+                          {"exposed", dim_vec},
+                          {"infect_symp", dim_vec},
+                          {"infect_asymp", dim_vec},
+                          {"hospitalised", dim_vec},
+                          {"recovered", dim_vec},
+                          {"dead", dim_vec},
+                          {"new_infections", dim_vec},
+                          {"new_hosp", dim_vec},
+                          {"susceptible_vax", dim_vec},
+                          {"exposed_vax", dim_vec},
+                          {"infect_symp_vax", dim_vec},
+                          {"infect_asymp_vax", dim_vec},
+                          {"hospitalised_vax", dim_vec},
+                          {"recovered_vax", dim_vec},
+                          {"dead_vax", dim_vec},
+                          {"new_infections_vax", dim_vec},
+                          {"new_hosp_vax", dim_vec},
+                          {"ipr", dim_flag},
+                          {"npi_flag", dim_flag},
                           {"vax_flag", dim_flag}};
-    // clang-format on
   }
 
   /// @brief Initialise shared parameters.
@@ -248,10 +255,6 @@ class daedalus_ode {
     dust2::r::read_real_vector(pars, n_econ_groups, openness.data(), "openness",
                                true);
 
-    // DATA COMPARTMENTS TO ZERO
-    const std::vector<size_t> i_to_zero = daedalus::helpers::get_state_idx(
-        daedalus::constants::seq_DATA_COMPARTMENTS, n_strata, N_VAX_STRATA);
-
     // RELATIVE LOCATIONS OF RESPONSE-RELATED FLAGS
     const int total_compartments = n_strata * N_VAX_STRATA * N_COMPARTMENTS;
     const size_t i_ipr = total_compartments + daedalus::constants::i_rel_IPR;
@@ -278,7 +281,7 @@ class daedalus_ode {
         rho,          gamma_Ia,   gamma_Is,     eta,
         omega,        gamma_H,    nu,           psi,
         uptake_limit, n_strata,   n_age_groups, n_econ_groups,
-        popsize,      i_to_zero,  cm,           cm_cw,
+        popsize,      cm,           cm_cw,
         cm_work,      susc,       openness,
         i_ipr,  // state index holding incidence/prevalence ratio
         i_npi_flag,   i_vax_flag, npi,          vaccination};
@@ -463,8 +466,7 @@ class daedalus_ode {
   /// @return Probably an array of zeros.
   static auto zero_every(const shared_state &shared) {
     return dust2::zero_every_type<real_type>{
-        {1, shared.i_to_zero},
-        {1, {shared.i_ipr}}};  // zero data and flag compartments
+        {1, {shared.i_ipr}}};  // zero IPR value
   }
 };
 
