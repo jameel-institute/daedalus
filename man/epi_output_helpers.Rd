@@ -22,7 +22,7 @@ get_epidemic_summary(
 get_new_vaccinations(data, groups = NULL)
 }
 \arguments{
-\item{data}{Either a \verb{<data.frame>} from a call to \code{get_daedalus()} on a
+\item{data}{Either a \verb{<data.frame>} from a call to \code{get_data()} on a
 \verb{<daedalus_output>} object, or such an object directly.}
 
 \item{measures}{A character vector of one or more of the following, passed to

@@ -7,7 +7,7 @@
 #' to provide daily values for infections, hospitalisations, deaths, and
 #' vaccinations, while allowing grouping by different strata.
 #'
-#' @param data Either a `<data.frame>` from a call to `get_daedalus()` on a
+#' @param data Either a `<data.frame>` from a call to `get_data()` on a
 #' `<daedalus_output>` object, or such an object directly.
 #'
 #' @param measures A character vector of one or more of the following, passed to
