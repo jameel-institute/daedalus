@@ -70,6 +70,16 @@ format.daedalus_output <- function(x, ...) {
 
   # NOTE: placeholder formatting
   cli::cli_text("{.cls daedalus_output}")
+  divid <- cli::cli_div(theme = list(.val = list(digits = 3)))
+  cli::cli_bullets(
+    class = divid,
+    c(
+      "*" = "Country: {cli::style_bold(x$country_parameters$name)}",
+      "*" = "Epidemic: {cli::style_bold(x$infection_parameters$name)}",
+      "*" = "Response: {cli::col_red(x$response_data$response_strategy)}"
+    )
+  )
+  cli::cli_end(divid)
 
   invisible(x)
 }
