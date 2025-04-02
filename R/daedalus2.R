@@ -14,11 +14,14 @@ initial_flags <- function() {
 
 #' Get model response times from dust2 output
 #'
-#' @param output dust2 output from [daedalus_internal()].
+#' @param output dust2 output from `daedalus_internal()`.
+#' @param time_end The model end time, passed from [daedalus2()].
 #'
 #' @return A vector of event start and end times suitable for a
 #' `<daedalus_output>` object. Returns model end time if there is no response
 #' end time.
+#'
+#' @keywords internal
 get_daedalus2_response_times <- function(output, time_end) {
   # internal function with no input checking
   event_data <- output$event_data

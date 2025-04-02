@@ -2,7 +2,7 @@
 country_canada <- daedalus_country("Canada")
 
 test_that("daedalus2: basic expectations", {
-  time_end <- 700
+  time_end <- 700L
   # expect no conditions
   expect_no_condition({
     daedalus2(country_canada, "influenza_1918")
@@ -15,12 +15,12 @@ test_that("daedalus2: basic expectations", {
   expect_length(data, N_OUTPUT_COLS)
 
   # as non-working groups do not have data per sector
-  expected_rows <- (time_end + 1.0) *
+  expected_rows <- (time_end + 1L) *
     N_MODEL_COMPARTMENTS *
     (N_AGE_GROUPS + N_ECON_SECTORS) *
     N_VACCINE_STRATA
 
-  expect_equal(nrow(data), expected_rows)
+  expect_identical(nrow(data), expected_rows)
   expect_named(
     data,
     c(

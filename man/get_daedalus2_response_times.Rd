@@ -7,7 +7,9 @@
 get_daedalus2_response_times(output, time_end)
 }
 \arguments{
-\item{output}{dust2 output from \code{\link[=daedalus_internal]{daedalus_internal()}}.}
+\item{output}{dust2 output from \code{daedalus_internal()}.}
+
+\item{time_end}{The model end time, passed from \code{\link[=daedalus2]{daedalus2()}}.}
 }
 \value{
 A vector of event start and end times suitable for a
@@ -17,3 +19,4 @@ end time.
 \description{
 Get model response times from dust2 output
 }
+\keyword{internal}
