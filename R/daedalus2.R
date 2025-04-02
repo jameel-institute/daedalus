@@ -12,6 +12,43 @@ initial_flags <- function() {
   c(ipr = ipr, npi_flag = npi_flag, vax_flag = vax_flag)
 }
 
+#' Get model response times from dust2 output
+#'
+#' @param output dust2 output from [daedalus_internal()].
+#'
+#' @return A vector of event start and end times suitable for a
+#' `<daedalus_output>` object. Returns model end time if there is no response
+#' end time.
+get_daedalus2_response_times <- function(output, time_end) {
+  # internal function with no input checking
+  event_data <- output$event_data
+
+  resp_times_on <- event_data[grepl("npi_\\w*_on$", event_data$name), "time"]
+  resp_time_on_realised <- if (length(resp_times_on) == 0) {
+    NA_real_
+  } else {
+    min(resp_times_on)
+  }
+
+  resp_times_off <- event_data[grepl("npi_\\w*_off$", event_data$name), "time"]
+  resp_time_off_realised <- if (is.na(resp_time_on_realised)) {
+    NA_real_
+  } else if (length(resp_times_off) == 0) {
+    time_end
+  } else {
+    min(resp_times_off)
+  }
+
+  duration <- resp_time_off_realised - resp_time_on_realised
+
+  # return list for consistency with daedalus
+  list(
+    closure_time_start = resp_time_on_realised,
+    closure_time_end = resp_time_off_realised,
+    closure_duration = duration
+  )
+}
+
 #' Internal function for daedalus2
 #'
 #' @return A list of state values as returned by `dust2::dust_unpack_state()`.
@@ -171,5 +208,17 @@ daedalus2 <- function(
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
-  output
+  output <- list(
+    total_time = time_end,
+    model_data = prepare_output_cpp(output$data, country),
+    country_parameters = unclass(country),
+    infection_parameters = unclass(infection),
+    response_data = list(
+      response_strategy = response_strategy,
+      openness = openness,
+      closure_info = get_daedalus2_response_times(output, time_end)
+    )
+  )
+
+  as_daedalus_output(output)
 }
