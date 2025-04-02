@@ -77,60 +77,91 @@ prepare_output <- function(output) {
   data
 }
 
-
-#' Constants for `daedalus_rtm()`
-#'
-#' @name epi_constants
-#' @keywords epi_constant
-#' @return A vector of compartment names used in the C++ model.
-COMPARTMENTS_cpp <- c(
-  "susceptible",
-  "exposed",
-  "infect_symp",
-  "infect_asymp",
-  "hospitalised",
-  "recovered",
-  "dead",
-  "vaccinated",
-  "new_infections",
-  "new_hosp"
-)
-
 #' Prepare output from the C++ model
 #'
 #' @name prepare_output
 #'
-#' @param output The output of `.model_daedalus_cpp()`.
-prepare_output_cpp <- function(output) {
-  times <- output[["time"]]
-  n_times <- length(times)
+#' @param country A `<daedalus_country>` object from which to get data on the
+#' number of demographic, economic, and vaccine groups.
+#'
+#' @keywords internal
+prepare_output_cpp <- function(output, country) {
+  # internal function: no input checking
+  timesteps <- seq_len(ncol(output[[1]])) - 1
+  n_times <- length(timesteps)
 
-  data <- do.call(rbind, output[["x"]])
+  # remove flags
+  output <- output[!names(output) %in% FLAG_NAMES]
 
+  # get data from country
+  demography <- get_data(country, "demography")
+  n_age_groups <- length(demography)
+  n_econ_sectors <- length(get_data(country, "workers"))
+  age_group_names <- names(demography)
+  i_working_age <- get_data(country, "group_working_age")
+
+  # age group labels
   age_group_labels <- c(
-    AGE_GROUPS,
-    rep(AGE_GROUPS[i_WORKING_AGE], N_ECON_SECTORS)
+    age_group_names,
+    rep(age_group_names[i_working_age], n_econ_sectors)
   )
-  econ_group_labels <- sprintf("sector_%02i", seq.int(N_ECON_SECTORS))
-  non_working_label <- rep("sector_00", N_AGE_GROUPS)
+  age_group_labels <- rep(
+    age_group_labels,
+    each = n_times
+  )
+  age_group_labels <- rep(
+    age_group_labels,
+    N_MODEL_COMPARTMENTS * N_VACCINE_STRATA
+  )
 
+  # econ sector labels
+  econ_group_labels <- sprintf("sector_%02i", seq.int(n_econ_sectors))
+  non_working_label <- rep("sector_00", n_age_groups)
   econ_group_labels <- c(non_working_label, econ_group_labels)
-
-  data <- data.table::as.data.table(data)
-  colnames(data) <- COMPARTMENTS_cpp
-
-  # assign names and times
-  data$age_group <- rep(age_group_labels, n_times)
-  data$econ_sector <- rep(econ_group_labels, n_times)
-  data$time <- rep(times, each = N_AGE_GROUPS + N_ECON_SECTORS)
-
-  # make long format
-  data <- data.table::melt(
-    data,
-    id.vars = c("time", "age_group", "econ_sector"),
-    variable.name = "compartment"
+  econ_group_labels <- rep(econ_group_labels, each = n_times)
+  econ_group_labels <- rep(
+    econ_group_labels,
+    N_MODEL_COMPARTMENTS * N_VACCINE_STRATA
   )
+
+  # vaccine group labels
+  vaccine_labels <- rep(
+    VACCINE_GROUPS[c(1, 2)],
+    each = (n_age_groups + n_econ_sectors) * N_MODEL_COMPARTMENTS * n_times
+  )
+
+  # compartment labels
+  compartment_labels <- rep(
+    COMPARTMENTS,
+    each = (n_age_groups + n_econ_sectors) * length(timesteps)
+  )
+  compartment_labels <- rep(compartment_labels, N_VACCINE_STRATA)
+
+  data_list <- lapply(output, function(x) {
+    x <- t(x)
+    x <- data.table::as.data.table(x)
+    x[, "time" := timesteps]
+    x <- data.table::melt(x, id.vars = "time")
+    x
+  })
+
+  data <- data.table::rbindlist(data_list)
+  data[,
+    c("age_group", "econ_sector", "vaccine_group", "compartment") := list(
+      age_group_labels,
+      econ_group_labels,
+      vaccine_labels,
+      compartment_labels
+    )
+  ]
+  data$variable <- NULL
 
   data.table::setDF(data)
+
+  # new vaccinations only in susceptible and recovered epi compartments
+  data <- data[
+    !(data$vaccine_group == "new_vaccinations" &
+      !data$compartment %in% c("susceptible", "recovered")),
+  ]
   data
 }

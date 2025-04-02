@@ -128,6 +128,10 @@ N_OUTPUT_COLS <- 6L
 #' @keywords model_constant
 N_FLAGS <- 3L
 
+#' @name model_constants
+#' @keywords model_constant
+FLAG_NAMES <- c("ipr", "npi_flag", "vax_flag")
+
 #' @title Epidemiological compartments and indices
 #' @description Names and indices for the epidemiological compartments used in
 #' DAEDALUS, for reuse in model code.
