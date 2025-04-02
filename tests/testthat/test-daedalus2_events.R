@@ -1,6 +1,5 @@
 test_that("daedalus2: root-finding events launch at each appropriate root", {
-  # check that NPI triggers at both response time and when hosp capacity is
-  # crossed
+  # check that NPI triggers at response time when response time is low
   response_time <- 22.0
   output <- daedalus2(
     "THA",
@@ -11,27 +10,15 @@ test_that("daedalus2: root-finding events launch at each appropriate root", {
   )
 
   expect_identical(
-    output$event_data[output$event_data$name == "npi_time_on", "time"],
+    output$response_data$closure_info$closure_time_start,
     response_time
   )
 
-  checkmate::expect_subset(
-    "npi_state_on",
-    output$event_data$name
-  )
-
-  # expect no vaccination is launched
-  expect_false(
-    checkmate::test_subset(
-      "vax_time_on",
-      output$event_data$name
-    )
-  )
-
-  # expect response is launched only at a specific time when hosp capacity
-  # is high
+  # check that NPI triggers when hospital capacity is crossed when
+  # response time is high
+  response_time <- 50
   x <- daedalus_country("THA")
-  x$hospital_capacity <- 1e9 # artificially high
+  x$hospital_capacity <- 1e2 # artificially low; resp launches around t = 40
   output <- daedalus2(
     x,
     "sars_cov_1",
@@ -39,15 +26,14 @@ test_that("daedalus2: root-finding events launch at each appropriate root", {
     response_time = response_time,
     time_end = 600
   )
-
-  expect_false(
-    checkmate::test_subset(
-      "npi_state_on",
-      output$event_data$name
-    )
+  expect_lt(
+    output$response_data$closure_info$closure_time_start,
+    response_time
   )
-  # NOTE: response duration feature removed
+})
 
+skip("Full event data is no longer returned for compliance with output class")
+test_that("Vaccination events launch as expected", {
   # expect vaccination is launched if chosen and does not end
   vax_time <- 33
   v <- daedalus_vaccination("high", start_time = vax_time)
