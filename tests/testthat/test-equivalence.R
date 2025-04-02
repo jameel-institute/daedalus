@@ -35,8 +35,8 @@ test_that("daedalus() and daedalus2() are equivalent", {
 
   # compare final sizes
   fs_daedalus <- get_epidemic_summary(output_daedalus, "infections")
-  fs_daedalus2 <- sum(output_daedalus2$data$new_inf)
+  fs_daedalus2 <- get_epidemic_summary(output_daedalus2, "infections")
 
   # a small difference is okay
-  expect_identical(fs_daedalus2, fs_daedalus$value, tolerance = 1e-5)
+  expect_identical(fs_daedalus2$value, fs_daedalus$value, tolerance = 1e-5)
 })

@@ -2,81 +2,109 @@
 country_canada <- daedalus_country("Canada")
 
 test_that("daedalus2: basic expectations", {
+  time_end <- 700
   # expect no conditions
   expect_no_condition({
     daedalus2(country_canada, "influenza_1918")
   })
-  output <- daedalus2(country_canada, "influenza_1918")
+  output <- daedalus2(country_canada, "influenza_1918", time_end = time_end)
 
-  checkmate::expect_list(
-    output,
-    len = 2L
+  # expect type double and non-negative
+  expect_s3_class(output, "daedalus_output")
+  data <- get_data(output)
+  expect_length(data, N_OUTPUT_COLS)
+
+  # as non-working groups do not have data per sector
+  expected_rows <- (time_end + 1.0) *
+    N_MODEL_COMPARTMENTS *
+    (N_AGE_GROUPS + N_ECON_SECTORS) *
+    N_VACCINE_STRATA
+
+  expect_equal(nrow(data), expected_rows)
+  expect_named(
+    data,
+    c(
+      "time",
+      "age_group",
+      "compartment",
+      "econ_sector",
+      "vaccine_group",
+      "value"
+    ),
+    ignore.order = TRUE
   )
-
-  # expect list is type double and non-negative
-  output <- output$data
-  checkmate::expect_list(
-    output,
-    "numeric",
-    len = N_MODEL_COMPARTMENTS * N_VACCINE_STRATA + N_FLAGS
-  )
-  expect_true(all(vapply(
-    output,
-    function(x) all(x >= 0.0),
-    FUN.VALUE = logical(1)
-  )))
-
-  # expect vaccination groups are zero
-  checkmate::expect_numeric(output$S_vax, lower = 0, upper = 0)
+  checkmate::expect_numeric(data[["time"]], lower = 0, upper = time_end)
+  expect_type(data[["age_group"]], "character")
+  expect_type(data[["compartment"]], "character")
+  expect_type(data[["econ_sector"]], "character")
+  expect_type(data[["vaccine_group"]], "character")
+  expect_type(data[["value"]], "double")
 
   # expect closed population with no change in total size
-  pop_sizes_time <- Reduce(
-    x = lapply(output[i_EPI_COMPARTMENTS], colSums),
-    f = `+`
+  # NOTE: disregard first column holding time
+  # NOTE: set tolerance to a reasonable value
+  expect_identical(
+    sum(
+      data[
+        data$time == max(data$time) &
+          data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS] &
+          data$vaccine_group != "new_vaccinations",
+      ]$value
+    ),
+    sum(
+      data[
+        data$time == min(data$time) &
+          data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS] &
+          data$vaccine_group != "new_vaccinations",
+      ]$value
+    ),
+    tolerance = 1e-12
   )
+
+  # check for no change in total size; some rounding needed
+  pop_sizes_time <- aggregate(
+    data[
+      data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS],
+    ],
+    value ~ time,
+    sum
+  )$value
   pop_size <- sum(get_data(country_canada, "demography"))
-  expect_length(unique(pop_size), 1L)
+  expect_length(unique(round(pop_sizes_time)), 1L)
   expect_true(all(abs(pop_sizes_time - pop_size) <= 1e-6))
+
+  # expect vaccination groups are zero
+  checkmate::expect_numeric(
+    data[data$vaccine_group == "vaccinated", "value"],
+    lower = 0,
+    upper = 0
+  )
 })
 
 test_that("daedalus2: Can run with ISO2 country parameter", {
   expect_no_condition({
     daedalus2("CA", "influenza_1918")
   })
-
-  output <- daedalus2("CA", "influenza_1918")$data
-
-  # expect list is type double and non-negative
-  checkmate::expect_list(
-    output,
-    "numeric",
-    len = N_MODEL_COMPARTMENTS * N_VACCINE_STRATA + N_FLAGS
+  expect_s3_class(
+    daedalus2("CA", "influenza_1918"),
+    "daedalus_output"
   )
-  expect_true(all(vapply(
-    output,
-    function(x) all(x >= 0.0),
-    FUN.VALUE = logical(1)
-  )))
+
+  data <- get_data(daedalus2("CA", "influenza_1918"))
+  expect_length(data, N_OUTPUT_COLS)
 })
 
 test_that("daedalus2: Can run with ISO3 country parameter", {
   expect_no_condition({
-    daedalus2("CAN", "influenza_1918")
+    daedalus2("GBR", "influenza_1918")
   })
-
-  output <- daedalus2("CAN", "influenza_1918")$data
-
-  # expect list is type double and non-negative
-  checkmate::expect_list(
-    output,
-    "numeric",
-    len = N_MODEL_COMPARTMENTS * N_VACCINE_STRATA + N_FLAGS
+  expect_s3_class(
+    daedalus2("GBR", "influenza_1918"),
+    "daedalus_output"
   )
-  expect_true(all(vapply(
-    output,
-    function(x) all(x >= 0.0),
-    FUN.VALUE = logical(1)
-  )))
+
+  data <- get_data(daedalus2("THA", "influenza_1918"))
+  expect_length(data, N_OUTPUT_COLS)
 })
 
 # test that daedalus runs for all epidemic infection parameter sets
@@ -94,10 +122,66 @@ test_that("daedalus2: Runs for all country x infection x response", {
     country_infection_combos$infection,
     f = function(x, y) {
       expect_no_condition(
-        daedalus2(x, y, time_end = time_end, response_time = 5)
+        daedalus2(x, y, time_end = time_end, response_time = time_end)
       )
     }
   ))
+})
+
+# test that passing model parameters works
+test_that("daedalus: Passing model parameters", {
+  expect_no_condition(daedalus(
+    country_canada,
+    daedalus_infection("influenza_1918", r0 = 1.3, eta = c(0.1, 0.2, 0.3, 0.4))
+  ))
+})
+
+# test statistical correctness for only the covid wildtype infection param set
+test_that("daedalus2: statistical correctness", {
+  output <- daedalus2("Canada", "influenza_1918")
+  data <- get_data(output)
+  # tests on single compartment without workers
+  data <- data[data$age_group == "65+" & data$vaccine_group == "unvaccinated", ]
+
+  # expectations when immunity wanes allowing R -> S
+  # no elegant way of programmatically accessing idx
+  deaths <- data[data$compartment == "dead", ]$value
+  expect_true(all(diff(deaths) >= 0.0))
+  susceptibles <- data[data$compartment == "susceptible", ]$value
+  expect_lt(min(diff(susceptibles)), 0.0)
+
+  # NOTE: expecting false due to R => S transitons
+  recovered <- data[data$compartment == "recovered", ]$value
+  expect_false(all(diff(recovered) >= 0.0))
+
+  # expectations when immunity does not wane
+  # - monotonically decreasing susceptibles
+  # - monotonically increasing recovered and deaths
+  output <- daedalus2("Canada", daedalus_infection("influenza_1918", rho = 0.0))
+  data <- get_data(output)
+  data <- data[data$age_group == "65+", ]
+
+  susceptibles <- data[
+    data$compartment == "susceptible" &
+      data$vaccine_group != "new_vaccinations",
+  ]
+  susceptibles <- tapply(susceptibles$value, susceptibles$time, sum)
+  expect_lte(
+    max(diff(susceptibles)),
+    1e-6 # allowing small positive diff
+  )
+
+  # NOTE: allow very small negative values
+  recovered <- data[
+    data$compartment == "recovered" & data$vaccine_group != "new_vaccinations",
+  ]
+  recovered <- tapply(recovered$value, recovered$time, sum)
+  expect_gte(min(diff(recovered)), -1e-6)
+
+  deaths <- data[
+    data$compartment == "dead" & data$vaccine_group == "unvaccinated",
+  ]$value
+  expect_gte(min(diff(deaths)), 0.0)
 })
 
 # check for vaccination mechanism
@@ -105,22 +189,30 @@ test_that("daedalus2: vaccination works", {
   # NOTE: test for truly no vaccination are in default daedalus2 test above
 
   # NOTE: event starting at t = 0 does not work
-  vax <- daedalus_vaccination("none", 10, 0.1, 100)
+  vax <- daedalus_vaccination("low", 10, 0.1, 100)
   expect_no_condition(
     daedalus2("THA", "sars_cov_1", vaccine_investment = vax)
   )
-  output <- daedalus2("THA", "sars_cov_1", vaccine_investment = vax)$data
+  data <- get_data(daedalus2("THA", "sars_cov_1", vaccine_investment = vax))
 
   # expect vaccination group is non-zero
-  expect_true(any(output$S_vax > 0))
+  data_vax_susc <- data[
+    data$vaccine_group == "vaccinated" & data$compartment == "susceptible",
+    "value"
+  ]
+  expect_true(any(data_vax_susc > 0))
 
   # test that vaccination infection pathways are active
-  expect_true(any(output$E_vax > 0))
+  data_vax_expo <- data[
+    data$vaccine_group == "vaccinated" & data$compartment == "exposed",
+    "value"
+  ]
+  expect_true(any(data_vax_expo > 0))
 
   # expect that vaccination reduces final size
-  output_novax <- daedalus2("THA", "sars_cov_1")$data
-  fs_daedalus2 <- sum(output$new_inf)
-  fs_daedalus2_novax <- sum(output_novax$new_inf)
+  output_novax <- get_data(daedalus2("THA", "sars_cov_1"))
+  fs_daedalus2 <- get_epidemic_summary(data, "infections")$value
+  fs_daedalus2_novax <- get_epidemic_summary(output_novax, "infections")$value
 
   expect_lt(fs_daedalus2, fs_daedalus2_novax)
 
@@ -135,16 +227,31 @@ test_that("daedalus2: advanced vaccination features", {
 
   uptake_limit <- 40
   popsize <- sum(get_data(x, "demography"))
-  vax <- daedalus_vaccination("high", uptake_limit = uptake_limit)
+  vax <- daedalus_vaccination(
+    "high",
+    uptake_limit = uptake_limit,
+    waning_period = 3000
+  )
   # final size is zero
-  output <- daedalus2(
-    "THA",
-    disease_x,
-    vaccine_investment = vax,
-    time_end = 600
-  )$data
+  data <- get_data(
+    daedalus2(
+      "THA",
+      disease_x,
+      vaccine_investment = vax,
+      time_end = 600
+    )
+  )
 
-  n_vax <- tail(colSums(output$S_vax) + colSums(output$R_vax), 1)
+  n_vax <- aggregate(
+    data[
+      data$compartment %in%
+        c("susceptible", "recovered") &
+        data$vaccine_group == "vaccinated",
+    ],
+    value ~ time,
+    sum
+  )
+  n_vax <- tail(n_vax, 1)$value
 
   # higher tolerance as vaccination is expected to be asymptotic
   expect_identical(
@@ -187,7 +294,7 @@ test_that("daedalus2: responses triggered by hospital capacity event", {
   output_fs <- vapply(
     output_list,
     function(x) {
-      sum(x$data$new_inf)
+      get_epidemic_summary(x, "infections")$value
     },
     FUN.VALUE = numeric(1)
   )
