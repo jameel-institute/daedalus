@@ -10,7 +10,8 @@
 daedalus_country(
   country,
   parameters = list(contact_matrix = NULL, contacts_workplace = NULL,
-    contacts_consumer_worker = NULL)
+    contacts_consumer_worker = NULL),
+  group_working_age = NULL
 )
 
 is_daedalus_country(x)

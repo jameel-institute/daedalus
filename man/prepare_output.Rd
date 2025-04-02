@@ -7,10 +7,13 @@
 \usage{
 prepare_output(output)
 
-prepare_output_cpp(output)
+prepare_output_cpp(output, country)
 }
 \arguments{
-\item{output}{The output of \code{.model_daedalus_cpp()}.}
+\item{output}{Output from \code{\link[=daedalus]{daedalus()}} of the class \verb{<deSolve>}.}
+
+\item{country}{A \verb{<daedalus_country>} object from which to get data on the
+number of demographic, economic, and vaccine groups.}
 }
 \value{
 A \verb{<data.frame>} in long or 'tidy' format with the columns
