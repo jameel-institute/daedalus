@@ -5,6 +5,7 @@
 
 // clang-format off
 #include "daedalus_types.h"
+#include "daedalus_helpers.h"
 
 #include <R_ext/Arith.h>
 #include <functional>
