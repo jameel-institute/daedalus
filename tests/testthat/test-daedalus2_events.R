@@ -46,13 +46,7 @@ test_that("daedalus2: root-finding events launch at each appropriate root", {
       output$event_data$name
     )
   )
-
-  # expect event ends at defined time
-  default_duration <- 60.0
-  expect_identical(
-    diff(output$event_data$time),
-    default_duration
-  )
+  # NOTE: response duration feature removed
 
   # expect vaccination is launched if chosen and does not end
   vax_time <- 33

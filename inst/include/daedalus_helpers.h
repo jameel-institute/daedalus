@@ -92,6 +92,29 @@ inline double scale_nu(
 
   return scaled_nu;
 }
+
+/// @brief Get a coefficient of public concern over epidemic deaths. Used to
+/// implement spontaneous social distancing, potentially in the absence of NPIs,
+/// with lower concern coefficients indicating higher concern and reduced
+/// social contacts.
+/// @param new_deaths The total number of new deaths at time t.
+/// @param rate The rate at which concern rises with each new death.
+/// @param lower_limit The limit to
+/// @return A value in the range 0.0 - 1.0, higher values indicate less concern.
+inline double get_concern_coefficient(const double &new_deaths,
+                                      const double &rate = 0.001,
+                                      const double &lower_limit = 0.2) {
+  return std::pow(1.0 - rate, new_deaths) * (1.0 - lower_limit) + lower_limit;
+}
+
+/// @brief Round a float to decimal place.
+/// @param value 
+/// @param decimal_places 
+/// @return 
+inline const double round_n(const double &value, const int decimal_places = 2) {
+  const double pow10 = std::pow(10.0, decimal_places);
+  return std::round(value * pow10) / pow10;
+}
 }  // namespace helpers
 
 }  // namespace daedalus
