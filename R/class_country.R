@@ -39,6 +39,9 @@ new_daedalus_country <- function(name, parameters) {
 #' matrix, workplace contacts, and consumer-worker contact matrix. If these are
 #' not passed, default values are accessed from stored package data.
 #'
+#' @param group_working_age An optional value for the age-group that is
+#' considered to be the working-age group. Defaults to `i_WORKING_AGE = 3`.
+#'
 #' @export
 #' @return
 #'
@@ -76,7 +79,8 @@ daedalus_country <- function(
     contact_matrix = NULL,
     contacts_workplace = NULL,
     contacts_consumer_worker = NULL
-  )
+  ),
+  group_working_age = i_WORKING_AGE
 ) {
   # input checking
   name <- country_name_from_arg(country)
@@ -183,6 +187,17 @@ daedalus_country <- function(
     params[["demography"]] /
     sum(params[["demography"]])
 
+  if (is.null(group_working_age)) {
+    group_working_age <- i_WORKING_AGE
+  } else {
+    checkmate::assert_integerish(
+      group_working_age,
+      lower = 1,
+      upper = N_AGE_GROUPS,
+      any.missing = FALSE
+    )
+  }
+
   params <- c(
     params,
     list(
@@ -193,7 +208,8 @@ daedalus_country <- function(
       ]],
       vsl = vsl,
       gni = gni,
-      life_expectancy = life_expectancy
+      life_expectancy = life_expectancy,
+      group_working_age = group_working_age
     )
   )
   parameters <- Filter(parameters, f = function(x) !is.null(x))
@@ -238,7 +254,8 @@ validate_daedalus_country <- function(x) {
     "hospital_capacity",
     "gni",
     "life_expectancy",
-    "n_strata"
+    "n_strata",
+    "group_working_age"
   )
   has_invariants <- checkmate::test_names(
     attributes(x)$names,
@@ -335,6 +352,12 @@ validate_daedalus_country <- function(x) {
         x$life_expectancy,
         len = N_AGE_GROUPS, any.missing = FALSE,
         lower = 0, upper = 100 # reasonable upper limit
+      ),
+    "Country index for working-age group must be a single positive number" =
+      checkmate::test_integerish(
+        x$group_working_age,
+        lower = 1, upper = N_AGE_GROUPS,
+        any.missing = FALSE
       )
   )
 
