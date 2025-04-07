@@ -103,6 +103,7 @@ class daedalus_ode {
     TensorMat t_comm_inf, t_foi, workplace_infected, t_comm_inf_age,
         consumer_worker_infections, susc_workers, sToE, eToIs, eToIa, isToR,
         iaToR, isToH, hToR, hToD, rToS;
+    TensorVec new_vax;
     double nu_eff, beta_tmp;
   };
 
@@ -115,7 +116,6 @@ class daedalus_ode {
               rToS = mat2d, t_comm_inf = mat2d, t_foi = mat2d;
 
     // infection related
-
     TensorMat mat2d_econ(shared.n_econ_groups, N_VAX_STRATA);
     mat2d_econ.setZero();
     TensorMat workplace_infected = mat2d_econ,
@@ -174,6 +174,7 @@ class daedalus_ode {
                           {"dead_vax", dim_vec},
                           {"new_infections_vax", dim_vec},
                           {"new_hosp_vax", dim_vec},
+                          {"new_vax", dim_vec},
                           {"ipr", dim_flag},
                           {"npi_flag", dim_flag},
                           {"vax_flag", dim_flag}};
@@ -345,6 +346,10 @@ class daedalus_ode {
     Eigen::TensorMap<TensorAry> t_dx(state_deriv, n_strata,
                                      daedalus::constants::N_COMPARTMENTS,
                                      N_VAX_STRATA);
+    Eigen::TensorMap<Eigen::Tensor<double, 1>> t_new_vax(
+        state_deriv +
+            (n_strata * daedalus::constants::N_COMPARTMENTS * N_VAX_STRATA),
+        n_strata);
 
     // calculate total deaths and scale beta by concern, but only if an
     // NPI is active
@@ -447,7 +452,7 @@ class daedalus_ode {
 
     // TODO(pratik): flexible way of selecting multiple cols from i-th layer
     // .stride() operator limited by start point
-    // S => S_v
+    // S => S_v and S_v => S
     t_dx.chip(iS, i_COMPS).chip(0, 1) +=
         -internal.nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) +
         shared.psi * t_x.chip(iS, i_COMPS).chip(1, 1);
@@ -455,13 +460,16 @@ class daedalus_ode {
         internal.nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) -
         shared.psi * t_x.chip(iS, i_COMPS).chip(1, 1);
 
-    // R => R_v
+    // R => R_v and R_v => R
     t_dx.chip(iR, i_COMPS).chip(0, 1) +=
         -internal.nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1) +
         shared.psi * t_x.chip(iR, i_COMPS).chip(1, 1);
     t_dx.chip(iR, i_COMPS).chip(1, 1) +=
         internal.nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1) -
         shared.psi * t_x.chip(iR, i_COMPS).chip(1, 1);
+
+    t_new_vax = internal.nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) +
+                internal.nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1);
 
     // get IPR (incidence prevalence ratio) as growth flag
     const Eigen::Tensor<double, 0> incidence = internal.sToE.sum();
