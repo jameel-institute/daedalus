@@ -61,8 +61,7 @@ daedalus2_internal <- function(time_end, params, state, flags) {
   sys_params <- list(daedalus_ode, pars = params)
   sys <- do.call(dust2::dust_system_create, sys_params)
 
-  # convert state to vector and add initial flags
-  state <- as.vector(state)
+  # add initial flags
   state <- c(state, flags)
   dust2::dust_system_set_state(sys, state)
 
@@ -105,8 +104,7 @@ daedalus2 <- function(
   response_strategy = NULL,
   vaccine_investment = NULL,
   response_time = 30,
-  time_end = 100
-) {
+    time_end = 100) {
   # prepare flags
   flags <- initial_flags()
 
@@ -187,7 +185,17 @@ daedalus2 <- function(
   }
 
   #### Prepare initial state and parameters ####
-  initial_state <- make_initial_state2(country)
+  initial_state <- as.vector(make_initial_state2(country))
+
+  # add state for new vaccinations by age group and econ sector
+  state_new_vax <- numeric(
+    length(get_data(country, "demography")) +
+      length(get_data(country, "workers"))
+  )
+  initial_state <- c(
+    initial_state,
+    state_new_vax
+  )
 
   # prepare susceptibility matrix for vaccination
   susc <- make_susc_matrix(vaccine_investment, country)
