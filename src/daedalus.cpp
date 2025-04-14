@@ -104,7 +104,6 @@ class daedalus_ode {
     TensorMat t_comm_inf, t_foi, workplace_infected, t_comm_inf_age,
         consumer_worker_infections, susc_workers, sToE, eToIs, eToIa, isToR,
         iaToR, isToH, hToR, hToD, rToS;
-    double nu_eff, beta_tmp;
   };
 
   static internal_state build_internal(const shared_state &shared) {
@@ -126,20 +125,13 @@ class daedalus_ode {
     TensorMat t_comm_inf_age(shared.n_age_groups, N_VAX_STRATA);
     t_comm_inf_age.setZero();
 
-    // effective vaccination rate is initially the vaccination rate
-    double nu_eff = shared.nu;
-
-    // initial temporary beta is original beta
-    double beta_tmp = shared.beta;
-
     // clang-format off
     return internal_state{
       t_comm_inf, t_foi, workplace_infected,
       t_comm_inf_age,
       consumer_worker_infections,
       susc_workers,
-      sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS,
-      nu_eff, beta_tmp
+      sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS
     };
     // clang-format on
   }
@@ -348,7 +340,7 @@ class daedalus_ode {
     // TODO(pratik): change in future so public-concern is independent of NPIs
     internal.hToD = shared.omega * t_x.chip(iH, i_COMPS);  // new deaths
     Eigen::Tensor<double, 0> total_deaths = internal.hToD.sum();
-    internal.beta_tmp =
+    const double beta_tmp =
         shared.beta *
         daedalus::events::switch_by_flag(
             daedalus::helpers::get_concern_coefficient(total_deaths(0)),
@@ -370,7 +362,7 @@ class daedalus_ode {
 
     // calculate C * I_w and C * I_cons for a n_econ_groups-length array
     internal.workplace_infected =
-        internal.beta_tmp *
+        beta_tmp *
         shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, 1)
         daedalus::events::switch_by_flag(shared.openness,
                                          state[shared.i_npi_flag]) *  // scale β
@@ -383,7 +375,7 @@ class daedalus_ode {
         Eigen::array<Eigen::Index, 2>{n_age_groups, 1});
 
     internal.consumer_worker_infections =
-        internal.beta_tmp *
+        beta_tmp *
         daedalus::events::switch_by_flag(shared.openness,
                                          state[shared.i_npi_flag]) *  // scale β
         shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
@@ -394,7 +386,7 @@ class daedalus_ode {
                    Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA});
 
     internal.sToE = t_x.chip(iS, i_COMPS) * internal.t_foi *
-                    internal.beta_tmp;  // dims (n_strata, 2)
+                    beta_tmp;  // dims (n_strata, 2)
 
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
@@ -437,7 +429,7 @@ class daedalus_ode {
 
     // vaccination related changes
     // calculate vaccination rate
-    internal.nu_eff =
+    const double nu_eff =
         daedalus::helpers::scale_nu(t_x, shared.nu, shared.uptake_limit,
                                     shared.popsize, n_strata) *
         state[shared.i_vax_flag];
@@ -446,18 +438,18 @@ class daedalus_ode {
     // .stride() operator limited by start point
     // S => S_v
     t_dx.chip(iS, i_COMPS).chip(0, 1) +=
-        -internal.nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) +
+        -nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) +
         shared.psi * t_x.chip(iS, i_COMPS).chip(1, 1);
     t_dx.chip(iS, i_COMPS).chip(1, 1) +=
-        internal.nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) -
+        nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) -
         shared.psi * t_x.chip(iS, i_COMPS).chip(1, 1);
 
     // R => R_v
     t_dx.chip(iR, i_COMPS).chip(0, 1) +=
-        -internal.nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1) +
+        -nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1) +
         shared.psi * t_x.chip(iR, i_COMPS).chip(1, 1);
     t_dx.chip(iR, i_COMPS).chip(1, 1) +=
-        internal.nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1) -
+        nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1) -
         shared.psi * t_x.chip(iR, i_COMPS).chip(1, 1);
 
     // get IPR (incidence prevalence ratio) as growth flag
