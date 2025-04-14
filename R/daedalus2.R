@@ -56,10 +56,14 @@ get_daedalus2_response_times <- function(output, time_end) {
 #'
 #' @return A list of state values as returned by `dust2::dust_unpack_state()`.
 #' @keywords internal
-daedalus2_internal <- function(time_end, params, state, flags) {
+daedalus2_internal <- function(time_end, params, state, flags, ode_control) {
   # NOTE: sys params assumed suitable for `do.call()`
-  sys_params <- list(daedalus_ode, pars = params)
-  sys <- do.call(dust2::dust_system_create, sys_params)
+  arg_list <- list(
+    generator = daedalus_ode,
+    pars = params,
+    ode_control = ode_control
+  )
+  sys <- do.call(dust2::dust_system_create, arg_list)
 
   # add initial flags
   state <- c(state, flags)
@@ -80,6 +84,8 @@ daedalus2_internal <- function(time_end, params, state, flags) {
 #' (and in future \pkg{dust}). *This is a work in progress!*
 #'
 #' @inheritParams daedalus
+#'
+#' @param ... Optional arguments that are passed to [dust2::dust_ode_control()].
 #'
 #' @details
 #' **Note that** `daedalus2()` currently uses a default vaccination strategy of
@@ -104,7 +110,9 @@ daedalus2 <- function(
   response_strategy = NULL,
   vaccine_investment = NULL,
   response_time = 30,
-    time_end = 100) {
+  time_end = 100,
+  ...
+) {
   # prepare flags
   flags <- initial_flags()
 
@@ -118,6 +126,14 @@ daedalus2 <- function(
   if (is.character(infection)) {
     infection <- rlang::arg_match(infection, daedalus::epidemic_names)
     infection <- daedalus_infection(infection)
+  }
+
+  # collect optional ODE control params and create ode_control obj
+  ode_control <- rlang::list2(...)
+  if (length(ode_control) > 0) {
+    ode_control <- do.call(dust2::dust_ode_control, ode_control)
+  } else {
+    ode_control <- NULL
   }
 
   # checks on interventions
@@ -215,21 +231,29 @@ daedalus2 <- function(
   # filter out NULLs so missing values can be read as NAN in C++
   parameters <- Filter(function(x) !is.null(x), parameters)
 
-  output <- daedalus2_internal(time_end, parameters, initial_state, flags)
-
-  # NOTE: needs to be compatible with `<daedalus_output>`
-  # or equivalent from `{daedalus.compare}`
-  output <- list(
-    total_time = time_end,
-    model_data = prepare_output_cpp(output$data, country),
-    country_parameters = unclass(country),
-    infection_parameters = unclass(infection),
-    response_data = list(
-      response_strategy = response_strategy,
-      openness = openness,
-      closure_info = get_daedalus2_response_times(output, time_end)
-    )
+  output <- daedalus2_internal(
+    time_end,
+    parameters,
+    initial_state,
+    flags,
+    ode_control
   )
 
-  as_daedalus_output(output)
+  # # NOTE: needs to be compatible with `<daedalus_output>`
+  # # or equivalent from `{daedalus.compare}`
+  # output <- list(
+  #   total_time = time_end,
+  #   model_data = prepare_output_cpp(output$data, country),
+  #   country_parameters = unclass(country),
+  #   infection_parameters = unclass(infection),
+  #   response_data = list(
+  #     response_strategy = response_strategy,
+  #     openness = openness,
+  #     closure_info = get_daedalus2_response_times(output, time_end)
+  #   )
+  # )
+
+  # as_daedalus_output(output)
+
+  output
 }
