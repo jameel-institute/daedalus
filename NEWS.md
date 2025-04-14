@@ -1,3 +1,37 @@
+# daedalus 0.2.10
+
+- `daedalus_ode` class no longer zeroes data compartments for new infections and new hospitalisations --- this is handled by the pre-existing `get_incidence()` function. This change will be reversed in a future rewrite of `get_incidence()`;
+
+- `<daedalus_country>` class takes argument `group_working_age` for the index of the working age group;
+
+- `<daedalus_output>` class prints information on country, epidemic, and response;
+
+- Added `FLAG_NAMES` for variables in `dust2` output to remove;
+
+- Added internal function `get_daedalus2_response_times()` to extract event data from `daedalus2_internal()` for `<daedalus_output>` class;
+
+- `daedalus2()` returns `<daedalus_output>` class object similar to `daedalus()`;
+
+- Removed some constants associated with now-removed `daedalus_rtm()` function;
+
+- Function `prepare_output_cpp()` rewritten to handle output from `daedalus2_internal()`;
+
+- Updated tests for classed output from `daedalus2()`;
+
+    - Skipping tests for vaccination start time as this data is not compatible with class `<daedalus_output>`; these will be switched on in future.
+
+- Added continuous benchmarking for `daedalus2()`;
+
+- Updated vignette on `daedalus2()` for classed output.
+
+# daedalus 0.2.9
+
+- Added public-concern social distancing to `daedalus2()`, and re-added it to `daedalus()`; this reverses the removal in v0.2.3. The functions are equivalent: social-distancing is active only when an NPI is active.
+
+- Added a filter on `NULL` to `daedalus2()` parameter collection step - this helps remove parameters and allows treating missing values as a meaningful indicator in the C++ code (as 0.0 can be a valid value in many cases).
+
+- **Removed** default response duration of 60 days in `daedalus2()` as this is not present in `daedalus()` leading to non-equivalence in tests.
+
 # daedalus 0.2.8
 
 ## Breaking changes

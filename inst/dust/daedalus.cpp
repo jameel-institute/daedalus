@@ -86,7 +86,6 @@ class daedalus_ode {
     const real_type nu, psi, uptake_limit;
 
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
-    const std::vector<size_t> i_to_zero;
     const TensorMat cm, cm_cons_work, cm_work;
     const TensorMat susc, openness;
 
@@ -102,7 +101,8 @@ class daedalus_ode {
     TensorMat t_comm_inf, t_foi, workplace_infected, t_comm_inf_age,
         consumer_worker_infections, susc_workers, sToE, eToIs, eToIa, isToR,
         iaToR, isToH, hToR, hToD, rToS;
-    double nu_eff;
+    TensorVec new_vax;
+    double nu_eff, beta_tmp;
   };
 
   static internal_state build_internal(const shared_state &shared) {
@@ -114,7 +114,6 @@ class daedalus_ode {
               rToS = mat2d, t_comm_inf = mat2d, t_foi = mat2d;
 
     // infection related
-
     TensorMat mat2d_econ(shared.n_econ_groups, N_VAX_STRATA);
     mat2d_econ.setZero();
     TensorMat workplace_infected = mat2d_econ,
@@ -127,6 +126,9 @@ class daedalus_ode {
     // effective vaccination rate is initially the vaccination rate
     double nu_eff = shared.nu;
 
+    // initial temporary beta is original beta
+    double beta_tmp = shared.beta;
+
     // clang-format off
     return internal_state{
       t_comm_inf, t_foi, workplace_infected,
@@ -134,7 +136,7 @@ class daedalus_ode {
       consumer_worker_infections,
       susc_workers,
       sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS,
-      nu_eff
+      nu_eff, beta_tmp
     };
     // clang-format on
   }
@@ -152,19 +154,28 @@ class daedalus_ode {
     // TODO(pratik): write a function to return this - names may need to be
     // more generic
 
-    // clang-format off
-    return dust2::packing{{"S", dim_vec},            {"E", dim_vec},
-                          {"Is", dim_vec},           {"Ia", dim_vec},
-                          {"H", dim_vec},            {"R", dim_vec},
-                          {"D", dim_vec},            {"new_inf", dim_vec},
-                          {"new_hosp", dim_vec},     {"S_vax", dim_vec},
-                          {"E_vax", dim_vec},        {"Is_vax", dim_vec},
-                          {"Ia_vax", dim_vec},       {"H_vax", dim_vec},
-                          {"R_vax", dim_vec},        {"D_vax", dim_vec},
-                          {"new_inf_vax", dim_vec},  {"new_hosp_vax", dim_vec},
-                          {"ipr", dim_flag},    {"npi_flag", dim_flag},
+    return dust2::packing{{"susceptible", dim_vec},
+                          {"exposed", dim_vec},
+                          {"infect_symp", dim_vec},
+                          {"infect_asymp", dim_vec},
+                          {"hospitalised", dim_vec},
+                          {"recovered", dim_vec},
+                          {"dead", dim_vec},
+                          {"new_infections", dim_vec},
+                          {"new_hosp", dim_vec},
+                          {"susceptible_vax", dim_vec},
+                          {"exposed_vax", dim_vec},
+                          {"infect_symp_vax", dim_vec},
+                          {"infect_asymp_vax", dim_vec},
+                          {"hospitalised_vax", dim_vec},
+                          {"recovered_vax", dim_vec},
+                          {"dead_vax", dim_vec},
+                          {"new_infections_vax", dim_vec},
+                          {"new_hosp_vax", dim_vec},
+                          {"new_vax", dim_vec},
+                          {"ipr", dim_flag},
+                          {"npi_flag", dim_flag},
                           {"vax_flag", dim_flag}};
-    // clang-format on
   }
 
   /// @brief Initialise shared parameters.
@@ -240,18 +251,16 @@ class daedalus_ode {
     // response time is only 0.0 when response is NULL or 'none'
     // this is used to set hosp capacity to NAN so the response is not triggered
     const real_type response_time =
-        dust2::r::read_real(pars, "response_time", 0.0);
+        dust2::r::read_real(pars, "response_time", NAN);
     // hospital capacity data
     const real_type hospital_capacity =
-        dust2::r::read_real(pars, "hospital_capacity", NAN);
+        std::isnan(response_time)
+            ? NAN
+            : dust2::r::read_real(pars, "hospital_capacity", NAN);
     // handling openness vector
     TensorMat openness(n_econ_groups, 1);
     dust2::r::read_real_vector(pars, n_econ_groups, openness.data(), "openness",
                                true);
-
-    // DATA COMPARTMENTS TO ZERO
-    const std::vector<size_t> i_to_zero = daedalus::helpers::get_state_idx(
-        daedalus::constants::seq_DATA_COMPARTMENTS, n_strata, N_VAX_STRATA);
 
     // RELATIVE LOCATIONS OF RESPONSE-RELATED FLAGS
     const int total_compartments = n_strata * N_VAX_STRATA * N_COMPARTMENTS;
@@ -265,10 +274,10 @@ class daedalus_ode {
     std::vector<size_t> idx_hosp =
         daedalus::helpers::get_state_idx({iH + 1}, n_strata, N_VAX_STRATA);
 
-    // NOTE: assume response ends after 60 days - awaiting better default
-    daedalus::events::response npi(std::string("npi"), response_time,
-                                   response_time + 60.0, hospital_capacity,
-                                   gamma_Ia, i_npi_flag, idx_hosp, i_ipr);
+    // NOTE: no response end time specified for now; represented by 0.0
+    daedalus::events::response npi(std::string("npi"), response_time, 0.0,
+                                   hospital_capacity, gamma_Ia, i_npi_flag,
+                                   idx_hosp, i_ipr);
     daedalus::events::response vaccination(std::string("vaccination"),
                                            vax_start_time, 0.0, 0.0, 0.0,
                                            i_vax_flag, {0}, 0);
@@ -279,7 +288,7 @@ class daedalus_ode {
         rho,          gamma_Ia,   gamma_Is,     eta,
         omega,        gamma_H,    nu,           psi,
         uptake_limit, n_strata,   n_age_groups, n_econ_groups,
-        popsize,      i_to_zero,  cm,           cm_cw,
+        popsize,      cm,           cm_cw,
         cm_work,      susc,       openness,
         i_ipr,  // state index holding incidence/prevalence ratio
         i_npi_flag,   i_vax_flag, npi,          vaccination};
@@ -335,6 +344,21 @@ class daedalus_ode {
     Eigen::TensorMap<TensorAry> t_dx(state_deriv, n_strata,
                                      daedalus::constants::N_COMPARTMENTS,
                                      N_VAX_STRATA);
+    Eigen::TensorMap<Eigen::Tensor<double, 1>> t_new_vax(
+        state_deriv +
+            (n_strata * daedalus::constants::N_COMPARTMENTS * N_VAX_STRATA),
+        n_strata);
+
+    // calculate total deaths and scale beta by concern, but only if an
+    // NPI is active
+    // TODO(pratik): change in future so public-concern is independent of NPIs
+    internal.hToD = shared.omega * t_x.chip(iH, i_COMPS);  // new deaths
+    Eigen::Tensor<double, 0> total_deaths = internal.hToD.sum();
+    internal.beta_tmp =
+        shared.beta *
+        daedalus::events::switch_by_flag(
+            daedalus::helpers::get_concern_coefficient(total_deaths(0)),
+            state[shared.i_npi_flag]);
 
     // all chip ops on dim N have dim N-1
     // compartmental transitions
@@ -352,7 +376,7 @@ class daedalus_ode {
 
     // calculate C * I_w and C * I_cons for a n_econ_groups-length array
     internal.workplace_infected =
-        shared.beta *
+        internal.beta_tmp *
         shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, 1)
         daedalus::events::switch_by_flag(shared.openness,
                                          state[shared.i_npi_flag]) *  // scale β
@@ -365,7 +389,7 @@ class daedalus_ode {
         Eigen::array<Eigen::Index, 2>{n_age_groups, 1});
 
     internal.consumer_worker_infections =
-        shared.beta *
+        internal.beta_tmp *
         daedalus::events::switch_by_flag(shared.openness,
                                          state[shared.i_npi_flag]) *  // scale β
         shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
@@ -376,7 +400,7 @@ class daedalus_ode {
                    Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA});
 
     internal.sToE = t_x.chip(iS, i_COMPS) * internal.t_foi *
-                    shared.beta;  // dims (n_strata, 2)
+                    internal.beta_tmp;  // dims (n_strata, 2)
 
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
@@ -401,7 +425,6 @@ class daedalus_ode {
 
     internal.isToH = shared.eta * t_x.chip(iIs, i_COMPS);
     internal.hToR = shared.gamma_H * t_x.chip(iH, i_COMPS);
-    internal.hToD = shared.omega * t_x.chip(iH, i_COMPS);
 
     internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
 
@@ -427,7 +450,7 @@ class daedalus_ode {
 
     // TODO(pratik): flexible way of selecting multiple cols from i-th layer
     // .stride() operator limited by start point
-    // S => S_v
+    // S => S_v and S_v => S
     t_dx.chip(iS, i_COMPS).chip(0, 1) +=
         -internal.nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) +
         shared.psi * t_x.chip(iS, i_COMPS).chip(1, 1);
@@ -435,13 +458,16 @@ class daedalus_ode {
         internal.nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) -
         shared.psi * t_x.chip(iS, i_COMPS).chip(1, 1);
 
-    // R => R_v
+    // R => R_v and R_v => R
     t_dx.chip(iR, i_COMPS).chip(0, 1) +=
         -internal.nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1) +
         shared.psi * t_x.chip(iR, i_COMPS).chip(1, 1);
     t_dx.chip(iR, i_COMPS).chip(1, 1) +=
         internal.nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1) -
         shared.psi * t_x.chip(iR, i_COMPS).chip(1, 1);
+
+    t_new_vax = internal.nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) +
+                internal.nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1);
 
     // get IPR (incidence prevalence ratio) as growth flag
     const Eigen::Tensor<double, 0> incidence = internal.sToE.sum();
@@ -454,7 +480,6 @@ class daedalus_ode {
   /// @return Probably an array of zeros.
   static auto zero_every(const shared_state &shared) {
     return dust2::zero_every_type<real_type>{
-        {1, shared.i_to_zero},
-        {1, {shared.i_ipr}}};  // zero data and flag compartments
+        {1, {shared.i_ipr}}};  // zero IPR value
   }
 };

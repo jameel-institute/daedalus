@@ -10,7 +10,8 @@ daedalus2(
   response_strategy = NULL,
   vaccine_investment = NULL,
   response_time = 30,
-  time_end = 100
+  time_end = 100,
+  ...
 )
 }
 \arguments{
@@ -58,6 +59,8 @@ Defaults to 30 days.}
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
 returned for each day. Defaults to 300 days.}
+
+\item{...}{Optional arguments that are passed to \code{\link[dust2:dust_ode_control]{dust2::dust_ode_control()}}.}
 }
 \description{
 \code{daedalus::daedalus2()} will eventually replace \code{daedalus::daedalus()} with

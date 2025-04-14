@@ -12,17 +12,60 @@ initial_flags <- function() {
   c(ipr = ipr, npi_flag = npi_flag, vax_flag = vax_flag)
 }
 
+#' Get model response times from dust2 output
+#'
+#' @param output dust2 output from `daedalus_internal()`.
+#' @param time_end The model end time, passed from [daedalus2()].
+#'
+#' @return A vector of event start and end times suitable for a
+#' `<daedalus_output>` object. Returns model end time if there is no response
+#' end time.
+#'
+#' @keywords internal
+get_daedalus2_response_times <- function(output, time_end) {
+  # internal function with no input checking
+  event_data <- output$event_data
+
+  resp_times_on <- event_data[grepl("npi_\\w*_on$", event_data$name), "time"]
+  resp_time_on_realised <- if (length(resp_times_on) == 0) {
+    NA_real_
+  } else {
+    min(resp_times_on)
+  }
+
+  resp_times_off <- event_data[grepl("npi_\\w*_off$", event_data$name), "time"]
+  resp_time_off_realised <- if (is.na(resp_time_on_realised)) {
+    NA_real_
+  } else if (length(resp_times_off) == 0) {
+    time_end
+  } else {
+    min(resp_times_off)
+  }
+
+  duration <- resp_time_off_realised - resp_time_on_realised
+
+  # return list for consistency with daedalus
+  list(
+    closure_time_start = resp_time_on_realised,
+    closure_time_end = resp_time_off_realised,
+    closure_duration = duration
+  )
+}
+
 #' Internal function for daedalus2
 #'
 #' @return A list of state values as returned by `dust2::dust_unpack_state()`.
 #' @keywords internal
-daedalus2_internal <- function(time_end, params, state, flags) {
+daedalus2_internal <- function(time_end, params, state, flags, ode_control) {
   # NOTE: sys params assumed suitable for `do.call()`
-  sys_params <- list(daedalus_ode, pars = params)
-  sys <- do.call(dust2::dust_system_create, sys_params)
+  arg_list <- list(
+    generator = daedalus_ode,
+    pars = params,
+    ode_control = ode_control
+  )
+  sys <- do.call(dust2::dust_system_create, arg_list)
 
-  # convert state to vector and add initial flags
-  state <- as.vector(state)
+  # add initial flags
   state <- c(state, flags)
   dust2::dust_system_set_state(sys, state)
 
@@ -42,6 +85,8 @@ daedalus2_internal <- function(time_end, params, state, flags) {
 #'
 #' @inheritParams daedalus
 #'
+#' @param ... Optional arguments that are passed to [dust2::dust_ode_control()].
+#'
 #' @details
 #' **Note that** `daedalus2()` currently uses a default vaccination strategy of
 #' _no vaccination_, using the internal helper function [dummy_vaccination()].
@@ -60,12 +105,14 @@ daedalus2_internal <- function(time_end, params, state, flags) {
 #'
 #' names(output)
 daedalus2 <- function(
-    country,
-    infection,
-    response_strategy = NULL,
-    vaccine_investment = NULL,
-    response_time = 30,
-    time_end = 100) {
+  country,
+  infection,
+  response_strategy = NULL,
+  vaccine_investment = NULL,
+  response_time = 30,
+  time_end = 100,
+  ...
+) {
   # prepare flags
   flags <- initial_flags()
 
@@ -81,11 +128,20 @@ daedalus2 <- function(
     infection <- daedalus_infection(infection)
   }
 
+  # collect optional ODE control params and create ode_control obj
+  ode_control <- rlang::list2(...)
+  if (length(ode_control) > 0) {
+    ode_control <- do.call(dust2::dust_ode_control, ode_control)
+  } else {
+    ode_control <- NULL
+  }
+
   # checks on interventions
   # also prepare the appropriate economic openness vectors
-  # allowing for a numeric vector, or NULL for no response
+  # allowing for a numeric vector, or NULL for truly response
   if (is.null(response_strategy)) {
     openness <- rep(1.0, N_ECON_SECTORS)
+    response_time <- NULL # to be filtered out later
   } else if (is.numeric(response_strategy)) {
     checkmate::assert_numeric(
       response_strategy,
@@ -145,7 +201,17 @@ daedalus2 <- function(
   }
 
   #### Prepare initial state and parameters ####
-  initial_state <- make_initial_state2(country)
+  initial_state <- as.vector(make_initial_state2(country))
+
+  # add state for new vaccinations by age group and econ sector
+  state_new_vax <- numeric(
+    length(get_data(country, "demography")) +
+      length(get_data(country, "workers"))
+  )
+  initial_state <- c(
+    initial_state,
+    state_new_vax
+  )
 
   # prepare susceptibility matrix for vaccination
   susc <- make_susc_matrix(vaccine_investment, country)
@@ -162,9 +228,32 @@ daedalus2 <- function(
     )
   )
 
-  output <- daedalus2_internal(time_end, parameters, initial_state, flags)
+  # filter out NULLs so missing values can be read as NAN in C++
+  parameters <- Filter(function(x) !is.null(x), parameters)
 
-  # NOTE: needs to be compatible with `<daedalus_output>`
-  # or equivalent from `{daedalus.compare}`
+  output <- daedalus2_internal(
+    time_end,
+    parameters,
+    initial_state,
+    flags,
+    ode_control
+  )
+
+  # # NOTE: needs to be compatible with `<daedalus_output>`
+  # # or equivalent from `{daedalus.compare}`
+  # output <- list(
+  #   total_time = time_end,
+  #   model_data = prepare_output_cpp(output$data, country),
+  #   country_parameters = unclass(country),
+  #   infection_parameters = unclass(infection),
+  #   response_data = list(
+  #     response_strategy = response_strategy,
+  #     openness = openness,
+  #     closure_info = get_daedalus2_response_times(output, time_end)
+  #   )
+  # )
+
+  # as_daedalus_output(output)
+
   output
 }
