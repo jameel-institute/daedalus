@@ -84,7 +84,7 @@ daedalus2 <- function(
 
   # checks on interventions
   # also prepare the appropriate economic openness vectors
-  # allowing for a numeric vector, or NULL for truly response
+  # allowing for a numeric vector, or NULL for truly no response
   if (is.null(response_strategy)) {
     openness <- rep(1.0, N_ECON_SECTORS)
     response_time <- NULL # to be filtered out later
