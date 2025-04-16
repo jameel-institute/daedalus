@@ -80,7 +80,7 @@ daedalus_country <- function(
     contacts_workplace = NULL,
     contacts_consumer_worker = NULL
   ),
-  group_working_age = i_WORKING_AGE
+  group_working_age = NULL
 ) {
   # input checking
   name <- country_name_from_arg(country)
