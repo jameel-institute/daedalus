@@ -40,7 +40,8 @@ new_daedalus_country <- function(name, parameters) {
 #' not passed, default values are accessed from stored package data.
 #'
 #' @param group_working_age An optional value for the age-group that is
-#' considered to be the working-age group. Defaults to `i_WORKING_AGE = 3`.
+#' considered to be the working-age group. Defaults to `3`, which is taken from
+#' an internal constant.
 #'
 #' @export
 #' @return
