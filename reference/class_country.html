@@ -15,7 +15,7 @@ characteristics for the DAEDALUS model."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,7 +75,8 @@ characteristics for the DAEDALUS model.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus_country</span><span class="op">(</span></span>
 <span>  <span class="va">country</span>,</span>
 <span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>contact_matrix <span class="op">=</span> <span class="cn">NULL</span>, contacts_workplace <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    contacts_consumer_worker <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span>    contacts_consumer_worker <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>,</span>
+<span>  group_working_age <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">is_daedalus_country</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
@@ -99,6 +100,12 @@ ISO3 code; must be from among <a href="country_names_codes.html">country_codes_i
 allowed to be modified. Currently, users may only pass their own contact
 matrix, workplace contacts, and consumer-worker contact matrix. If these are
 not passed, default values are accessed from stored package data.</p></dd>
+
+
+<dt id="arg-group-working-age">group_working_age<a class="anchor" aria-label="anchor" href="#arg-group-working-age"></a></dt>
+<dd><p>An optional value for the age-group that is
+considered to be the working-age group. Defaults to <code>3</code>, which is taken from
+an internal constant.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>

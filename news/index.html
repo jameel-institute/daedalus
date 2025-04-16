@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,23 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.10" id="daedalus-0210">daedalus 0.2.10<a class="anchor" aria-label="anchor" href="#daedalus-0210"></a></h2>
+<ul><li><p><code>daedalus_ode</code> class no longer zeroes data compartments for new infections and new hospitalisations — this is handled by the pre-existing <code><a href="../reference/epi_output_helpers.html">get_incidence()</a></code> function. This change will be reversed in a future rewrite of <code><a href="../reference/epi_output_helpers.html">get_incidence()</a></code>;</p></li>
+<li><p><code>&lt;daedalus_country&gt;</code> class takes argument <code>group_working_age</code> for the index of the working age group;</p></li>
+<li><p><code>&lt;daedalus_output&gt;</code> class prints information on country, epidemic, and response;</p></li>
+<li><p>Added <code>FLAG_NAMES</code> for variables in <code>dust2</code> output to remove;</p></li>
+<li><p>Added internal function <code><a href="../reference/get_daedalus2_response_times.html">get_daedalus2_response_times()</a></code> to extract event data from <code><a href="../reference/daedalus2_internal.html">daedalus2_internal()</a></code> for <code>&lt;daedalus_output&gt;</code> class;</p></li>
+<li><p><code><a href="../reference/daedalus2.html">daedalus2()</a></code> returns <code>&lt;daedalus_output&gt;</code> class object similar to <code><a href="../reference/daedalus.html">daedalus()</a></code>;</p></li>
+<li><p>Removed some constants associated with now-removed <code>daedalus_rtm()</code> function;</p></li>
+<li><p>Function <code><a href="../reference/prepare_output.html">prepare_output_cpp()</a></code> rewritten to handle output from <code><a href="../reference/daedalus2_internal.html">daedalus2_internal()</a></code>;</p></li>
+<li>
+<p>Updated tests for classed output from <code><a href="../reference/daedalus2.html">daedalus2()</a></code>;</p>
+<ul><li>Skipping tests for vaccination start time as this data is not compatible with class <code>&lt;daedalus_output&gt;</code>; these will be switched on in future.</li>
+</ul></li>
+<li><p>Added continuous benchmarking for <code><a href="../reference/daedalus2.html">daedalus2()</a></code>;</p></li>
+<li><p>Updated vignette on <code><a href="../reference/daedalus2.html">daedalus2()</a></code> for classed output.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.9" id="daedalus-029">daedalus 0.2.9<a class="anchor" aria-label="anchor" href="#daedalus-029"></a></h2>
 <ul><li><p>Added public-concern social distancing to <code><a href="../reference/daedalus2.html">daedalus2()</a></code>, and re-added it to <code><a href="../reference/daedalus.html">daedalus()</a></code>; this reverses the removal in v0.2.3. The functions are equivalent: social-distancing is active only when an NPI is active.</p></li>
