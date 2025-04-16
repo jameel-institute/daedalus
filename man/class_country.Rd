@@ -11,7 +11,7 @@ daedalus_country(
   country,
   parameters = list(contact_matrix = NULL, contacts_workplace = NULL,
     contacts_consumer_worker = NULL),
-  group_working_age = i_WORKING_AGE
+  group_working_age = NULL
 )
 
 is_daedalus_country(x)
@@ -29,7 +29,8 @@ matrix, workplace contacts, and consumer-worker contact matrix. If these are
 not passed, default values are accessed from stored package data.}
 
 \item{group_working_age}{An optional value for the age-group that is
-considered to be the working-age group. Defaults to \code{i_WORKING_AGE = 3}.}
+considered to be the working-age group. Defaults to \code{3}, which is taken from
+an internal constant.}
 
 \item{x}{An object of the \verb{<daedalus_country>} class.}
 
