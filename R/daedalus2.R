@@ -239,21 +239,19 @@ daedalus2 <- function(
     ode_control
   )
 
-  # # NOTE: needs to be compatible with `<daedalus_output>`
-  # # or equivalent from `{daedalus.compare}`
-  # output <- list(
-  #   total_time = time_end,
-  #   model_data = prepare_output_cpp(output$data, country),
-  #   country_parameters = unclass(country),
-  #   infection_parameters = unclass(infection),
-  #   response_data = list(
-  #     response_strategy = response_strategy,
-  #     openness = openness,
-  #     closure_info = get_daedalus2_response_times(output, time_end)
-  #   )
-  # )
+  # NOTE: needs to be compatible with `<daedalus_output>`
+  # or equivalent from `{daedalus.compare}`
+  output <- list(
+    total_time = time_end,
+    model_data = prepare_output_cpp(output$data, country),
+    country_parameters = unclass(country),
+    infection_parameters = unclass(infection),
+    response_data = list(
+      response_strategy = response_strategy,
+      openness = openness,
+      closure_info = get_daedalus2_response_times(output, time_end)
+    )
+  )
 
-  # as_daedalus_output(output)
-
-  output
+  as_daedalus_output(output)
 }

@@ -20,6 +20,9 @@ test_that("daedalus2: basic expectations", {
     (N_AGE_GROUPS + N_ECON_SECTORS) *
     N_VACCINE_STRATA
 
+  expected_rows <- expected_rows +
+    ((N_AGE_GROUPS + N_ECON_SECTORS) * (time_end + 1L))
+
   expect_identical(nrow(data), expected_rows)
   expect_named(
     data,
