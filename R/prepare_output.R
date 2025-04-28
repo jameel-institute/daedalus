@@ -90,8 +90,10 @@ prepare_output_cpp <- function(output, country) {
   timesteps <- seq_len(ncol(output[[1]])) - 1
   n_times <- length(timesteps)
 
-  # remove flags
-  output <- output[!names(output) %in% FLAG_NAMES]
+  # remove flags and new vaccinations data
+  NEW_VACCINATIONS_NAME <- "new_vax"
+  new_vaccinations <- output[[NEW_VACCINATIONS_NAME]]
+  output <- output[!names(output) %in% c(FLAG_NAMES, NEW_VACCINATIONS_NAME)]
 
   # get data from country
   demography <- get_data(country, "demography")
@@ -105,12 +107,12 @@ prepare_output_cpp <- function(output, country) {
     age_group_names,
     rep(age_group_names[i_working_age], n_econ_sectors)
   )
-  age_group_labels <- rep(
+  age_group_labels_rep <- rep(
     age_group_labels,
     each = n_times
   )
-  age_group_labels <- rep(
-    age_group_labels,
+  age_group_labels_rep <- rep(
+    age_group_labels_rep,
     N_MODEL_COMPARTMENTS * N_VACCINE_STRATA
   )
 
@@ -118,13 +120,14 @@ prepare_output_cpp <- function(output, country) {
   econ_group_labels <- sprintf("sector_%02i", seq.int(n_econ_sectors))
   non_working_label <- rep("sector_00", n_age_groups)
   econ_group_labels <- c(non_working_label, econ_group_labels)
-  econ_group_labels <- rep(econ_group_labels, each = n_times)
-  econ_group_labels <- rep(
-    econ_group_labels,
+  econ_group_labels_rep <- rep(econ_group_labels, each = n_times)
+  econ_group_labels_rep <- rep(
+    econ_group_labels_rep,
     N_MODEL_COMPARTMENTS * N_VACCINE_STRATA
   )
 
   # vaccine group labels
+  # NOTE: subsetting will be removed with replacement of daedalus w/ daedalus2
   vaccine_labels <- rep(
     VACCINE_GROUPS[c(1, 2)],
     each = (n_age_groups + n_econ_sectors) * N_MODEL_COMPARTMENTS * n_times
@@ -148,20 +151,28 @@ prepare_output_cpp <- function(output, country) {
   data <- data.table::rbindlist(data_list)
   data[,
     c("age_group", "econ_sector", "vaccine_group", "compartment") := list(
-      age_group_labels,
-      econ_group_labels,
+      age_group_labels_rep,
+      econ_group_labels_rep,
       vaccine_labels,
       compartment_labels
     )
   ]
   data$variable <- NULL
 
-  data.table::setDF(data)
+  # handle new vaccinations data
+  # NOTE: this could go into a dedicated function
+  new_vaccinations <- t(new_vaccinations)
+  new_vaccinations <- data.table::as.data.table(new_vaccinations)
+  new_vaccinations[, "time" := timesteps]
+  new_vaccinations <- data.table::melt(new_vaccinations, id.vars = "time")
+  new_vaccinations$compartment <- "new_vax"
+  new_vaccinations$vaccine_group <- "new_vaccinations" # compat with data fn
+  new_vaccinations$age_group <- rep(age_group_labels, each = n_times)
+  new_vaccinations$econ_sector <- rep(econ_group_labels, each = n_times)
+  new_vaccinations$variable <- NULL
 
-  # new vaccinations only in susceptible and recovered epi compartments
-  data <- data[
-    !(data$vaccine_group == "new_vaccinations" &
-      !data$compartment %in% c("susceptible", "recovered")),
-  ]
-  data
+  # combine and return data converted to data.frame
+  data <- data.table::rbindlist(list(data, new_vaccinations), use.names = TRUE)
+
+  data.table::setDF(data)
 }
