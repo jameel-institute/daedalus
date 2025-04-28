@@ -461,8 +461,8 @@ class daedalus_ode {
         nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1) -
         shared.psi * t_x.chip(iR, i_COMPS).chip(1, 1);
 
-    t_new_vax = internal.nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) +
-                internal.nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1);
+    t_new_vax = nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) +
+                nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1);
 
     // get IPR (incidence prevalence ratio) as growth flag
     const Eigen::Tensor<double, 0> incidence = internal.sToE.sum();
