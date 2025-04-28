@@ -254,7 +254,9 @@ class daedalus_ode {
                                true);
 
     // RELATIVE LOCATIONS OF RESPONSE-RELATED FLAGS
-    const int total_compartments = n_strata * N_VAX_STRATA * N_COMPARTMENTS;
+    // add n_strata to the end for new vaccinations data
+    const int total_compartments =
+        (n_strata * N_VAX_STRATA * N_COMPARTMENTS) + n_strata;
     const size_t i_ipr = total_compartments + daedalus::constants::i_rel_IPR;
     const size_t i_npi_flag =
         total_compartments + daedalus::constants::i_rel_NPI_FLAG;
