@@ -16,6 +16,10 @@ test_that("Daily incidence: basic expectations", {
 
   expect_error(get_incidence(data, measures = "dummy"))
   expect_error(get_incidence(data, groups = "dummy"))
+  expect_error(
+    get_incidence("dummy_data"),
+    "(Expected `data`)*(data.frame)*(daedalus_output)"
+  )
 })
 
 test_that("Epidemic summary: basic expectations", {
@@ -41,6 +45,10 @@ test_that("Epidemic summary: basic expectations", {
 
   expect_error(get_epidemic_summary(data, measures = "dummy"))
   expect_error(get_epidemic_summary(data, groups = "dummy"))
+  expect_error(
+    get_epidemic_summary("dummy_data"),
+    "(Expected `data` to be)*(data.frame)*(daedalus_output)"
+  )
 })
 
 # Test get_new_vaccinations() - expect that there are no
@@ -61,6 +69,10 @@ test_that("New vaccinations: basic expectations", {
     data,
     groups = c("age_group", "econ_sector")
   ))
+  expect_error(
+    get_new_vaccinations("dummy_data"),
+    "(Expected `data` to be)*(data.frame)*(daedalus_output)"
+  )
   expect_error(get_new_vaccinations(
     data,
     groups = c("age_group", "vaccine_group")

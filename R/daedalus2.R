@@ -150,8 +150,16 @@ daedalus2 <- function(
       len = N_ECON_SECTORS
     )
     openness <- response_strategy
-  } else if (response_strategy %in% names(daedalus::closure_data)) {
+  } else if (
+    length(response_strategy) == 1 &&
+      response_strategy %in% names(daedalus::closure_data)
+  ) {
     openness <- daedalus::closure_data[[response_strategy]]
+  } else {
+    cli::cli_abort(
+      "Got an unexpected value for `response_strategy`. Options are `NULL`, \
+      a numeric vector, or a recognised strategy. See function docs."
+    )
   }
 
   # checks on vaccination
