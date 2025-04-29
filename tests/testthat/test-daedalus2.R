@@ -110,6 +110,16 @@ test_that("daedalus2: Can run with ISO3 country parameter", {
   expect_length(data, N_OUTPUT_COLS)
 })
 
+test_that("daedalus2: Can run with ODE control arguments", {
+  expect_no_condition(
+    daedalus2("GBR", "influenza_1918", atol = 1e-5)
+  )
+  expect_error(
+    daedalus2("GBR", "influenza_1918", dummy = 1e-5),
+    "unused argument"
+  )
+})
+
 # test that daedalus runs for all epidemic infection parameter sets
 test_that("daedalus2: Runs for all country x infection x response", {
   country_infection_combos <- data.table::CJ(
@@ -308,6 +318,7 @@ test_that("daedalus2: responses triggered by hospital capacity event", {
   )
 })
 
+# NOTE: see PR #83 for a reprex
 skip("Root jumping causes test to fail")
 test_that("daedalus2: responses ended by epidemic growth", {
   # start response early
@@ -341,5 +352,24 @@ test_that("daedalus2: responses ended by epidemic growth", {
   expect_identical(
     event_data[event_data$name == "npi_state_off", "time"],
     end_time
+  )
+})
+
+test_that("daedalus2: Errors and messages", {
+  expect_error(
+    daedalus2(
+      "GBR",
+      "sars_cov_1",
+      as.character(1:49)
+    ),
+    "Got an unexepected value for `response_strategy`."
+  )
+  expect_error(
+    daedalus2(
+      "GBR",
+      "sars_cov_1",
+      1:50
+    ),
+    "Assertion on 'response_strategy' failed: Must have length"
   )
 })

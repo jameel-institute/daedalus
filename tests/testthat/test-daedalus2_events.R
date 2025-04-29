@@ -32,6 +32,7 @@ test_that("daedalus2: root-finding events launch at each appropriate root", {
   )
 })
 
+# NOTE: this test will/should be reinstated when daedalus2() replaces daedalus()
 skip("Full event data is no longer returned for compliance with output class")
 test_that("Vaccination events launch as expected", {
   # expect vaccination is launched if chosen and does not end
