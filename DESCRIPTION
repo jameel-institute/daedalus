@@ -52,13 +52,15 @@ LinkingTo:
     cpp11,
     dust2,
     monty,
+    daedalus.data,
     Rcpp,
     RcppEigen
 VignetteBuilder: 
     knitr
 Remotes:
     mrc-ide/dust2,
-    mrc-ide/monty
+    mrc-ide/monty,
+    jameel-institute/daedalus.data
 Config/Needs/website: jameel-institute/jameelinst.rpkg.theme
 Config/testthat/edition: 3
 Encoding: UTF-8
