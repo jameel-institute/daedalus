@@ -62,6 +62,19 @@ ggplot(data, aes(time, value)) +
     x = "Time", y = "Vaccinated susceptibles (prevalence)",
     caption = "Vaccinated susceptibles decrease due to infections."
   )
+
+# plot new vaccinations (incidence)
+# NOTE: dashboard shows cumulative vaccinations which are recalculated
+vax_data <- get_new_vaccinations(output, groups = "age_group")
+
+ggplot(vax_data, aes(time, new_vaccinations)) +
+  geom_line(
+    aes(col = age_group)
+  ) +
+  labs(
+    x = "Time",
+    y = "New vaccinations (incidence)"
+  )
 ```
 
 Check that fully protective (non-leaky) vaccination does not see a mid-epidemic reduction in vaccinated susceptibles.

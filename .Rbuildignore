@@ -35,3 +35,4 @@
 ^touchstone$
 ^format-R.sh$
 ^air.toml$
+^\.vscode$

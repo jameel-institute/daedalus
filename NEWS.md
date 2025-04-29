@@ -1,3 +1,15 @@
+# daedalus 0.2.11
+
+This patch version adds logging of new vaccinations in each age and economic group.
+
+- `daedalus2()` now returns data on new vaccinations and is compatible with `get_new_vaccinations()`; new vaccinations are stored as a vector of the size of age + economic groups after the main state but before the model flags;
+
+- `daedalus_ode` does not zero new vaccinations - this is handled by `get_new_vaccinations()`;
+
+- `daedalus2()` accepts optional ODE control arguments for _dust2_ via `...`;
+
+- Internal function `prepare_output_cpp()` accommodates new vaccination data in `output`.
+
 # daedalus 0.2.10
 
 - `daedalus_ode` class no longer zeroes data compartments for new infections and new hospitalisations --- this is handled by the pre-existing `get_incidence()` function. This change will be reversed in a future rewrite of `get_incidence()`;
