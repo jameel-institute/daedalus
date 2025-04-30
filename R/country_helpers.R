@@ -13,24 +13,24 @@ country_name_from_arg <- function(country) {
     # check code is known, and lookup country name from idx
     code <- rlang::arg_match(code, code_list)
     idx <- match(code, code_list)
-    daedalus::country_names[[idx]]
+    daedalus.data::country_names[[idx]]
   }
 
   if (any(grep("^[A-Z]{2}$", country))) {
     # regex check for ISO2
     country <- lookup_country_name_from_code(
       country,
-      daedalus::country_codes_iso2c
+      daedalus.data::country_codes_iso2c
     )
   } else if (any(grep("^[A-Z]{3}$", country))) {
     # regex check for ISO3
     country <- lookup_country_name_from_code(
       country,
-      daedalus::country_codes_iso3c
+      daedalus.data::country_codes_iso3c
     )
   } else {
     # check country name is known
-    country <- rlang::arg_match(country, daedalus::country_names)
+    country <- rlang::arg_match(country, daedalus.data::country_names)
   }
   country
 }

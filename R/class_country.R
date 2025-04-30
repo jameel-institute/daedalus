@@ -31,8 +31,8 @@ new_daedalus_country <- function(name, parameters) {
 #' characteristics for the DAEDALUS model.
 #'
 #' @param country A string giving the country or territory name, or ISO2 or
-#' ISO3 code; must be from among [daedalus::country_codes_iso2c] or
-#' [daedalus::country_codes_iso3c] or [daedalus::country_names].
+#' ISO3 code; must be from among [daedalus.data::country_codes_iso2c] or
+#' [daedalus.data::country_codes_iso3c] or [daedalus.data::country_names].
 #'
 #' @param parameters An optional named list of country parameters that are
 #' allowed to be modified. Currently, users may only pass their own contact
@@ -170,18 +170,18 @@ daedalus_country <- function(
   }
 
   # substitute defaults with non-NULL elements of parameters
-  params <- daedalus::country_data[[name]]
+  params <- daedalus.data::country_data[[name]]
   # add one worker to each sector to avoid division by zero
   params$workers <- params$workers + 1
 
   # add value of statistical life (VSL)
-  life_expectancy <- daedalus::life_expectancy[[name]]
-  vsl <- daedalus::life_value[[name]]
-  gni <- daedalus::country_gni[[name]]
+  life_expectancy <- daedalus.data::life_expectancy[[name]]
+  vsl <- daedalus.data::life_value[[name]]
+  gni <- daedalus.data::country_gni[[name]]
 
   # calculate consumer-worker contacts
   contacts_consumer_worker <- matrix(
-    daedalus::economic_contacts[["contacts_workplace"]],
+    daedalus.data::economic_contacts[["contacts_workplace"]],
     N_ECON_SECTORS,
     N_AGE_GROUPS
   ) *
@@ -202,9 +202,10 @@ daedalus_country <- function(
   params <- c(
     params,
     list(
-      contacts_workplace = daedalus::economic_contacts[["contacts_workplace"]],
+      contacts_workplace = daedalus.data::economic_contacts[[
+        "contacts_workplace"]],
       contacts_consumer_worker = contacts_consumer_worker,
-      contacts_between_sectors = daedalus::economic_contacts[[
+      contacts_between_sectors = daedalus.data::economic_contacts[[
         "contacts_between_sectors"
       ]],
       vsl = vsl,
@@ -270,10 +271,10 @@ validate_daedalus_country <- function(x) {
   # super informative
   # fmt: skip
   stopifnot(
-    "Country `name` must be a string from `daedalus::country_names`" =
+    "Country `name` must be a string from `daedalus.data::country_names`" =
       checkmate::test_string(x$name) &&
         checkmate::test_subset(
-          x$name, daedalus::country_names
+          x$name, daedalus.data::country_names
         ),
     "Country `demography` must be a integer-ish vector of 4 positive values" =
       checkmate::test_integerish(
