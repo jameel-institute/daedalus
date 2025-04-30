@@ -14,11 +14,11 @@ is_daedalus_infection(x)
 \method{print}{daedalus_infection}(x, ...)
 }
 \arguments{
-\item{name}{An epidemic name from among \link{epidemic_names}.
+\item{name}{An epidemic name from among \link[daedalus.data:epidemic_data]{daedalus.data::epidemic_names}.
 Selecting an epidemic automatically pulls in infection parameters
 associated with the epidemic; these are stored as packaged data in
-\code{daedalus::infection_data}. Default infection parameters for epidemics can be
-over-ridden by passing them as a named list to \code{...}.}
+\code{daedalus.data::infection_data}. Default infection parameters for epidemics
+can be over-ridden by passing them as a named list to \code{...}.}
 
 \item{...}{Other parameters passed to \code{\link[=print]{print()}}.}
 
@@ -61,7 +61,7 @@ argument.
 \subsection{Infection parameters}{
 
 All infections have the following parameters, which take default values
-stored in the package under \link{infection_data}. Users can pass
+stored in the package under \link[daedalus.data:epidemic_data]{daedalus.data::infection_data}. Users can pass
 custom values for these parameters as arguments via \code{...}.
 \itemize{
 \item \code{r0}: A single numeric value for the basic reproduction value of the

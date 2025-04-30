@@ -20,8 +20,8 @@ is_daedalus_country(x)
 }
 \arguments{
 \item{country}{A string giving the country or territory name, or ISO2 or
-ISO3 code; must be from among \link{country_codes_iso2c} or
-\link{country_codes_iso3c} or \link{country_names}.}
+ISO3 code; must be from among \link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso2c} or
+\link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso3c} or \link[daedalus.data:country_names_codes]{daedalus.data::country_names}.}
 
 \item{parameters}{An optional named list of country parameters that are
 allowed to be modified. Currently, users may only pass their own contact

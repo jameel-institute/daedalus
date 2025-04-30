@@ -4,7 +4,7 @@
 #' `<daedalus_infection>`. See [daedalus_infection()] for the user-facing helper
 #' function which calls this function internally.
 #'
-#' @param name An epidemic name from among [daedalus::epidemic_names].
+#' @param name An epidemic name from among [daedalus.data::epidemic_names].
 #' @param parameters A named list of parameters for the infection.
 #'
 #' @return An object of the `<daedalus_infection>` class, which inherits from a
@@ -30,11 +30,11 @@ new_daedalus_infection <- function(name, parameters) {
 #' parameter access and editing, as well as processing raw infection
 #' characteristics for the DAEDALUS model.
 #'
-#' @param name An epidemic name from among [daedalus::epidemic_names].
+#' @param name An epidemic name from among [daedalus.data::epidemic_names].
 #' Selecting an epidemic automatically pulls in infection parameters
 #' associated with the epidemic; these are stored as packaged data in
-#' `daedalus::infection_data`. Default infection parameters for epidemics can be
-#' over-ridden by passing them as a named list to `...`.
+#' `daedalus.data::infection_data`. Default infection parameters for epidemics 
+#' can be over-ridden by passing them as a named list to `...`.
 #'
 #' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Manually specified values for
 #' any of the infection parameters. See **Details** for which infection
@@ -77,7 +77,7 @@ new_daedalus_infection <- function(name, parameters) {
 #' ## Infection parameters
 #'
 #' All infections have the following parameters, which take default values
-#' stored in the package under [daedalus::infection_data]. Users can pass
+#' stored in the package under [daedalus.data::infection_data]. Users can pass
 #' custom values for these parameters as arguments via `...`.
 #'
 #' - `r0`: A single numeric value for the basic reproduction value of the
@@ -125,7 +125,7 @@ new_daedalus_infection <- function(name, parameters) {
 #' daedalus_infection("influenza_1918", r0 = 2.5, rho = 0.01)
 daedalus_infection <- function(name, ...) {
   # input checking
-  name <- rlang::arg_match(name, daedalus::epidemic_names)
+  name <- rlang::arg_match(name, daedalus.data::epidemic_names)
   parameters <- rlang::list2(...)
 
   is_empty_list <- checkmate::test_list(parameters, len = 0)
@@ -136,18 +136,18 @@ daedalus_infection <- function(name, ...) {
       parameters,
       "numeric",
       min.len = 0,
-      max.len = length(daedalus::infection_parameter_names)
+      max.len = length(daedalus.data::infection_parameter_names)
     )
 
     has_good_names <- checkmate::test_subset(
       names(parameters),
-      daedalus::infection_parameter_names,
+      daedalus.data::infection_parameter_names,
       empty.ok = TRUE
     )
     if (!has_good_names) {
       cli::cli_abort(
         "Found unexpected values in `...`; the only allowed parameters are:
-        {.str {daedalus::infection_parameter_names}}"
+        {.str {daedalus.data::infection_parameter_names}}"
       )
     }
 
@@ -176,7 +176,7 @@ daedalus_infection <- function(name, ...) {
         "Expected the following parameters passed in `...`
           to be a single positive and finite number:
           {.str {
-            setdiff(daedalus::infection_parameter_names,
+            setdiff(daedalus.data::infection_parameter_names,
             allowed_numerics_names)
           }}",
         i = "Only {.str {allowed_numerics_names}} may be numeric vectors.
@@ -198,7 +198,7 @@ daedalus_infection <- function(name, ...) {
   }
 
   # substitute defaults with non-NULL elements of parameters
-  params <- daedalus::infection_data[[name]]
+  params <- daedalus.data::infection_data[[name]]
   params[names(parameters)] <- parameters
 
   x <- new_daedalus_infection(name, params)
@@ -223,7 +223,7 @@ validate_daedalus_infection <- function(x) {
   }
 
   # check class members
-  expected_invariants <- c("name", daedalus::infection_parameter_names)
+  expected_invariants <- c("name", daedalus.data::infection_parameter_names)
   has_invariants <- checkmate::test_names(
     attributes(x)$names,
     must.include = expected_invariants
@@ -238,16 +238,16 @@ validate_daedalus_infection <- function(x) {
   # check class members
   allowed_numerics_names <- c("ifr", "eta", "gamma_H", "omega")
   expected_number <- setdiff(
-    daedalus::infection_parameter_names,
+    daedalus.data::infection_parameter_names,
     allowed_numerics_names
   )
 
   # fmt: skip
   stopifnot(
-    "Infection `name` must be a string from `daedalus::epidemic_names`" =
+    "Infection `name` must be a string from `daedalus.data::epidemic_names`" =
       checkmate::test_string(x$name) &&
         checkmate::test_subset(
-          x$name, daedalus::epidemic_names
+          x$name, daedalus.data::epidemic_names
         )
   )
   invisible(lapply(expected_number, function(n) {
@@ -358,7 +358,7 @@ set_data.daedalus_infection <- function(x, ...) {
 
   is_good_subs <- checkmate::test_subset(
     names(to_set),
-    daedalus::infection_parameter_names
+    daedalus.data::infection_parameter_names
   )
   if (!is_good_subs) {
     cli::cli_abort(

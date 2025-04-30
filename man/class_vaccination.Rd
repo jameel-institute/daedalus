@@ -22,10 +22,10 @@ is_daedalus_vaccination(x)
 }
 \arguments{
 \item{name}{A vaccination investment scenario name from among
-\link{vaccination_scenario_names}.
+\link[daedalus.data:vaccine_scenarios]{daedalus.data::vaccination_scenario_names}.
 Selecting an epidemic automatically pulls in vaccination parameters
 associated with the epidemic; these are stored as packaged data in
-\code{daedalus::vaccination_scenario_data}.}
+\code{daedalus.data::vaccination_scenario_data}.}
 
 \item{start_time}{The number of days after the start of the epidemic that
 vaccination begins. Must be a single number. Defaults to \code{NULL} and the start

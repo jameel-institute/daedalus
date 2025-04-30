@@ -32,10 +32,10 @@ new_daedalus_vaccination <- function(name, parameters) {
 #' characteristics for the DAEDALUS model.
 #'
 #' @param name A vaccination investment scenario name from among
-#' [daedalus::vaccination_scenario_names].
+#' [daedalus.data::vaccination_scenario_names].
 #' Selecting an epidemic automatically pulls in vaccination parameters
 #' associated with the epidemic; these are stored as packaged data in
-#' `daedalus::vaccination_scenario_data`.
+#' `daedalus.data::vaccination_scenario_data`.
 #'
 #' @param start_time The number of days after the start of the epidemic that
 #' vaccination begins. Must be a single number. Defaults to `NULL` and the start
@@ -85,7 +85,7 @@ daedalus_vaccination <- function(
   waning_period = 180
 ) {
   # input checking
-  name <- rlang::arg_match(name, daedalus::vaccination_scenario_names)
+  name <- rlang::arg_match(name, daedalus.data::vaccination_scenario_names)
 
   checkmate::assert_integerish(start_time, lower = 0, null.ok = TRUE)
   checkmate::assert_number(
@@ -107,7 +107,7 @@ daedalus_vaccination <- function(
   )
   user_params <- Filter(Negate(is.null), user_params)
 
-  params <- daedalus::vaccination_scenario_data[[name]]
+  params <- daedalus.data::vaccination_scenario_data[[name]]
   params[names(user_params)] <- user_params
 
   x <- new_daedalus_vaccination(name, params)
@@ -132,7 +132,7 @@ validate_daedalus_vaccination <- function(x) {
   }
 
   # check class members
-  expected_invariants <- c("name", daedalus::vaccination_parameter_names)
+  expected_invariants <- c("name", daedalus.data::vaccination_parameter_names)
   has_invariants <- checkmate::test_names(
     attributes(x)$names,
     permutation.of = expected_invariants
@@ -146,14 +146,14 @@ validate_daedalus_vaccination <- function(x) {
 
   # fmt: skip
   stopifnot(
-    "Vaccination `name` must be among `daedalus::vaccination_scenario_names`" =
+    "Vaccination `name` must be among `daedalus.data::vaccination_scenario_names`" =
       checkmate::test_string(x$name) &&
         checkmate::test_subset(
-          x$name, c(daedalus::vaccination_scenario_names, "dummy")
+          x$name, c(daedalus.data::vaccination_scenario_names, "dummy")
         )
   )
 
-  invisible(lapply(daedalus::vaccination_parameter_names, function(n) {
+  invisible(lapply(daedalus.data::vaccination_parameter_names, function(n) {
     lgl <- checkmate::test_number(x[[n]], lower = 0.0, finite = TRUE)
     if (!lgl) {
       cli::cli_abort(
@@ -239,7 +239,7 @@ set_data.daedalus_vaccination <- function(x, ...) {
 
   is_good_subs <- checkmate::test_subset(
     names(to_set),
-    daedalus::vaccination_parameter_names
+    daedalus.data::vaccination_parameter_names
   )
   if (!is_good_subs) {
     cli::cli_abort(

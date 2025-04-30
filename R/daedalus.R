@@ -130,10 +130,9 @@ daedalus <- function(
   }
   checkmate::assert_multi_class(infection, c("daedalus_infection", "character"))
   if (is.character(infection)) {
-    infection <- rlang::arg_match(infection, daedalus::epidemic_names)
+    infection <- rlang::arg_match(infection, daedalus.data::epidemic_names)
     infection <- daedalus_infection(infection)
   }
-
   response_strategy <- rlang::arg_match(response_strategy)
 
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
@@ -179,7 +178,7 @@ daedalus <- function(
   if (!is_daedalus_vaccination(vaccine_investment)) {
     vaccine_investment <- rlang::arg_match(
       vaccine_investment,
-      daedalus::vaccination_scenario_names
+      daedalus.data::vaccination_scenario_names
     )
     vaccine_investment <- daedalus_vaccination(vaccine_investment)
   }
@@ -214,7 +213,7 @@ daedalus <- function(
   mutables <- prepare_mutable_parameters()
 
   # add the appropriate economic openness vectors to parameters
-  openness <- daedalus::closure_data[[response_strategy]]
+  openness <- daedalus.data::closure_data[[response_strategy]]
 
   # NOTE: psi (vax waning rate), tau (vax reduction in suscept.), and dims of nu
   # are hard-coded until vaccination scenarios are decided
