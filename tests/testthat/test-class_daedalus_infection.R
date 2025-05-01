@@ -20,7 +20,7 @@ test_that("class <daedalus_infection>: basic expectations", {
 
 test_that("class <daedalus_infection>: works for all epidemics", {
   expect_no_condition({
-    infections <- lapply(daedalus::epidemic_names, daedalus_infection) # nolint
+    infections <- lapply(daedalus.data::epidemic_names, daedalus_infection) # nolint
   })
   checkmate::expect_list(infections, "daedalus_infection")
 })

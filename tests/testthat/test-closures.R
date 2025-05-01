@@ -19,7 +19,7 @@ test_that("Closures: basic expectations: runs without errors", {
   invisible({
     Map(
       response_names,
-      daedalus::country_names[seq_along(response_names)],
+      daedalus.data::country_names[seq_along(response_names)],
       f = function(response, country) {
         expect_no_condition(daedalus(
           country,

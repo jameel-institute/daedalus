@@ -14,7 +14,7 @@
 ---
 
     Code
-      daedalus::vaccination_scenario_data
+      daedalus.data::vaccination_scenario_data
     Output
       $none
       $none$start_time
