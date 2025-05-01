@@ -33,7 +33,7 @@ new_daedalus_infection <- function(name, parameters) {
 #' @param name An epidemic name from among [daedalus.data::epidemic_names].
 #' Selecting an epidemic automatically pulls in infection parameters
 #' associated with the epidemic; these are stored as packaged data in
-#' `daedalus.data::infection_data`. Default infection parameters for epidemics 
+#' `daedalus.data::infection_data`. Default infection parameters for epidemics
 #' can be over-ridden by passing them as a named list to `...`.
 #'
 #' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Manually specified values for
