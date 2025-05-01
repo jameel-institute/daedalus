@@ -146,7 +146,8 @@ validate_daedalus_vaccination <- function(x) {
 
   # fmt: skip
   stopifnot(
-    "Vaccination `name` must be among `daedalus.data::vaccination_scenario_names`" =
+    "Vaccination `name` must be among
+    `daedalus.data::vaccination_scenario_names`" =
       checkmate::test_string(x$name) &&
         checkmate::test_subset(
           x$name, c(daedalus.data::vaccination_scenario_names, "dummy")
