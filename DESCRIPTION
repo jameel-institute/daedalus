@@ -34,6 +34,7 @@ Imports:
     data.table,
     deSolve,
     dust2,
+    daedalus.data,
     Rcpp,
     rlang
 Suggests:
