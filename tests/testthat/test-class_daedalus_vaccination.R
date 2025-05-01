@@ -2,13 +2,13 @@
 
 test_that("class <daedalus_vaccination>: basic expectations", {
   expect_no_condition(lapply(
-    daedalus::vaccination_scenario_names,
+    daedalus.data::vaccination_scenario_names,
     daedalus_vaccination
   ))
 
   # rate can be set independently
   expect_no_condition(lapply(
-    daedalus::vaccination_scenario_names,
+    daedalus.data::vaccination_scenario_names,
     daedalus_vaccination,
     rate = 0.3
   ))
@@ -41,7 +41,7 @@ test_that("class <daedalus_vaccination>: basic expectations", {
 
   expect_identical(data_string, data_s3, tolerance = 1e-6)
 
-  expect_snapshot(daedalus::vaccination_scenario_data)
+  expect_snapshot(daedalus.data::vaccination_scenario_data)
 })
 
 test_that("class <daedalus_vaccination>: class validation", {
@@ -61,7 +61,7 @@ test_that("class <daedalus_vaccination>: class validation", {
 
 test_that("class <daedalus_vaccination>: access and assignment", {
   expect_no_condition(lapply(
-    daedalus::vaccination_parameter_names,
+    daedalus.data::vaccination_parameter_names,
     function(x) {
       y <- daedalus_vaccination("medium")
 

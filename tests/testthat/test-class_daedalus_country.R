@@ -21,21 +21,21 @@ test_that("class <daedalus_country>: basic expectations", {
 
 test_that("class <daedalus_country>`: works for all country names", {
   expect_no_condition({
-    countries <- lapply(daedalus::country_names, daedalus_country) # nolint
+    countries <- lapply(daedalus.data::country_names, daedalus_country) # nolint
   })
   checkmate::expect_list(countries, "daedalus_country")
 })
 
 test_that("class <daedalus_country>`: works for all country ISO2 codes", {
   expect_no_condition({
-    countries <- lapply(daedalus::country_codes_iso2c, daedalus_country) # nolint
+    countries <- lapply(daedalus.data::country_codes_iso2c, daedalus_country) # nolint
   })
   checkmate::expect_list(countries, "daedalus_country")
 })
 
 test_that("class <daedalus_country>`: works for all country ISO3 codes", {
   expect_no_condition({
-    countries <- lapply(daedalus::country_codes_iso3c, daedalus_country) # nolint
+    countries <- lapply(daedalus.data::country_codes_iso3c, daedalus_country) # nolint
   })
   checkmate::expect_list(countries, "daedalus_country")
 })

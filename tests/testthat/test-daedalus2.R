@@ -123,8 +123,8 @@ test_that("daedalus2: Can run with ODE control arguments", {
 # test that daedalus runs for all epidemic infection parameter sets
 test_that("daedalus2: Runs for all country x infection x response", {
   country_infection_combos <- data.table::CJ(
-    country = daedalus::country_names,
-    infection = daedalus::epidemic_names
+    country = daedalus.data::country_names,
+    infection = daedalus.data::epidemic_names
   )
 
   time_end <- 10
@@ -283,7 +283,7 @@ test_that("daedalus2: responses triggered by hospital capacity event", {
   # with named responses (none = absolutely no resp)
   invisible(
     lapply(
-      names(daedalus::closure_data),
+      names(daedalus.data::closure_data),
       function(x) {
         expect_no_condition({
           daedalus2("GBR", "sars_cov_1", x)
@@ -298,12 +298,12 @@ test_that("daedalus2: responses triggered by hospital capacity event", {
   x$hospital_capacity <- 1e4
 
   output_list <- lapply(
-    names(daedalus::closure_data),
+    names(daedalus.data::closure_data),
     daedalus2,
     country = x,
     infection = "sars_cov_1"
   )
-  resp_scenario_names <- names(daedalus::closure_data)
+  resp_scenario_names <- names(daedalus.data::closure_data)
   output_fs <- vapply(
     output_list,
     function(x) {

@@ -43,7 +43,7 @@ test_that("Vaccination: basic expectations", {
 test_that("Vaccination: basic statistical correctness", {
   # expect that higher vaccination investment leads to fewer deaths
   # set disease to lower R0 to make it run longer
-  data_list <- lapply(daedalus::vaccination_scenario_names, function(v) {
+  data_list <- lapply(daedalus.data::vaccination_scenario_names, function(v) {
     daedalus(
       country = "Canada",
       infection = daedalus_infection("sars_cov_1", r0 = 1.1),

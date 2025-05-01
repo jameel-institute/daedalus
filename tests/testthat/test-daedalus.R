@@ -84,8 +84,8 @@ test_that("Can run with ISO3 country parameter", {
 # test that daedalus runs for all epidemic infection parameter sets
 test_that("daedalus: Runs for all country x infection x response", {
   country_infection_combos <- data.table::CJ(
-    country = daedalus::country_names,
-    infection = daedalus::epidemic_names
+    country = daedalus.data::country_names,
+    infection = daedalus.data::epidemic_names
   )
 
   dummy_vax <- daedalus_vaccination("low", start_time = 5)
