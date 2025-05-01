@@ -128,7 +128,7 @@ daedalus2 <- function(
   }
   checkmate::assert_multi_class(infection, c("daedalus_infection", "character"))
   if (is.character(infection)) {
-    infection <- rlang::arg_match(infection, daedalus::epidemic_names)
+    infection <- rlang::arg_match(infection, daedalus.data::epidemic_names)
     infection <- daedalus_infection(infection)
   }
 
@@ -156,9 +156,9 @@ daedalus2 <- function(
     openness <- response_strategy
   } else if (
     length(response_strategy) == 1 &&
-      response_strategy %in% names(daedalus::closure_data)
+      response_strategy %in% names(daedalus.data::closure_data)
   ) {
-    openness <- daedalus::closure_data[[response_strategy]]
+    openness <- daedalus.data::closure_data[[response_strategy]]
   } else {
     cli::cli_abort(
       "Got an unexpected value for `response_strategy`. Options are `NULL`, \
@@ -185,7 +185,7 @@ daedalus2 <- function(
   if (is.character(vaccine_investment)) {
     vaccine_investment <- rlang::arg_match(
       vaccine_investment,
-      daedalus::vaccination_scenario_names
+      daedalus.data::vaccination_scenario_names
     )
     vaccine_investment <- daedalus_vaccination(vaccine_investment)
   }
