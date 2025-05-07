@@ -32,6 +32,46 @@ test_that("daedalus2: root-finding events launch at each appropriate root", {
   )
 })
 
+test_that("daedalus2: setting response duration works", {
+  response_time <- 10
+  response_duration <- 30
+  output <- daedalus2(
+    "GBR",
+    "sars_cov_1",
+    "elimination",
+    response_time = response_time,
+    response_duration = response_duration
+  )
+
+  expect_identical(
+    output$response_data$closure_info$closure_time_end,
+    response_time + response_duration
+  )
+
+  # check that response duration of 0 is the same as no response
+  # must set hospital capacity to prevent event based triggering
+  cx <- daedalus_country("GBR")
+  cx$hospital_capacity <- 1e9
+  response_time <- 10
+  response_duration <- 0
+  output_alt <- daedalus2(
+    cx,
+    "sars_cov_1",
+    "elimination",
+    response_time = response_time,
+    response_duration = response_duration
+  )
+  output <- daedalus2(
+    cx,
+    "sars_cov_1"
+  )
+
+  expect_identical(
+    get_epidemic_summary(output_alt, "infections"),
+    get_epidemic_summary(output, "infections")
+  )
+})
+
 # NOTE: this test will/should be reinstated when daedalus2() replaces daedalus()
 skip("Full event data is no longer returned for compliance with output class")
 test_that("Vaccination events launch as expected", {

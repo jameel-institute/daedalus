@@ -21,6 +21,7 @@ test_that("daedalus() and daedalus2() are equivalent", {
     x,
     response_strategy = "elimination",
     response_time = 2,
+    response_duration = 400,
     time_end = 399
   ) # one less timestep
   output_daedalus <- daedalus(
