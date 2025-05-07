@@ -85,6 +85,9 @@ daedalus2_internal <- function(time_end, params, state, flags, ode_control) {
 #'
 #' @inheritParams daedalus
 #'
+#' @param response_duration A single integer-ish number that gives the number of
+#' days after `response_time` that an NPI should end.
+#'
 #' @param ... Optional arguments that are passed to [dust2::dust_ode_control()].
 #'
 #' @details
@@ -110,6 +113,7 @@ daedalus2 <- function(
   response_strategy = NULL,
   vaccine_investment = NULL,
   response_time = 30,
+  response_duration = 365,
   time_end = 100,
   ...
 ) {
@@ -191,11 +195,24 @@ daedalus2 <- function(
       response_time,
       upper = time_end - 2L, # for compat with daedalus
       lower = 1L, # responses cannot start at 0, unless strategy is null
-      any.missing = FALSE
+      any.missing = FALSE,
+      len = 1
     )
     if (!is_good_response_time) {
       cli::cli_abort(
         "Expected `response_time` to be between 1 and {time_end - 2L}."
+      )
+    }
+
+    is_good_response_duration <- checkmate::test_integerish(
+      response_duration,
+      lower = 0L, # no minimum duration
+      any.missing = FALSE,
+      len = 1
+    )
+    if (!is_good_response_duration) {
+      cli::cli_abort(
+        "Expected `response_duration` to be a single integer-like and >= 0"
       )
     }
   }
@@ -232,7 +249,8 @@ daedalus2 <- function(
       beta = get_beta(infection, country),
       susc = susc,
       openness = openness,
-      response_time = response_time
+      response_time = response_time,
+      response_duration = response_duration
     )
   )
 
