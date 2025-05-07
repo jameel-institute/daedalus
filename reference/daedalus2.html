@@ -11,7 +11,7 @@ the model implemented in C++ to integrate with dust2
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,6 +72,7 @@ the model implemented in C++ to integrate with <span class="pkg">dust2</span>
 <span>  response_strategy <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  vaccine_investment <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  response_time <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  response_duration <span class="op">=</span> <span class="fl">365</span>,</span>
 <span>  time_end <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -128,6 +129,11 @@ Other accepted values are <code>"low"</code>, <code>"medium"</code> and <code>"h
 at which the selected response is activated. This is ignored if the response
 has already been activated by the hospitalisation threshold being reached.
 Defaults to 30 days.</p></dd>
+
+
+<dt id="arg-response-duration">response_duration<a class="anchor" aria-label="anchor" href="#arg-response-duration"></a></dt>
+<dd><p>A single integer-ish number that gives the number of
+days after <code>response_time</code> that an NPI should end.</p></dd>
 
 
 <dt id="arg-time-end">time_end<a class="anchor" aria-label="anchor" href="#arg-time-end"></a></dt>
