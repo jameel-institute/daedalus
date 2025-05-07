@@ -71,6 +71,7 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(hospital_capacity, type = "real_type", constant = TRUE)]]
 // [[dust2::parameter(openness, constant = TRUE)]]
 // [[dust2::parameter(response_time, constant = TRUE)]]
+// [[dust2::parameter(response_duration, constant = TRUE)]]
 class daedalus_ode {
  public:
   daedalus_ode() = delete;
@@ -243,6 +244,9 @@ class daedalus_ode {
     // this is used to set hosp capacity to NAN so the response is not triggered
     const real_type response_time =
         dust2::r::read_real(pars, "response_time", NAN);
+    const real_type response_duration =
+        dust2::r::read_real(pars, "response_duration", NAN);
+
     // hospital capacity data
     const real_type hospital_capacity =
         std::isnan(response_time)
@@ -267,10 +271,10 @@ class daedalus_ode {
     std::vector<size_t> idx_hosp =
         daedalus::helpers::get_state_idx({iH + 1}, n_strata, N_VAX_STRATA);
 
-    // NOTE: no response end time specified for now; represented by 0.0
-    daedalus::events::response npi(std::string("npi"), response_time, 0.0,
-                                   hospital_capacity, gamma_Ia, i_npi_flag,
-                                   idx_hosp, i_ipr);
+    // NOTE: NPI response end time passed as parameter; vax end time remains 0.0
+    daedalus::events::response npi(
+        std::string("npi"), response_time, response_time + response_duration,
+        hospital_capacity, gamma_Ia, i_npi_flag, idx_hosp, i_ipr);
     daedalus::events::response vaccination(std::string("vaccination"),
                                            vax_start_time, 0.0, 0.0, 0.0,
                                            i_vax_flag, {0}, 0);

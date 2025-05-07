@@ -10,6 +10,7 @@ daedalus2(
   response_strategy = NULL,
   vaccine_investment = NULL,
   response_time = 30,
+  response_duration = 365,
   time_end = 100,
   ...
 )
@@ -55,6 +56,9 @@ Other accepted values are \code{"low"}, \code{"medium"} and \code{"high"}. See
 at which the selected response is activated. This is ignored if the response
 has already been activated by the hospitalisation threshold being reached.
 Defaults to 30 days.}
+
+\item{response_duration}{A single integer-ish number that gives the number of
+days after \code{response_time} that an NPI should end.}
 
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
