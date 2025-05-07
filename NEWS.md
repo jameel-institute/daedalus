@@ -1,3 +1,7 @@
+# daedalus 0.2.12
+
+This patch version adds a `response_duration` argument to `daedalus2()`, and tests for time-limited responses.
+
 # daedalus 0.2.11
 
 This patch version adds logging of new vaccinations in each age and economic group.
