@@ -11,7 +11,8 @@ daedalus2(
   vaccine_investment = NULL,
   response_time = 30,
   response_duration = 365,
-  time_end = 100,
+  initial_state_manual = NULL,
+  time_end = 600,
   ...
 )
 }
@@ -59,6 +60,11 @@ Defaults to 30 days.}
 
 \item{response_duration}{A single integer-ish number that gives the number of
 days after \code{response_time} that an NPI should end.}
+
+\item{initial_state_manual}{An optional \strong{named} list with the names
+\code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and
+symptomatic individuals in each age group and economic sector.
+Defaults to \code{1e-6} and \code{0.0} respectively.}
 
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
