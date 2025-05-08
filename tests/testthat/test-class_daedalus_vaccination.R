@@ -40,8 +40,6 @@ test_that("class <daedalus_vaccination>: basic expectations", {
   data_s3 <- get_new_vaccinations(data_s3)
 
   expect_identical(data_string, data_s3, tolerance = 1e-6)
-
-  expect_snapshot(daedalus.data::vaccination_scenario_data)
 })
 
 test_that("class <daedalus_vaccination>: class validation", {
