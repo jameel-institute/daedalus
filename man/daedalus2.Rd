@@ -73,14 +73,14 @@ returned for each day. Defaults to 300 days.}
 \item{...}{Optional arguments that are passed to \code{\link[dust2:dust_ode_control]{dust2::dust_ode_control()}}.}
 }
 \description{
-\code{daedalus::daedalus2()} will eventually replace \code{daedalus::daedalus()} with
+\code{daedalus::daedalus2()} will eventually replace \code{daedalus::daedalus2()} with
 the model implemented in C++ to integrate with \pkg{dust2}
 (and in future \pkg{dust}). \emph{This is a work in progress!}
 }
 \details{
 \strong{Note that} \code{daedalus2()} currently uses a default vaccination strategy of
 \emph{no vaccination}, using the internal helper function \code{\link[=dummy_vaccination]{dummy_vaccination()}}.
-This is expected to become the default for \code{\link[=daedalus]{daedalus()}} when it is replaced
+This is expected to become the default for \code{\link[=daedalus2]{daedalus2()}} when it is replaced
 with \code{daedalus2()}.
 
 \strong{Note also} that \code{daedalus2()} vaccination begins at the model start time,

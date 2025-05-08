@@ -70,7 +70,7 @@ make_consumer_contacts <- function(country) {
 #' vaccinations).
 #' @keywords internal
 make_initial_state <- function(country, initial_state_manual) {
-  # NOTE: country checked in daedalus()
+  # NOTE: country checked in daedalus2()
   initial_infect_state <- list(p_infectious = 1e-6, p_asymptomatic = 0.0)
 
   if (is.null(initial_state_manual)) {
@@ -82,7 +82,7 @@ make_initial_state <- function(country, initial_state_manual) {
     p_infectious <- initial_infect_state[["p_infectious"]]
     p_asymptomatic <- initial_infect_state[["p_asymptomatic"]]
 
-    # NOTE: no checks on country as this is tested in top-level fn `daedalus()`
+    # NOTE: no checks on country as this is tested in top-level fn `daedalus2()`
     # check other inputs
     is_good_p_infectious <- checkmate::test_number(
       p_infectious,

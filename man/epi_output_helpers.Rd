@@ -55,12 +55,12 @@ Columns for the \code{groups} are added when \code{groups} are specified.
 }
 }
 \description{
-Functions to quickly summarise timeseries data from \code{daedalus()}
+Functions to quickly summarise timeseries data from \code{daedalus2()}
 to provide daily values for infections, hospitalisations, deaths, and
 vaccinations, while allowing grouping by different strata.
 }
 \examples{
-data <- daedalus("Canada", "sars_cov_1")
+data <- daedalus2("Canada", "sars_cov_1")
 
 # new infections
 new_infections <- get_incidence(data, "infections")

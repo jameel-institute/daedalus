@@ -7,10 +7,10 @@
 #' @param state Vector of the initial state. The form of the vector should be
 #' \eqn{X_i, for X \in S, E, I_s, I_a, R, H, D}, where values for each
 #' of the compartments for each age group \eqn{i} are given consecutively.
-#' May be a matrix to allow for multiple age groups. See [daedalus()] for an
+#' May be a matrix to allow for multiple age groups. See [daedalus2()] for an
 #' explanation of the epidemiological compartments.
 #' @param parameters List for the parameters used in the simulation. See
-#' [daedalus()] for a list of model parameters.
+#' [daedalus2()] for a list of model parameters.
 #' @return A list with a single numeric vector of the same size as `state`,
 #' suitable as output for \pkg{deSolve} functions such as [deSolve::lsoda()].
 #' @details

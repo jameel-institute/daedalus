@@ -1,6 +1,6 @@
 #' Get epidemic costs from a DAEDALUS model run
 #'
-#' @param x A `<daedalus_output>` object from a call to [daedalus()].
+#' @param x A `<daedalus_output>` object from a call to [daedalus2()].
 #' @param summarise_as A string from among "none", "total", or "domain", for how
 #' the costs should be returned. Select "none", the default, for the raw costs
 #' along with overall and domain-specific totals; "total" for the overall cost,
@@ -44,7 +44,7 @@
 #' adjustment is applied.
 #'
 #' @examples
-#' output <- daedalus("Canada", "influenza_1918")
+#' output <- daedalus2("Canada", "influenza_1918")
 #'
 #' get_costs(output)
 #' @export

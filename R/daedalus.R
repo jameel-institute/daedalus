@@ -83,7 +83,7 @@
 #'
 #' @examples
 #' # country and infection specified by strings using default characteristics
-#' output <- daedalus(
+#' output <- daedalus2(
 #'   "Canada", "influenza_1918"
 #' )
 #'
@@ -92,16 +92,16 @@
 #'   "Canada",
 #'   parameters = list(contact_matrix = matrix(5, 4, 4)) # uniform contacts
 #' )
-#' output <- daedalus(country_x, "influenza_1918")
+#' output <- daedalus2(country_x, "influenza_1918")
 #'
 #' # with some infection parameters over-ridden by the user
-#' output <- daedalus(
+#' output <- daedalus2(
 #'   "United Kingdom",
 #'   daedalus_infection("influenza_1918", r0 = 1.3)
 #' )
 #'
 #' # with default initial conditions over-ridden by the user
-#' output <- daedalus(
+#' output <- daedalus2(
 #'   "United Kingdom", "influenza_1918",
 #'   initial_state_manual = list(p_infectious = 1e-3)
 #' )

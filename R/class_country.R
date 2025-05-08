@@ -25,7 +25,7 @@ new_daedalus_country <- function(name, parameters) {
 #' @rdname class_country
 #'
 #' @description Helper functions to create and work with S3 class
-#' `<daedalus_country>` objects for use with [daedalus()].
+#' `<daedalus_country>` objects for use with [daedalus2()].
 #' These objects store country parameters for reuse and have methods for easy
 #' parameter access and editing, as well as processing raw country
 #' characteristics for the DAEDALUS model.
