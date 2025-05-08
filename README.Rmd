@@ -87,4 +87,6 @@ Users can also model the implementation of pandemic response measures: for more 
 
 _daedalus_ is an R implementation of the scenario model from a [project on the economics of pandemic preparedness](https://github.com/robj411/p2_drivers).
 
+[_daedalus.data_](https://github.com/jameel-institute/daedalus.data) is a stand-alone helper R pakage to handle input data for the _daedalus_ model. Its purpose is to allow users to flexibly manipulate or change epidemiological and economic data, without needing to modify the model itself.
+
 ## References

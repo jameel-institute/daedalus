@@ -90,8 +90,8 @@ get_costs(data, "domain")
 Users can select infection parameters from among seven epidemics caused
 by directly-transmitted viral respiratory pathogens, which are stored in
 the stand-alone helper package `daedalus.data`. These can be called as
-`daedalus.data::infection_data`, with epidemic identifiers are stored as
-`daedalus.data::epidemic_names`.
+`daedalus.data::infection_data`, while epidemic identifiers are stored
+as `daedalus.data::epidemic_names`.
 
 Users can override default country contact data and epidemic-specific
 infection arguments by passing custom classes to `daedalus()`; see the
@@ -107,6 +107,12 @@ website.
 *daedalus* is an R implementation of the scenario model from a [project
 on the economics of pandemic
 preparedness](https://github.com/robj411/p2_drivers).
+
+[*daedalus.data*](https://github.com/jameel-institute/daedalus.data) is
+a stand-alone helper R pakage to handle input data for the *daedalus*
+model. Its purpose is to allow users to flexibly manipulate or change
+epidemiological and economic data, without needing to modify the model
+itself.
 
 ## References
 
