@@ -77,7 +77,7 @@ get_costs(data, "total")
 get_costs(data, "domain")
 ```
 
-Users can select infection parameters from among seven epidemics caused by directly-transmitted viral respiratory pathogens, which are stored in the package as `daedalus::infection_data`, with epidemic identifiers are stored as `daedalus::epidemic_names`.
+Users can select infection parameters from among seven epidemics caused by directly-transmitted viral respiratory pathogens, which are stored in the stand-alone helper package `daedalus.data`. These can be called as `daedalus.data::infection_data`, with epidemic identifiers are stored as `daedalus.data::epidemic_names`.
 
 Users can override default country contact data and epidemic-specific infection arguments by passing custom classes to `daedalus()`; see the package website for more details.
 
