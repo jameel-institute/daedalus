@@ -7,7 +7,7 @@
 get_costs(x, summarise_as = c("none", "total", "domain"))
 }
 \arguments{
-\item{x}{A \verb{<daedalus_output>} object from a call to \code{\link[=daedalus]{daedalus()}}.}
+\item{x}{A \verb{<daedalus_output>} object from a call to \code{\link[=daedalus2]{daedalus2()}}.}
 
 \item{summarise_as}{A string from among "none", "total", or "domain", for how
 the costs should be returned. Select "none", the default, for the raw costs
@@ -59,7 +59,7 @@ adjustment is applied.
 }
 }
 \examples{
-output <- daedalus("Canada", "influenza_1918")
+output <- daedalus2("Canada", "influenza_1918")
 
 get_costs(output)
 }

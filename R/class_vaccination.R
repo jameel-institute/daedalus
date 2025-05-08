@@ -26,7 +26,7 @@ new_daedalus_vaccination <- function(name, parameters) {
 #' @rdname class_vaccination
 #'
 #' @description Helper functions to create and work with S3 class
-#' `<daedalus_vaccination>` objects for use with [daedalus()].
+#' `<daedalus_vaccination>` objects for use with [daedalus2()].
 #' These objects store vaccination parameters for reuse and have methods for
 #' easy parameter access and editing, as well as processing raw vaccination
 #' characteristics for the DAEDALUS model.
@@ -43,7 +43,7 @@ new_daedalus_vaccination <- function(name, parameters) {
 #'
 #' @param rate A single number for the _percentage_ of the total population that
 #' can be vaccinated each day. This is converted into a proportion automatically
-#' within [daedalus()].
+#' within [daedalus2()].
 #'
 #' @param uptake_limit A single number giving the upper limit for the
 #' _percentage_ of the population that can be vaccinated. When this limit is

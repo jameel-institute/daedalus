@@ -12,11 +12,11 @@ daedalus_rhs(t, state, parameters)
 \item{state}{Vector of the initial state. The form of the vector should be
 \eqn{X_i, for X \in S, E, I_s, I_a, R, H, D}, where values for each
 of the compartments for each age group \eqn{i} are given consecutively.
-May be a matrix to allow for multiple age groups. See \code{\link[=daedalus]{daedalus()}} for an
+May be a matrix to allow for multiple age groups. See \code{\link[=daedalus2]{daedalus2()}} for an
 explanation of the epidemiological compartments.}
 
 \item{parameters}{List for the parameters used in the simulation. See
-\code{\link[=daedalus]{daedalus()}} for a list of model parameters.}
+\code{\link[=daedalus2]{daedalus2()}} for a list of model parameters.}
 }
 \value{
 A list with a single numeric vector of the same size as \code{state},

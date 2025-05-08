@@ -47,7 +47,7 @@ object \code{x}. Called for printing side-effects.
 }
 \description{
 Helper functions to create and work with S3 class
-\verb{<daedalus_country>} objects for use with \code{\link[=daedalus]{daedalus()}}.
+\verb{<daedalus_country>} objects for use with \code{\link[=daedalus2]{daedalus2()}}.
 These objects store country parameters for reuse and have methods for easy
 parameter access and editing, as well as processing raw country
 characteristics for the DAEDALUS model.

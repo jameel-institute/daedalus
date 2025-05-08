@@ -29,7 +29,7 @@
 #' get_data(disease_x, "r0")
 #'
 #' # get model data
-#' output <- daedalus("Canada", "influenza_1918")
+#' output <- daedalus2("Canada", "influenza_1918")
 #' head(
 #'   get_data(output)
 #' )

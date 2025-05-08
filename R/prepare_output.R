@@ -4,7 +4,7 @@
 #' @rdname prepare_output
 #'
 #' @description Convert DAEDALUS data into a long-format `<data.frame>`.
-#' @param output Output from [daedalus()] of the class `<deSolve>`.
+#' @param output Output from [daedalus2()] of the class `<deSolve>`.
 #' @return A `<data.frame>` in long or 'tidy' format with the columns
 #' "time", "age_group", "compartment", "econ_sector", and "value", for the
 #' age-group specific value of the number of individuals in each economic sector
