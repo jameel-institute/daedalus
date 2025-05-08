@@ -109,7 +109,7 @@ on the economics of pandemic
 preparedness](https://github.com/robj411/p2_drivers).
 
 [*daedalus.data*](https://github.com/jameel-institute/daedalus.data) is
-a stand-alone helper R pakage to handle input data for the *daedalus*
+a stand-alone helper R package to handle input data for the *daedalus*
 model. Its purpose is to allow users to flexibly manipulate or change
 epidemiological and economic data, without needing to modify the model
 itself.
