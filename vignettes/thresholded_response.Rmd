@@ -27,10 +27,12 @@ response_threshold <- 1000
 Initially run the model with no response, and then with an elimination response activated when total hospitalisations reach 1000 or after 30 days, whichever is sooner.
 
 ```{r}
-data_baseline <- daedalus(
-  "Canada",
+canada <- daedalus_country("CAN")
+canada$hospital_capacity <- response_threshold
+
+data_baseline <- daedalus2(
+  canada,
   daedalus_infection("influenza_1918", rho = 0.0), # prevent re-infection
-  response_threshold = response_threshold,
   response_strategy = "none"
 )
 
@@ -42,10 +44,9 @@ data_baseline$scenario <- "no_response"
 
 ```{r run_model}
 # run the model with a heavy elimination intervention
-data_intervention <- daedalus(
-  "Canada",
+data_intervention <- daedalus2(
+  canada,
   daedalus_infection("influenza_1918", rho = 0.0), # prevent re-infection
-  response_threshold = response_threshold,
   response_strategy = "elimination"
 )
 

@@ -26,7 +26,7 @@ The methodology used here has been chosen so as to be generalisable for the wide
 This approach balances the ability to run _daedalus_ scenarios for a large number of countries, and the effort required to obtain and update official life-values from national governments.
 
 ::: {.alert .alert-info}
-**Note that** the VSL values used in a call to `daedalus()` for any country can always be substituted with values considered to be more appropriate (e.g., from a national health ministry).
+**Note that** the VSL values used in a call to `daedalus2()` for any country can always be substituted with values considered to be more appropriate (e.g., from a national health ministry).
 :::
 
 ## Value of a life year
@@ -83,7 +83,7 @@ x$vsl
 
 ## Value of lives lost
 
-In a `daedalus()` scenario, the total value of lives lost is the sum of the products of the country- and age-specific VSL and the number of deaths in each age-group in that country:
+In a `daedalus2()` scenario, the total value of lives lost is the sum of the products of the country- and age-specific VSL and the number of deaths in each age-group in that country:
 
 $$\Sigma_{i = 1}^{N} \text{VSL}_{c_i} \times D_i$$
 

@@ -26,7 +26,7 @@ library(ggplot2)
 
 ## Representing countries and territories
 
-The model can be run for any country or territory included in package data simply by passing its name to `daedalus()`.
+The model can be run for any country or territory included in package data simply by passing its name to `daedalus2()`.
 The `country_names` vector holds a list of country and territory names for which data is available.
 
 Passing the country name directly leads to the model accessing country characteristics stored as package data.
@@ -64,11 +64,11 @@ Epidemics with associated infection parameters are given in the package dependen
 daedalus.data::epidemic_names
 ```
 
-Users can pass the epidemic names directly to `daedalus()` to use the default infection parameters.
+Users can pass the epidemic names directly to `daedalus2()` to use the default infection parameters.
 
 ```r
 # not run
-output <- daedalus("Canada", "influenza_1918")
+output <- daedalus2("Canada", "influenza_1918")
 ```
 
 To modify infection parameters associated with an epidemic, users should create a `<daedalus_infection>` class
@@ -91,7 +91,7 @@ This scenario (`vaccine_investment = "none"`) is intended to represent the Covid
 
 These parameters are contained in the package data `daedalus::vaccine_scenario_data`, for a total of four scenarios of advance vaccine investment ("none", "low", "medium", and "high").
 
-Vaccine investment scenarios can be passed a string to `daedalus()` to use the default parameters for each scenario, or as a `<daedalus_vaccination>` object using `daedalus_vaccination(name, <PARAMETERS>)` to modify vaccination parameters.
+Vaccine investment scenarios can be passed a string to `daedalus2()` to use the default parameters for each scenario, or as a `<daedalus_vaccination>` object using `daedalus_vaccination(name, <PARAMETERS>)` to modify vaccination parameters.
 
 ```{r}
 # the default vaccine investment scenario
@@ -100,12 +100,12 @@ daedalus_vaccination("none")
 
 ## Running the model
 
-Run the model by passing the `country` and `infection` arguments to `daedalus()`.
+Run the model by passing the `country` and `infection` arguments to `daedalus2()`.
 The vaccine investment scenarios is automatically assumed to be "none".
 
 ```{r run_model}
 # simulate a Covid-19 wild type outbreak in Canada; using default parameters
-data <- daedalus("Canada", "sars_cov_2_pre_alpha")
+data <- daedalus2("Canada", "sars_cov_2_pre_alpha")
 ```
 
 The model runs for 300 timesteps by default; timesteps should be interpreted as days since model parameters are in terms of days.
@@ -115,7 +115,7 @@ Plot the data to view the epidemic curve.
 ```{r plot_epidemic}
 data <- get_data(data)
 ggplot(
-  data[data$compartment == "infect_symp" & data$age_group == "20-65", ]
+  data[data$compartment == "infect_symp" & data$age_group == "20-64", ]
 ) +
   geom_line(
     aes(time, value, colour = econ_sector),
