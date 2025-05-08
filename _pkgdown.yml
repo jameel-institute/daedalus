@@ -52,15 +52,6 @@ reference:
     desc: Generics with methods for package S3 classes
     contents:
     - has_keyword("generics")
-  - title: Package data
-    desc: Data included with the package
-    contents:
-    - contains("data")
-    - contains("contacts")
-    - country_names
-    - econ_sector_names
-    - life_value
-    - -has_keyword("generics")
   - title: Model constants
     desc: Useful constants used internally
     contents:
