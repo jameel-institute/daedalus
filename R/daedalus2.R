@@ -114,7 +114,8 @@ daedalus2 <- function(
   vaccine_investment = NULL,
   response_time = 30,
   response_duration = 365,
-  time_end = 100,
+  initial_state_manual = NULL,
+  time_end = 600,
   ...
 ) {
   # prepare flags
@@ -144,6 +145,7 @@ daedalus2 <- function(
   # also prepare the appropriate economic openness vectors
   # allowing for a numeric vector, or NULL for truly no response
   if (is.null(response_strategy)) {
+    response_strategy <- "none" # for output class
     openness <- rep(1.0, N_ECON_SECTORS)
     response_time <- NULL # to be filtered out later
   } else if (is.numeric(response_strategy)) {
@@ -190,7 +192,8 @@ daedalus2 <- function(
     vaccine_investment <- daedalus_vaccination(vaccine_investment)
   }
 
-  if (!(is.null(response_strategy) || response_strategy == "none")) {
+  # NULL converted to "none"; WIP: this will be moved to a class constructor
+  if (response_strategy != "none") {
     is_good_response_time <- checkmate::test_integerish(
       response_time,
       upper = time_end - 2L, # for compat with daedalus
@@ -226,7 +229,7 @@ daedalus2 <- function(
   }
 
   #### Prepare initial state and parameters ####
-  initial_state <- as.vector(make_initial_state2(country))
+  initial_state <- as.vector(make_initial_state2(country, initial_state_manual))
 
   # add state for new vaccinations by age group and econ sector
   state_new_vax <- numeric(
