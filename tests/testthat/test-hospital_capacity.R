@@ -3,12 +3,13 @@
 test_that("Hospital capacity: basic expectations", {
   # NOTE: Not testing every country and infection
   response_strategy <- c("elimination", "school_closures", "economic_closures")
+  cx <- daedalus_country("China")
+  cx$hospital_capacity <- 100L
   invisible(lapply(response_strategy, function(x) {
     expect_no_condition({
-      daedalus(
-        country = "China",
+      daedalus2(
+        country = cx,
         infection = "influenza_1918",
-        response_threshold = 100L,
         response_strategy = x
       )
     })
@@ -24,13 +25,13 @@ test_that("Closures: hospital capacity and closure time", {
   cty_y <- daedalus_country("Canada")
   cty_y$hospital_capacity <- round(cty_y$hospital_capacity * 2)
 
-  x <- daedalus(
+  x <- daedalus2(
     cty_x,
     "sars_cov_1",
     response_strategy = "elimination",
     response_time = 298
   )
-  y <- daedalus(
+  y <- daedalus2(
     cty_y,
     "sars_cov_1",
     response_strategy = "elimination",
@@ -42,12 +43,12 @@ test_that("Closures: hospital capacity and closure time", {
     y$response_data$closure_info$closure_time_start
   )
 
-  # hospital capacity override from `daedalus()`
-  x <- daedalus(
+  # hospital capacity override from `daedalus2()`
+  cty_x$hospital_capacity <- cty_y$hospital_capacity * 2 # 4x higher
+  x <- daedalus2(
     cty_x,
     "sars_cov_1",
     response_strategy = "elimination",
-    response_threshold = cty_y$hospital_capacity * 2, # 4x higher
     response_time = 298
   )
 

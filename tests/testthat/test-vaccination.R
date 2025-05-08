@@ -1,8 +1,8 @@
-# Tests for daedalus() with vaccination active
+# Tests for daedalus2() with vaccination active
 test_that("Vaccination: basic expectations", {
   vax_level <- daedalus_vaccination("medium")
   expect_no_condition({
-    output <- daedalus("Canada", "sars_cov_1", vaccine_investment = vax_level)
+    output <- daedalus2("Canada", "sars_cov_1", vaccine_investment = vax_level)
   })
   data <- get_data(output)
 

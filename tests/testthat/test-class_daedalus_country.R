@@ -13,8 +13,8 @@ test_that("class <daedalus_country>: basic expectations", {
 
   # model function can handle either string or class input
   expect_identical(
-    daedalus("Canada", "influenza_1918"),
-    daedalus(daedalus_country("Canada"), "influenza_1918"),
+    daedalus2("Canada", "influenza_1918"),
+    daedalus2(daedalus_country("Canada"), "influenza_1918"),
     tolerance = 1e-6
   )
 })

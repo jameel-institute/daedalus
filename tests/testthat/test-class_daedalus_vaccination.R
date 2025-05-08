@@ -25,14 +25,14 @@ test_that("class <daedalus_vaccination>: basic expectations", {
   checkmate::expect_list(x, c("character", "numeric"), any.missing = FALSE)
 
   # model function can handle either string or class input
-  data_string <- daedalus(
+  data_string <- daedalus2(
     "Canada",
     "influenza_1918",
     vaccine_investment = "medium"
   )
   data_string <- get_new_vaccinations(data_string)
 
-  data_s3 <- daedalus(
+  data_s3 <- daedalus2(
     "Canada",
     "influenza_1918",
     vaccine_investment = daedalus_vaccination("medium")

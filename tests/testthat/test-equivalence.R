@@ -14,15 +14,14 @@ test_that("daedalus() and daedalus2() are equivalent", {
   )
 
   # get outputs
-  # NOTE: response specified as 'none' rather than NULL because `daedalus()`
-  # triggers public-concern distancing even when response is 'none'
   output_daedalus2 <- daedalus2(
     ct,
     x,
     response_strategy = "elimination",
     response_time = 2,
     response_duration = 400,
-    time_end = 399
+    time_end = 399,
+    initial_state_manual = list(p_infectious = 1e-7)
   ) # one less timestep
   output_daedalus <- daedalus(
     ct,
