@@ -72,34 +72,40 @@ make_consumer_contacts <- function(country) {
 make_initial_state <- function(country, initial_state_manual) {
   # NOTE: country checked in daedalus()
   initial_infect_state <- list(p_infectious = 1e-6, p_asymptomatic = 0.0)
-  initial_infect_state[names(initial_state_manual)] <- initial_state_manual
 
-  p_infectious <- initial_infect_state[["p_infectious"]]
-  p_asymptomatic <- initial_infect_state[["p_asymptomatic"]]
+  if (is.null(initial_state_manual)) {
+    p_infectious <- initial_infect_state[["p_infectious"]]
+    p_asymptomatic <- initial_infect_state[["p_asymptomatic"]]
+  } else {
+    initial_infect_state[names(initial_state_manual)] <- initial_state_manual
 
-  # NOTE: no checks on country as this is tested in top-level fn `daedalus()`
-  # check other inputs
-  is_good_p_infectious <- checkmate::test_number(
-    p_infectious,
-    lower = 0.0,
-    upper = 1.0
-  )
-  if (!is_good_p_infectious) {
-    cli::cli_abort(
-      "`p_infectious` must be a single number in the range [0.0, 1.0].",
-      .envir = parent.frame()
+    p_infectious <- initial_infect_state[["p_infectious"]]
+    p_asymptomatic <- initial_infect_state[["p_asymptomatic"]]
+
+    # NOTE: no checks on country as this is tested in top-level fn `daedalus()`
+    # check other inputs
+    is_good_p_infectious <- checkmate::test_number(
+      p_infectious,
+      lower = 0.0,
+      upper = 1.0
     )
-  }
+    if (!is_good_p_infectious) {
+      cli::cli_abort(
+        "`p_infectious` must be a single number in the range [0.0, 1.0].",
+        .envir = parent.frame()
+      )
+    }
 
-  is_good_p_asymp <- checkmate::test_number(
-    p_asymptomatic,
-    lower = 0.0,
-    upper = 1.0
-  )
-  if (!is_good_p_asymp) {
-    cli::cli_abort(
-      "`p_asymptomatic` must be a single number in the range [0.0, 1.0]."
+    is_good_p_asymp <- checkmate::test_number(
+      p_asymptomatic,
+      lower = 0.0,
+      upper = 1.0
     )
+    if (!is_good_p_asymp) {
+      cli::cli_abort(
+        "`p_asymptomatic` must be a single number in the range [0.0, 1.0]."
+      )
+    }
   }
 
   initial_state <- c(
