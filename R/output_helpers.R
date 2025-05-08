@@ -3,9 +3,9 @@
 #' @name epi_output_helpers
 #' @rdname epi_output_helpers
 #'
-#' @description Functions to quickly summarise timeseries data from `daedalus2()`
-#' to provide daily values for infections, hospitalisations, deaths, and
-#' vaccinations, while allowing grouping by different strata.
+#' @description Functions to quickly summarise timeseries data from
+#' [daedalus2()] to provide daily values for infections, hospitalisations,
+#' deaths, and vaccinations, while allowing grouping by different strata.
 #'
 #' @param data Either a `<data.frame>` from a call to `get_data()` on a
 #' `<daedalus_output>` object, or such an object directly.

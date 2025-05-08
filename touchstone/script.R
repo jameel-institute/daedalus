@@ -8,20 +8,9 @@
 # installs branches to benchmark
 touchstone::branch_install()
 
-# benchmark daedalus::daedalus()
-touchstone::benchmark_run(
-  test_daedalus = daedalus::daedalus("GBR", "influenza_2009", "elimination"),
-  n = 10
-)
-
 # benchmark daedalus::daedalus2()
 touchstone::benchmark_run(
-  test_daedalus2 = daedalus::daedalus2(
-    "GBR",
-    "influenza_2009",
-    "elimination",
-    time_end = 600
-  ),
+  test_daedalus = daedalus::daedalus("GBR", "influenza_2009", "elimination"),
   n = 10
 )
 
