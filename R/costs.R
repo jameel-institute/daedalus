@@ -51,10 +51,6 @@
 get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   checkmate::assert_class(x, "daedalus_output")
 
-  closure_duration <- x$response_data$closure_info$closure_duration
-  closure_start <- x$response_data$closure_info$closure_time_start
-  closure_end <- x$response_data$closure_info$closure_time_end
-
   gva <- x$country_parameters$gva
   openness <- x$response_data$openness
 
@@ -67,18 +63,6 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   vsd <- vsy / 365
   vsd <- vsd / 1e6 # for uniformity with daily GVA
   n_students <- x$country_parameters$demography[i_SCHOOL_AGE]
-
-  # cost of closures, per sector and total
-  sector_cost_closures <- gva * (1 - openness) * closure_duration
-  economic_cost_closures <- sum(sector_cost_closures)
-
-  education_cost_closures <- sum(
-    vsd *
-      n_students *
-      (1 - openness[i_EDUCATION_SECTOR]) *
-      (1 - edu_effectiveness_remote) *
-      closure_duration
-  )
 
   # absences due to infection, hospitalisation, death
   model_data <- get_data(x)
@@ -98,13 +82,6 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   # scale GVA loss by openness when closures are active
   # assuming no working from home
   gva_loss <- worker_absences %*% diag(gva / workforce)
-
-  gva_loss[seq(closure_start, closure_end), ] <- gva_loss[
-    seq(closure_start, closure_end),
-  ] %*%
-    diag(openness)
-
-  gva_loss <- colSums(gva_loss)
 
   # NOTE: education costs of absences are ONLY related to the absence of
   # educational workers, not students - may need to be updated
@@ -126,6 +103,38 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
 
   # NOTE: in million $s
   life_value_lost <- x$country_parameters$vsl * total_deaths / 1e6
+
+  closure_duration <- x$response_data$closure_info$closure_duration
+
+  # handle daedalus2
+  if (is.na(closure_duration)) {
+    economic_cost_closures <- 0
+    education_cost_closures <- 0
+    sector_cost_closures <- rep(0, length(x$country_parameters$workers))
+  } else {
+    closure_start <- x$response_data$closure_info$closure_time_start
+    closure_end <- x$response_data$closure_info$closure_time_end
+
+    # cost of closures, per sector and total
+    sector_cost_closures <- gva * (1 - openness) * closure_duration
+    economic_cost_closures <- sum(sector_cost_closures)
+
+    education_cost_closures <- sum(
+      vsd *
+        n_students *
+        (1 - openness[i_EDUCATION_SECTOR]) *
+        (1 - edu_effectiveness_remote) *
+        closure_duration
+    )
+
+    # multiply loss due to closures by loss due to absences
+    gva_loss[seq(closure_start, closure_end), ] <- gva_loss[
+      seq(closure_start, closure_end),
+    ] %*%
+      diag(openness)
+  }
+
+  gva_loss <- colSums(gva_loss)
 
   cost_list <- list(
     total_cost = NA,
