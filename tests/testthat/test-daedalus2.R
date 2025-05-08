@@ -143,7 +143,7 @@ test_that("daedalus2: Runs for all country x infection x response", {
 
 # test that passing model parameters works
 test_that("daedalus: Passing model parameters", {
-  expect_no_condition(daedalus(
+  expect_no_condition(daedalus2(
     country_canada,
     daedalus_infection("influenza_1918", r0 = 1.3, eta = c(0.1, 0.2, 0.3, 0.4))
   ))
