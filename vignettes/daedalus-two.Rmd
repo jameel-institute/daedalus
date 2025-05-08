@@ -24,12 +24,12 @@ This vignette is intended as a visual check on _daedalus_ features in developmen
 
 ## Basic `daedalus2()` usage
 
-This example shows (checks) that `daedalus2()` output works with pre-built function `get_incidence()` written for `daedalus()`.
+This example shows (checks) that `daedalus2()` output works with pre-built function `get_incidence()` written for `daedalus2()`.
 
 ```{r}
 output <- daedalus2("GBR", "influenza_2009")
 
-# get incidence data using function developed for daedalus()
+# get incidence data using function developed for daedalus2()
 data <- get_incidence(output, "infections")
 
 ggplot(data) +
