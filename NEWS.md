@@ -1,3 +1,7 @@
+# daedalus 0.2.13
+
+This patch version replaces all calls to `daedalus()` with `daedalus2()`; this excludes equivalence tests. Some tests have been updated to conform to the function signature of `daedalus2()`; this is mostly related to how the NPI triggering  hospital threshold is passed to the function.
+
 # daedalus 0.2.12
 
 This patch version adds a `response_duration` argument to `daedalus2()`, and tests for time-limited responses.
