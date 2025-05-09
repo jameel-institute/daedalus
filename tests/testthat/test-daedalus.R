@@ -283,7 +283,7 @@ test_that("daedalus: responses triggered by hospital capacity event", {
   # with named responses (none = absolutely no resp)
   invisible(
     lapply(
-      names(daedalus::closure_data),
+      names(daedalus.data::closure_data),
       function(x) {
         expect_no_condition({
           daedalus("GBR", "sars_cov_1", x)
@@ -298,12 +298,12 @@ test_that("daedalus: responses triggered by hospital capacity event", {
   x$hospital_capacity <- 1e4
 
   output_list <- lapply(
-    names(daedalus::closure_data),
+    names(daedalus.data::closure_data),
     daedalus,
     country = x,
     infection = "sars_cov_1"
   )
-  resp_scenario_names <- names(daedalus::closure_data)
+  resp_scenario_names <- names(daedalus.data::closure_data)
   output_fs <- vapply(
     output_list,
     function(x) {

@@ -83,8 +83,9 @@ daedalus_internal <- function(time_end, params, state, flags, ode_control) {
 #'
 #' @param country A country or territory object of class `<daedalus_country>`,
 #' **or** a country or territory name from those included in the package;
-#' see [daedalus::country_names], **or** a country ISO2 or ISO3 code; see
-#' [daedalus::country_codes_iso2c] and [daedalus::country_codes_iso3c] .
+#' see [daedalus.data::country_names], **or** a country ISO2 or ISO3 code; see
+#' [daedalus.data::country_codes_iso2c] and
+#' [daedalus.data::country_codes_iso3c].
 #' Country-specific data such as the community and workplace contacts, the
 #' demography, and the distribution of the workforce into economic sectors is
 #' automatically accessed from package data for the relevant country name if it
@@ -94,7 +95,7 @@ daedalus_internal <- function(time_end, params, state, flags, ode_control) {
 #'
 #' @param infection An infection parameter object of the class
 #' `<daedalus_infection>`, **or** an epidemic name for which data are provided
-#' in the package; see [daedalus::epidemic_names] for historical epidemics
+#' in the package; see [daedalus.data::epidemic_names] for historical epidemics
 #' or epidemic waves for which parameters are available.
 #'
 #' Passing the name as a string automatically accesses the default parameters
@@ -107,7 +108,7 @@ daedalus_internal <- function(time_end, params, state, flags, ode_control) {
 #' `response_threshold`.
 #'
 #' While the response strategy is active, economic contacts are scaled using the
-#' package data object `daedalus::closure_data`.
+#' package data object `daedalus.data::closure_data`.
 #'
 #' @param vaccine_investment Either a single string or a
 #' `<daedalus_vaccination>` object specifying the vaccination parameters
@@ -230,9 +231,9 @@ daedalus <- function(
     openness <- response_strategy
   } else if (
     length(response_strategy) == 1 &&
-      response_strategy %in% names(daedalus::closure_data)
+      response_strategy %in% names(daedalus.data::closure_data)
   ) {
-    openness <- daedalus::closure_data[[response_strategy]]
+    openness <- daedalus.data::closure_data[[response_strategy]]
   } else {
     cli::cli_abort(
       "Got an unexpected value for `response_strategy`. Options are `NULL`, \
@@ -259,7 +260,7 @@ daedalus <- function(
   if (is.character(vaccine_investment)) {
     vaccine_investment <- rlang::arg_match(
       vaccine_investment,
-      daedalus::vaccination_scenario_names
+      daedalus.data::vaccination_scenario_names
     )
     vaccine_investment <- daedalus_vaccination(vaccine_investment)
   }
