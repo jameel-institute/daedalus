@@ -29,7 +29,7 @@
 #' get_data(disease_x, "r0")
 #'
 #' # get model data
-#' output <- daedalus2("Canada", "influenza_1918")
+#' output <- daedalus("Canada", "influenza_1918")
 #' head(
 #'   get_data(output)
 #' )
@@ -116,12 +116,4 @@ set_data <- function(x, ...) {
 #' @keywords internal
 prepare_parameters <- function(x, ...) {
   UseMethod("prepare_parameters")
-}
-
-#' @name prepare_parameters
-#' @rdname prepare_parameters
-#'
-#' @keywords internal
-prepare_parameters2 <- function(x, ...) {
-  UseMethod("prepare_parameters2")
 }

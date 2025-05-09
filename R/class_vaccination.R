@@ -26,7 +26,7 @@ new_daedalus_vaccination <- function(name, parameters) {
 #' @rdname class_vaccination
 #'
 #' @description Helper functions to create and work with S3 class
-#' `<daedalus_vaccination>` objects for use with [daedalus2()].
+#' `<daedalus_vaccination>` objects for use with [daedalus()].
 #' These objects store vaccination parameters for reuse and have methods for
 #' easy parameter access and editing, as well as processing raw vaccination
 #' characteristics for the DAEDALUS model.
@@ -43,7 +43,7 @@ new_daedalus_vaccination <- function(name, parameters) {
 #'
 #' @param rate A single number for the _percentage_ of the total population that
 #' can be vaccinated each day. This is converted into a proportion automatically
-#' within [daedalus2()].
+#' within [daedalus()].
 #'
 #' @param uptake_limit A single number giving the upper limit for the
 #' _percentage_ of the population that can be vaccinated. When this limit is
@@ -264,21 +264,15 @@ set_data.daedalus_vaccination <- function(x, ...) {
 #' @keywords internal
 prepare_parameters.daedalus_vaccination <- function(x, ...) {
   chkDots(...)
-
   validate_daedalus_vaccination(x)
-  x <- unclass(x)
 
-  # convert percentages to proportions, and times to rates
-  x[["nu"]] <- x[["rate"]] / 100.0
-  x[["vax_uptake_limit"]] <- x[["uptake_limit"]] / 100.0
-  x[["tau"]] <- c(1, x[["efficacy"]] / 100.0)
-  x[["psi"]] <- 1 / x[["waning_period"]]
-  x[["vax_start_time"]] <- x[["start_time"]]
-
-  x[
-    !names(x) %in%
-      c("name", "rate", "waning_period", "start_time", "uptake_limit")
-  ]
+  # only need rates for nu and psi for now
+  list(
+    nu = get_data(x, "rate") / 100,
+    psi = 1 / get_data(x, "waning_period"),
+    uptake_limit = get_data(x, "uptake_limit") / 100,
+    vax_start_time = get_data(x, "start_time")
+  )
 }
 
 #' Scale vaccination rate by remaining eligibles
@@ -314,24 +308,6 @@ scale_nu <- function(state, nu, uptake_limit) {
   } else {
     0.0
   }
-}
-
-#' Replace prepare_parameters() for vaccinations
-#'
-#' @name prepare_parameters
-#'
-#' @keywords internal
-prepare_parameters2.daedalus_vaccination <- function(x, ...) {
-  chkDots(...)
-  validate_daedalus_vaccination(x)
-
-  # only need rates for nu and psi for now
-  list(
-    nu = get_data(x, "rate") / 100,
-    psi = 1 / get_data(x, "waning_period"),
-    uptake_limit = get_data(x, "uptake_limit") / 100,
-    vax_start_time = get_data(x, "start_time")
-  )
 }
 
 #' Dummy vaccination

@@ -25,7 +25,7 @@ new_daedalus_country <- function(name, parameters) {
 #' @rdname class_country
 #'
 #' @description Helper functions to create and work with S3 class
-#' `<daedalus_country>` objects for use with [daedalus2()].
+#' `<daedalus_country>` objects for use with [daedalus()].
 #' These objects store country parameters for reuse and have methods for easy
 #' parameter access and editing, as well as processing raw country
 #' characteristics for the DAEDALUS model.
@@ -460,38 +460,12 @@ set_data.daedalus_country <- function(x, ...) {
   x
 }
 
+
 #' Prepare country parameters for model
 #'
 #' @name prepare_parameters
 #' @keywords internal
 prepare_parameters.daedalus_country <- function(x, ...) {
-  chkDots(...)
-  validate_daedalus_country(x)
-
-  demography <- get_data(x, "demography")
-
-  # scale M[i, ] by demography[j]
-  cm_unscaled <- get_data(x, "contact_matrix")
-  cm <- cm_unscaled / demography
-  cmw <- get_data(x, "contacts_workplace")
-  cmcw <- get_data(x, "contacts_consumer_worker")
-  workers <- get_data(x, "workers")
-
-  list(
-    demography = demography,
-    contact_matrix = cm,
-    cm_unscaled = cm_unscaled, # for use in Rt calculations
-    contacts_workplace = cmw / workers, # scaled by workers
-    contacts_consumer_worker = cmcw
-  )
-}
-
-#' Replacement prepare_parameters()
-#'
-#' @name prepare_parameters
-#'
-#' @keywords internal
-prepare_parameters2.daedalus_country <- function(x, ...) {
   chkDots(...)
   validate_daedalus_country(x)
 
