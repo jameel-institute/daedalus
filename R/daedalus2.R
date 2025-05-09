@@ -79,7 +79,7 @@ daedalus2_internal <- function(time_end, params, state, flags, ode_control) {
 
 #' DAEDALUS model implemented with dust
 #'
-#' `daedalus::daedalus2()` will eventually replace `daedalus::daedalus2()` with
+#' `daedalus::daedalus2()` will eventually replace `daedalus::daedalus()` with
 #' the model implemented in C++ to integrate with \pkg{dust2}
 #' (and in future \pkg{dust}). *This is a work in progress!*
 #'
@@ -93,7 +93,7 @@ daedalus2_internal <- function(time_end, params, state, flags, ode_control) {
 #' @details
 #' **Note that** `daedalus2()` currently uses a default vaccination strategy of
 #' _no vaccination_, using the internal helper function [dummy_vaccination()].
-#' This is expected to become the default for [daedalus2()] when it is replaced
+#' This is expected to become the default for [daedalus()] when it is replaced
 #' with `daedalus2()`.
 #'
 #' **Note also** that `daedalus2()` vaccination begins at the model start time,
