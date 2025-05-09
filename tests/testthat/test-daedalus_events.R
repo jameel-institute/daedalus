@@ -1,4 +1,4 @@
-test_that("daedalus2: root-finding events launch at each appropriate root", {
+test_that("daedalus: root-finding events launch at each appropriate root", {
   # check that NPI triggers at response time when response time is low
   response_time <- 22.0
   output <- daedalus(
@@ -32,7 +32,7 @@ test_that("daedalus2: root-finding events launch at each appropriate root", {
   )
 })
 
-test_that("daedalus2: setting response duration works", {
+test_that("daedalus: setting response duration works", {
   response_time <- 10
   response_duration <- 30
   output <- daedalus(
