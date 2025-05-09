@@ -1,6 +1,6 @@
 Package: daedalus
 Title: Model Health, Social, and Economic Costs of a Pandemic
-Version: 0.2.13
+Version: 0.2.14
 Authors@R: c(
     person("Pratik", "Gupte", , "p.gupte24@imperial.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5294-7819")),
@@ -34,7 +34,6 @@ Imports:
     checkmate,
     cli,
     data.table,
-    deSolve,
     dust2,
     daedalus.data,
     Rcpp,
