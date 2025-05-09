@@ -1,13 +1,13 @@
-# Tests for daedalus2() mirror `test-daedalus.R`
+# Tests for daedalus() mirror `test-daedalus.R`
 country_canada <- daedalus_country("Canada")
 
 test_that("daedalus2: basic expectations", {
   time_end <- 700L
   # expect no conditions
   expect_no_condition({
-    daedalus2(country_canada, "influenza_1918")
+    daedalus(country_canada, "influenza_1918")
   })
-  output <- daedalus2(country_canada, "influenza_1918", time_end = time_end)
+  output <- daedalus(country_canada, "influenza_1918", time_end = time_end)
 
   # expect type double and non-negative
   expect_s3_class(output, "daedalus_output")
@@ -86,36 +86,36 @@ test_that("daedalus2: basic expectations", {
 
 test_that("daedalus2: Can run with ISO2 country parameter", {
   expect_no_condition({
-    daedalus2("CA", "influenza_1918")
+    daedalus("CA", "influenza_1918")
   })
   expect_s3_class(
-    daedalus2("CA", "influenza_1918"),
+    daedalus("CA", "influenza_1918"),
     "daedalus_output"
   )
 
-  data <- get_data(daedalus2("CA", "influenza_1918"))
+  data <- get_data(daedalus("CA", "influenza_1918"))
   expect_length(data, N_OUTPUT_COLS)
 })
 
 test_that("daedalus2: Can run with ISO3 country parameter", {
   expect_no_condition({
-    daedalus2("GBR", "influenza_1918")
+    daedalus("GBR", "influenza_1918")
   })
   expect_s3_class(
-    daedalus2("GBR", "influenza_1918"),
+    daedalus("GBR", "influenza_1918"),
     "daedalus_output"
   )
 
-  data <- get_data(daedalus2("THA", "influenza_1918"))
+  data <- get_data(daedalus("THA", "influenza_1918"))
   expect_length(data, N_OUTPUT_COLS)
 })
 
 test_that("daedalus2: Can run with ODE control arguments", {
   expect_no_condition(
-    daedalus2("GBR", "influenza_1918", atol = 1e-5)
+    daedalus("GBR", "influenza_1918", atol = 1e-5)
   )
   expect_error(
-    daedalus2("GBR", "influenza_1918", dummy = 1e-5),
+    daedalus("GBR", "influenza_1918", dummy = 1e-5),
     "unused argument"
   )
 })
@@ -135,7 +135,7 @@ test_that("daedalus2: Runs for all country x infection x response", {
     country_infection_combos$infection,
     f = function(x, y) {
       expect_no_condition(
-        daedalus2(x, y, time_end = time_end, response_time = time_end)
+        daedalus(x, y, time_end = time_end, response_time = time_end)
       )
     }
   ))
@@ -143,7 +143,7 @@ test_that("daedalus2: Runs for all country x infection x response", {
 
 # test that passing model parameters works
 test_that("daedalus: Passing model parameters", {
-  expect_no_condition(daedalus2(
+  expect_no_condition(daedalus(
     country_canada,
     daedalus_infection("influenza_1918", r0 = 1.3, eta = c(0.1, 0.2, 0.3, 0.4))
   ))
@@ -151,7 +151,7 @@ test_that("daedalus: Passing model parameters", {
 
 # test statistical correctness for only the covid wildtype infection param set
 test_that("daedalus2: statistical correctness", {
-  output <- daedalus2("Canada", "influenza_1918")
+  output <- daedalus("Canada", "influenza_1918")
   data <- get_data(output)
   # tests on single compartment without workers
   data <- data[data$age_group == "65+" & data$vaccine_group == "unvaccinated", ]
@@ -170,7 +170,7 @@ test_that("daedalus2: statistical correctness", {
   # expectations when immunity does not wane
   # - monotonically decreasing susceptibles
   # - monotonically increasing recovered and deaths
-  output <- daedalus2("Canada", daedalus_infection("influenza_1918", rho = 0.0))
+  output <- daedalus("Canada", daedalus_infection("influenza_1918", rho = 0.0))
   data <- get_data(output)
   data <- data[data$age_group == "65+", ]
 
@@ -204,9 +204,9 @@ test_that("daedalus2: vaccination works", {
   # NOTE: event starting at t = 0 does not work
   vax <- daedalus_vaccination("low", 10, 0.1, 100)
   expect_no_condition(
-    daedalus2("THA", "sars_cov_1", vaccine_investment = vax)
+    daedalus("THA", "sars_cov_1", vaccine_investment = vax)
   )
-  data <- get_data(daedalus2("THA", "sars_cov_1", vaccine_investment = vax))
+  data <- get_data(daedalus("THA", "sars_cov_1", vaccine_investment = vax))
 
   # expect vaccination group is non-zero
   data_vax_susc <- data[
@@ -223,14 +223,14 @@ test_that("daedalus2: vaccination works", {
   expect_true(any(data_vax_expo > 0))
 
   # expect that vaccination reduces final size
-  output_novax <- get_data(daedalus2("THA", "sars_cov_1"))
+  output_novax <- get_data(daedalus("THA", "sars_cov_1"))
   fs_daedalus2 <- get_epidemic_summary(data, "infections")$value
   fs_daedalus2_novax <- get_epidemic_summary(output_novax, "infections")$value
 
   expect_lt(fs_daedalus2, fs_daedalus2_novax)
 
   # see `../test-equivalence.R` for tests that no vaccination in
-  # `daedalus2()` is equivalent to no vaccination in `daedalus()`
+  # `daedalus()` is equivalent to no vaccination in `daedalus()`
 })
 
 test_that("daedalus2: advanced vaccination features", {
@@ -247,7 +247,7 @@ test_that("daedalus2: advanced vaccination features", {
   )
   # final size is zero
   data <- get_data(
-    daedalus2(
+    daedalus(
       "THA",
       disease_x,
       vaccine_investment = vax,
@@ -277,7 +277,7 @@ test_that("daedalus2: advanced vaccination features", {
 test_that("daedalus2: responses triggered by hospital capacity event", {
   # with absolutely no response
   expect_no_condition(
-    daedalus2("GBR", "sars_cov_1")
+    daedalus("GBR", "sars_cov_1")
   )
 
   # with named responses (none = absolutely no resp)
@@ -286,7 +286,7 @@ test_that("daedalus2: responses triggered by hospital capacity event", {
       names(daedalus.data::closure_data),
       function(x) {
         expect_no_condition({
-          daedalus2("GBR", "sars_cov_1", x)
+          daedalus("GBR", "sars_cov_1", x)
         })
       }
     )
@@ -328,7 +328,7 @@ test_that("daedalus2: responses ended by epidemic growth", {
 
   d <- daedalus_infection("influenza_2009")
 
-  output <- daedalus2(
+  output <- daedalus(
     x,
     "influenza_2009",
     "elimination",
@@ -357,7 +357,7 @@ test_that("daedalus2: responses ended by epidemic growth", {
 
 test_that("daedalus2: Errors and messages", {
   expect_error(
-    daedalus2(
+    daedalus(
       "GBR",
       "sars_cov_1",
       as.character(1:49)
@@ -365,7 +365,7 @@ test_that("daedalus2: Errors and messages", {
     "Got an unexepected value for `response_strategy`."
   )
   expect_error(
-    daedalus2(
+    daedalus(
       "GBR",
       "sars_cov_1",
       1:50

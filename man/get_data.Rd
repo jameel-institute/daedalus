@@ -50,7 +50,7 @@ disease_x <- daedalus_infection("sars_cov_1", r0 = 1.9)
 get_data(disease_x, "r0")
 
 # get model data
-output <- daedalus2("Canada", "influenza_1918")
+output <- daedalus("Canada", "influenza_1918")
 head(
   get_data(output)
 )
