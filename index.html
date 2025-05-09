@@ -131,7 +131,7 @@
 <span><span class="fu"><a href="reference/get_costs.html">get_costs</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"domain"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     economic    education   life_value   life_years </span></span>
 <span><span class="co">#&gt;    33787.966     2207.265  1591707.843 34564774.017</span></span></code></pre></div>
-<p>Users can select infection parameters from among seven epidemics caused by directly-transmitted viral respiratory pathogens, which are stored in the package as <code><a href="reference/epidemic_data.html">daedalus::infection_data</a></code>, with epidemic identifiers are stored as <code><a href="reference/epidemic_data.html">daedalus::epidemic_names</a></code>.</p>
+<p>Users can select infection parameters from among seven epidemics caused by directly-transmitted viral respiratory pathogens, which are stored in the stand-alone helper package <code>daedalus.data</code>. These can be called as <code><a href="https://rdrr.io/pkg/daedalus.data/man/epidemic_data.html" class="external-link">daedalus.data::infection_data</a></code>, while epidemic identifiers are stored as <code><a href="https://rdrr.io/pkg/daedalus.data/man/epidemic_data.html" class="external-link">daedalus.data::epidemic_names</a></code>.</p>
 <p>Users can override default country contact data and epidemic-specific infection arguments by passing custom classes to <code><a href="reference/daedalus.html">daedalus()</a></code>; see the package website for more details.</p>
 <p>Users can also model the implementation of pandemic response measures: for more on this see the documentation for the main model function <code><a href="reference/daedalus.html">daedalus()</a></code>, and the vignette on modelling interventions on the package website.</p>
 </div>
@@ -139,6 +139,7 @@
 <h2 id="related-projects">Related projects<a class="anchor" aria-label="anchor" href="#related-projects"></a>
 </h2>
 <p><em>daedalus</em> is an R implementation of the scenario model from a <a href="https://github.com/robj411/p2_drivers" class="external-link">project on the economics of pandemic preparedness</a>.</p>
+<p><a href="https://github.com/jameel-institute/daedalus.data" class="external-link"><em>daedalus.data</em></a> is a stand-alone helper R package to handle input data for the <em>daedalus</em> model. Its purpose is to allow users to flexibly manipulate or change epidemiological and economic data, without needing to modify the model itself.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -180,6 +181,7 @@ Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo Pianell
 <li>Pratik Gupte <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-5294-7819" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li>Patrick Doohan <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-8076-1106" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li>Robert Johnson <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7365-0042" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Pablo Perez-Guzman <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-5277-5196" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li>Rich FitzJohn <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-8888-3837" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li>Emma Russell <br><small class="roles"> Author </small>   </li>
 <li>David Mears <br><small class="roles"> Author </small>   </li>
@@ -196,7 +198,7 @@ Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo Pianell
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Pratik Gupte, Patrick Doohan, Robert Johnson, Rich FitzJohn, Emma Russell, David Mears, Katharina Hauck, Abdul Latif Jameel Institute for Disease and Emergency Analytics, Imperial College of Science, Technology and Medicine.</p>
+  <p>Developed by Pratik Gupte, Patrick Doohan, Robert Johnson, Pablo Perez-Guzman, Rich FitzJohn, Emma Russell, David Mears, Katharina Hauck, Abdul Latif Jameel Institute for Disease and Emergency Analytics, Imperial College of Science, Technology and Medicine.</p>
 </div>
 
 <div class="pkgdown-footer-right">

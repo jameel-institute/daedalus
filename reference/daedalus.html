@@ -80,8 +80,8 @@
 <dl><dt id="arg-country">country<a class="anchor" aria-label="anchor" href="#arg-country"></a></dt>
 <dd><p>A country or territory object of class <code>&lt;daedalus_country&gt;</code>,
 <strong>or</strong> a country or territory name from those included in the package;
-see <a href="country_names_codes.html">country_names</a>, <strong>or</strong> a country ISO2 or ISO3 code; see
-<a href="country_names_codes.html">country_codes_iso2c</a> and <a href="country_names_codes.html">country_codes_iso3c</a> .
+see country_names, <strong>or</strong> a country ISO2 or ISO3 code; see
+country_codes_iso2c and country_codes_iso3c .
 Country-specific data such as the community and workplace contacts, the
 demography, and the distribution of the workforce into economic sectors is
 automatically accessed from package data for the relevant country name if it
@@ -93,7 +93,7 @@ To override package defaults for country characteristics, pass a
 <dt id="arg-infection">infection<a class="anchor" aria-label="anchor" href="#arg-infection"></a></dt>
 <dd><p>An infection parameter object of the class
 <code>&lt;daedalus_infection&gt;</code>, <strong>or</strong> an epidemic name for which data are provided
-in the package; see <a href="epidemic_data.html">epidemic_names</a> for historical epidemics
+in the package; see epidemic_names for historical epidemics
 or epidemic waves for which parameters are available.</p>
 <p>Passing the name as a string automatically accesses the default parameters
 of an infection. Create and pass a <code>&lt;daedalus_infection&gt;</code> to tweak infection
@@ -106,7 +106,7 @@ defaults to "none". The response strategy determines the country-specific
 response threshold following which the response is activated. See
 <code>response_threshold</code>.</p>
 <p>While the response strategy is active, economic contacts are scaled using the
-package data object <code><a href="closure_data.html">daedalus::closure_data</a></code>.</p></dd>
+package data object <code>daedalus::closure_data</code>.</p></dd>
 
 
 <dt id="arg-vaccine-investment">vaccine_investment<a class="anchor" aria-label="anchor" href="#arg-vaccine-investment"></a></dt>
@@ -132,7 +132,7 @@ hospitalisations that causes an epidemic response
 (specified by <code>response_strategy</code>) to be triggered, if it has not already
 been triggered via <code>response_time</code>. Currently defaults to <code>NULL</code>, and a
 <code>country</code>-specific spare hospital capacity value is used from
-<a href="country_data.html">country_data</a>.
+country_data.
 Pass a number to override the default country-specific threshold value.</p></dd>
 
 
@@ -209,7 +209,7 @@ asymptomatic. Defaults to 0.0.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Pratik Gupte, Patrick Doohan, Robert Johnson, Rich FitzJohn, Emma Russell, David Mears, Katharina Hauck, Abdul Latif Jameel Institute for Disease and Emergency Analytics, Imperial College of Science, Technology and Medicine.</p>
+  <p>Developed by Pratik Gupte, Patrick Doohan, Robert Johnson, Pablo Perez-Guzman, Rich FitzJohn, Emma Russell, David Mears, Katharina Hauck, Abdul Latif Jameel Institute for Disease and Emergency Analytics, Imperial College of Science, Technology and Medicine.</p>
 </div>
 
 <div class="pkgdown-footer-right">

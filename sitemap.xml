@@ -16,10 +16,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/class_daedalus_output.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/class_infection.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/class_vaccination.html</loc></url>
-<url><loc>https://jameel-institute.github.io/daedalus/reference/closure_data.html</loc></url>
-<url><loc>https://jameel-institute.github.io/daedalus/reference/country_data.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/country_name_from_arg.html</loc></url>
-<url><loc>https://jameel-institute.github.io/daedalus/reference/country_names_codes.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus-package.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus2.html</loc></url>
@@ -27,11 +24,8 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus_rhs.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/dummy_vaccination.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/econ_constants.html</loc></url>
-<url><loc>https://jameel-institute.github.io/daedalus/reference/econ_sector_names.html</loc></url>
-<url><loc>https://jameel-institute.github.io/daedalus/reference/economic_contacts.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/epi_constants.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/epi_output_helpers.html</loc></url>
-<url><loc>https://jameel-institute.github.io/daedalus/reference/epidemic_data.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_beta.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_closure_info.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_costs.html</loc></url>
@@ -44,7 +38,6 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_value_school_year.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/index.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/initial_flags.html</loc></url>
-<url><loc>https://jameel-institute.github.io/daedalus/reference/life_value.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/make_initial_state.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/make_initial_state2.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/make_response_threshold_event.html</loc></url>
@@ -59,7 +52,6 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/scale_nu.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/set_data.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/summary_constants.html</loc></url>
-<url><loc>https://jameel-institute.github.io/daedalus/reference/vaccine_scenarios.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/values_to_state.html</loc></url>
 </urlset>
 
