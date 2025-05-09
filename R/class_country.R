@@ -203,7 +203,8 @@ daedalus_country <- function(
     params,
     list(
       contacts_workplace = daedalus.data::economic_contacts[[
-        "contacts_workplace"]],
+        "contacts_workplace"
+      ]],
       contacts_consumer_worker = contacts_consumer_worker,
       contacts_between_sectors = daedalus.data::economic_contacts[[
         "contacts_between_sectors"

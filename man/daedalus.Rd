@@ -19,8 +19,9 @@ daedalus(
 \arguments{
 \item{country}{A country or territory object of class \verb{<daedalus_country>},
 \strong{or} a country or territory name from those included in the package;
-see \link{country_names}, \strong{or} a country ISO2 or ISO3 code; see
-\link{country_codes_iso2c} and \link{country_codes_iso3c} .
+see \link[daedalus.data:country_names_codes]{daedalus.data::country_names}, \strong{or} a country ISO2 or ISO3 code; see
+\link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso2c} and
+\link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso3c}.
 Country-specific data such as the community and workplace contacts, the
 demography, and the distribution of the workforce into economic sectors is
 automatically accessed from package data for the relevant country name if it
@@ -30,7 +31,7 @@ To override package defaults for country characteristics, pass a
 
 \item{infection}{An infection parameter object of the class
 \verb{<daedalus_infection>}, \strong{or} an epidemic name for which data are provided
-in the package; see \link{epidemic_names} for historical epidemics
+in the package; see \link[daedalus.data:epidemic_data]{daedalus.data::epidemic_names} for historical epidemics
 or epidemic waves for which parameters are available.
 
 Passing the name as a string automatically accesses the default parameters
@@ -43,7 +44,7 @@ response threshold following which the response is activated. See
 \code{response_threshold}.
 
 While the response strategy is active, economic contacts are scaled using the
-package data object \code{daedalus::closure_data}.}
+package data object \code{daedalus.data::closure_data}.}
 
 \item{vaccine_investment}{Either a single string or a
 \verb{<daedalus_vaccination>} object specifying the vaccination parameters
