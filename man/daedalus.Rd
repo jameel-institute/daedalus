@@ -7,11 +7,11 @@
 daedalus(
   country,
   infection,
-  response_strategy = c("none", "elimination", "economic_closures", "school_closures"),
-  vaccine_investment = c("none", "low", "medium", "high"),
+  response_strategy = NULL,
+  vaccine_investment = NULL,
   response_time = 30,
-  response_threshold = NULL,
-  initial_state_manual = list(),
+  response_duration = 365,
+  initial_state_manual = NULL,
   time_end = 600,
   ...
 )
@@ -47,24 +47,20 @@ package data object \code{daedalus::closure_data}.}
 
 \item{vaccine_investment}{Either a single string or a
 \verb{<daedalus_vaccination>} object specifying the vaccination parameters
-associated with an advance vaccine-investment scenario. Defaults to \code{"none"},
-for no advance vaccine investment. In this case, vaccination begins 365 days
-(1 year) after the simulation begins, at a low rate across all age groups.
-Other accepted values are \code{"low"}, \code{"medium"} and \code{"high"}. See
-\code{\link[=daedalus_vaccination]{daedalus_vaccination()}} for more information.}
+associated with an advance vaccine-investment scenario. Defaults to \code{NULL}
+for absolutely no vaccination in the model.
+A vaccination investment of \code{"none"} indicates no \emph{prior} investment, but
+the model will include vaccination beginning after 1 year, at a low rate
+across all age groups. Other accepted values are \code{"low"}, \code{"medium"} and
+\code{"high"}. See \code{\link[=daedalus_vaccination]{daedalus_vaccination()}} for more information.}
 
 \item{response_time}{A single numeric value for the time in days
 at which the selected response is activated. This is ignored if the response
 has already been activated by the hospitalisation threshold being reached.
 Defaults to 30 days.}
 
-\item{response_threshold}{A single numeric value for the total number of
-hospitalisations that causes an epidemic response
-(specified by \code{response_strategy}) to be triggered, if it has not already
-been triggered via \code{response_time}. Currently defaults to \code{NULL}, and a
-\code{country}-specific spare hospital capacity value is used from
-\link{country_data}.
-Pass a number to override the default country-specific threshold value.}
+\item{response_duration}{A single integer-ish number that gives the number of
+days after \code{response_time} that an NPI should end.}
 
 \item{initial_state_manual}{An optional \strong{named} list with the names
 \code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and
@@ -75,18 +71,15 @@ Defaults to \code{1e-6} and \code{0.0} respectively.}
 at which to return data. This is treated as the number of days with data
 returned for each day. Defaults to 300 days.}
 
-\item{...}{Other arguments to be passed to the ODE solver; these are passed
-to \code{\link[deSolve:ode]{deSolve::ode()}}.}
+\item{...}{Optional arguments that are passed to \code{\link[dust2:dust_ode_control]{dust2::dust_ode_control()}}.}
 }
 \value{
-A \verb{<deSolve>} object.
+A \verb{<daedalus_output>} object.
 }
 \description{
 Run the DAEDALUS model from R. This is a work in progress.
 }
 \details{
-\subsection{Initial state}{
-
 Users can pass the following initial state parameters to
 \code{initial_state_manual}:
 \itemize{
@@ -99,10 +92,9 @@ the proportion of initially infectious individuals who are considered to be
 asymptomatic. Defaults to 0.0.
 }
 }
-}
 \examples{
 # country and infection specified by strings using default characteristics
-output <- daedalus2(
+output <- daedalus(
   "Canada", "influenza_1918"
 )
 
@@ -111,17 +103,18 @@ country_x <- daedalus_country(
   "Canada",
   parameters = list(contact_matrix = matrix(5, 4, 4)) # uniform contacts
 )
-output <- daedalus2(country_x, "influenza_1918")
+output <- daedalus(country_x, "influenza_1918")
 
 # with some infection parameters over-ridden by the user
-output <- daedalus2(
+output <- daedalus(
   "United Kingdom",
   daedalus_infection("influenza_1918", r0 = 1.3)
 )
 
 # with default initial conditions over-ridden by the user
-output <- daedalus2(
+output <- daedalus(
   "United Kingdom", "influenza_1918",
   initial_state_manual = list(p_infectious = 1e-3)
 )
+
 }
