@@ -23,6 +23,7 @@ Authors:
 \itemize{
   \item Patrick Doohan (\href{https://orcid.org/0000-0001-8076-1106}{ORCID})
   \item Robert Johnson (\href{https://orcid.org/0000-0002-7365-0042}{ORCID})
+  \item Pablo Perez-Guzman (\href{https://orcid.org/0000-0002-5277-5196}{ORCID})
   \item Rich FitzJohn (\href{https://orcid.org/0000-0001-8888-3837}{ORCID})
   \item Emma Russell
   \item David Mears

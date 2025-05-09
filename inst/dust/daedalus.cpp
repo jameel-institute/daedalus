@@ -317,7 +317,7 @@ class daedalus_ode {
   static void initial(real_type time, const shared_state &shared,
                       const internal_state &internal,
                       const rng_state_type &rng_state, real_type *state_next) {
-    state_next[0] = 0.0;  // dummy state, see `R/daedalus2.R` for state setting
+    state_next[0] = 0.0;  // dummy state, see `R/daedalus.R` for state setting
   }
 
   /// @brief RHS of the ODE model.

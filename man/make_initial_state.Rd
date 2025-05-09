@@ -9,8 +9,9 @@ make_initial_state(country, initial_state_manual)
 \arguments{
 \item{country}{A country or territory object of class \verb{<daedalus_country>},
 \strong{or} a country or territory name from those included in the package;
-see \link{country_names}, \strong{or} a country ISO2 or ISO3 code; see
-\link{country_codes_iso2c} and \link{country_codes_iso3c} .
+see \link[daedalus.data:country_names_codes]{daedalus.data::country_names}, \strong{or} a country ISO2 or ISO3 code; see
+\link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso2c} and
+\link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso3c}.
 Country-specific data such as the community and workplace contacts, the
 demography, and the distribution of the workforce into economic sectors is
 automatically accessed from package data for the relevant country name if it

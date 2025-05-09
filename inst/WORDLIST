@@ -12,6 +12,7 @@ Forchini
 GH
 GNI
 GVA
+Guzman
 Hosptial
 IDM
 IFR
@@ -20,8 +21,8 @@ Jameel
 Latif
 NPI
 NPIs
-ODEs
 ORCID
+Perez
 Pianella
 Rcpp
 RcppEigen
@@ -55,7 +56,6 @@ rootfinding
 specifc
 started’
 struct
-susceptibles
 symp
 th
 timeseries

@@ -4,7 +4,7 @@
 #' Helper function to prepare a susceptibility matrix to be used internally to
 #' modulate the number of infections in vaccinated groups.
 #'
-#' @inheritParams daedalus2
+#' @inheritParams daedalus
 #'
 #' @returns A matrix with dimensions as follows:
 #' - Rows: number of age and economic groups in `country`;

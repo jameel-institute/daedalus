@@ -1,13 +1,13 @@
-# Basic tests for DAEDALUS
-# select a test country
-country_canada <- "Canada"
+# Tests for daedalus()
+country_canada <- daedalus_country("Canada")
 
 test_that("daedalus: basic expectations", {
   time_end <- 700L
   # expect no conditions
   expect_no_condition({
-    output <- daedalus2(country_canada, "influenza_1918", time_end = time_end)
+    daedalus(country_canada, "influenza_1918")
   })
+  output <- daedalus(country_canada, "influenza_1918", time_end = time_end)
 
   # expect type double and non-negative
   expect_s3_class(output, "daedalus_output")
@@ -19,9 +19,9 @@ test_that("daedalus: basic expectations", {
     N_MODEL_COMPARTMENTS *
     (N_AGE_GROUPS + N_ECON_SECTORS) *
     N_VACCINE_STRATA
-  # add new vaccinations which are only logged at the group level
+
   expected_rows <- expected_rows +
-    ((time_end + 1L) * (N_AGE_GROUPS + N_ECON_SECTORS))
+    ((N_AGE_GROUPS + N_ECON_SECTORS) * (time_end + 1L))
 
   expect_identical(nrow(data), expected_rows)
   expect_named(
@@ -63,22 +63,61 @@ test_that("daedalus: basic expectations", {
     ),
     tolerance = 1e-12
   )
+
+  # check for no change in total size; some rounding needed
+  pop_sizes_time <- aggregate(
+    data[
+      data$compartment %in% COMPARTMENTS[i_EPI_COMPARTMENTS],
+    ],
+    value ~ time,
+    sum
+  )$value
+  pop_size <- sum(get_data(country_canada, "demography"))
+  expect_length(unique(round(pop_sizes_time)), 1L)
+  expect_true(all(abs(pop_sizes_time - pop_size) <= 1e-6))
+
+  # expect vaccination groups are zero
+  checkmate::expect_numeric(
+    data[data$vaccine_group == "vaccinated", "value"],
+    lower = 0,
+    upper = 0
+  )
 })
 
-test_that("Can run with ISO2 country parameter", {
+test_that("daedalus: Can run with ISO2 country parameter", {
   expect_no_condition({
-    output <- daedalus2("CA", "influenza_1918")
+    daedalus("CA", "influenza_1918")
   })
-  data <- get_data(output)
+  expect_s3_class(
+    daedalus("CA", "influenza_1918"),
+    "daedalus_output"
+  )
+
+  data <- get_data(daedalus("CA", "influenza_1918"))
   expect_length(data, N_OUTPUT_COLS)
 })
 
-test_that("Can run with ISO3 country parameter", {
+test_that("daedalus: Can run with ISO3 country parameter", {
   expect_no_condition({
-    output <- daedalus2("CAN", "influenza_1918")
+    daedalus("GBR", "influenza_1918")
   })
-  data <- get_data(output)
+  expect_s3_class(
+    daedalus("GBR", "influenza_1918"),
+    "daedalus_output"
+  )
+
+  data <- get_data(daedalus("THA", "influenza_1918"))
   expect_length(data, N_OUTPUT_COLS)
+})
+
+test_that("daedalus: Can run with ODE control arguments", {
+  expect_no_condition(
+    daedalus("GBR", "influenza_1918", atol = 1e-5)
+  )
+  expect_error(
+    daedalus("GBR", "influenza_1918", dummy = 1e-5),
+    "unused argument"
+  )
 })
 
 # test that daedalus runs for all epidemic infection parameter sets
@@ -88,7 +127,6 @@ test_that("daedalus: Runs for all country x infection x response", {
     infection = daedalus.data::epidemic_names
   )
 
-  dummy_vax <- daedalus_vaccination("low", start_time = 5)
   time_end <- 10
 
   # expect no conditions
@@ -96,20 +134,16 @@ test_that("daedalus: Runs for all country x infection x response", {
     country_infection_combos$country,
     country_infection_combos$infection,
     f = function(x, y) {
-      expect_no_condition(daedalus2(
-        x,
-        y,
-        time_end = time_end,
-        response_time = 2,
-        vaccine_investment = dummy_vax
-      ))
+      expect_no_condition(
+        daedalus(x, y, time_end = time_end, response_time = time_end)
+      )
     }
   ))
 })
 
 # test that passing model parameters works
 test_that("daedalus: Passing model parameters", {
-  expect_no_condition(daedalus2(
+  expect_no_condition(daedalus(
     country_canada,
     daedalus_infection("influenza_1918", r0 = 1.3, eta = c(0.1, 0.2, 0.3, 0.4))
   ))
@@ -117,7 +151,7 @@ test_that("daedalus: Passing model parameters", {
 
 # test statistical correctness for only the covid wildtype infection param set
 test_that("daedalus: statistical correctness", {
-  output <- daedalus2("Canada", "influenza_1918")
+  output <- daedalus("Canada", "influenza_1918")
   data <- get_data(output)
   # tests on single compartment without workers
   data <- data[data$age_group == "65+" & data$vaccine_group == "unvaccinated", ]
@@ -136,7 +170,7 @@ test_that("daedalus: statistical correctness", {
   # expectations when immunity does not wane
   # - monotonically decreasing susceptibles
   # - monotonically increasing recovered and deaths
-  output <- daedalus2("Canada", daedalus_infection("influenza_1918", rho = 0.0))
+  output <- daedalus("Canada", daedalus_infection("influenza_1918", rho = 0.0))
   data <- get_data(output)
   data <- data[data$age_group == "65+", ]
 
@@ -163,74 +197,179 @@ test_that("daedalus: statistical correctness", {
   expect_gte(min(diff(deaths)), 0.0)
 })
 
-test_that("daedalus: errors and warnings", {
-  # expect errors on country
-  expect_error(
-    daedalus2("U.K.", "influenza_1918"),
-    regexp = "`country` must be one of"
+# check for vaccination mechanism
+test_that("daedalus: vaccination works", {
+  # NOTE: test for truly no vaccination are in default daedalus test above
+
+  # NOTE: event starting at t = 0 does not work
+  vax <- daedalus_vaccination("low", 10, 0.1, 100)
+  expect_no_condition(
+    daedalus("THA", "sars_cov_1", vaccine_investment = vax)
+  )
+  data <- get_data(daedalus("THA", "sars_cov_1", vaccine_investment = vax))
+
+  # expect vaccination group is non-zero
+  data_vax_susc <- data[
+    data$vaccine_group == "vaccinated" & data$compartment == "susceptible",
+    "value"
+  ]
+  expect_true(any(data_vax_susc > 0))
+
+  # test that vaccination infection pathways are active
+  data_vax_expo <- data[
+    data$vaccine_group == "vaccinated" & data$compartment == "exposed",
+    "value"
+  ]
+  expect_true(any(data_vax_expo > 0))
+
+  # expect that vaccination reduces final size
+  output_novax <- get_data(daedalus("THA", "sars_cov_1"))
+  fs_daedalus <- get_epidemic_summary(data, "infections")$value
+  fs_daedalus_novax <- get_epidemic_summary(output_novax, "infections")$value
+
+  expect_lt(fs_daedalus, fs_daedalus_novax)
+
+  # see `../test-equivalence.R` for tests that no vaccination in
+  # `daedalus()` is equivalent to no vaccination in `daedalus()`
+})
+
+test_that("daedalus: advanced vaccination features", {
+  # use dummy scenarios to check that vaccination uptake limit is respected
+  x <- daedalus_country("THA")
+  disease_x <- daedalus_infection("sars_cov_1", r0 = 0)
+
+  uptake_limit <- 40
+  popsize <- sum(get_data(x, "demography"))
+  vax <- daedalus_vaccination(
+    "high",
+    uptake_limit = uptake_limit,
+    waning_period = 3000
+  )
+  # final size is zero
+  data <- get_data(
+    daedalus(
+      "THA",
+      disease_x,
+      vaccine_investment = vax,
+      time_end = 600
+    )
   )
 
-  # expect errors on poorly specified time_end
-  expect_error(
-    daedalus2(country_canada, "influenza_1918", time_end = -1),
-    regexp = "Expected `time_end` to be a single positive integer-like number."
+  n_vax <- aggregate(
+    data[
+      data$compartment %in%
+        c("susceptible", "recovered") &
+        data$vaccine_group == "vaccinated",
+    ],
+    value ~ time,
+    sum
   )
-  expect_error(
-    daedalus2(country_canada, "influenza_1918", time_end = 100.5),
-    regexp = "Expected `time_end` to be a single positive integer-like number."
+  n_vax <- tail(n_vax, 1)$value
+
+  # higher tolerance as vaccination is expected to be asymptotic
+  expect_identical(
+    n_vax,
+    uptake_limit * popsize / 100,
+    tolerance = 1
   )
-  expect_error(
-    daedalus2(country_canada, "influenza_1918", time_end = Inf),
-    regexp = "Expected `time_end` to be a single positive integer-like number."
+})
+
+test_that("daedalus: responses triggered by hospital capacity event", {
+  # with absolutely no response
+  expect_no_condition(
+    daedalus("GBR", "sars_cov_1")
   )
 
-  expect_error(daedalus2(country_canada, daedalus_infection("unfluenza_1920")))
+  # with named responses (none = absolutely no resp)
+  invisible(
+    lapply(
+      names(daedalus.data::closure_data),
+      function(x) {
+        expect_no_condition({
+          daedalus("GBR", "sars_cov_1", x)
+        })
+      }
+    )
+  )
 
-  # expect errors on bad response time
+  # expect lower final sizes for all interventions
+  # very low hosp capacity trigger
+  x <- daedalus_country("GBR")
+  x$hospital_capacity <- 1e4
+
+  output_list <- lapply(
+    names(daedalus.data::closure_data),
+    daedalus,
+    country = x,
+    infection = "sars_cov_1"
+  )
+  resp_scenario_names <- names(daedalus.data::closure_data)
+  output_fs <- vapply(
+    output_list,
+    function(x) {
+      get_epidemic_summary(x, "infections")$value
+    },
+    FUN.VALUE = numeric(1)
+  )
+  names(output_fs) <- resp_scenario_names
+
+  invisible(
+    lapply(output_fs[names(output_fs) != "none"], expect_lt, output_fs["none"])
+  )
+})
+
+# NOTE: see PR #83 for a reprex
+skip("Root jumping causes test to fail")
+test_that("daedalus: responses ended by epidemic growth", {
+  # start response early
+  time_end <- 100
+  x <- daedalus_country("GBR")
+  x$hospital_capacity <- 1e3
+
+  d <- daedalus_infection("influenza_2009")
+
+  output <- daedalus(
+    x,
+    "influenza_2009",
+    "elimination",
+    time_end = time_end,
+    response_time = 98
+  )
+
+  event_data <- output$event_data
+  output <- output$data
+  # check that epidemic stops growing by IPR method; IPR < gamma
+  ipr <- colSums(output$new_inf) / colSums(output$Is + output$Ia)
+  expect_lt(
+    min(ipr - d$gamma_Is),
+    0.0
+  )
+
+  # find end idx
+  end_time <- which.min(abs(ipr - d$gamma_Ia)) + 1
+
+  # check that response is switched off at expected time
+  expect_identical(
+    event_data[event_data$name == "npi_state_off", "time"],
+    end_time
+  )
+})
+
+test_that("daedalus: Errors and messages", {
   expect_error(
-    daedalus2(
-      country_canada,
-      daedalus_infection("sars_cov_1"),
-      response_strategy = "elimination",
-      response_time = -1
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      as.character(1:49)
     ),
-    regexp = "Expected `response_time` to be between 1"
+    "Got an unexepected value for `response_strategy`."
   )
   expect_error(
-    daedalus2(
-      country_canada,
-      daedalus_infection("sars_cov_1"),
-      response_strategy = "elimination",
-      response_time = 30,
-      time_end = 30
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      1:50
     ),
-    regexp = "Expected `response_time` to be between 1"
-  )
-  expect_error(
-    daedalus2(
-      country_canada,
-      daedalus_infection("sars_cov_1"),
-      response_strategy = "elimination",
-      response_time = Inf
-    ),
-    regexp = "Expected `response_time` to be between 1"
-  )
-  expect_error(
-    daedalus2(
-      country_canada,
-      daedalus_infection("sars_cov_1"),
-      response_strategy = "elimination",
-      response_time = NA_real_
-    ),
-    regexp = "Expected `response_time` to be between 1"
-  )
-  expect_error(
-    daedalus2(
-      country_canada,
-      daedalus_infection("sars_cov_1"),
-      response_strategy = "elimination",
-      response_time = 10.5
-    ),
-    regexp = "Expected `response_time` to be between 1"
+    "Assertion on 'response_strategy' failed: Must have length"
   )
 })

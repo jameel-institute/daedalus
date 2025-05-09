@@ -2,7 +2,7 @@
 # Test `get_new_infections()`
 test_that("Daily incidence: basic expectations", {
   country <- daedalus_country("Canada")
-  data <- daedalus2(country, "sars_cov_1")
+  data <- daedalus(country, "sars_cov_1")
 
   expect_no_condition({
     incidence <- get_incidence(data)
@@ -24,7 +24,7 @@ test_that("Daily incidence: basic expectations", {
 
 test_that("Epidemic summary: basic expectations", {
   country <- daedalus_country("Canada")
-  data <- daedalus2(country, daedalus_infection("sars_cov_1", rho = 0))
+  data <- daedalus(country, daedalus_infection("sars_cov_1", rho = 0))
 
   expect_no_condition({
     data_summary <- get_epidemic_summary(data)
@@ -57,7 +57,7 @@ test_that("New vaccinations: basic expectations", {
   vaccine_level <- daedalus_vaccination("medium")
   vax_time <- get_data(vaccine_level, "start_time")
   time_end <- 600
-  data <- daedalus2(
+  data <- daedalus(
     "Canada",
     daedalus_infection("sars_cov_1", rho = 0.0),
     vaccine_investment = vaccine_level,

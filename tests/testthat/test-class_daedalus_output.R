@@ -1,7 +1,7 @@
 # Tests for the <daedalus_output> class
 test_that("class <daedalus_output>: basic expectations", {
   expect_no_condition({
-    output <- daedalus2("Canada", "influenza_1918") # nolint saves assignment
+    output <- daedalus("Canada", "influenza_1918") # nolint saves assignment
   })
   expect_s3_class(output, "daedalus_output")
   checkmate::expect_list(

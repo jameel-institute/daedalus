@@ -30,7 +30,7 @@ Initially run the model with no response, and then with an elimination response 
 canada <- daedalus_country("CAN")
 canada$hospital_capacity <- response_threshold
 
-data_baseline <- daedalus2(
+data_baseline <- daedalus(
   canada,
   daedalus_infection("influenza_1918", rho = 0.0), # prevent re-infection
   response_strategy = "none"
@@ -44,7 +44,7 @@ data_baseline$scenario <- "no_response"
 
 ```{r run_model}
 # run the model with a heavy elimination intervention
-data_intervention <- daedalus2(
+data_intervention <- daedalus(
   canada,
   daedalus_infection("influenza_1918", rho = 0.0), # prevent re-infection
   response_strategy = "elimination"

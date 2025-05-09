@@ -15,17 +15,12 @@ articles:
   contents:
   - info_life_value
   - info_edu_value
-- title: "In development"
-  navbar: "In development"
-  contents:
-  - daedalus-two
 
 reference:
   - title: Model function
     desc: Run the DAEDALUS integrated economic-epidemiological model
     contents:
     - daedalus
-    - daedalus2
   - title: Class `<daedalus_country>`
     desc: Represent and access country or territory characteristics
     contents:

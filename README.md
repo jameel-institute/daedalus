@@ -75,7 +75,7 @@ for more details).
 library(daedalus)
 
 # run model for Canada
-data <- daedalus2("Canada", "influenza_1918")
+data <- daedalus("Canada", "influenza_1918")
 
 # get pandemic costs as a total in million dollars
 get_costs(data, "total")
@@ -94,13 +94,13 @@ the stand-alone helper package `daedalus.data`. These can be called as
 as `daedalus.data::epidemic_names`.
 
 Users can override default country contact data and epidemic-specific
-infection arguments by passing custom classes to `daedalus2()`; see the
+infection arguments by passing custom classes to `daedalus()`; see the
 package website for more details.
 
 Users can also model the implementation of pandemic response measures:
 for more on this see the documentation for the main model function
-`daedalus2()`, and the vignette on modelling interventions on the
-package website.
+`daedalus()`, and the vignette on modelling interventions on the package
+website.
 
 ## Related projects
 

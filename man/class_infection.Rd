@@ -36,7 +36,7 @@ object \code{x}. Called for printing side-effects.
 }
 \description{
 Helper functions to create and work with S3 class
-\verb{<daedalus_infection>} objects for use with \code{\link[=daedalus2]{daedalus2()}}.
+\verb{<daedalus_infection>} objects for use with \code{\link[=daedalus]{daedalus()}}.
 These objects store infection parameters for reuse and have methods for easy
 parameter access and editing, as well as processing raw infection
 characteristics for the DAEDALUS model.
