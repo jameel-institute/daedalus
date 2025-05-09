@@ -1,3 +1,7 @@
+# daedalus 0.2.14
+
+This patch renames `daedalus2()` to `daedalus()`. All references and helper functions for `daedalus2()` have replaced their `daedalus()` equivalents, if any.
+
 # daedalus 0.2.13
 
 This patch version replaces all calls to `daedalus()` with `daedalus2()`; this excludes equivalence tests. Some tests have been updated to conform to the function signature of `daedalus2()`; this is mostly related to how the NPI triggering  hospital threshold is passed to the function.
