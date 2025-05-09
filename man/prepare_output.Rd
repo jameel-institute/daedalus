@@ -2,15 +2,12 @@
 % Please edit documentation in R/prepare_output.R
 \name{prepare_output}
 \alias{prepare_output}
-\alias{prepare_output_cpp}
 \title{Prepare DAEDALUS data}
 \usage{
-prepare_output(output)
-
-prepare_output_cpp(output, country)
+prepare_output(output, country)
 }
 \arguments{
-\item{output}{Output from \code{\link[=daedalus]{daedalus()}} of the class \verb{<deSolve>}.}
+\item{output}{Output from \code{\link[=daedalus_internal]{daedalus_internal()}}, expected to be a list.}
 
 \item{country}{A \verb{<daedalus_country>} object from which to get data on the
 number of demographic, economic, and vaccine groups.}
