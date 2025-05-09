@@ -1,3 +1,82 @@
+#' Initial values for model flags
+#'
+#' @return A vector of initial flag values; all flags are initially set to 'off'
+#' or 0.0.
+#'
+#' @keywords internal
+initial_flags <- function() {
+  vax_flag <- 0.0
+  npi_flag <- 0.0
+  ipr <- 0.0 # incidence-prevalence ratio
+
+  c(ipr = ipr, npi_flag = npi_flag, vax_flag = vax_flag)
+}
+
+#' Get model response times from dust2 output
+#'
+#' @param output dust2 output from `daedalus_internal()`.
+#' @param time_end The model end time, passed from [daedalus()].
+#'
+#' @return A vector of event start and end times suitable for a
+#' `<daedalus_output>` object. Returns model end time if there is no response
+#' end time.
+#'
+#' @keywords internal
+get_daedalus_response_times <- function(output, time_end) {
+  # internal function with no input checking
+  event_data <- output$event_data
+
+  resp_times_on <- event_data[grepl("npi_\\w*_on$", event_data$name), "time"]
+  resp_time_on_realised <- if (length(resp_times_on) == 0) {
+    NA_real_
+  } else {
+    min(resp_times_on)
+  }
+
+  resp_times_off <- event_data[grepl("npi_\\w*_off$", event_data$name), "time"]
+  resp_time_off_realised <- if (is.na(resp_time_on_realised)) {
+    NA_real_
+  } else if (length(resp_times_off) == 0) {
+    time_end
+  } else {
+    min(resp_times_off)
+  }
+
+  duration <- resp_time_off_realised - resp_time_on_realised
+
+  # return list for consistency with daedalus
+  list(
+    closure_time_start = resp_time_on_realised,
+    closure_time_end = resp_time_off_realised,
+    closure_duration = duration
+  )
+}
+
+#' Internal function for daedalus
+#'
+#' @return A list of state values as returned by `dust2::dust_unpack_state()`.
+#' @keywords internal
+daedalus_internal <- function(time_end, params, state, flags, ode_control) {
+  # NOTE: sys params assumed suitable for `do.call()`
+  arg_list <- list(
+    generator = daedalus_ode,
+    pars = params,
+    ode_control = ode_control
+  )
+  sys <- do.call(dust2::dust_system_create, arg_list)
+
+  # add initial flags
+  state <- c(state, flags)
+  dust2::dust_system_set_state(sys, state)
+
+  state <- dust2::dust_system_simulate(sys, seq(0, time_end))
+
+  list(
+    data = dust2::dust_unpack_state(sys, state),
+    event_data = dust2::dust_system_internals(sys)[["events"]][[1]]
+  )
+}
+
 #' @title DAEDALUS model for health, social and economic costs of a pandemic
 #'
 #' @description Run the DAEDALUS model from R. This is a work in progress.
@@ -30,26 +109,22 @@
 #' While the response strategy is active, economic contacts are scaled using the
 #' package data object `daedalus::closure_data`.
 #'
+#' @param vaccine_investment Either a single string or a
+#' `<daedalus_vaccination>` object specifying the vaccination parameters
+#' associated with an advance vaccine-investment scenario. Defaults to `NULL`
+#' for absolutely no vaccination in the model.
+#' A vaccination investment of `"none"` indicates no _prior_ investment, but
+#' the model will include vaccination beginning after 1 year, at a low rate
+#' across all age groups. Other accepted values are `"low"`, `"medium"` and
+#' `"high"`. See [daedalus_vaccination()] for more information.
+#'
 #' @param response_time A single numeric value for the time in days
 #' at which the selected response is activated. This is ignored if the response
 #' has already been activated by the hospitalisation threshold being reached.
 #' Defaults to 30 days.
 #'
-#' @param response_threshold A single numeric value for the total number of
-#' hospitalisations that causes an epidemic response
-#' (specified by `response_strategy`) to be triggered, if it has not already
-#' been triggered via `response_time`. Currently defaults to `NULL`, and a
-#' `country`-specific spare hospital capacity value is used from
-#' [daedalus::country_data].
-#' Pass a number to override the default country-specific threshold value.
-#'
-#' @param vaccine_investment Either a single string or a
-#' `<daedalus_vaccination>` object specifying the vaccination parameters
-#' associated with an advance vaccine-investment scenario. Defaults to `"none"`,
-#' for no advance vaccine investment. In this case, vaccination begins 365 days
-#' (1 year) after the simulation begins, at a low rate across all age groups.
-#' Other accepted values are `"low"`, `"medium"` and `"high"`. See
-#' [daedalus_vaccination()] for more information.
+#' @param response_duration A single integer-ish number that gives the number of
+#' days after `response_time` that an NPI should end.
 #'
 #' @param initial_state_manual An optional **named** list with the names
 #' `p_infectious` and `p_asymptomatic` for the proportion of infectious and
@@ -60,12 +135,9 @@
 #' at which to return data. This is treated as the number of days with data
 #' returned for each day. Defaults to 300 days.
 #'
-#' @param ... Other arguments to be passed to the ODE solver; these are passed
-#' to [deSolve::ode()].
+#' @param ... Optional arguments that are passed to [dust2::dust_ode_control()].
 #'
 #' @details
-#'
-#' ## Initial state
 #'
 #' Users can pass the following initial state parameters to
 #' `initial_state_manual`:
@@ -79,11 +151,11 @@
 #' the proportion of initially infectious individuals who are considered to be
 #' asymptomatic. Defaults to 0.0.
 #'
-#' @return A `<deSolve>` object.
+#' @return A `<daedalus_output>` object.
 #'
 #' @examples
 #' # country and infection specified by strings using default characteristics
-#' output <- daedalus2(
+#' output <- daedalus(
 #'   "Canada", "influenza_1918"
 #' )
 #'
@@ -92,36 +164,35 @@
 #'   "Canada",
 #'   parameters = list(contact_matrix = matrix(5, 4, 4)) # uniform contacts
 #' )
-#' output <- daedalus2(country_x, "influenza_1918")
+#' output <- daedalus(country_x, "influenza_1918")
 #'
 #' # with some infection parameters over-ridden by the user
-#' output <- daedalus2(
+#' output <- daedalus(
 #'   "United Kingdom",
 #'   daedalus_infection("influenza_1918", r0 = 1.3)
 #' )
 #'
 #' # with default initial conditions over-ridden by the user
-#' output <- daedalus2(
+#' output <- daedalus(
 #'   "United Kingdom", "influenza_1918",
 #'   initial_state_manual = list(p_infectious = 1e-3)
 #' )
+#'
 #' @export
 daedalus <- function(
   country,
   infection,
-  response_strategy = c(
-    "none",
-    "elimination",
-    "economic_closures",
-    "school_closures"
-  ),
-  vaccine_investment = c("none", "low", "medium", "high"),
+  response_strategy = NULL,
+  vaccine_investment = NULL,
   response_time = 30,
-  response_threshold = NULL,
-  initial_state_manual = list(),
+  response_duration = 365,
+  initial_state_manual = NULL,
   time_end = 600,
   ...
 ) {
+  # prepare flags
+  flags <- initial_flags()
+
   # input checking
   # NOTE: names are case sensitive
   checkmate::assert_multi_class(country, c("daedalus_country", "character"))
@@ -133,7 +204,93 @@ daedalus <- function(
     infection <- rlang::arg_match(infection, daedalus.data::epidemic_names)
     infection <- daedalus_infection(infection)
   }
-  response_strategy <- rlang::arg_match(response_strategy)
+
+  # collect optional ODE control params and create ode_control obj
+  ode_control <- rlang::list2(...)
+  if (length(ode_control) > 0) {
+    ode_control <- do.call(dust2::dust_ode_control, ode_control)
+  } else {
+    ode_control <- NULL
+  }
+
+  # checks on interventions
+  # also prepare the appropriate economic openness vectors
+  # allowing for a numeric vector, or NULL for truly no response
+  if (is.null(response_strategy)) {
+    response_strategy <- "none" # for output class
+    openness <- rep(1.0, N_ECON_SECTORS)
+    response_time <- NULL # to be filtered out later
+  } else if (is.numeric(response_strategy)) {
+    checkmate::assert_numeric(
+      response_strategy,
+      lower = 0,
+      upper = 1,
+      len = N_ECON_SECTORS
+    )
+    openness <- response_strategy
+  } else if (
+    length(response_strategy) == 1 &&
+      response_strategy %in% names(daedalus::closure_data)
+  ) {
+    openness <- daedalus::closure_data[[response_strategy]]
+  } else {
+    cli::cli_abort(
+      "Got an unexpected value for `response_strategy`. Options are `NULL`, \
+      a numeric vector, or a recognised strategy. See function docs."
+    )
+  }
+
+  # checks on vaccination
+  checkmate::assert_multi_class(
+    vaccine_investment,
+    c("daedalus_vaccination", "character"),
+    null.ok = TRUE
+  )
+  if (
+    is_daedalus_vaccination(vaccine_investment) &&
+      get_data(vaccine_investment, "start_time") == 0.0
+  ) {
+    # check vaccination start time and set vaccination flag
+    flags["vax_flag"] <- 1.0
+  }
+  if (is.null(vaccine_investment)) {
+    vaccine_investment <- dummy_vaccination()
+  }
+  if (is.character(vaccine_investment)) {
+    vaccine_investment <- rlang::arg_match(
+      vaccine_investment,
+      daedalus::vaccination_scenario_names
+    )
+    vaccine_investment <- daedalus_vaccination(vaccine_investment)
+  }
+
+  # NULL converted to "none"; WIP: this will be moved to a class constructor
+  if (response_strategy != "none") {
+    is_good_response_time <- checkmate::test_integerish(
+      response_time,
+      upper = time_end - 2L, # for compat with daedalus
+      lower = 1L, # responses cannot start at 0, unless strategy is null
+      any.missing = FALSE,
+      len = 1
+    )
+    if (!is_good_response_time) {
+      cli::cli_abort(
+        "Expected `response_time` to be between 1 and {time_end - 2L}."
+      )
+    }
+
+    is_good_response_duration <- checkmate::test_integerish(
+      response_duration,
+      lower = 0L, # no minimum duration
+      any.missing = FALSE,
+      len = 1
+    )
+    if (!is_good_response_duration) {
+      cli::cli_abort(
+        "Expected `response_duration` to be a single integer-like and >= 0"
+      )
+    }
+  }
 
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
   if (!is_good_time_end) {
@@ -143,216 +300,59 @@ daedalus <- function(
     ))
   }
 
-  is_good_response_time <- checkmate::test_integerish(
-    response_time,
-    upper = time_end - 2L,
-    lower = 2L,
-    any.missing = FALSE
-  )
-  if (!is_good_response_time) {
-    cli::cli_abort(
-      "Expected `response_time` to be between 2 and {time_end - 2L}."
-    )
-  }
-
-  # response threhsold is determined by country data or user-input
-  if (is.null(response_threshold)) {
-    response_threshold <- get_data(country, "hospital_capacity")
-  } else {
-    is_good_threshold <- checkmate::test_count(
-      response_threshold,
-      positive = TRUE
-    )
-    if (!is_good_threshold) {
-      cli::cli_abort(
-        "Expected `response_threshold` to be a positive finite integer."
-      )
-    }
-  }
-
-  #### Vaccination parameters ####
-  checkmate::assert_multi_class(
-    vaccine_investment,
-    c("daedalus_vaccination", "character")
-  )
-  if (!is_daedalus_vaccination(vaccine_investment)) {
-    vaccine_investment <- rlang::arg_match(
-      vaccine_investment,
-      daedalus.data::vaccination_scenario_names
-    )
-    vaccine_investment <- daedalus_vaccination(vaccine_investment)
-  }
-
-  # check that `response_time` <= vaccination_start <= `time_end` or NULL
-  is_good_vax_time <- checkmate::test_integerish(
-    get_data(vaccine_investment, "start_time"),
-    lower = response_time + 2L,
-    upper = time_end - 2L,
-    null.ok = TRUE
-  )
-  if (!is_good_vax_time) {
-    cli::cli_abort(c(
-      "Vaccination start time can only take an integer-like value between
-        {response_time + 2L} and {time_end - 2L}",
-      i = "Vaccination must start after the overall pandemic response,
-        and before the model end time. Set the `vax_start_time` parameter in
-        the {.cls daedalus_vaccination} passsed to `vaccine_investment`."
-    ))
-  }
-
   #### Prepare initial state and parameters ####
-  initial_state <- as.numeric(make_initial_state(country, initial_state_manual))
+  initial_state <- as.vector(make_initial_state2(country, initial_state_manual))
 
-  parameters <- c(
-    prepare_parameters(country),
-    prepare_parameters(infection),
-    prepare_parameters(vaccine_investment)
+  # add state for new vaccinations by age group and econ sector
+  state_new_vax <- numeric(
+    length(get_data(country, "demography")) +
+      length(get_data(country, "workers"))
+  )
+  initial_state <- c(
+    initial_state,
+    state_new_vax
   )
 
-  # NOTE: using {rlang} for convenience
-  mutables <- prepare_mutable_parameters()
+  # prepare susceptibility matrix for vaccination
+  susc <- make_susc_matrix(vaccine_investment, country)
 
-  # add the appropriate economic openness vectors to parameters
-  openness <- daedalus.data::closure_data[[response_strategy]]
-
-  # NOTE: psi (vax waning rate), tau (vax reduction in suscept.), and dims of nu
-  # are hard-coded until vaccination scenarios are decided
   parameters <- c(
-    parameters,
+    prepare_parameters2.daedalus_country(country),
+    prepare_parameters.daedalus_infection(infection),
+    prepare_parameters2.daedalus_vaccination(vaccine_investment),
     list(
-      hospital_capacity = response_threshold, # to increase HFR if crossed
       beta = get_beta(infection, country),
+      susc = susc,
       openness = openness,
-      mutables = mutables,
-      min_time = 1 # setting minimum time to prevent switch flipping
+      response_time = response_time,
+      response_duration = response_duration
     )
   )
 
-  # get activation and termination events
-  activation_event <- make_response_threshold_event(response_threshold)
-  termination_event <- make_rt_end_event() # NOTE: only type of end event as yet
+  # filter out NULLs so missing values can be read as NAN in C++
+  parameters <- Filter(function(x) !is.null(x), parameters)
 
-  # two-stage model run: run from 1:response_time with switch = 0.0, or off
-  # from response_time:time_end run with switch = 1.0, or on
-  # NOTE: state is carried over. This looks ugly and might not scale if
-  # parameter uncertainty is needed in future.
-  vaccination_start <- get_data(vaccine_investment, "start_time")
-  times_stage_01 <- seq(1, response_time)
-  times_stage_02 <- seq(response_time, vaccination_start)
-  times_stage_03 <- seq(vaccination_start, time_end)
-
-  #### Stage 1 - day one to response time ####
-  data_stage_01 <- deSolve::ode(
-    y = initial_state,
-    times = times_stage_01,
-    func = daedalus_rhs,
-    parms = parameters,
-    rootfunc = activation_event[["root_function"]],
-    events = list(func = activation_event[["event_function"]], root = TRUE),
-    ...
-  )
-
-  # set switch parameter and log closure start time if not 0.0/FALSE
-  rlang::env_poke(parameters[["mutables"]], "switch", TRUE)
-
-  is_response_active <- as.logical(rlang::env_get(
-    parameters[["mutables"]],
-    "closure_time_start"
-  )) # coerce to logical; automatically FALSE as default value is 0.0
-
-  if (!is_response_active) {
-    # set switch parameter and log closure start time if not 0.0 or FALSE
-    rlang::env_bind(
-      parameters[["mutables"]],
-      switch = TRUE,
-      closure_time_start = response_time
-    )
-  }
-
-  #### Stage 2 - response time to vaccination start time ####
-  # carry over initial state; could be named more clearly?
-  initial_state <- data_stage_01[
-    nrow(data_stage_01),
-    colnames(data_stage_01) != "time"
-  ]
-  initial_state <- as.numeric(initial_state)
-
-  ### cancel closures if epidemic is not growing ###
-  state_temp <- values_to_state(initial_state)
-  # close intervention IFF epidemic is not growing
-  # NOTE: this step placed here as a conditional on r_eff < 1.0 is not
-  # practical in a root-finding function (Error: 'root too near initial point')
-  rt <- r_eff(state_temp, parameters)
-  is_epidemic_growing <- rt >= 1.0
-
-  if (!is_epidemic_growing) {
-    rlang::env_bind(
-      parameters[["mutables"]],
-      switch = FALSE,
-      closure_time_end = response_time
-    )
-  }
-
-  # reset min time
-  parameters[["min_time"]] <- response_time
-
-  data_stage_02 <- deSolve::ode(
-    initial_state,
-    times_stage_02,
-    daedalus_rhs,
+  output <- daedalus_internal(
+    time_end,
     parameters,
-    rootfunc = termination_event[["root_function"]],
-    events = list(func = termination_event[["event_function"]], root = TRUE),
-    ...
-  )
-
-  #### Stage 3 - vaccination start time to sim end time ####
-  # carry over initial state
-  initial_state <- data_stage_02[
-    nrow(data_stage_02),
-    colnames(data_stage_02) != "time"
-  ]
-  initial_state <- as.numeric(initial_state)
-
-  # reset min time
-  parameters[["min_time"]] <- vaccination_start
-
-  # turn vax_switch on
-  rlang::env_poke(parameters[["mutables"]], "vax_switch", TRUE)
-
-  data_stage_03 <- deSolve::ode(
     initial_state,
-    times_stage_03,
-    daedalus_rhs,
-    parameters,
-    rootfunc = termination_event[["root_function"]],
-    events = list(func = termination_event[["event_function"]], root = TRUE),
-    ...
+    flags,
+    ode_control
   )
 
-  # log simulation end time as closure end time if not already ended
-  is_response_ended <- as.logical(rlang::env_get(
-    parameters[["mutables"]],
-    "closure_time_end"
-  )) # coerce to logical; automatically FALSE as default value is 0.0
-  if (!is_response_ended) {
-    rlang::env_poke(parameters[["mutables"]], "closure_time_end", time_end)
-  }
-
-  data <- rbind(data_stage_01, data_stage_02[-1L, ], data_stage_03[-1L, ])
-
-  # NOTE: unclassing country and infection returns lists
-  data <- list(
+  # NOTE: needs to be compatible with `<daedalus_output>`
+  # or equivalent from `{daedalus.compare}`
+  output <- list(
     total_time = time_end,
-    model_data = prepare_output(data),
+    model_data = prepare_output_cpp(output$data, country),
     country_parameters = unclass(country),
     infection_parameters = unclass(infection),
     response_data = list(
       response_strategy = response_strategy,
-      openness = openness, # easier to include here
-      closure_info = get_closure_info(mutables)
+      openness = openness,
+      closure_info = get_daedalus_response_times(output, time_end)
     )
   )
 
-  as_daedalus_output(data)
+  as_daedalus_output(output)
 }
