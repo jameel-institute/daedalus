@@ -317,9 +317,9 @@ daedalus <- function(
   susc <- make_susc_matrix(vaccine_investment, country)
 
   parameters <- c(
-    prepare_parameters2.daedalus_country(country),
-    prepare_parameters.daedalus_infection(infection),
-    prepare_parameters2.daedalus_vaccination(vaccine_investment),
+    prepare_parameters(country),
+    prepare_parameters(infection),
+    prepare_parameters(vaccine_investment),
     list(
       beta = get_beta(infection, country),
       susc = susc,
@@ -344,7 +344,7 @@ daedalus <- function(
   # or equivalent from `{daedalus.compare}`
   output <- list(
     total_time = time_end,
-    model_data = prepare_output_cpp(output$data, country),
+    model_data = prepare_output(output$data, country),
     country_parameters = unclass(country),
     infection_parameters = unclass(infection),
     response_data = list(

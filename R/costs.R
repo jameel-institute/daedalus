@@ -1,6 +1,6 @@
 #' Get epidemic costs from a DAEDALUS model run
 #'
-#' @param x A `<daedalus_output>` object from a call to [daedalus2()].
+#' @param x A `<daedalus_output>` object from a call to [daedalus()].
 #' @param summarise_as A string from among "none", "total", or "domain", for how
 #' the costs should be returned. Select "none", the default, for the raw costs
 #' along with overall and domain-specific totals; "total" for the overall cost,
@@ -44,7 +44,7 @@
 #' adjustment is applied.
 #'
 #' @examples
-#' output <- daedalus2("Canada", "influenza_1918")
+#' output <- daedalus("Canada", "influenza_1918")
 #'
 #' get_costs(output)
 #' @export
@@ -106,7 +106,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
 
   closure_duration <- x$response_data$closure_info$closure_duration
 
-  # handle daedalus2
+  # handle daedalus
   if (is.na(closure_duration)) {
     economic_cost_closures <- 0
     education_cost_closures <- 0

@@ -25,7 +25,7 @@ new_daedalus_infection <- function(name, parameters) {
 #' @rdname class_infection
 #'
 #' @description Helper functions to create and work with S3 class
-#' `<daedalus_infection>` objects for use with [daedalus2()].
+#' `<daedalus_infection>` objects for use with [daedalus()].
 #' These objects store infection parameters for reuse and have methods for easy
 #' parameter access and editing, as well as processing raw infection
 #' characteristics for the DAEDALUS model.

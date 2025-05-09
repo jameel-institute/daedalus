@@ -199,7 +199,7 @@ test_that("daedalus: statistical correctness", {
 
 # check for vaccination mechanism
 test_that("daedalus: vaccination works", {
-  # NOTE: test for truly no vaccination are in default daedalus2 test above
+  # NOTE: test for truly no vaccination are in default daedalus test above
 
   # NOTE: event starting at t = 0 does not work
   vax <- daedalus_vaccination("low", 10, 0.1, 100)
@@ -224,10 +224,10 @@ test_that("daedalus: vaccination works", {
 
   # expect that vaccination reduces final size
   output_novax <- get_data(daedalus("THA", "sars_cov_1"))
-  fs_daedalus2 <- get_epidemic_summary(data, "infections")$value
-  fs_daedalus2_novax <- get_epidemic_summary(output_novax, "infections")$value
+  fs_daedalus <- get_epidemic_summary(data, "infections")$value
+  fs_daedalus_novax <- get_epidemic_summary(output_novax, "infections")$value
 
-  expect_lt(fs_daedalus2, fs_daedalus2_novax)
+  expect_lt(fs_daedalus, fs_daedalus_novax)
 
   # see `../test-equivalence.R` for tests that no vaccination in
   # `daedalus()` is equivalent to no vaccination in `daedalus()`

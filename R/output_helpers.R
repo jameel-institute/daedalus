@@ -4,7 +4,7 @@
 #' @rdname epi_output_helpers
 #'
 #' @description Functions to quickly summarise timeseries data from
-#' [daedalus2()] to provide daily values for infections, hospitalisations,
+#' [daedalus()] to provide daily values for infections, hospitalisations,
 #' deaths, and vaccinations, while allowing grouping by different strata.
 #'
 #' @param data Either a `<data.frame>` from a call to `get_data()` on a
@@ -40,7 +40,7 @@
 #' Columns for the `groups` are added when `groups` are specified.
 #'
 #' @examples
-#' data <- daedalus2("Canada", "sars_cov_1")
+#' data <- daedalus("Canada", "sars_cov_1")
 #'
 #' # new infections
 #' new_infections <- get_incidence(data, "infections")
