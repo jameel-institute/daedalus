@@ -1,6 +1,6 @@
 # Tests on model cost function
 test_that("Costs: basic expectations", {
-  output <- daedalus2("Canada", "influenza_1918")
+  output <- daedalus("Canada", "influenza_1918")
   expect_no_condition({
     costs <- get_costs(output)
   })
@@ -36,7 +36,7 @@ test_that("Costs: basic expectations", {
 
 test_that("Costs: scenario expectations", {
   ## when response = "none"
-  output <- daedalus2("Canada", "influenza_2009", time_end = 400)
+  output <- daedalus("Canada", "influenza_2009", time_end = 400)
   costs <- get_costs(output)
 
   expect_identical(costs$economic_costs$economic_cost_closures, 0)
@@ -47,7 +47,7 @@ test_that("Costs: scenario expectations", {
 
   o <- lapply(
     x,
-    daedalus2,
+    daedalus,
     country = "United Kingdom",
     infection = "influenza_1957",
     response_time = 10
@@ -63,7 +63,7 @@ test_that("Costs: scenario expectations", {
   response_names <- c("elimination", "economic_closures", "school_closures")
   invisible({
     lapply(response_names, function(x) {
-      output <- daedalus2("Canada", "influenza_1918", response_strategy = x)
+      output <- daedalus("Canada", "influenza_1918", response_strategy = x)
       costs <- get_costs(output)
 
       # closure costs must be at least one day of reduced GVA
@@ -86,7 +86,7 @@ test_that("Expectations on schooling costs", {
 
   o <- lapply(
     x,
-    daedalus2,
+    daedalus,
     country = "United Kingdom",
     infection = daedalus_infection("sars_cov_1")
   )

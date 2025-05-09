@@ -10,7 +10,7 @@ prepare_output(output)
 prepare_output_cpp(output, country)
 }
 \arguments{
-\item{output}{Output from \code{\link[=daedalus2]{daedalus2()}} of the class \verb{<deSolve>}.}
+\item{output}{Output from \code{\link[=daedalus]{daedalus()}} of the class \verb{<deSolve>}.}
 
 \item{country}{A \verb{<daedalus_country>} object from which to get data on the
 number of demographic, economic, and vaccine groups.}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/model_helpers.R
 \name{make_initial_state2}
 \alias{make_initial_state2}
-\title{Generate initial state for daedalus2()}
+\title{Generate initial state for daedalus()}
 \usage{
 make_initial_state2(country, initial_state_manual = list(p_infectious = 1e-07))
 }
@@ -24,6 +24,6 @@ symptomatic individuals in each age group and economic sector.
 Defaults to \code{1e-6} and \code{0.0} respectively.}
 }
 \description{
-Generate initial state for daedalus2()
+Generate initial state for daedalus()
 }
 \keyword{internal}

@@ -11,7 +11,7 @@ test_that("Closures: basic expectations: runs without errors", {
   # test all responses
   expect_no_condition({
     output_list <- lapply(response_names, function(x) {
-      daedalus2(country_x, "sars_cov_1", response_strategy = x)
+      daedalus(country_x, "sars_cov_1", response_strategy = x)
     })
   })
 
@@ -21,7 +21,7 @@ test_that("Closures: basic expectations: runs without errors", {
       response_names,
       daedalus.data::country_names[seq_along(response_names)],
       f = function(response, country) {
-        expect_no_condition(daedalus2(
+        expect_no_condition(daedalus(
           country,
           "sars_cov_1",
           response_strategy = response
@@ -34,7 +34,7 @@ test_that("Closures: basic expectations: runs without errors", {
 # expect that applying closures reduces epidemic size
 test_that("Closures: basic statistical correctness: reduces epidemic size", {
   output_list <- lapply(response_names, function(x) {
-    daedalus2(
+    daedalus(
       country_x,
       daedalus_infection("sars_cov_1", rho = 0.0),
       response_strategy = x,
@@ -60,7 +60,7 @@ test_that("Closures: earlier closures reduce epidemic size", {
   cx <- country_x
   cx$hospital_capacity <- 1e9
   output_list <- lapply(response_times, function(x) {
-    daedalus2(
+    daedalus(
       cx,
       daedalus_infection("sars_cov_1", rho = 0.0),
       response_strategy = "elimination",
@@ -88,7 +88,7 @@ test_that("Closures: lower threshold reduces epidemic size", {
     cx <- country_x
     cx$hospital_capacity <- x
 
-    daedalus2(
+    daedalus(
       cx,
       daedalus_infection("sars_cov_1", rho = 0.0),
       response_strategy = "elimination",
@@ -116,7 +116,7 @@ test_that("Closures: correct logging of time limits", {
   response_time <- 10 # arbitrary value
   time_end <- 25 # low to prematurely end simulation
   dummy_vax <- daedalus_vaccination("none", start_time = 15)
-  output <- daedalus2(
+  output <- daedalus(
     cx,
     daedalus_infection("influenza_1918", r0 = 1.1),
     response_strategy = "elimination",
@@ -148,7 +148,7 @@ test_that("NPIs terminate at start time when epidemic is not growing", {
   cx <- country_x
   cx$hospital_capacity <- 1e9
   invisible(lapply(response_time, function(x) {
-    data <- daedalus2(
+    data <- daedalus(
       cx,
       "influenza_1957",
       initial_state_manual = list(p_infectious = 0.9999),

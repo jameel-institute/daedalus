@@ -33,7 +33,7 @@ time is taken from the vaccination scenarios specified by \code{name}.}
 
 \item{rate}{A single number for the \emph{percentage} of the total population that
 can be vaccinated each day. This is converted into a proportion automatically
-within \code{\link[=daedalus2]{daedalus2()}}.}
+within \code{\link[=daedalus]{daedalus()}}.}
 
 \item{uptake_limit}{A single number giving the upper limit for the
 \emph{percentage} of the population that can be vaccinated. When this limit is
@@ -56,7 +56,7 @@ compartments can wane out of being vaccinated.}
 }
 \description{
 Helper functions to create and work with S3 class
-\verb{<daedalus_vaccination>} objects for use with \code{\link[=daedalus2]{daedalus2()}}.
+\verb{<daedalus_vaccination>} objects for use with \code{\link[=daedalus]{daedalus()}}.
 These objects store vaccination parameters for reuse and have methods for
 easy parameter access and editing, as well as processing raw vaccination
 characteristics for the DAEDALUS model.
