@@ -22,7 +22,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -105,11 +105,11 @@ features in development.</p>
 </h2>
 <p>This example shows (checks) that <code><a href="../reference/daedalus2.html">daedalus2()</a></code> output
 works with pre-built function <code><a href="../reference/epi_output_helpers.html">get_incidence()</a></code> written for
-<code><a href="../reference/daedalus.html">daedalus()</a></code>.</p>
+<code><a href="../reference/daedalus2.html">daedalus2()</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus2.html">daedalus2</a></span><span class="op">(</span><span class="st">"GBR"</span>, <span class="st">"influenza_2009"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># get incidence data using function developed for daedalus()</span></span>
+<span><span class="co"># get incidence data using function developed for daedalus2()</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epi_output_helpers.html">get_incidence</a></span><span class="op">(</span><span class="va">output</span>, <span class="st">"infections"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">+</span></span>
