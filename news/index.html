@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,9 +27,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
     <li><a class="dropdown-item" href="../articles/info_edu_value.html">Value of educational time lost</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>In development</h6></li>
-    <li><a class="dropdown-item" href="../articles/daedalus-two.html">Daedalus features in development</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -54,20 +51,25 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.14" id="daedalus-0214">daedalus 0.2.14<a class="anchor" aria-label="anchor" href="#daedalus-0214"></a></h2>
+<p>This patch renames <code>daedalus2()</code> to <code><a href="../reference/daedalus.html">daedalus()</a></code>. All references and helper functions for <code>daedalus2()</code> have replaced their <code><a href="../reference/daedalus.html">daedalus()</a></code> equivalents, if any.</p>
+<ul><li>All data has been moved to the package <a href="https://github.com/jameel-institute/daedalus.data" class="external-link"><em>daedalus.data</em></a>, and is imported from there.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.13" id="daedalus-0213">daedalus 0.2.13<a class="anchor" aria-label="anchor" href="#daedalus-0213"></a></h2>
-<p>This patch version replaces all calls to <code><a href="../reference/daedalus.html">daedalus()</a></code> with <code><a href="../reference/daedalus2.html">daedalus2()</a></code>; this excludes equivalence tests. Some tests have been updated to conform to the function signature of <code><a href="../reference/daedalus2.html">daedalus2()</a></code>; this is mostly related to how the NPI triggering hospital threshold is passed to the function.</p>
+<p>This patch version replaces all calls to <code><a href="../reference/daedalus.html">daedalus()</a></code> with <code>daedalus2()</code>; this excludes equivalence tests. Some tests have been updated to conform to the function signature of <code>daedalus2()</code>; this is mostly related to how the NPI triggering hospital threshold is passed to the function.</p>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.12" id="daedalus-0212">daedalus 0.2.12<a class="anchor" aria-label="anchor" href="#daedalus-0212"></a></h2>
-<p>This patch version adds a <code>response_duration</code> argument to <code><a href="../reference/daedalus2.html">daedalus2()</a></code>, and tests for time-limited responses.</p>
+<p>This patch version adds a <code>response_duration</code> argument to <code>daedalus2()</code>, and tests for time-limited responses.</p>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.11" id="daedalus-0211">daedalus 0.2.11<a class="anchor" aria-label="anchor" href="#daedalus-0211"></a></h2>
 <p>This patch version adds logging of new vaccinations in each age and economic group.</p>
-<ul><li><p><code><a href="../reference/daedalus2.html">daedalus2()</a></code> now returns data on new vaccinations and is compatible with <code><a href="../reference/epi_output_helpers.html">get_new_vaccinations()</a></code>; new vaccinations are stored as a vector of the size of age + economic groups after the main state but before the model flags;</p></li>
+<ul><li><p><code>daedalus2()</code> now returns data on new vaccinations and is compatible with <code><a href="../reference/epi_output_helpers.html">get_new_vaccinations()</a></code>; new vaccinations are stored as a vector of the size of age + economic groups after the main state but before the model flags;</p></li>
 <li><p><code>daedalus_ode</code> does not zero new vaccinations - this is handled by <code><a href="../reference/epi_output_helpers.html">get_new_vaccinations()</a></code>;</p></li>
-<li><p><code><a href="../reference/daedalus2.html">daedalus2()</a></code> accepts optional ODE control arguments for <em>dust2</em> via <code>...</code>;</p></li>
-<li><p>Internal function <code><a href="../reference/prepare_output.html">prepare_output_cpp()</a></code> accommodates new vaccination data in <code>output</code>.</p></li>
+<li><p><code>daedalus2()</code> accepts optional ODE control arguments for <em>dust2</em> via <code>...</code>;</p></li>
+<li><p>Internal function <code>prepare_output_cpp()</code> accommodates new vaccination data in <code>output</code>.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.10" id="daedalus-0210">daedalus 0.2.10<a class="anchor" aria-label="anchor" href="#daedalus-0210"></a></h2>
@@ -75,22 +77,22 @@
 <li><p><code>&lt;daedalus_country&gt;</code> class takes argument <code>group_working_age</code> for the index of the working age group;</p></li>
 <li><p><code>&lt;daedalus_output&gt;</code> class prints information on country, epidemic, and response;</p></li>
 <li><p>Added <code>FLAG_NAMES</code> for variables in <code>dust2</code> output to remove;</p></li>
-<li><p>Added internal function <code><a href="../reference/get_daedalus2_response_times.html">get_daedalus2_response_times()</a></code> to extract event data from <code><a href="../reference/daedalus2_internal.html">daedalus2_internal()</a></code> for <code>&lt;daedalus_output&gt;</code> class;</p></li>
-<li><p><code><a href="../reference/daedalus2.html">daedalus2()</a></code> returns <code>&lt;daedalus_output&gt;</code> class object similar to <code><a href="../reference/daedalus.html">daedalus()</a></code>;</p></li>
+<li><p>Added internal function <code>get_daedalus2_response_times()</code> to extract event data from <code>daedalus2_internal()</code> for <code>&lt;daedalus_output&gt;</code> class;</p></li>
+<li><p><code>daedalus2()</code> returns <code>&lt;daedalus_output&gt;</code> class object similar to <code><a href="../reference/daedalus.html">daedalus()</a></code>;</p></li>
 <li><p>Removed some constants associated with now-removed <code>daedalus_rtm()</code> function;</p></li>
-<li><p>Function <code><a href="../reference/prepare_output.html">prepare_output_cpp()</a></code> rewritten to handle output from <code><a href="../reference/daedalus2_internal.html">daedalus2_internal()</a></code>;</p></li>
+<li><p>Function <code>prepare_output_cpp()</code> rewritten to handle output from <code>daedalus2_internal()</code>;</p></li>
 <li>
-<p>Updated tests for classed output from <code><a href="../reference/daedalus2.html">daedalus2()</a></code>;</p>
+<p>Updated tests for classed output from <code>daedalus2()</code>;</p>
 <ul><li>Skipping tests for vaccination start time as this data is not compatible with class <code>&lt;daedalus_output&gt;</code>; these will be switched on in future.</li>
 </ul></li>
-<li><p>Added continuous benchmarking for <code><a href="../reference/daedalus2.html">daedalus2()</a></code>;</p></li>
-<li><p>Updated vignette on <code><a href="../reference/daedalus2.html">daedalus2()</a></code> for classed output.</p></li>
+<li><p>Added continuous benchmarking for <code>daedalus2()</code>;</p></li>
+<li><p>Updated vignette on <code>daedalus2()</code> for classed output.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.9" id="daedalus-029">daedalus 0.2.9<a class="anchor" aria-label="anchor" href="#daedalus-029"></a></h2>
-<ul><li><p>Added public-concern social distancing to <code><a href="../reference/daedalus2.html">daedalus2()</a></code>, and re-added it to <code><a href="../reference/daedalus.html">daedalus()</a></code>; this reverses the removal in v0.2.3. The functions are equivalent: social-distancing is active only when an NPI is active.</p></li>
-<li><p>Added a filter on <code>NULL</code> to <code><a href="../reference/daedalus2.html">daedalus2()</a></code> parameter collection step - this helps remove parameters and allows treating missing values as a meaningful indicator in the C++ code (as 0.0 can be a valid value in many cases).</p></li>
-<li><p><strong>Removed</strong> default response duration of 60 days in <code><a href="../reference/daedalus2.html">daedalus2()</a></code> as this is not present in <code><a href="../reference/daedalus.html">daedalus()</a></code> leading to non-equivalence in tests.</p></li>
+<ul><li><p>Added public-concern social distancing to <code>daedalus2()</code>, and re-added it to <code><a href="../reference/daedalus.html">daedalus()</a></code>; this reverses the removal in v0.2.3. The functions are equivalent: social-distancing is active only when an NPI is active.</p></li>
+<li><p>Added a filter on <code>NULL</code> to <code>daedalus2()</code> parameter collection step - this helps remove parameters and allows treating missing values as a meaningful indicator in the C++ code (as 0.0 can be a valid value in many cases).</p></li>
+<li><p><strong>Removed</strong> default response duration of 60 days in <code>daedalus2()</code> as this is not present in <code><a href="../reference/daedalus.html">daedalus()</a></code> leading to non-equivalence in tests.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.8" id="daedalus-028">daedalus 0.2.8<a class="anchor" aria-label="anchor" href="#daedalus-028"></a></h2>
@@ -98,7 +100,7 @@
 <h3 id="breaking-changes-0-2-8">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-8"></a></h3>
 <p>daedalus2() output type is now a two-element list with event data included. Time-series data are in <code>data</code>. This output type will be converted to <code>&lt;daedalus_output&gt;</code> in future versions.</p>
 <p>This patch version implements a <code>response</code> class to better organise event handling. All events can be launched and ended at specific times, or by specific state variables crossing threshold values. Only some of these triggers can be controlled by the user from R; others are hard-coded in C++:</p>
-<ul><li><p>NPI response start time is added as an argument to <code><a href="../reference/daedalus2.html">daedalus2()</a></code> similar to <code><a href="../reference/daedalus.html">daedalus()</a></code>;</p></li>
+<ul><li><p>NPI response start time is added as an argument to <code>daedalus2()</code> similar to <code><a href="../reference/daedalus.html">daedalus()</a></code>;</p></li>
 <li><p>NPI response starts on <code>hospital_threshold</code> (a country parameters) being crossed;</p></li>
 <li><p>NPI response is intended to end when the <a href="https://doi.org/10.1097/01.aids.0000244213.23574.fa" class="external-link">incidence-prevalence ratio reaches the recovery rate</a> (for asymptomatic infections); this does not appear to work as the solver jumps over this root.</p></li>
 <li><p>Vaccination start time can be specified by the user in the vaccination object or strategy; no specific end triggers are specified as vaccination rate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ν</mi><annotation encoding="application/x-tex">\nu</annotation></semantics></math> is scaled within the ODE RHS to decline as the uptake limit is reached.</p></li>
@@ -148,7 +150,7 @@
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.5" id="daedalus-025">daedalus 0.2.5<a class="anchor" aria-label="anchor" href="#daedalus-025"></a></h2>
-<ul><li><p>Adds a correction for reducing eligibles to vaccination in <code><a href="../reference/daedalus2.html">daedalus2()</a></code> by re-implementing <code><a href="../reference/scale_nu.html">scale_nu()</a></code> in C++. Adds a simple test for vaccination uptake limit.</p></li>
+<ul><li><p>Adds a correction for reducing eligibles to vaccination in <code>daedalus2()</code> by re-implementing <code><a href="../reference/scale_nu.html">scale_nu()</a></code> in C++. Adds a simple test for vaccination uptake limit.</p></li>
 <li><p>Adds C++ headers for types and dimensions.</p></li>
 </ul></div>
     <div class="section level2">
@@ -160,18 +162,18 @@
 </div>
 <div class="section level3">
 <h3 id="model-changes-0-2-4">Model changes<a class="anchor" aria-label="anchor" href="#model-changes-0-2-4"></a></h3>
-<ul><li><p><code><a href="../reference/daedalus2.html">daedalus2()</a></code> supports infections for the vaccinated stratum similar to <code><a href="../reference/daedalus.html">daedalus()</a></code>; vaccination is now leaky. The default is absolutely no vaccination, which differs from <code><a href="../reference/daedalus.html">daedalus()</a></code> where ‘none’ refers to advance investment;</p></li>
+<ul><li><p><code>daedalus2()</code> supports infections for the vaccinated stratum similar to <code><a href="../reference/daedalus.html">daedalus()</a></code>; vaccination is now leaky. The default is absolutely no vaccination, which differs from <code><a href="../reference/daedalus.html">daedalus()</a></code> where ‘none’ refers to advance investment;</p></li>
 <li><p><code><a href="../reference/daedalus.html">daedalus()</a></code> takes vaccine efficacy and waning period from the <code>vaccine_investment</code> argument, see below;</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="class-changes-0-2-4">Class changes<a class="anchor" aria-label="anchor" href="#class-changes-0-2-4"></a></h3>
 <ul><li><p><code>&lt;daedalus_vaccination&gt;</code> has been updated with shorter invariants that drop prefix <code>vax</code> from names;</p></li>
 <li><p><code>&lt;daedalus_vaccination&gt;</code>s now hold information on the vaccine efficacy (single value) and waning period (single value); these can be modified using the construction helper <code><a href="../reference/class_vaccination.html">daedalus_vaccination()</a></code> or the <code><a href="../reference/set_data.html">set_data()</a></code> method;</p></li>
-<li><p>A new <code><a href="../reference/prepare_parameters.html">prepare_parameters2()</a></code> method for the vaccination class to satisfy <code><a href="../reference/daedalus2.html">daedalus2()</a></code>;</p></li>
+<li><p>A new <code>prepare_parameters2()</code> method for the vaccination class to satisfy <code>daedalus2()</code>;</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="other-changes-0-2-4">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-2-4"></a></h3>
-<ul><li><p>Tests for vaccination working in <code><a href="../reference/daedalus2.html">daedalus2()</a></code>;</p></li>
+<ul><li><p>Tests for vaccination working in <code>daedalus2()</code>;</p></li>
 <li><p>Updated to function documentation for changes to vaccination class.</p></li>
 <li><p>Code formatting using <a href="https://posit-dev.github.io/air/" class="external-link">Air</a>, added <code>air.toml</code> and disabled <code>commas_linter</code> as it conflicts with Air.</p></li>
 </ul></div>
@@ -180,17 +182,17 @@
 <h2 class="pkg-version" data-toc-text="0.2.3" id="daedalus-023">daedalus 0.2.3<a class="anchor" aria-label="anchor" href="#daedalus-023"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-0-2-3">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-3"></a></h3>
-<ul><li><p><code><a href="../reference/daedalus.html">daedalus()</a></code> no longer includes auto-social distancing; this is to check for equivalence with <code><a href="../reference/daedalus2.html">daedalus2()</a></code>. This will be re-added once the event-trigger mapping feature is developed.</p></li>
-<li><p><code><a href="../reference/daedalus2.html">daedalus2()</a></code> implementation of vaccination is very basic: vaccination begins at model start time and does not end, vaccination does not correct for reducing eligible population, vaccination is non-leaky</p></li>
+<ul><li><p><code><a href="../reference/daedalus.html">daedalus()</a></code> no longer includes auto-social distancing; this is to check for equivalence with <code>daedalus2()</code>. This will be re-added once the event-trigger mapping feature is developed.</p></li>
+<li><p><code>daedalus2()</code> implementation of vaccination is very basic: vaccination begins at model start time and does not end, vaccination does not correct for reducing eligible population, vaccination is non-leaky</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="model-changes-0-2-3">Model changes<a class="anchor" aria-label="anchor" href="#model-changes-0-2-3"></a></h3>
 <ol style="list-style-type: decimal"><li>
-<p>Added full DAEDALUS ODE structure to <code>daedalus_ode</code> class for <code><a href="../reference/daedalus2.html">daedalus2()</a></code> – except events, auto-social distancing, and excess mortality; <code><a href="../reference/daedalus2.html">daedalus2()</a></code> accepts <code>country</code> and <code>infection</code> similar to <code><a href="../reference/daedalus.html">daedalus()</a></code>.</p>
+<p>Added full DAEDALUS ODE structure to <code>daedalus_ode</code> class for <code>daedalus2()</code> – except events, auto-social distancing, and excess mortality; <code>daedalus2()</code> accepts <code>country</code> and <code>infection</code> similar to <code><a href="../reference/daedalus.html">daedalus()</a></code>.</p>
 <ul><li>
-<code><a href="../reference/daedalus2.html">daedalus2()</a></code> takes vaccination arguments for vaccination rate and waning rate.</li>
+<code>daedalus2()</code> takes vaccination arguments for vaccination rate and waning rate.</li>
 </ul></li>
-<li><p>Fixes consumer-worker contact scaling in <code><a href="../reference/daedalus2.html">daedalus2()</a></code>.</p></li>
+<li><p>Fixes consumer-worker contact scaling in <code>daedalus2()</code>.</p></li>
 <li><p><code>daedalus_ode</code> class uses <code>Eigen::Tensor</code> over <code>Eigen::Matrix</code> for numerical operations.</p></li>
 </ol></div>
 <div class="section level3">
@@ -200,12 +202,12 @@
 </ol></div>
 <div class="section level3">
 <h3 id="r-code-0-2-3">R code<a class="anchor" aria-label="anchor" href="#r-code-0-2-3"></a></h3>
-<ol style="list-style-type: decimal"><li>Added intermediate internal helper generic and methods <code><a href="../reference/prepare_parameters.html">prepare_parameters2()</a></code> and <code><a href="../reference/make_initial_state2.html">make_initial_state2()</a></code> for use with <code><a href="../reference/daedalus2.html">daedalus2()</a></code>.</li>
+<ol style="list-style-type: decimal"><li>Added intermediate internal helper generic and methods <code>prepare_parameters2()</code> and <code><a href="../reference/make_initial_state2.html">make_initial_state2()</a></code> for use with <code>daedalus2()</code>.</li>
 </ol></div>
 <div class="section level3">
 <h3 id="other-0-2-3">Other<a class="anchor" aria-label="anchor" href="#other-0-2-3"></a></h3>
-<ol style="list-style-type: decimal"><li><p>Added more tests for output expectations and fixed population size for <code><a href="../reference/daedalus2.html">daedalus2()</a></code>.</p></li>
-<li><p>Added tests for equivalence between <code><a href="../reference/daedalus.html">daedalus()</a></code> and <code><a href="../reference/daedalus2.html">daedalus2()</a></code>.</p></li>
+<ol style="list-style-type: decimal"><li><p>Added more tests for output expectations and fixed population size for <code>daedalus2()</code>.</p></li>
+<li><p>Added tests for equivalence between <code><a href="../reference/daedalus.html">daedalus()</a></code> and <code>daedalus2()</code>.</p></li>
 <li><p>Added function documentation and updated replacement DAEDALUS vignette.</p></li>
 <li><p>Update <code>.lintr</code> for <em>lintr</em> v3.2.0.</p></li>
 </ol></div>
@@ -228,7 +230,7 @@
 <li><p>Continuous benchmarking removed for <code>daedalus_rtm()</code>.</p></li>
 </ul><p><strong>Changes for dust2 implementation</strong></p>
 <ul><li><p>Dependencies {dust2} and {monty} added;</p></li>
-<li><p>Added successor function <code><a href="../reference/daedalus2.html">daedalus2()</a></code> which will replace <code><a href="../reference/daedalus.html">daedalus()</a></code>;</p></li>
+<li><p>Added successor function <code>daedalus2()</code> which will replace <code><a href="../reference/daedalus.html">daedalus()</a></code>;</p></li>
 <li><p>Toy SEIR model with flexible number of demographic strata added in <code>inst/dust/daedalus.cpp</code>; this will build up to the full model;</p></li>
 <li><p>Infrastructure files updated for changes above;</p></li>
 <li><p>Added small vignette to check functionality;</p></li>
@@ -255,7 +257,7 @@
 <li><p>Added C++ code in <code>src/daedalus.cpp</code> to help with ODE RHS, observer for ODE system, looping over parameter combinations, and exposing C++ code to R.</p></li>
 <li>
 <p>Added functions to help with <code>daedalus_rtm()</code>:</p>
-<ul><li><p><code><a href="../reference/prepare_output.html">prepare_output_cpp()</a></code> to handle output from Rcpp fn (returned as list of matrices);</p></li>
+<ul><li><p><code>prepare_output_cpp()</code> to handle output from Rcpp fn (returned as list of matrices);</p></li>
 <li><p><code><a href="../reference/prepare_contacts.html">make_conmat_large()</a></code> prepares a 49 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 49 contact matrix for C++ ODE RHS;</p></li>
 <li><p><code><a href="../reference/prepare_contacts.html">make_work_contacts()</a></code> and <code><a href="../reference/prepare_contacts.html">make_consumer_contacts()</a></code> scale contacts by workers in economic sectors – <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi><mi>S</mi><mi>I</mi><mtext mathvariant="normal">CM</mtext><mi>/</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">\beta SI \text{CM} / N</annotation></semantics></math>.</p></li>
 </ul></li>
@@ -297,10 +299,10 @@
 <p>This patch corrects epidemic dynamics:</p>
 <ol style="list-style-type: decimal"><li><p>Replaces <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mn>0</mn></msub><annotation encoding="application/x-tex">R_0</annotation></semantics></math> in force of infection calculations with transmission parameter <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>;</p></li>
 <li><p>Adds a new function <code><a href="../reference/get_beta.html">get_beta()</a></code> to calculate model <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math> for a country and infection (thanks <a href="https://github.com/patcatgit" class="external-link">@patcatgit</a>);</p></li>
-<li><p>Corrects the implementation of <code><a href="../reference/reff_calculation.html">r_eff()</a></code> to use model <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>;</p></li>
+<li><p>Corrects the implementation of <code>r_eff()</code> to use model <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>;</p></li>
 <li><p>Corrects <code><a href="../reference/prepare_parameters.html">prepare_parameters.daedalus_country()</a></code> to provide appropriate contact matrix values;</p></li>
 <li><p>Adds tests to check newly added functions.</p></li>
-</ol><p>There is a noticeable speed loss due to repeated calls to <code><a href="https://rdrr.io/r/base/eigen.html" class="external-link">base::eigen()</a></code> and <code><a href="https://rdrr.io/r/base/solve.html" class="external-link">base::solve()</a></code> in <code><a href="../reference/reff_calculation.html">r_eff()</a></code>.</p>
+</ol><p>There is a noticeable speed loss due to repeated calls to <code><a href="https://rdrr.io/r/base/eigen.html" class="external-link">base::eigen()</a></code> and <code><a href="https://rdrr.io/r/base/solve.html" class="external-link">base::solve()</a></code> in <code>r_eff()</code>.</p>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.22" id="daedalus-0022">daedalus 0.0.22<a class="anchor" aria-label="anchor" href="#daedalus-0022"></a></h2>
@@ -321,7 +323,7 @@
 <p>This patch updates the state variable in <code><a href="../reference/daedalus.html">daedalus()</a></code> to substantially reduce the number of compartments; all empty compartments have been removed. This improves the speed of model runs as there are fewer derivatives to calculate.</p>
 <ol style="list-style-type: decimal"><li><p>State variable is a 3D array with the dimensions: <code>c(49, 9, 3)</code>. The working-age economic sectors are added on as rows after the age-groups. Epidemiological compartments are unchanged. The third dimension holds data on vaccination status, including new vaccinations.</p></li>
 <li><p>Helper functions are updated to support the new state dimensions.</p></li>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mi>t</mi></msub><annotation encoding="application/x-tex">R_t</annotation></semantics></math> calculation in <code><a href="../reference/reff_calculation.html">r_eff()</a></code> has been simplified to the proportional susceptible times <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mn>0</mn></msub><annotation encoding="application/x-tex">R_0</annotation></semantics></math>, pending a more accurate calculation.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mi>t</mi></msub><annotation encoding="application/x-tex">R_t</annotation></semantics></math> calculation in <code>r_eff()</code> has been simplified to the proportional susceptible times <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mn>0</mn></msub><annotation encoding="application/x-tex">R_0</annotation></semantics></math>, pending a more accurate calculation.</p></li>
 <li><p>The internal helper function <code><a href="../reference/prepare_output.html">prepare_output()</a></code> has been refactored to avoid use of <code><a href="https://rdrr.io/r/base/array2DF.html" class="external-link">base::array2DF()</a></code> to remove the dependency on newer versions of R.</p></li>
 <li><p>Removes unused between-sector contacts in force-of-infection calculations.</p></li>
 <li><p>Moves some contact scaling to the parameter preparation stage to reduce operations during the model run.</p></li>
@@ -362,7 +364,7 @@
 <div class="section level3">
 <h3 id="miscellaneous-changes-0-0-15">Miscellaneous changes<a class="anchor" aria-label="anchor" href="#miscellaneous-changes-0-0-15"></a></h3>
 <ul><li><p>The package now requires a minimum R version &gt;= v4.3 due to the use of the new function <code><a href="https://rdrr.io/r/base/array2DF.html" class="external-link">array2DF()</a></code>;</p></li>
-<li><p><code><a href="../reference/prepare_parameters.html">prepare_parameters.daedalus_country()</a></code> now provides a contact matrix scaled by the leading eigenvalue but not the demography for use in <code><a href="../reference/reff_calculation.html">r_eff()</a></code>.</p></li>
+<li><p><code><a href="../reference/prepare_parameters.html">prepare_parameters.daedalus_country()</a></code> now provides a contact matrix scaled by the leading eigenvalue but not the demography for use in <code>r_eff()</code>.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -397,7 +399,7 @@
 <ul><li><p>Vaccination starts when a response is triggered, and is active even in the ‘no closures’ scenario;</p></li>
 <li><p>Vaccination rate and start time is uniform across age groups;</p></li>
 <li><p>Vaccine-derived protection (reduced susceptibility) is represented by hard-coded parameter <code>tau</code>, and the waning of this protection is also hard-coded and represented by parameter <code>psi</code>. Default values are 0.5 and 1 / 270, respectively;</p></li>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mi>t</mi></msub><annotation encoding="application/x-tex">R_t</annotation></semantics></math> calculation in <code><a href="../reference/reff_calculation.html">r_eff()</a></code> includes reduced susceptibility for vaccinated individuals.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mi>t</mi></msub><annotation encoding="application/x-tex">R_t</annotation></semantics></math> calculation in <code>r_eff()</code> includes reduced susceptibility for vaccinated individuals.</p></li>
 </ul><p>Internal changes include:</p>
 <ul><li><p>The system state is now represented as a 4-dimensional array, with the vaccination groups/strata on the 4th dimension (see package constant <code>DIM_VACCINE_STRATA</code>);</p></li>
 <li><p>ODE system has been updated to include reduced susceptibility and movements between vaccination strata;</p></li>
@@ -406,7 +408,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9" id="daedalus-009">daedalus 0.0.9<a class="anchor" aria-label="anchor" href="#daedalus-009"></a></h2>
-<p>This patch version adds a spontaneous social distancing mechanism to the model in the internal function <code><a href="../reference/get_distancing_coefficient.html">get_distancing_coefficient()</a></code>, which modifies the infection transmission rate based on the number of new deaths. The intention is to model public concern that leads to a spontaneous reduction in community social contacts.</p>
+<p>This patch version adds a spontaneous social distancing mechanism to the model in the internal function <code>get_distancing_coefficient()</code>, which modifies the infection transmission rate based on the number of new deaths. The intention is to model public concern that leads to a spontaneous reduction in community social contacts.</p>
 <ul><li>Social distancing is independent of the specific response strategy chosen, but is active while a response strategy is active. In future, social distancing will be conditioned on vaccination regime completion.</li>
 <li>Social distancing is active in the ‘no response’ scenario.</li>
 <li>Workplace contacts are not affected.</li>
@@ -460,8 +462,8 @@
 <li><p>Closures are triggered by the response time being reached, or the total hospitalisation reaching the response threshold. The state variable has been expanded by one to accommodate a switch that is initially zero, is changed to one (for on) when the response is activated, and back to zero when the response ends. Responses currently end on the same trigger of the effective R being less than 1.0.</p></li>
 <li><p>The <code>make_parameters()</code> function has been split into <code>make_infect_parameters()</code> and <code>make_country_parameters()</code> to be clearer and more manageable. <code><a href="../reference/daedalus.html">daedalus()</a></code>-level override for parameters which was originally implemented as <code>...</code> has been replaced with three separate overrides: <code>country_params_manual</code>, <code>infect_params_manual</code>, and <code>initial_state_manual</code>, for users to pass custom values.</p></li>
 <li><p><code><a href="../reference/prepare_output.html">prepare_output()</a></code> has been made internal; it omits data for non-working age groups in economic sectors (as these are always 0), and pads all sector numbers to fit the format <code>sector_XX</code>.</p></li>
-<li><p>Internal functions for R effective calculations and getting the total hospitalisations, <code><a href="../reference/reff_calculation.html">r_eff()</a></code> and <code><a href="../reference/get_hospitalisations.html">get_hospitalisations()</a></code> have been added.</p></li>
-<li><p>Closures are implemented as <code><a href="https://rdrr.io/pkg/deSolve/man/events.html" class="external-link">deSolve::events</a></code> triggered by a rootfinding function, with separate functions for activation and termination, which are implemented as <code><a href="../reference/make_response_threshold_event.html">make_response_threshold_event()</a></code> and <code><a href="../reference/make_rt_end_event.html">make_rt_end_event()</a></code>.</p></li>
+<li><p>Internal functions for R effective calculations and getting the total hospitalisations, <code>r_eff()</code> and <code><a href="../reference/get_hospitalisations.html">get_hospitalisations()</a></code> have been added.</p></li>
+<li><p>Closures are implemented as <code><a href="https://rdrr.io/pkg/deSolve/man/events.html" class="external-link">deSolve::events</a></code> triggered by a rootfinding function, with separate functions for activation and termination, which are implemented as <code>make_response_threshold_event()</code> and <code>make_rt_end_event()</code>.</p></li>
 <li><p><code>contacts_between_sectors</code> is now set to 0.0, it was previously 1e-6.</p></li>
 <li><p>Added tests for closure triggers having expected effects; but closure end points are not specifically tested.</p></li>
 </ol></div>

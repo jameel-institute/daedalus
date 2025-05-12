@@ -22,7 +22,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,9 +44,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
     <li><a class="dropdown-item" href="../articles/info_edu_value.html">Value of educational time lost</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>In development</h6></li>
-    <li><a class="dropdown-item" href="../articles/daedalus-two.html">Daedalus features in development</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -100,7 +97,7 @@ for a large number of countries, and the effort required to obtain and
 update official life-values from national governments.</p>
 <div class="alert alert-info">
 <p><strong>Note that</strong> the VSL values used in a call to
-<code><a href="../reference/daedalus2.html">daedalus2()</a></code> for any country can always be substituted with
+<code><a href="../reference/daedalus.html">daedalus()</a></code> for any country can always be substituted with
 values considered to be more appropriate (e.g., from a national health
 ministry).</p>
 </div>
@@ -188,7 +185,7 @@ These values are also automatically accessed and included when a
 <div class="section level2">
 <h2 id="value-of-lives-lost">Value of lives lost<a class="anchor" aria-label="anchor" href="#value-of-lives-lost"></a>
 </h2>
-<p>In a <code><a href="../reference/daedalus2.html">daedalus2()</a></code> scenario, the total value of lives lost
+<p>In a <code><a href="../reference/daedalus.html">daedalus()</a></code> scenario, the total value of lives lost
 is the sum of the products of the country- and age-specific VSL and the
 number of deaths in each age-group in that country:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>Σ</mi><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></msubsup><msub><mtext mathvariant="normal">VSL</mtext><msub><mi>c</mi><mi>i</mi></msub></msub><mo>×</mo><msub><mi>D</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">\Sigma_{i = 1}^{N} \text{VSL}_{c_i} \times D_i</annotation></semantics></math></p>

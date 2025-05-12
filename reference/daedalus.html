@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,9 +27,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
     <li><a class="dropdown-item" href="../articles/info_edu_value.html">Value of educational time lost</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>In development</h6></li>
-    <li><a class="dropdown-item" href="../articles/daedalus-two.html">Daedalus features in development</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -63,11 +60,11 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus</span><span class="op">(</span></span>
 <span>  <span class="va">country</span>,</span>
 <span>  <span class="va">infection</span>,</span>
-<span>  response_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"elimination"</span>, <span class="st">"economic_closures"</span>, <span class="st">"school_closures"</span><span class="op">)</span>,</span>
-<span>  vaccine_investment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span><span class="op">)</span>,</span>
+<span>  response_strategy <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  vaccine_investment <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  response_time <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  response_threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  initial_state_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  response_duration <span class="op">=</span> <span class="fl">365</span>,</span>
+<span>  initial_state_manual <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  time_end <span class="op">=</span> <span class="fl">600</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -80,8 +77,9 @@
 <dl><dt id="arg-country">country<a class="anchor" aria-label="anchor" href="#arg-country"></a></dt>
 <dd><p>A country or territory object of class <code>&lt;daedalus_country&gt;</code>,
 <strong>or</strong> a country or territory name from those included in the package;
-see country_names, <strong>or</strong> a country ISO2 or ISO3 code; see
-country_codes_iso2c and country_codes_iso3c .
+see <a href="https://rdrr.io/pkg/daedalus.data/man/country_names_codes.html" class="external-link">daedalus.data::country_names</a>, <strong>or</strong> a country ISO2 or ISO3 code; see
+<a href="https://rdrr.io/pkg/daedalus.data/man/country_names_codes.html" class="external-link">daedalus.data::country_codes_iso2c</a> and
+<a href="https://rdrr.io/pkg/daedalus.data/man/country_names_codes.html" class="external-link">daedalus.data::country_codes_iso3c</a>.
 Country-specific data such as the community and workplace contacts, the
 demography, and the distribution of the workforce into economic sectors is
 automatically accessed from package data for the relevant country name if it
@@ -93,7 +91,7 @@ To override package defaults for country characteristics, pass a
 <dt id="arg-infection">infection<a class="anchor" aria-label="anchor" href="#arg-infection"></a></dt>
 <dd><p>An infection parameter object of the class
 <code>&lt;daedalus_infection&gt;</code>, <strong>or</strong> an epidemic name for which data are provided
-in the package; see epidemic_names for historical epidemics
+in the package; see <a href="https://rdrr.io/pkg/daedalus.data/man/epidemic_data.html" class="external-link">daedalus.data::epidemic_names</a> for historical epidemics
 or epidemic waves for which parameters are available.</p>
 <p>Passing the name as a string automatically accesses the default parameters
 of an infection. Create and pass a <code>&lt;daedalus_infection&gt;</code> to tweak infection
@@ -106,17 +104,18 @@ defaults to "none". The response strategy determines the country-specific
 response threshold following which the response is activated. See
 <code>response_threshold</code>.</p>
 <p>While the response strategy is active, economic contacts are scaled using the
-package data object <code>daedalus::closure_data</code>.</p></dd>
+package data object <code><a href="https://rdrr.io/pkg/daedalus.data/man/closure_data.html" class="external-link">daedalus.data::closure_data</a></code>.</p></dd>
 
 
 <dt id="arg-vaccine-investment">vaccine_investment<a class="anchor" aria-label="anchor" href="#arg-vaccine-investment"></a></dt>
 <dd><p>Either a single string or a
 <code>&lt;daedalus_vaccination&gt;</code> object specifying the vaccination parameters
-associated with an advance vaccine-investment scenario. Defaults to <code>"none"</code>,
-for no advance vaccine investment. In this case, vaccination begins 365 days
-(1 year) after the simulation begins, at a low rate across all age groups.
-Other accepted values are <code>"low"</code>, <code>"medium"</code> and <code>"high"</code>. See
-<code><a href="class_vaccination.html">daedalus_vaccination()</a></code> for more information.</p></dd>
+associated with an advance vaccine-investment scenario. Defaults to <code>NULL</code>
+for absolutely no vaccination in the model.
+A vaccination investment of <code>"none"</code> indicates no <em>prior</em> investment, but
+the model will include vaccination beginning after 1 year, at a low rate
+across all age groups. Other accepted values are <code>"low"</code>, <code>"medium"</code> and
+<code>"high"</code>. See <code><a href="class_vaccination.html">daedalus_vaccination()</a></code> for more information.</p></dd>
 
 
 <dt id="arg-response-time">response_time<a class="anchor" aria-label="anchor" href="#arg-response-time"></a></dt>
@@ -126,14 +125,9 @@ has already been activated by the hospitalisation threshold being reached.
 Defaults to 30 days.</p></dd>
 
 
-<dt id="arg-response-threshold">response_threshold<a class="anchor" aria-label="anchor" href="#arg-response-threshold"></a></dt>
-<dd><p>A single numeric value for the total number of
-hospitalisations that causes an epidemic response
-(specified by <code>response_strategy</code>) to be triggered, if it has not already
-been triggered via <code>response_time</code>. Currently defaults to <code>NULL</code>, and a
-<code>country</code>-specific spare hospital capacity value is used from
-country_data.
-Pass a number to override the default country-specific threshold value.</p></dd>
+<dt id="arg-response-duration">response_duration<a class="anchor" aria-label="anchor" href="#arg-response-duration"></a></dt>
+<dd><p>A single integer-ish number that gives the number of
+days after <code>response_time</code> that an NPI should end.</p></dd>
 
 
 <dt id="arg-initial-state-manual">initial_state_manual<a class="anchor" aria-label="anchor" href="#arg-initial-state-manual"></a></dt>
@@ -150,22 +144,16 @@ returned for each day. Defaults to 300 days.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other arguments to be passed to the ODE solver; these are passed
-to <code><a href="https://rdrr.io/pkg/deSolve/man/ode.html" class="external-link">deSolve::ode()</a></code>.</p></dd>
+<dd><p>Optional arguments that are passed to <code><a href="https://mrc-ide.github.io/dust2/reference/dust_ode_control.html" class="external-link">dust2::dust_ode_control()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>&lt;deSolve&gt;</code> object.</p>
+    <p>A <code>&lt;daedalus_output&gt;</code> object.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-
-<div class="section">
-<h3 id="initial-state">Initial state<a class="anchor" aria-label="anchor" href="#initial-state"></a></h3>
-
-
-<p>Users can pass the following initial state parameters to
+    <p>Users can pass the following initial state parameters to
 <code>initial_state_manual</code>:</p><ul><li><p><code>p_infectious</code>: A single numeric value in the range \([0.0, 1.0]\) giving
 the proportion of individuals in each age group and economic sector that are
 to be initialised as infectious. Defaults to <code>1e-6</code>, or one in every one
@@ -175,12 +163,10 @@ the proportion of initially infectious individuals who are considered to be
 asymptomatic. Defaults to 0.0.</p></li>
 </ul></div>
 
-    </div>
-
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># country and infection specified by strings using default characteristics</span></span></span>
-<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="daedalus2.html">daedalus2</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="st">"Canada"</span>, <span class="st">"influenza_1918"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -189,19 +175,20 @@ asymptomatic. Defaults to 0.0.</p></li>
 <span class="r-in"><span>  <span class="st">"Canada"</span>,</span></span>
 <span class="r-in"><span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>contact_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span> <span class="co"># uniform contacts</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="daedalus2.html">daedalus2</a></span><span class="op">(</span><span class="va">country_x</span>, <span class="st">"influenza_1918"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span><span class="va">country_x</span>, <span class="st">"influenza_1918"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># with some infection parameters over-ridden by the user</span></span></span>
-<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="daedalus2.html">daedalus2</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="st">"United Kingdom"</span>,</span></span>
 <span class="r-in"><span>  <span class="fu"><a href="class_infection.html">daedalus_infection</a></span><span class="op">(</span><span class="st">"influenza_1918"</span>, r0 <span class="op">=</span> <span class="fl">1.3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># with default initial conditions over-ridden by the user</span></span></span>
-<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="daedalus2.html">daedalus2</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="st">"United Kingdom"</span>, <span class="st">"influenza_1918"</span>,</span></span>
 <span class="r-in"><span>  initial_state_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>p_infectious <span class="op">=</span> <span class="fl">1e-3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

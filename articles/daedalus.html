@@ -22,7 +22,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,9 +44,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
     <li><a class="dropdown-item" href="../articles/info_edu_value.html">Value of educational time lost</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>In development</h6></li>
-    <li><a class="dropdown-item" href="../articles/daedalus-two.html">Daedalus features in development</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -96,7 +93,7 @@ adapted from <span class="citation">Haw et al. (<a href="#ref-haw2022">2022</a>)
 <h2 id="representing-countries-and-territories">Representing countries and territories<a class="anchor" aria-label="anchor" href="#representing-countries-and-territories"></a>
 </h2>
 <p>The model can be run for any country or territory included in package
-data simply by passing its name to <code><a href="../reference/daedalus2.html">daedalus2()</a></code>. The
+data simply by passing its name to <code><a href="../reference/daedalus.html">daedalus()</a></code>. The
 <code>country_names</code> vector holds a list of country and territory
 names for which data is available.</p>
 <p>Passing the country name directly leads to the model accessing
@@ -166,11 +163,11 @@ associated infection parameters are given in the package dependency
 <span><span class="co">#&gt; [1] "sars_cov_1"           "influenza_2009"       "influenza_1957"      </span></span>
 <span><span class="co">#&gt; [4] "influenza_1918"       "sars_cov_2_pre_alpha" "sars_cov_2_omicron"  </span></span>
 <span><span class="co">#&gt; [7] "sars_cov_2_delta"</span></span></code></pre></div>
-<p>Users can pass the epidemic names directly to
-<code><a href="../reference/daedalus2.html">daedalus2()</a></code> to use the default infection parameters.</p>
+<p>Users can pass the epidemic names directly to <code><a href="../reference/daedalus.html">daedalus()</a></code>
+to use the default infection parameters.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># not run</span></span>
-<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus2.html">daedalus2</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"influenza_1918"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"influenza_1918"</span><span class="op">)</span></span></code></pre></div>
 <p>To modify infection parameters associated with an epidemic, users
 should create a <code>&lt;daedalus_infection&gt;</code> class</p>
 <p>Users can also override epidemic-specific infection parameter values
@@ -223,8 +220,8 @@ roll out, and that uptake is low.</p>
 scenarios of advance vaccine investment (“none”, “low”, “medium”, and
 “high”).</p>
 <p>Vaccine investment scenarios can be passed a string to
-<code><a href="../reference/daedalus2.html">daedalus2()</a></code> to use the default parameters for each
-scenario, or as a <code>&lt;daedalus_vaccination&gt;</code> object using
+<code><a href="../reference/daedalus.html">daedalus()</a></code> to use the default parameters for each scenario,
+or as a <code>&lt;daedalus_vaccination&gt;</code> object using
 <code>daedalus_vaccination(name, &lt;PARAMETERS&gt;)</code> to modify
 vaccination parameters.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -242,11 +239,11 @@ vaccination parameters.</p>
 <h2 id="running-the-model">Running the model<a class="anchor" aria-label="anchor" href="#running-the-model"></a>
 </h2>
 <p>Run the model by passing the <code>country</code> and
-<code>infection</code> arguments to <code><a href="../reference/daedalus2.html">daedalus2()</a></code>. The
-vaccine investment scenarios is automatically assumed to be “none”.</p>
+<code>infection</code> arguments to <code><a href="../reference/daedalus.html">daedalus()</a></code>. The vaccine
+investment scenarios is automatically assumed to be “none”.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># simulate a Covid-19 wild type outbreak in Canada; using default parameters</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus2.html">daedalus2</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span></code></pre></div>
 <p>The model runs for 300 timesteps by default; timesteps should be
 interpreted as days since model parameters are in terms of days.</p>
 <p>Plot the data to view the epidemic curve.</p>

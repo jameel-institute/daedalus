@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,9 +27,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
     <li><a class="dropdown-item" href="../articles/info_edu_value.html">Value of educational time lost</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>In development</h6></li>
-    <li><a class="dropdown-item" href="../articles/daedalus-two.html">Daedalus features in development</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -69,12 +66,6 @@
 
         </dt>
         <dd>DAEDALUS model for health, social and economic costs of a pandemic</dd>
-      </dl><dl><dt>
-
-          <code><a href="daedalus2.html">daedalus2()</a></code>
-
-        </dt>
-        <dd>DAEDALUS model implemented with dust</dd>
       </dl></div><div class="section level2">
       <h2 id="class-">Class <code>&lt;daedalus_country&gt;</code><a class="anchor" aria-label="anchor" href="#class-"></a></h2>
 
@@ -255,16 +246,10 @@
         <dd>daedalus: Model Health, Social, and Economic Costs of a Pandemic</dd>
       </dl><dl><dt>
 
-          <code><a href="daedalus2_internal.html">daedalus2_internal()</a></code>
+          <code><a href="daedalus_internal.html">daedalus_internal()</a></code>
 
         </dt>
-        <dd>Internal function for daedalus2</dd>
-      </dl><dl><dt>
-
-          <code><a href="daedalus_rhs.html">daedalus_rhs()</a></code>
-
-        </dt>
-        <dd>DAEDALUS system of ODEs</dd>
+        <dd>Internal function for daedalus</dd>
       </dl><dl><dt>
 
           <code><a href="dummy_vaccination.html">dummy_vaccination()</a></code>
@@ -285,16 +270,10 @@
         <dd>Get closure time limits and calculate duration</dd>
       </dl><dl><dt>
 
-          <code><a href="get_daedalus2_response_times.html">get_daedalus2_response_times()</a></code>
+          <code><a href="get_daedalus_response_times.html">get_daedalus_response_times()</a></code>
 
         </dt>
         <dd>Get model response times from dust2 output</dd>
-      </dl><dl><dt>
-
-          <code><a href="get_distancing_coefficient.html">get_distancing_coefficient()</a></code>
-
-        </dt>
-        <dd>Coefficient to scale transmission by public concern about the pandemic</dd>
       </dl><dl><dt>
 
           <code><a href="get_hospitalisations.html">get_hospitalisations()</a></code>
@@ -330,19 +309,7 @@
           <code><a href="make_initial_state2.html">make_initial_state2()</a></code>
 
         </dt>
-        <dd>Generate initial state for daedalus2()</dd>
-      </dl><dl><dt>
-
-          <code><a href="make_response_threshold_event.html">make_response_threshold_event()</a></code>
-
-        </dt>
-        <dd>Event and root-finding functions to trigger response strategies</dd>
-      </dl><dl><dt>
-
-          <code><a href="make_rt_end_event.html">make_rt_end_event()</a></code>
-
-        </dt>
-        <dd>Event and root-finding functions to terminate epidemic responses</dd>
+        <dd>Generate initial state for daedalus()</dd>
       </dl><dl><dt>
 
           <code><a href="make_susc_matrix.html">make_susc_matrix()</a></code>
@@ -363,22 +330,16 @@
         <dd>Prepare mutable parameters for the DAEDALUS model</dd>
       </dl><dl><dt>
 
-          <code><a href="prepare_output.html">prepare_output()</a></code> <code><a href="prepare_output.html">prepare_output_cpp()</a></code>
+          <code><a href="prepare_output.html">prepare_output()</a></code>
 
         </dt>
         <dd>Prepare DAEDALUS data</dd>
       </dl><dl><dt>
 
-          <code><a href="prepare_parameters.html">prepare_parameters()</a></code> <code><a href="prepare_parameters.html">prepare_parameters2()</a></code>
+          <code><a href="prepare_parameters.html">prepare_parameters()</a></code>
 
         </dt>
         <dd>Prepare country parameters for model</dd>
-      </dl><dl><dt>
-
-          <code><a href="reff_calculation.html">r_eff()</a></code>
-
-        </dt>
-        <dd>Calculate the effective R</dd>
       </dl><dl><dt>
 
           <code><a href="scale_nu.html">scale_nu()</a></code>
