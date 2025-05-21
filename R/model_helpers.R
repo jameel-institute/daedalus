@@ -71,7 +71,7 @@ make_consumer_contacts <- function(country) {
 #' @keywords internal
 make_initial_state <- function(country, initial_state_manual) {
   # NOTE: country checked in daedalus()
-  initial_infect_state <- list(p_infectious = 1e-6, p_asymptomatic = 0.0)
+  initial_infect_state <- list(p_infectious = 1e-7, p_asymptomatic = 0.0)
 
   if (is.null(initial_state_manual)) {
     p_infectious <- initial_infect_state[["p_infectious"]]
@@ -148,24 +148,21 @@ make_initial_state <- function(country, initial_state_manual) {
   # add strata for vaccination groups and set to zero
   initial_state <- array(
     initial_state,
-    c(dim(initial_state), N_VACCINE_DATA_GROUPS)
+    c(dim(initial_state), N_VACCINE_STRATA)
   )
-  initial_state[,, -i_UNVACCINATED_STRATUM] <- 0
+  initial_state[,, i_VACCINATED_STRATUM] <- 0.0 # initially no vaccinateds
+
+  # add state for new vaccinations by age group and econ sector
+  state_new_vax <- numeric(
+    length(get_data(country, "demography")) +
+      length(get_data(country, "workers"))
+  )
+  initial_state <- c(
+    initial_state,
+    state_new_vax
+  )
 
   initial_state
-}
-
-#' @title Generate initial state for daedalus()
-#'
-#' @inheritParams make_initial_state
-#' @keywords internal
-make_initial_state2 <- function(
-  country,
-  initial_state_manual = list(p_infectious = 1e-7)
-) {
-  initial_state <- make_initial_state(country, initial_state_manual)
-
-  initial_state[,, c(i_UNVACCINATED_STRATUM, i_VACCINATED_STRATUM)]
 }
 
 #' Prepare mutable parameters for the DAEDALUS model

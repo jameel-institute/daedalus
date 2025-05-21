@@ -302,17 +302,7 @@ daedalus <- function(
   }
 
   #### Prepare initial state and parameters ####
-  initial_state <- as.vector(make_initial_state2(country, initial_state_manual))
-
-  # add state for new vaccinations by age group and econ sector
-  state_new_vax <- numeric(
-    length(get_data(country, "demography")) +
-      length(get_data(country, "workers"))
-  )
-  initial_state <- c(
-    initial_state,
-    state_new_vax
-  )
+  initial_state <- as.vector(make_initial_state(country, initial_state_manual))
 
   # prepare susceptibility matrix for vaccination
   susc <- make_susc_matrix(vaccine_investment, country)
