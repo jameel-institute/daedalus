@@ -1,3 +1,59 @@
+#' Process output data
+#' 
+#' @param output
+#' @param new_vaccinations
+#' @param timesteps
+#' @param labels
+#' 
+#' @keywords internal
+out_list_to_df <- function(output, new_vaccinations, timesteps, labels) {
+  # handle labels
+  age_group_labels <- labels$age_group_labels
+  age_group_labels_vax <- labels$age_group_labels_vax
+  econ_group_labels <- labels$econ_group_labels
+  econ_group_labels_vax <- labels$econ_group_labels_vax
+  vaccine_labels <- labels$vaccine_labels
+  compartment_labels <- labels$compartment_labels
+
+  data_list <- lapply(output, function(x) {
+    x <- t(x)
+    x <- data.table::as.data.table(x)
+    x[, "time" := timesteps]
+    x <- data.table::melt(x, id.vars = "time")
+    x
+  })
+  data <- data.table::rbindlist(data_list)
+  data[,
+    c("age_group", "econ_sector", "vaccine_group", "compartment") := list(
+      age_group_labels,
+      econ_group_labels,
+      vaccine_labels,
+      compartment_labels
+    )
+  ]
+  data$variable <- NULL
+
+  # handle new vaccinations data
+  # NOTE: this could go into a dedicated function
+  new_vaccinations <- t(new_vaccinations)
+  new_vaccinations <- data.table::as.data.table(new_vaccinations)
+  new_vaccinations[, "time" := timesteps]
+  new_vaccinations <- data.table::melt(new_vaccinations, id.vars = "time")
+  new_vaccinations$compartment <- "new_vax"
+  new_vaccinations$vaccine_group <- "new_vaccinations" # compat with data fn
+  new_vaccinations$age_group <- rep(age_group_labels_vax, each = n_times)
+  new_vaccinations$econ_sector <- rep(econ_group_labels_vax, each = n_times)
+  new_vaccinations$variable <- NULL
+
+  # combine and return data converted to data.frame
+  data <- data.table::rbindlist(
+    list(data, new_vaccinations),
+    use.names = TRUE
+  )
+
+  data.table::setDF(data)
+}
+
 #' @title Prepare DAEDALUS data
 #'
 #' @name prepare_output
@@ -26,8 +82,14 @@
 #' @keywords internal
 prepare_output <- function(output, country) {
   # internal function: no input checking
-  timesteps <- seq_len(ncol(output[[1]])) - 1
+  timesteps <- seq_len(tail(dim(output[[1]]), 1)) - 1
   n_times <- length(timesteps)
+
+  # find groups if any
+  n_groups <- 1
+  if (length(dim(output[[1]])) == 3L) {
+    n_groups <- dim(output[[1]])[[2]]
+  }
 
   # remove flags and new vaccinations data
   NEW_VACCINATIONS_NAME <- "new_vax"
@@ -79,39 +141,45 @@ prepare_output <- function(output, country) {
   )
   compartment_labels <- rep(compartment_labels, N_VACCINE_STRATA)
 
-  data_list <- lapply(output, function(x) {
-    x <- t(x)
-    x <- data.table::as.data.table(x)
-    x[, "time" := timesteps]
-    x <- data.table::melt(x, id.vars = "time")
-    x
-  })
+  labels <- list(
+    age_group_labels = age_group_labels_rep,
+    age_group_labels_vax = age_group_labels,
+    econ_group_labels = econ_group_labels_rep,
+    econ_group_labels_vax = econ_group_labels,
+    vaccine_labels = vaccine_labels,
+    compartment_labels = compartment_labels
+  )
 
-  data <- data.table::rbindlist(data_list)
-  data[,
-    c("age_group", "econ_sector", "vaccine_group", "compartment") := list(
-      age_group_labels_rep,
-      econ_group_labels_rep,
-      vaccine_labels,
-      compartment_labels
+  if (n_groups > 1) {
+    data_list <- lapply(output, asplit, 2)
+    data_list <- data.table::transpose(data_list)
+
+    new_vaccinations <- asplit(new_vaccinations, 2)
+
+    data <- Map(
+      f = function(x, y) {
+        out_list_to_df(x, y, timesteps = timesteps, labels = labels)
+      },
+      data_list,
+      new_vaccinations
     )
-  ]
-  data$variable <- NULL
+    data <- Map(
+      f = function(x, i) {
+        x$param_set <- i
+        x
+      },
+      data,
+      seq_along(data)
+    )
+  } else {
+    data <- out_list_to_df(
+      output,
+      new_vaccinations,
+      timesteps,
+      labels
+    )
+  }
 
-  # handle new vaccinations data
-  # NOTE: this could go into a dedicated function
-  new_vaccinations <- t(new_vaccinations)
-  new_vaccinations <- data.table::as.data.table(new_vaccinations)
-  new_vaccinations[, "time" := timesteps]
-  new_vaccinations <- data.table::melt(new_vaccinations, id.vars = "time")
-  new_vaccinations$compartment <- "new_vax"
-  new_vaccinations$vaccine_group <- "new_vaccinations" # compat with data fn
-  new_vaccinations$age_group <- rep(age_group_labels, each = n_times)
-  new_vaccinations$econ_sector <- rep(econ_group_labels, each = n_times)
-  new_vaccinations$variable <- NULL
-
-  # combine and return data converted to data.frame
-  data <- data.table::rbindlist(list(data, new_vaccinations), use.names = TRUE)
-
-  data.table::setDF(data)
+  # either a data.frame or a list of data.frames
+  data
 }
