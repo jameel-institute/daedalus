@@ -1,11 +1,20 @@
-#' Process output data
-#' 
-#' @param output
-#' @param new_vaccinations
-#' @param timesteps
-#' @param labels
-#' 
+#' Reshape output data
+#'
+#' @description
+#' An internal function to help [prepare_output()] process lists of data.
+#'
+#'
+#' @param output A list-like object originating from [daedalus_internal()] and
+#' partially processed within [prepare_output()].
+#' @param new_vaccinations A list object of new vaccination data origination in
+#' [daedalus_internal()].
+#' @param timesteps A vector of timesteps, typically starting with 0.
+#' @param labels A list of labels to be applied to the data.
+#'
 #' @keywords internal
+#'
+#' @return A `<data.frame>` suitable for passing to a `<daedalus_output>`
+#' object.
 out_list_to_df <- function(output, new_vaccinations, timesteps, labels) {
   # handle labels
   age_group_labels <- labels$age_group_labels
@@ -41,8 +50,8 @@ out_list_to_df <- function(output, new_vaccinations, timesteps, labels) {
   new_vaccinations <- data.table::melt(new_vaccinations, id.vars = "time")
   new_vaccinations$compartment <- "new_vax"
   new_vaccinations$vaccine_group <- "new_vaccinations" # compat with data fn
-  new_vaccinations$age_group <- rep(age_group_labels_vax, each = n_times)
-  new_vaccinations$econ_sector <- rep(econ_group_labels_vax, each = n_times)
+  new_vaccinations$age_group <- age_group_labels_vax
+  new_vaccinations$econ_sector <- econ_group_labels_vax
   new_vaccinations$variable <- NULL
 
   # combine and return data converted to data.frame
@@ -143,9 +152,9 @@ prepare_output <- function(output, country) {
 
   labels <- list(
     age_group_labels = age_group_labels_rep,
-    age_group_labels_vax = age_group_labels,
+    age_group_labels_vax = rep(age_group_labels, n_times),
     econ_group_labels = econ_group_labels_rep,
-    econ_group_labels_vax = econ_group_labels,
+    econ_group_labels_vax = rep(econ_group_labels, n_times),
     vaccine_labels = vaccine_labels,
     compartment_labels = compartment_labels
   )
