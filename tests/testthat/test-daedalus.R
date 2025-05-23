@@ -141,6 +141,50 @@ test_that("daedalus: Runs for all country x infection x response", {
   ))
 })
 
+test_that("daedalus: Runs with custom openness values", {
+  expect_no_condition(
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      response_strategy = rep(0.5, N_ECON_SECTORS)
+    )
+  )
+  expect_error(
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      response_strategy = rep(0.5, N_ECON_SECTORS - 1)
+    ),
+    "Must have length 45"
+  )
+  expect_error(
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      NA_character_
+    ),
+    "Got an unexpected value for `response_strategy`"
+  )
+  expect_error(
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      "elimination",
+      response_time = 0
+    ),
+    "Expected `response_time` to be between 1"
+  )
+  expect_error(
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      "elimination",
+      response_duration = c(1, 1)
+    ),
+    "Expected `response_duration` to be a single integer-like"
+  )
+})
+
 # test that passing model parameters works
 test_that("daedalus: Passing model parameters", {
   expect_no_condition(daedalus(
@@ -362,7 +406,7 @@ test_that("daedalus: Errors and messages", {
       "sars_cov_1",
       as.character(1:49)
     ),
-    "Got an unexepected value for `response_strategy`."
+    "Got an unexpected value for `response_strategy`."
   )
   expect_error(
     daedalus(
@@ -371,5 +415,32 @@ test_that("daedalus: Errors and messages", {
       1:50
     ),
     "Assertion on 'response_strategy' failed: Must have length"
+  )
+  expect_error(
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      "elimination",
+      time_end = -1
+    ),
+    "Expected `time_end` to be a single positive integer-like number."
+  )
+  expect_error(
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      "elimination",
+      time_end = 0
+    ),
+    "Expected `time_end` to be a single positive integer-like number."
+  )
+  expect_error(
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      "elimination",
+      time_end = c(10, 10)
+    ),
+    "Expected `time_end` to be a single positive integer-like number."
   )
 })
