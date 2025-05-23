@@ -279,19 +279,27 @@ daedalus <- function(
     )
     vaccine_investment <- daedalus_vaccination(vaccine_investment)
   }
+  
+  is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
+  if (!is_good_time_end) {
+    cli::cli_abort(c(
+      "Expected `time_end` to be a single positive integer-like number.",
+      i = "E.g. `time_end = 100`, but not `time_end = 100.5`"
+    ))
+  }
 
   # NULL converted to "none"; WIP: this will be moved to a class constructor
-  if (response_strategy != "none") {
+  if (!identical(response_strategy, "none")) {
     is_good_response_time <- checkmate::test_integerish(
       response_time,
-      upper = time_end - 2L, # for compat with daedalus
+      upper = time_end, # for compat with daedalus
       lower = 1L, # responses cannot start at 0, unless strategy is null
       any.missing = FALSE,
       len = 1
     )
     if (!is_good_response_time) {
       cli::cli_abort(
-        "Expected `response_time` to be between 1 and {time_end - 2L}."
+        "Expected `response_time` to be between 1 and {time_end}."
       )
     }
 
@@ -303,17 +311,9 @@ daedalus <- function(
     )
     if (!is_good_response_duration) {
       cli::cli_abort(
-        "Expected `response_duration` to be a single integer-like and >= 0"
+        "Expected `response_duration` to be a single integer-like"
       )
     }
-  }
-
-  is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
-  if (!is_good_time_end) {
-    cli::cli_abort(c(
-      "Expected `time_end` to be a single positive integer-like number.",
-      i = "E.g. `time_end = 100`, but not `time_end = 100.5`"
-    ))
   }
 
   #### Prepare initial state and parameters ####
@@ -322,20 +322,26 @@ daedalus <- function(
   # prepare susceptibility matrix for vaccination
   susc <- make_susc_matrix(vaccine_investment, country)
 
-  parameters <- c(
+  parameters <- lapply(infection, function(x) {
+    c(
     prepare_parameters(country),
-    prepare_parameters(infection),
+      prepare_parameters(x),
     prepare_parameters(vaccine_investment),
     list(
-      beta = get_beta(infection, country),
+        beta = get_beta(x, country),
       susc = susc,
       openness = openness,
       response_time = response_time,
       response_duration = response_duration
     )
   )
+  })
 
   # filter out NULLs so missing values can be read as NAN in C++
+  parameters <- lapply(parameters, function(x) {
+    Filter(function(z) !is.null(z), x)
+  })
+
   # handle single parameter set case
   n_param_sets <- length(parameters)
   if (n_param_sets == 1) {
