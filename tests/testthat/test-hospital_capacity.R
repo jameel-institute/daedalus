@@ -16,8 +16,6 @@ test_that("Hospital capacity: basic expectations", {
   }))
 })
 
-# NOTE: unable to find good tests for mortality rate changes
-
 # check that increasing hospital capacity leads to later closure
 test_that("Closures: hospital capacity and closure time", {
   # hospital capacity saved in country class

@@ -1,3 +1,17 @@
+# daedalus 0.2.16
+
+Patch version to allow passing a list of infection objects to [daedalus()]. This helps model multiple different pandemics on the same population, or to model uncertainty in outcomes due to uncertainty in infection parameters for a single pandemic pathogen.
+
+[daedalus()] returns a list of output objects when a list of infection objects is passed.
+
+- Added a vignette showing how to use infection list functionality.
+
+- Some functions used in v0.1.0 have been removed.
+
+# daedalus 0.2.15
+
+Fixes to construction of initial model state.
+
 # daedalus 0.2.14
 
 This patch renames `daedalus2()` to `daedalus()`. All references and helper functions for `daedalus2()` have replaced their `daedalus()` equivalents, if any.

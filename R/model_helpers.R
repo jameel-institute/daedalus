@@ -71,7 +71,7 @@ make_consumer_contacts <- function(country) {
 #' @keywords internal
 make_initial_state <- function(country, initial_state_manual) {
   # NOTE: country checked in daedalus()
-  initial_infect_state <- list(p_infectious = 1e-6, p_asymptomatic = 0.0)
+  initial_infect_state <- list(p_infectious = 1e-7, p_asymptomatic = 0.0)
 
   if (is.null(initial_state_manual)) {
     p_infectious <- initial_infect_state[["p_infectious"]]
@@ -148,92 +148,19 @@ make_initial_state <- function(country, initial_state_manual) {
   # add strata for vaccination groups and set to zero
   initial_state <- array(
     initial_state,
-    c(dim(initial_state), N_VACCINE_DATA_GROUPS)
+    c(dim(initial_state), N_VACCINE_STRATA)
   )
-  initial_state[,, -i_UNVACCINATED_STRATUM] <- 0
+  initial_state[,, i_VACCINATED_STRATUM] <- 0.0 # initially no vaccinateds
+
+  # add state for new vaccinations by age group and econ sector
+  state_new_vax <- numeric(
+    length(get_data(country, "demography")) +
+      length(get_data(country, "workers"))
+  )
+  initial_state <- c(
+    initial_state,
+    state_new_vax
+  )
 
   initial_state
-}
-
-#' @title Generate initial state for daedalus()
-#'
-#' @inheritParams make_initial_state
-#' @keywords internal
-make_initial_state2 <- function(
-  country,
-  initial_state_manual = list(p_infectious = 1e-7)
-) {
-  initial_state <- make_initial_state(country, initial_state_manual)
-
-  initial_state[,, c(i_UNVACCINATED_STRATUM, i_VACCINATED_STRATUM)]
-}
-
-#' Prepare mutable parameters for the DAEDALUS model
-#'
-#' @description Prepares closure start and end times for model output.
-#'
-#' @return
-#' An environment with three mutable parameters:
-#'
-#' - `switch`: The switch parameter which controls whether closures are active
-#' or not.
-#'
-#' - `hosp_switch`: The switch for excess mortality due to more hospitalisations
-#' required than hospital places are available.
-#'
-#' - `vax_switch`: A switch for whether vaccination is active. Manually switched
-#' on in model stage 3.
-#'
-#' - `closures_time_start` and `closures_time_end`: The times at which closures
-#' start and end. Defaults to the end time of the simulation so as to
-#' give a default duration of 0.0.
-#' @keywords internal
-prepare_mutable_parameters <- function() {
-  env <- rlang::env(
-    switch = FALSE,
-
-    # set closure time start and time end to 0.0
-    # to later process duration as time_start - time_end
-    closure_time_start = 0.0,
-    closure_time_end = 0.0,
-    hosp_switch = FALSE,
-    vax_switch = FALSE
-  )
-
-  env
-}
-
-#' Get closure time limits and calculate duration
-#'
-#' @param mutables An environment holding the mutable parameters.
-#' See [prepare_mutable_parameters()] for a template.
-#'
-#' @return
-#' A three-element list of the start time, end time, and duration for which
-#' closures are active.
-#' @keywords internal
-get_closure_info <- function(mutables) {
-  closure_times <- rlang::env_get_list(
-    mutables,
-    c("closure_time_start", "closure_time_end")
-  )
-  closure_times[["closure_duration"]] <- unname(diff(unlist(closure_times)))
-
-  lapply(closure_times, floor)
-}
-
-#' Reshape a vector to the dimensions of the DAEDALUS state array
-#'
-#' @param x A vector of numeric values.
-#'
-#' @return An array of dimensions (4, 9, 46, 3).
-#' @keywords internal
-values_to_state <- function(x) {
-  dim(x) <- c(
-    N_AGE_GROUPS + N_ECON_SECTORS,
-    N_MODEL_COMPARTMENTS,
-    N_VACCINE_DATA_GROUPS
-  )
-
-  x
 }
