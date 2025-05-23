@@ -91,7 +91,7 @@ out_list_to_df <- function(output, new_vaccinations, timesteps, labels) {
 #' @keywords internal
 prepare_output <- function(output, country) {
   # internal function: no input checking
-  timesteps <- seq_len(tail(dim(output[[1]]), 1)) - 1
+  timesteps <- seq_len(utils::tail(dim(output[[1]]), 1)) - 1
   n_times <- length(timesteps)
 
   # find groups if any
