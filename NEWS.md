@@ -4,6 +4,8 @@ Patch version to allow passing a list of infection objects to [daedalus()]. This
 
 [daedalus()] returns a list of output objects when a list of infection objects is passed.
 
+- Added a vignette showing how to use infection list functionality.
+
 - Some functions used in v0.1.0 have been removed.
 
 # daedalus 0.2.15
