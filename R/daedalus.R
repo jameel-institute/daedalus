@@ -285,7 +285,7 @@ daedalus <- function(
     )
     vaccine_investment <- daedalus_vaccination(vaccine_investment)
   }
-  
+
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
   if (!is_good_time_end) {
     cli::cli_abort(c(
@@ -330,17 +330,17 @@ daedalus <- function(
 
   parameters <- lapply(infection, function(x) {
     c(
-    prepare_parameters(country),
+      prepare_parameters(country),
       prepare_parameters(x),
-    prepare_parameters(vaccine_investment),
-    list(
+      prepare_parameters(vaccine_investment),
+      list(
         beta = get_beta(x, country),
-      susc = susc,
-      openness = openness,
-      response_time = response_time,
-      response_duration = response_duration
+        susc = susc,
+        openness = openness,
+        response_time = response_time,
+        response_duration = response_duration
+      )
     )
-  )
   })
 
   # filter out NULLs so missing values can be read as NAN in C++
@@ -382,13 +382,13 @@ daedalus <- function(
       closure_info,
       f = function(x, y, z) {
         o <- list(
-    total_time = time_end,
+          total_time = time_end,
           model_data = x,
-    country_parameters = unclass(country),
+          country_parameters = unclass(country),
           infection_parameters = unclass(y),
-    response_data = list(
-      response_strategy = response_strategy,
-      openness = openness,
+          response_data = list(
+            response_strategy = response_strategy,
+            openness = openness,
             closure_info = z
           )
         )
@@ -409,8 +409,8 @@ daedalus <- function(
           output$event_data[[1]],
           time_end
         )
+      )
     )
-  )
-  as_daedalus_output(output)
+    as_daedalus_output(output)
   }
 }
