@@ -1,3 +1,7 @@
+# daedalus 0.2.15
+
+Fixes to construction of initial model state.
+
 # daedalus 0.2.14
 
 This patch renames `daedalus2()` to `daedalus()`. All references and helper functions for `daedalus2()` have replaced their `daedalus()` equivalents, if any.
