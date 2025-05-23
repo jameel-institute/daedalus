@@ -14,7 +14,7 @@ initial_flags <- function() {
 
 #' Get model response times from dust2 output
 #'
-#' @param output dust2 output from `daedalus_internal()`.
+#' @param even_data dust2 output event data from `daedalus_internal()`.
 #' @param time_end The model end time, passed from [daedalus()].
 #'
 #' @return A vector of event start and end times suitable for a
