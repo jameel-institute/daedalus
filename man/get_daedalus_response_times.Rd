@@ -9,7 +9,7 @@ get_daedalus_response_times(event_data, time_end)
 \arguments{
 \item{time_end}{The model end time, passed from \code{\link[=daedalus]{daedalus()}}.}
 
-\item{output}{dust2 output from \code{daedalus_internal()}.}
+\item{even_data}{dust2 output event data from \code{daedalus_internal()}.}
 }
 \value{
 A vector of event start and end times suitable for a
