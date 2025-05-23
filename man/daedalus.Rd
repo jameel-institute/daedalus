@@ -32,7 +32,8 @@ To override package defaults for country characteristics, pass a
 \item{infection}{An infection parameter object of the class
 \verb{<daedalus_infection>}, \strong{or} an epidemic name for which data are provided
 in the package; see \link[daedalus.data:epidemic_data]{daedalus.data::epidemic_names} for historical epidemics
-or epidemic waves for which parameters are available.
+or epidemic waves for which parameters are available. Alternatively, a list
+of \verb{<daedalus_infection>} objects.
 
 Passing the name as a string automatically accesses the default parameters
 of an infection. Create and pass a \verb{<daedalus_infection>} to tweak infection
@@ -75,7 +76,10 @@ returned for each day. Defaults to 300 days.}
 \item{...}{Optional arguments that are passed to \code{\link[dust2:dust_ode_control]{dust2::dust_ode_control()}}.}
 }
 \value{
-A \verb{<daedalus_output>} object.
+A \verb{<daedalus_output>} object if \code{infection} is a string or a single
+\verb{<daedalus_infection>} object. Otherwise, a list of \verb{<daedalus_output>}s
+of the same length of \code{infection} if a list of \verb{<daedalus_infection>}s is
+passed to \code{infection}.
 }
 \description{
 Run the DAEDALUS model from R. This is a work in progress.
