@@ -22,10 +22,8 @@ initial_flags <- function() {
 #' end time.
 #'
 #' @keywords internal
-get_daedalus_response_times <- function(output, time_end) {
+get_daedalus_response_times <- function(event_data, time_end) {
   # internal function with no input checking
-  event_data <- output$event_data
-
   resp_times_on <- event_data[grepl("npi_\\w*_on$", event_data$name), "time"]
   resp_time_on_realised <- if (length(resp_times_on) == 0) {
     NA_real_
@@ -56,12 +54,20 @@ get_daedalus_response_times <- function(output, time_end) {
 #'
 #' @return A list of state values as returned by `dust2::dust_unpack_state()`.
 #' @keywords internal
-daedalus_internal <- function(time_end, params, state, flags, ode_control) {
+daedalus_internal <- function(
+  time_end,
+  params,
+  state,
+  flags,
+  ode_control,
+  n_groups
+) {
   # NOTE: sys params assumed suitable for `do.call()`
   arg_list <- list(
     generator = daedalus_ode,
     pars = params,
-    ode_control = ode_control
+    ode_control = ode_control,
+    n_groups = n_groups
   )
   sys <- do.call(dust2::dust_system_create, arg_list)
 
@@ -73,7 +79,7 @@ daedalus_internal <- function(time_end, params, state, flags, ode_control) {
 
   list(
     data = dust2::dust_unpack_state(sys, state),
-    event_data = dust2::dust_system_internals(sys)[["events"]][[1]]
+    event_data = dust2::dust_system_internals(sys)[["events"]]
   )
 }
 
