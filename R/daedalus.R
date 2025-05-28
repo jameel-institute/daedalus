@@ -261,7 +261,7 @@ daedalus <- function(
   if (!identical(response_strategy, "none")) {
     is_good_response_time <- checkmate::test_integerish(
       response_time,
-      upper = time_end, # for compat with daedalus
+      upper = time_end,
       lower = 1L, # responses cannot start at 0, unless strategy is null
       any.missing = FALSE,
       len = 1
