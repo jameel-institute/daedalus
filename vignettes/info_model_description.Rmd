@@ -1,0 +1,53 @@
+---
+title: "General model description"
+output: rmarkdown::html_vignette
+bibliography: resources/references.json
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Model description}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette presents an overview of the _daedalus_ model.
+
+
+<img src="man/figures/daedalus.png" align="center" style = "border: none; float: center;" width = "800px">
+
+
+
+## Model compartments and definitions:
+
+Model compartments are stratified by age-economic sector $i$ and vaccination $j$ classes. After a susceptible individual $S$ becomes exposed to the virus they enter a latent state $E$, from which they can develop either a symptomatic $Is$ or asymptomatic $Ia$ infection. Whereas asymptomatically infected individuals are assumed to always recover, the latter can either recover $R$ or develop a more severe condition requiring hospitalisation $H$, from which they can either recover or die $D$.
+
+- $S^{ij}(t)$ - Susceptible individuals not yet exposed to the pathogen
+
+- $E^{ij}(t)$ - Exposed individuals (infected but not yet infectious)
+
+- $Is^{ij}(t)$ - Symptomatic infectious individuals
+
+- $Ia^{ij}(t)$ - Asymptomatic infectious individuals
+
+- $H^{ij}(t)$ - Hospitalised individuals
+
+- $R^{ij}(t)$ - Recovered individuals
+
+- $D^{ij}(t)$ - Dead individuals
+
+
+::: {.alert .alert-info}
+**Note that** the compartment transition rate parameters used in a call to `daedalus()` can be modified for a specific respiratory pathogen pandemic, either internally with calls to pre-defined pathogens, or with values considered to be more appropriate by the user.
+:::
+
+
+
+
+
+## References
