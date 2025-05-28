@@ -490,18 +490,18 @@ prepare_parameters.daedalus_country <- function(x, ...) {
 }
 
 #' Validate country input
-#' 
+#'
 #' @param x An object to be validated as suitable as input for the
 #' `country` argument of [daedalus()].
-#' 
+#'
 #' @keywords internal
-#' 
+#'
 #' @return A `<daedalus_country>` object.
-validate_country_input = function(x) {
+validate_country_input <- function(x) {
   # NOTE: names are case sensitive
   checkmate::assert_multi_class(x, c("daedalus_country", "character"))
 
-  if(is_daedalus_country(x)) {
+  if (is_daedalus_country(x)) {
     invisible(x)
   } else {
     invisible(daedalus_country(x))
