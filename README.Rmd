@@ -30,25 +30,6 @@ _daedalus_ implements the integrated epidemiological and economic model in @haw2
 
 
 
-\begin{table}[!h]
-\centering
-\caption{Definition of model compartments}
-\begin{tabular}{cc}
-\hline
-\textbf{Compartment} & \textbf{Definition}\tabularnewline
-\hline
-$S^{ij}(t)$ & Susceptible individuals not yet exposed to the pathogen\tabularnewline
-$E^{ij}(t)$ & Exposed individuals (infected but not yet infectious)\tabularnewline
-$Is^{ij}(t)$ & Symptomatic infectious individuals\tabularnewline
-$Ia^{ij}(t)$ & Asymptomatic infectious individuals\tabularnewline
-$H^{ij}(t)$ & Hospitalised individuals\tabularnewline
-$R^{ij}(t)$ & Recovered individuals\tabularnewline
-$D^{ij}(t)$ & Dead individuals\tabularnewline
-\hline
-\end{tabular}
-\end{table}
-
-
 ## Installation
 
 You can install the development version of daedalus from this repository using the _pak_ package, or from the Jameel Institute R-universe.
