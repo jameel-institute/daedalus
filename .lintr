@@ -20,6 +20,9 @@ exclusions: list(
     "R/daedalus.R" = list(
       cyclocomp_linter = Inf # unavoidable due to input checking
     ),
+    "R/daedalus_multi.R" = list(
+      cyclocomp_linter = Inf # unavoidable due to input checking
+    ),
     "tests/testthat.R" = list(
       unused_import_linter = Inf
     ),
