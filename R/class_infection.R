@@ -395,3 +395,41 @@ prepare_parameters.daedalus_infection <- function(x, ...) {
 
   x[names(x) != "name"]
 }
+
+#' Validate and return infection input
+#'
+#' @name validate_infection_input
+#' @rdname validate_infection_input
+#'
+#' @param x An object to be validated as input to the `infection` argument
+#' of [daedalus()].
+#'
+#' @keywords internal
+#'
+#' @return `validate_infection_input()` returns a `<daedalus_infection>`.
+#' `validate_infection_list_input()` returns a list of `<daedalus_infection>`s.
+validate_infection_input = function(x) {
+  checkmate::assert_multi_class(
+    x,
+    c("character", "daedalus_infection")
+  )
+
+  if (is_daedalus_infection(x)) {
+    invisible(x)
+  } else {
+    x = rlang::arg_match(x, daedalus.data::epidemic_names)
+    invisible(daedalus_infection(x))
+  }
+}
+
+#' @name validate_infection_input
+#'
+#' @keywords internal
+validate_infection_list_input = function(x) {
+  checkmate::assert_list(
+    x,
+    "daedalus_infection", min.len = 2
+  )
+
+  invisible(x)
+}
