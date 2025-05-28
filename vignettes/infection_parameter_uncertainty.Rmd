@@ -26,7 +26,7 @@ library(dplyr)
 ```
 
 Consider an infection similar to 2009 influenza, with uncertainty in the $R_0$.
-We draw a set of 100 $R_0$ values from a normal distribution to parameterise 100 `<daedalus_infection>` objects, which can be passed as a list to [daedalus()].
+We draw a set of 100 $R_0$ values from a normal distribution to parameterise 100 `<daedalus_infection>` objects, which can be passed as a list to the function [daedalus_multi_infection()].
 
 ```{r draw_r0_samples}
 flu_2009 <- daedalus_infection("influenza_2009")
@@ -49,7 +49,7 @@ infection_list <- lapply(
 )
 ```
 
-Run [daedalus()] for the U.K. with the infection list passed as `infection`.
+Run the model for the U.K. with the infection list passed as `infection`.
 No mitigation strategies are applied.
 
 ```{r model_multi_infect}
