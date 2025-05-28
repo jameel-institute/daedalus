@@ -54,7 +54,7 @@ No mitigation strategies are applied.
 
 ```{r model_multi_infect}
 # run model with 100 infection objects
-output_list <- daedalus(
+output_list <- daedalus_multi_infection(
   "GBR", infection_list,
   time_end = 100
 )

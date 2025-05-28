@@ -62,14 +62,12 @@ daedalus_internal <- function(
   ode_control,
   n_groups
 ) {
-  # NOTE: sys params assumed suitable for `do.call()`
-  arg_list <- list(
-    generator = daedalus_ode,
-    pars = params,
-    ode_control = ode_control,
-    n_groups = n_groups
+  sys <- dust2::dust_system_create(
+    daedalus_ode,
+    params,
+    n_groups = n_groups,
+    ode_control = ode_control
   )
-  sys <- do.call(dust2::dust_system_create, arg_list)
 
   # add initial flags
   state <- c(state, flags)
@@ -102,9 +100,7 @@ daedalus_internal <- function(
 #' @param infection An infection parameter object of the class
 #' `<daedalus_infection>`, **or** an epidemic name for which data are provided
 #' in the package; see [daedalus.data::epidemic_names] for historical epidemics
-#' or epidemic waves for which parameters are available. Alternatively, a list
-#' of `<daedalus_infection>` objects.
-#'
+#' or epidemic waves for which parameters are available.
 #' Passing the name as a string automatically accesses the default parameters
 #' of an infection. Create and pass a `<daedalus_infection>` to tweak infection
 #' parameters using [daedalus_infection()].
@@ -205,27 +201,10 @@ daedalus <- function(
   flags <- initial_flags()
 
   # input checking
-  # NOTE: names are case sensitive
-  checkmate::assert_multi_class(country, c("daedalus_country", "character"))
-  if (is.character(country)) {
-    country <- daedalus_country(country)
-  }
+  country <- validate_country_input(country)
 
   # handle infection input and convert to a list of daedalus_infection
-  checkmate::assert_multi_class(
-    infection,
-    c("daedalus_infection", "character", "list")
-  )
-  n_param_sets <- 1
-  if (is.character(infection)) {
-    infection <- rlang::arg_match(infection, daedalus.data::epidemic_names)
-    infection <- list(daedalus_infection(infection))
-  } else if (is.list(infection) && !is_daedalus_infection(infection)) {
-    checkmate::assert_list(infection, "daedalus_infection")
-    n_param_sets <- length(infection)
-  } else {
-    infection <- list(infection)
-  }
+  infection <- validate_infection_input(infection)
 
   # collect optional ODE control params and create ode_control obj
   ode_control <- rlang::list2(...)
@@ -263,27 +242,11 @@ daedalus <- function(
   }
 
   # checks on vaccination
-  checkmate::assert_multi_class(
-    vaccine_investment,
-    c("daedalus_vaccination", "character"),
-    null.ok = TRUE
-  )
-  if (
-    is_daedalus_vaccination(vaccine_investment) &&
-      get_data(vaccine_investment, "start_time") == 0.0
-  ) {
+  vaccine_investment <- validate_vaccination_input(vaccine_investment)
+
+  if (get_data(vaccine_investment, "start_time") == 0.0) {
     # check vaccination start time and set vaccination flag
     flags["vax_flag"] <- 1.0
-  }
-  if (is.null(vaccine_investment)) {
-    vaccine_investment <- dummy_vaccination()
-  }
-  if (is.character(vaccine_investment)) {
-    vaccine_investment <- rlang::arg_match(
-      vaccine_investment,
-      daedalus.data::vaccination_scenario_names
-    )
-    vaccine_investment <- daedalus_vaccination(vaccine_investment)
   }
 
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
@@ -328,31 +291,21 @@ daedalus <- function(
   # prepare susceptibility matrix for vaccination
   susc <- make_susc_matrix(vaccine_investment, country)
 
-  parameters <- lapply(infection, function(x) {
-    c(
-      prepare_parameters(country),
-      prepare_parameters(x),
-      prepare_parameters(vaccine_investment),
-      list(
-        beta = get_beta(x, country),
-        susc = susc,
-        openness = openness,
-        response_time = response_time,
-        response_duration = response_duration
-      )
+  parameters <- c(
+    prepare_parameters.daedalus_country(country),
+    prepare_parameters.daedalus_infection(infection),
+    prepare_parameters.daedalus_vaccination(vaccine_investment),
+    list(
+      beta = get_beta(infection, country),
+      susc = susc,
+      openness = openness,
+      response_time = response_time,
+      response_duration = response_duration
     )
-  })
+  )
 
   # filter out NULLs so missing values can be read as NAN in C++
-  parameters <- lapply(parameters, function(x) {
-    Filter(function(z) !is.null(z), x)
-  })
-
-  # handle single parameter set case
-  n_param_sets <- length(parameters)
-  if (n_param_sets == 1) {
-    parameters <- parameters[[1]]
-  }
+  parameters <- Filter(function(z) !is.null(z), parameters)
 
   output <- daedalus_internal(
     time_end,
@@ -360,57 +313,25 @@ daedalus <- function(
     initial_state,
     flags,
     ode_control,
-    n_param_sets
+    n_groups = 1
   )
   output_data <- prepare_output(output$data, country)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
-  if (n_param_sets > 1) {
-    stopifnot(
-      "Length of outputs and infections is not the same" = length(infection) ==
-        length(output_data)
-    )
-    closure_info <- lapply(
-      output$event_data,
-      get_daedalus_response_times,
-      time_end
-    )
-    Map(
-      output_data,
-      infection,
-      closure_info,
-      f = function(x, y, z) {
-        o <- list(
-          total_time = time_end,
-          model_data = x,
-          country_parameters = unclass(country),
-          infection_parameters = unclass(y),
-          response_data = list(
-            response_strategy = response_strategy,
-            openness = openness,
-            closure_info = z
-          )
-        )
-
-        as_daedalus_output(o)
-      }
-    )
-  } else {
-    output <- list(
-      total_time = time_end,
-      model_data = output_data,
-      country_parameters = unclass(country),
-      infection_parameters = unclass(infection[[1]]), # infection is list
-      response_data = list(
-        response_strategy = response_strategy,
-        openness = openness,
-        closure_info = get_daedalus_response_times(
-          output$event_data[[1]],
-          time_end
-        )
+  output <- list(
+    total_time = time_end,
+    model_data = output_data,
+    country_parameters = unclass(country),
+    infection_parameters = unclass(infection), # infection is list
+    response_data = list(
+      response_strategy = response_strategy,
+      openness = openness,
+      closure_info = get_daedalus_response_times(
+        output$event_data[[1]],
+        time_end
       )
     )
-    as_daedalus_output(output)
-  }
+  )
+  as_daedalus_output(output)
 }
