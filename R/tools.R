@@ -1,5 +1,5 @@
 #' Helper functions
-#' 
+#'
 #' @name tools
 #' @rdname tools
 #'
