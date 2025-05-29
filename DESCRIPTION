@@ -63,7 +63,7 @@ VignetteBuilder:
     knitr
 Remotes:
     jameel-institute/daedalus.data,
-    mrc-ide/dust2@mrc-6413,
+    mrc-ide/dust2,
     mrc-ide/monty
 Config/Needs/website: jameel-institute/jameelinst.rpkg.theme
 Config/testthat/edition: 3
