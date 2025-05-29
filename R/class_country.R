@@ -499,11 +499,9 @@ prepare_parameters.daedalus_country <- function(x, ...) {
 #' @return A `<daedalus_country>` object.
 validate_country_input <- function(x) {
   # NOTE: names are case sensitive
-  checkmate::assert_multi_class(x, c("daedalus_country", "character"))
-
   if (is_daedalus_country(x)) {
-    invisible(x)
+    x
   } else {
-    invisible(daedalus_country(x))
+    daedalus_country(x)
   }
 }
