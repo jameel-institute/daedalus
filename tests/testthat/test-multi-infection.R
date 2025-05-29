@@ -77,7 +77,7 @@ test_that("daedalus_multi_infection: errors", {
       "GBR",
       list(daedalus_infection("sars_cov_1"))
     ),
-    "Must have length >= 2"
+    "must be a list of >= 2"
   )
 
   expect_error(
