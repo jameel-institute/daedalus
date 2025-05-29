@@ -27,10 +27,7 @@ daedalus_multi_infection <- function(
 
   # input checking
   # NOTE: names are case sensitive
-  checkmate::assert_multi_class(country, c("daedalus_country", "character"))
-  if (is.character(country)) {
-    country <- daedalus_country(country)
-  }
+  country <- validate_country_input(country)
 
   # handle infection input and convert to a list of daedalus_infection
   infection <- validate_infection_list_input(infection)
@@ -72,27 +69,11 @@ daedalus_multi_infection <- function(
   }
 
   # checks on vaccination
-  checkmate::assert_multi_class(
-    vaccine_investment,
-    c("daedalus_vaccination", "character"),
-    null.ok = TRUE
-  )
-  if (
-    is_daedalus_vaccination(vaccine_investment) &&
-      get_data(vaccine_investment, "start_time") == 0.0
-  ) {
+  vaccine_investment <- validate_vaccination_input(vaccine_investment)
+
+  if (get_data(vaccine_investment, "start_time") == 0.0) {
     # check vaccination start time and set vaccination flag
     flags["vax_flag"] <- 1.0
-  }
-  if (is.null(vaccine_investment)) {
-    vaccine_investment <- dummy_vaccination()
-  }
-  if (is.character(vaccine_investment)) {
-    vaccine_investment <- rlang::arg_match(
-      vaccine_investment,
-      daedalus.data::vaccination_scenario_names
-    )
-    vaccine_investment <- daedalus_vaccination(vaccine_investment)
   }
 
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
@@ -153,9 +134,7 @@ daedalus_multi_infection <- function(
   })
 
   # filter out NULLs so missing values can be read as NAN in C++
-  parameters <- lapply(parameters, function(x) {
-    Filter(function(z) !is.null(z), x)
-  })
+  parameters <- lapply(parameters, drop_null)
 
   output <- daedalus_internal(
     time_end,

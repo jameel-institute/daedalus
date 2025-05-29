@@ -426,11 +426,21 @@ validate_infection_input <- function(x) {
 #'
 #' @keywords internal
 validate_infection_list_input <- function(x) {
-  checkmate::assert_list(
+  is_good_infection_list <- checkmate::test_list(
     x,
     "daedalus_infection",
     min.len = 2
   )
+
+  if (!is_good_infection_list) {
+    cli::cli_abort(
+      c(
+        "`infection` must be a list of >= 2 `<daedalus_infection>`s",
+        i = "If passing a single `<daedalus_infection>` in a list, please use
+      `daedalus()` instead."
+      )
+    )
+  }
 
   invisible(x)
 }

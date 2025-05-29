@@ -305,7 +305,7 @@ daedalus <- function(
   )
 
   # filter out NULLs so missing values can be read as NAN in C++
-  parameters <- Filter(function(z) !is.null(z), parameters)
+  parameters <- drop_null(parameters)
 
   output <- daedalus_internal(
     time_end,
