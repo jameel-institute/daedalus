@@ -395,3 +395,46 @@ prepare_parameters.daedalus_infection <- function(x, ...) {
 
   x[names(x) != "name"]
 }
+
+#' Validate and return infection input
+#'
+#' @name validate_infection_input
+#' @rdname validate_infection_input
+#'
+#' @param x An object to be validated as input to the `infection` argument
+#' of [daedalus()].
+#'
+#' @keywords internal
+#'
+#' @return `validate_infection_input()` returns a `<daedalus_infection>`.
+#' `validate_infection_list_input()` returns a list of `<daedalus_infection>`s.
+validate_infection_input <- function(x) {
+  if (is_daedalus_infection(x)) {
+    x
+  } else {
+    daedalus_infection(x)
+  }
+}
+
+#' @name validate_infection_input
+#'
+#' @keywords internal
+validate_infection_list_input <- function(x) {
+  is_good_infection_list <- checkmate::test_list(
+    x,
+    "daedalus_infection",
+    min.len = 2
+  )
+
+  if (!is_good_infection_list) {
+    cli::cli_abort(
+      c(
+        "`infection` must be a list of >= 2 `<daedalus_infection>`s",
+        i = "If passing a single `<daedalus_infection>` in a list, please use
+      `daedalus()` instead."
+      )
+    )
+  }
+
+  invisible(x)
+}

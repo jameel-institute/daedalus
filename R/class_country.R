@@ -488,3 +488,20 @@ prepare_parameters.daedalus_country <- function(x, ...) {
     hospital_capacity = hospital_capacity
   )
 }
+
+#' Validate country input
+#'
+#' @param x An object to be validated as suitable as input for the
+#' `country` argument of [daedalus()].
+#'
+#' @keywords internal
+#'
+#' @return A `<daedalus_country>` object.
+validate_country_input <- function(x) {
+  # NOTE: names are case sensitive
+  if (is_daedalus_country(x)) {
+    x
+  } else {
+    daedalus_country(x)
+  }
+}

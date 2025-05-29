@@ -1,3 +1,13 @@
+# daedalus 0.2.16
+
+Patch version to allow passing a list of infection objects to the Daedalus model using the new function `daedalus_multi_infection()`. This helps model multiple different pandemics on the same population, or to model uncertainty in outcomes due to uncertainty in infection parameters for a single pandemic pathogen.`daedalus_multi_infection()` returns a list of output objects.
+
+- Added a vignette showing how to use `daedalus_multi_infection()`;
+
+- Added functions to more cleanly handle inputs to `daedalus()` and `daedalus_multi_infection()`;
+
+- Some functions used in v0.1.0 have been removed.
+
 # daedalus 0.2.15
 
 Fixes to construction of initial model state.

@@ -329,3 +329,32 @@ dummy_vaccination <- function() {
   validate_daedalus_vaccination(x)
   x
 }
+
+#' Validate vaccination inputs
+#'
+#' @param x An object to be validated as input to the `vaccine_investment`
+#' argument of [daedalus()].
+#'
+#' @keywords internal
+#'
+#' @return A `<daedalus_vaccination>` object.
+validate_vaccination_input <- function(x) {
+  checkmate::assert_multi_class(
+    x,
+    c("daedalus_vaccination", "character"),
+    null.ok = TRUE
+  )
+
+  if (is_daedalus_vaccination(x)) {
+    invisible(x)
+  } else if (is.character(x)) {
+    x <- rlang::arg_match(
+      x,
+      daedalus.data::vaccination_scenario_names
+    )
+    x <- daedalus_vaccination(x)
+    invisible(x)
+  } else {
+    invisible(dummy_vaccination())
+  }
+}
