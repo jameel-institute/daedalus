@@ -179,6 +179,10 @@ class daedalus_ode {
     return 4;  // npi_flag, vax_flag, sd_flag, hosp_flag
   }
 
+  static size_t size_special() {
+    return 2;  // npi_flag and vax_flag
+  }
+
   /// @brief Initialise shared parameters.
   /// @param pars A list of parameters passed from R.
   /// @return A shared parameters object.
