@@ -1,6 +1,12 @@
 ---
 title: "General model description"
-output: rmarkdown::html_vignette
+output:
+  bookdown::github_document2:
+    # pandoc_args: --webtex
+    toc: true
+    toc_depth: 5
+    toc_float: true
+    number_sections: true
 bibliography: resources/references.json
 link-citations: true
 vignette: >
@@ -14,32 +20,59 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+pacman::p_load(tidyverse, daedalus, daedalus.data, latex2exp, knitr)
 ```
 
-This vignette presents an overview of the _daedalus_ model.
-
-
-<img src="man/figures/daedalus.png" align="center" style = "border: none; float: center;" width = "800px">
+This vignette presents a technical description of the _daedalus_ model in its current state. It should be noted _daedalus_ is in constant development; we will attempt to keep this document as updates as possible during the lifespan of the model. If you encounter any issues, contact the package developers or raise a GitHub issue.
 
 
 
-## Model compartments and definitions:
+# Rationale
 
-Model compartments are stratified by age-economic sector $i$ and vaccination $j$ classes. After a susceptible individual $S$ becomes exposed to the virus they enter a latent state $E$, from which they can develop either a symptomatic $Is$ or asymptomatic $Ia$ infection. Whereas asymptomatically infected individuals are assumed to always recover, the latter can either recover $R$ or develop a more severe condition requiring hospitalisation $H$, from which they can either recover or die $D$.
+The _daedalus_ package is the implementation of a deterministic epidemiological and economic model of the emergence and spread of respiratory pathogen pandemics in synthetic countries. Specifically, _daedalus_ tracks 
 
-- $S^{ij}(t)$ - Susceptible individuals not yet exposed to the pathogen
+- Health impact in terms of infections, hospitalisations, deaths and years of life lost (YLL), and 
 
-- $E^{ij}(t)$ - Exposed individuals (infected but not yet infectious)
+- Economic impact in terms of GDP lost from economic sector closures and workforce depletion (i.e., as a result of self-isolation, infection, hospitalisation or death). 
 
-- $Is^{ij}(t)$ - Symptomatic infectious individuals
+Presently, we have equipped _daedalus_ with parameters to simulate nine potential pathogens (influenza A 2009, influenza A 1957, influenza A 1918, MERS, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1, see \@ref(tab:pathogendata)) across 67 synthetic countries (see \@ref(tab:countrydata)). In addition, _daedalus_ allows the user the flexibility to incorporate additional respiratory pathogen and/or country parameters and data, as considered appropriate for their use case.
 
-- $Ia^{ij}(t)$ - Asymptomatic infectious individuals
+The following sections present a technical description of the epidemiological and economic components of _daedalus_, its parameters and input data. For examples of its implementation in research case studies, see 
 
-- $H^{ij}(t)$ - Hospitalised individuals
+- The original description of _daedalus_ and application to the UK during the COVID-19 pandemic in @haw2022
 
-- $R^{ij}(t)$ - Recovered individuals
+- Study of the societal value of SARS-CoV-2 booster vaccination in Indonesia in @johnson_indonesia
 
-- $D^{ij}(t)$ - Dead individuals
+- Study of promoting healthy populations as a pandemic preparedness strategy in Mexico in @johnson_mexico
+
+
+
+# Epidemiological model
+
+## Model structure
+
+_daedalus_ simulates an entire synthetic country's population split into seven possible disease state compartments. Model compartments are stratified by age-economic sector $i$ and vaccination $j$ classes. 
+
+A susceptible individual $S$ can become exposed to the virus and enter a latent state $E$, from which they can develop either a symptomatic $Is$ or asymptomatic $Ia$ infection. Whereas asymptomatic infected individuals are assumed to always recover, symptomatic ones can either recover $R$ or develop a more severe condition requiring hospitalisation $H$, from which they can either recover or die $D$.
+
+
+```{r,fig.cap='DAEDALUS epidemiological model diagram.',echo=F,warning=F,message=F, out.width="50%"}
+knitr::include_graphics(path = "figures/daedalus.png")
+```
+
+
+### Ordinary differential equations
+
+\begin{align}
+    & \frac{dS^{i,j}}{dt} = \zeta^{i,j-1}(t) S^{i,j-1}(t) - \Lambda^{i,j} (t) S^{i,j}(t)  + \rho R^{i,j}(t)\\
+    & \frac{dE^{i,j}}{dt} = \Lambda^{i,j} (t) S^{i,j}(t) - \sigma E^{i,j}(t) \\
+    & \frac{dIa^{i,j}}{dt} = (1 - p_{symp}) \sigma E^{i,j}(t) - \gamma_{Ia} Ia^{i,j}(t) \\
+    & \frac{dIs^{i,j}}{dt} = p_{symp} \sigma E^{i,j}(t) - \gamma_{Is} Is^{i,j}(t) - \eta^i Is^{i,j}(t) \\
+    & \frac{dH^{i,j}}{dt} = \eta^i Is^{i,j}(t) - \omega^i H^{i,j}(t) - \gamma_H^i H^{i,j}(t) \\
+    & \frac{dR^{i,j}}{dt} = \zeta^{i,j-1}(t) R^{i,j-1}(t) + \gamma_{Is} Is^{i,j}(t) + \gamma_{Ia} Ia^{i,j}(t) + \gamma_H^i H^{i,j}(t) - \rho R^{i,j}(t) \\
+    & \frac{dD^{i,j}}{dt} = \omega^i H^{i,j}(t)\\
+\end{align}
+
 
 
 ::: {.alert .alert-info}
@@ -47,7 +80,174 @@ Model compartments are stratified by age-economic sector $i$ and vaccination $j$
 :::
 
 
+### Age-economic sector classes
+
+There are 49 age-economic classes $i$ in _daedalus_. Age-economic classes $i \in 1:4$ represent the population disaggregated into four age groups $( [0-5], [5-20), [20-65),65+)$. Population in $i=3$ (20-65), however, includes only those that are not in employment (not economically active). The remainder are disaggregated in groups $i \in 5:49$, individuals of working age employed across 45 economic sectors (see in Economic model below).
+
+
+### Vaccination classes
+
+As a default, _daedalus_ further disaggregates the population into the vaccination classes $j \in 1:3$ of unvaccinated, fully vaccinated and waned immunity from vaccination. The parameters of full and waned vaccine efficacy, however, can be manipulated by the user with values considered more appropriate for their use case (e.g., vaccinated with doses one and two of a two course vaccine).
 
 
 
-## References
+
+
+## Model transition parameters
+
+_daedalus_ can simulate nine different pathogens (influenza A 2009, influenza A 1957, influenza A 1918, MERS, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1) with pathogen-specific transition (see \@ref(tab:pathogendata)).
+
+| **Parameter** | **Definition** |
+| :----- | :----- |
+| $\Lambda^{i,j} (t)$ | Force of infection by age-economic and vaccination class |
+| $\sigma$ | Rate of progression from exposed to infectious |
+| $p_{symp}$ | Proportion of exposed individuals becoming symptomatic |
+| $\eta^i$ | Probability of hospitalisation by age|
+| $\gamma_{Ia}$ | Recovery rate for asymptomatic infections |
+| $\gamma_{Is}$ | Recovery rate for symptomatic infections |
+| $\gamma_H^i$ | Recovery rate for hospitalised individuals by age |
+| $\rho$ | Rate of waning immunity (recovered to susceptible) |
+| $\omega^i$ | Death rate among hospitalised individuals (age/econ stratified) |
+| $\zeta^i(t)$ | Vaccination rate |
+
+Table: (\#tab:transitionpars) Definition of model transition parameters.
+
+
+
+### Seed and force of infection
+
+For any given pathogen, we assume a seed of 1 infection per-million population, of which 60\% are further assumed to be asymptomatic infections.
+
+The force of infection $\lambda^{i,j} (t)$ accounts for the infection contributions of symptomatically $Is^{ij}(t)$ and asymptomatically $Ia^{ij}(t)$ infected individuals in the community and in workplaces.
+
+
+We let $\delta I_{comm}^i(t)$ and $\delta I_{work}^i(t)$ denote the number of infected individuals in the community and the workplace, respectively, weighted by their infectivity given
+\begin{align}
+    & \delta I_{comm}^{ij}(t) = \zeta^{i,j} (Ia^{i \in 1:4,j}(t) \epsilon + Is^{i \in 1:4,j}(t))\\
+    & \delta I_{work}^{ij}(t) = \zeta^{i,j} (Ia^{i \in 5:49,j}(t) \epsilon + Is^{i \in 5:49,j}(t)),
+\end{align}
+where $\epsilon$ is the relative infectiousness of an asymptomatically infected individual relative to a symptomatic one, and $\zeta^{ij}$ the infectivity of an individual in strata $i,j$ relative to an unvaccinated individual of the same age accounting for vaccine efficacy against onward transmission $e^{ij}_{inf}$. 
+
+
+
+The force of infection from the community $\lambda^{i,j}_{comm} (t)$ on a susceptible individual is thus modelled as 
+\begin{align}
+\lambda^{i,j}_{comm} (t) & =
+    \beta (t) \cdot \chi^{i,j} \cdot \sum_{i'} m_{i,i'} \sum_{j'} \delta I_{comm}^{i',j'} (t)
+\end{align}
+where $\chi^{i,j}$ is the relative susceptibility to infection of a susceptible individual in strata $i,j$ relative to a non-vaccinated individual of the same strata, $\beta(t)$ represents a time-varying contact rate scaling factor, determined by social distancing interventions simulated, and $m_{i,i'}$ is the (symmetric) person-to-person contact rate between age group $i$ and $i'$.
+
+
+
+The force of infection within the workplace $\lambda^{i,j}_{work} (t)$ is modelled as 
+\begin{align}
+\lambda^{i,j}_{work} (t) & =
+    \beta (t) \cdot \chi^{i,j} \cdot \Phi(t) \cdot \sum_{i'} C_{i,i'} \sum_{j'} \delta I_{work}^{i',j'} (t)
+\end{align}
+where $C_{i,i'}$ is a contact matrix specific to the workplace, and $\Phi(t)$ is a scaling factor determined by economic closure interventions simulated.
+
+
+Lastly, the force of infection from infected individuals in the community to susceptible workers $\lambda^{i,j}_{c2w} (t)$ (i.e.~asymptomatically infected individuals from the community attending shops, etc.) is given by
+\begin{align}
+\lambda^{i,j}_{c2w} (t) & =
+    \beta (t) \cdot \chi^{i,j} \cdot \Phi(t) \cdot \sum_{i'} CtoW_{i,i'} \sum_{j'} \delta I_{comm}^{i',j'} (t)
+\end{align}
+where $CtoW_{i,i'}$ is a contact matrix specific to consumers attending workplaces.
+
+
+
+The total force of infection acting on susceptible individuals is then assumed to be an addition of the above
+\begin{equation}
+    \Lambda^{ij} (t) = \lambda_{comm}^{ij} (t) + \lambda_{work}^{ij} (t) + \lambda^{i,j}_{c2w} (t).
+\end{equation}
+
+
+### Disease transition rates
+
+
+
+### Vaccination transition rates
+
+
+
+
+
+# Economic model
+
+_daedalus_ assigns monetary values to the years of life lost (YLL) $K_1$, years of education lost $K_2$ and economic activity losses $K_3$, given
+
+\begin{align}
+& K_1 = YLL * VLY,\\
+& K_2 = \text{school years lost} * VSY,\\
+& K_3 = GDP_{lost},
+\end{align}
+
+where $VLY$ is the value of a life year, $VSY$ the value of a school year and $GDP_{lost}$ is the total (summed across all economic sectors) of GDP lost over the closure period due to reduced economic activity of sectors.
+
+
+The total socioeconomic loss (TSL) of a respiratory pandemic is therefore given by
+```math
+TSL = K_1 + K_2 + K3.
+```
+
+## Years of life lost
+
+
+## Years of education lost
+
+
+## Economic activity losses
+
+_daedalus_ measures the cost of economic closures in terms of lost gross value added (GVA). The GDP generated by a given economy over the course of a year is the maximum GVA, denoted $y_j$ for each sector $j$, multiplied by the respective proportion of days $\tau$ sector $j$ is open for production. 
+
+The maximum possible GDP, without any economic closures, is thus
+
+$$Y_0=\frac{\tau}{365}\sum_{j=1}^{m_S}y_j$$
+
+for $m_S$ sectors.
+
+All economic sectors contribute GVA according to the level they are open for production, as above, with the exception for the education sector. We assume the latter contributes its maximum possible GVA, $y_{\text{ed}}$. 
+
+
+In addition of GVA losses from closures, economic sectors can lose productivity from depletion of their workforce (i.e., due to self-isolation, sickness, hospitalisation or death). $x_{j}(t)$ is the proportion of the workforce contributing to economic production in sector $j$ out of the total workforce $N_j$ on day $t$. As the workforce of a sector is depleted, we assume a smaller fraction ($`\hat{x}_{j}(t)`$) will be available to contribute to production.
+
+``` math
+\hat{x}_{j}(t)=x_{j}(t)\left(1 - \left(p_j^{23}(t)  + (1-q_j)p_j^{22}(t)\right)/N_j\right)
+```
+
+where $q_j$ is the fraction of the sector working from home. $p_j^{23}(t)$ represents worker sickness and death:
+
+$$p_j^{23}(t)=\sum_{v=0}^{m_V}\left(\left(1-p^H_{j,v}\right)p^1p^{19}I_{j,v}^{s}+p^H_{j,v}p^1I_{j,v}^{s}+H_{j,v}+D_{j,v}\right),$$ 
+
+with $m_V=2$ vaccines and $p_j^{22}(t)$ represents lost output from asymptomatic self-isolating workers:
+
+$$p_j^{22}(t)=p^2(t)p^{18}I_{j}^{a}.$$ 
+
+$p^{18}$ is the number of days spent in self isolation per day of infectiousness (e.g. suppose the average infectious period is four days and mandatory self-isolation time is ten days, then $p^{19}=2.5$ and $p^{18}=p^{19}T^{I^s}/T^{I^a:R}$, where $T^{I^s}$ and $T^{I^a:R}$ are expected infectious periods for symptomatic and asymptomatic, respectively). $p^1$ is compliance with the requirement to self isolate and $p^2(t)$ is the fraction of cases identified. Other notations are vaccine status $v$, infectious and asymptomatic $I_{j,v}^{a}$, infectious and symptomatic $I_{j,v}^{s}$, hospitalised $H$, deceased $D$, and probability to be hospitalised $p^H$. 
+
+Then the total GDP is
+
+```math
+Y =  \frac{1 }{365} \sum_{j\neq\text{ed}}^{m_S}y_j\int_{t=0}^{\tau}\hat{x}_{j}(t)dt + \frac{\tau }{365}{y_\text{ed}},
+```
+
+and the GDP loss compared to the maximum is 
+
+$$K_2=Y_0-Y.$$
+
+# Data 
+
+This section details the data inputs used to parameterise _daedalus_.
+
+##  Respiratory pathogens
+
+Table: (\#tab:pathogendata) Pathogen parameters and data sources.
+
+
+## Synthetic countries
+
+Table: (\#tab:countrydata) Country parameters and data sources.
+
+
+
+# References
