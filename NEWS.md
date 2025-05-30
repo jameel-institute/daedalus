@@ -1,3 +1,7 @@
+# daedalus 0.2.16
+
+Implements a new vignette with a technical description of the model.
+
 # daedalus 0.2.15
 
 Fixes to construction of initial model state.
