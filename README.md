@@ -20,7 +20,7 @@ status](https://www.r-pkg.org/badges/version/daedalus)](https://CRAN.R-project.o
 *daedalus* implements the integrated epidemiological and economic model
 in Haw et al. ([2022](#ref-haw2022)).
 
-<img src="man/figures/daedalus.png" align="center" style = "border: none; float: center;" width = "800px">
+<img src="vignettes/figures/daedalus.png" align="center" style = "border: none; float: center;" width = "800px">
 
 ## Installation
 
