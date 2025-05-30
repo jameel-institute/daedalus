@@ -47,6 +47,7 @@ Suggests:
     knitr,
     rmarkdown,
     bookdown,
+    latex2exp,
     scales,
     spelling,
     testthat (>= 3.0.0),
