@@ -46,6 +46,7 @@ Suggests:
     ggplot2,
     knitr,
     rmarkdown,
+    bookdown,
     scales,
     spelling,
     testthat (>= 3.0.0),
