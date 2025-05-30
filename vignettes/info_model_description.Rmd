@@ -35,7 +35,7 @@ The _daedalus_ package is the implementation of a deterministic epidemiological 
 
 - Economic impact in terms of GDP lost from economic sector closures and workforce depletion (i.e., as a result of self-isolation, infection, hospitalisation or death). 
 
-Presently, we have equipped _daedalus_ with parameters to simulate nine potential pathogens (influenza A 2009, influenza A 1957, influenza A 1918, MERS, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1, see \@ref(tab:pathogendata)) across 67 synthetic countries (see \@ref(tab:countrydata)). In addition, _daedalus_ allows the user the flexibility to incorporate additional respiratory pathogen and/or country parameters and data, as considered appropriate for their use case.
+Presently, we have equipped _daedalus_ with parameters to simulate nine potential pathogens (influenza A 2009, influenza A 1957, influenza A 1918, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1, see \@ref(tab:pathogendata)) across 67 synthetic countries (see \@ref(tab:countrydata)). In addition, _daedalus_ allows the user the flexibility to incorporate additional respiratory pathogen and/or country parameters and data, as considered appropriate for their use case.
 
 The following sections present a technical description of the epidemiological and economic components of _daedalus_, its parameters and input data. For examples of its implementation in research case studies, see 
 
@@ -95,7 +95,7 @@ As a default, _daedalus_ further disaggregates the population into the vaccinati
 
 ## Model transition parameters
 
-_daedalus_ can simulate nine different pathogens (influenza A 2009, influenza A 1957, influenza A 1918, MERS, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1) with pathogen-specific transition (see \@ref(tab:pathogendata)).
+_daedalus_ can simulate nine different pathogens (influenza A 2009, influenza A 1957, influenza A 1918, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1) with pathogen-specific transition (see \@ref(tab:pathogendata)).
 
 | **Parameter** | **Definition** |
 | :----- | :----- |
@@ -162,8 +162,36 @@ The total force of infection acting on susceptible individuals is then assumed t
 \end{equation}
 
 
+
 ### Disease transition rates
 
+| **Parameter** | **Symbol** | **Influenza 2009** | **Influenza 1957** | **Influenza 1918** | **Covid Omicron** | **Covid Delta** | **Covid Wildtype** | **SARS** |
+| :----- | :----- | :----- | :----- | :----- | :----- | :----- | :----- |
+| Basic reproduction number | $R_0$ | 1.58 | 1.80 | 2.50 | 5.94 | 5.08 | 2.87 | 1.75 |
+| Probability symptomatic | $p_{sympt}$ | 0.669 | 0.669 | 0.669 | 0.592 | 0.595 | 0.595 | 0.867 |
+| Relative infectiousness (asymptomatic:symptomatic) | $\epsilon$ | 0.58 | 0.58 | 0.58 | 0.58 | 0.58 | 0.58 | 0.58 |
+| Incubation period (days) | $\sigma$ | 1.1 | 1.1 | 1.1 | 4 | 4 | 4.6 | 4.6 |
+| Recovery rate asymptomatic (days) | $\gamma_{Ia}$ | 2.5 | 2.5 | 2.5 | 2.1 | 2.1 | 2.1 | 2.1 |
+| Recovery rate symptomatic (days) | $\gamma_{Is}$ | 2.5 | 2.5 | 2.5 | 4 | 4 | 4 | 4 |
+| Waning immunity rate (days) | $\rho$ | 365 | 365 | 365 | 365 | 365 | 365 | 365 |
+| **Age specific parameters*** | 
+| Hospitalisation given symptomatic infection (days) | $\eta^i$ | 
+| 0-4 years |   | 358.7 | 1851.9 | 13.7 | 73006.1 | 80405.4 | 148750.0 | 56.2 |
+| 5-19 years |  | 359.5 | 158.7  | 15.6 | 133.7   | 25.4    | 47       | 12.1 |
+| 20-64 years | | 912.4 | 1851.9 | 50.4 | 5900.4  | 4638.8  | 8581.7   | 56.2 |
+| 65+ years |   | 161.7 | 9.3    | 6.6  | 35.8    | 8.1     | 15       | 4.1 |
+| Recovery rate hospitalised (days) | $\gamma_H^i$ | 
+| 0-4 years |   | 5.2  | 5.4 | 5.7 | NA  | NA   | NA   | 29.6 |
+| 5-19 years |  | 5.3  | 5.4 | 5.7 | 5.9 | 8.3  | 13.1 | 29.6 |
+| 20-64 years | | 5.2  | 5.4 | 5.7 | 6.8 | 9.4  | 14.8 | 29.6 |
+| 65+ years |   | 13.7 | 5.4 | 5.7 | 8.1 | 10.7 | 16.9 | 29.6 |
+| Death given hospitalised (days) | $\omega^i$ | 
+| 0-4 years |   | 126.3 | 67.5 | 40 | 5.5  | 7.6  | 12    | 86.4 |
+| 5-19 years |  | 79.8  | 67.5 | 40 | 82.1 | 94.3 | 148.9 | 86.4 |
+| 20-64 years | | 120.9 | 67.5 | 40 | 28.4 | 40.5 | 64    | 86.4 |
+| 65+ years |   | 7.9   | 67.5 | 40 | 17.3 | 26.3 | 41.6  | 86.4 |
+
+Table: (\#tab:pathogendata) Pathogen parameters and data sources. A different pathogen profile can be created by the user by generating a list object specifying these parameter values (see list structure for these pathogens in `daedalus.data::infection_data`). *Note disease severity progression is modelled with competing rates (e.g., for individuals in the $Ia$ compartment, of recovery $\gamma_{Is}$ vs hospitalisation by age $\eta^i$); where NA values are specified, we assume these individuals cannot undergo the respective disease severity transition.
 
 
 ### Vaccination transition rates
@@ -198,42 +226,50 @@ TSL = K_1 + K_2 + K3.
 
 ## Economic activity losses
 
-_daedalus_ measures the cost of economic closures in terms of lost gross value added (GVA). The GDP generated by a given economy over the course of a year is the maximum GVA, denoted $y_j$ for each sector $j$, multiplied by the respective proportion of days $\tau$ sector $j$ is open for production. 
+We calculate the cost of economic closures by each of 45 $j$ sectors in terms of lost gross value added (GVA). The yearly GDP generated by a country in the absence of closures is composed of the maximum GVA $y_j$ for each sector $j$. 
 
-The maximum possible GDP, without any economic closures, is thus
+Formally, the maximum possible GDP generated $Y_0$ by all economic sectors $m_S$ in the absence of mandated closures (i.e., as a result of NPIs) is defined by
 
-$$Y_0=\frac{\tau}{365}\sum_{j=1}^{m_S}y_j$$
+\begin{equation}
+Y_0=\frac{\tau}{365}\sum_{j=1}^{m_S}y_j,
+\end{equation}
 
-for $m_S$ sectors.
-
-All economic sectors contribute GVA according to the level they are open for production, as above, with the exception for the education sector. We assume the latter contributes its maximum possible GVA, $y_{\text{ed}}$. 
+where all economic sectors contribute GVA according to the proportion of days in a year $\tau$ they are open for production. The only exception to this is the education sector, which we assume contributes its maximum possible GVA as $y_{\text{ed}}$. 
 
 
 In addition of GVA losses from closures, economic sectors can lose productivity from depletion of their workforce (i.e., due to self-isolation, sickness, hospitalisation or death). $x_{j}(t)$ is the proportion of the workforce contributing to economic production in sector $j$ out of the total workforce $N_j$ on day $t$. As the workforce of a sector is depleted, we assume a smaller fraction ($`\hat{x}_{j}(t)`$) will be available to contribute to production.
 
-``` math
+\begin{equation}
 \hat{x}_{j}(t)=x_{j}(t)\left(1 - \left(p_j^{23}(t)  + (1-q_j)p_j^{22}(t)\right)/N_j\right)
-```
+\end{equation}
 
 where $q_j$ is the fraction of the sector working from home. $p_j^{23}(t)$ represents worker sickness and death:
 
-$$p_j^{23}(t)=\sum_{v=0}^{m_V}\left(\left(1-p^H_{j,v}\right)p^1p^{19}I_{j,v}^{s}+p^H_{j,v}p^1I_{j,v}^{s}+H_{j,v}+D_{j,v}\right),$$ 
+\begin{equation}
+p_j^{23}(t)=\sum_{v=0}^{m_V}\left(\left(1-p^H_{j,v}\right)p^1p^{19}I_{j,v}^{s}+p^H_{j,v}p^1I_{j,v}^{s}+H_{j,v}+D_{j,v}\right),
+\end{equation}
 
 with $m_V=2$ vaccines and $p_j^{22}(t)$ represents lost output from asymptomatic self-isolating workers:
 
-$$p_j^{22}(t)=p^2(t)p^{18}I_{j}^{a}.$$ 
+\begin{equation}
+p_j^{22}(t)=p^2(t)p^{18}I_{j}^{a}.
+\end{equation}
 
 $p^{18}$ is the number of days spent in self isolation per day of infectiousness (e.g. suppose the average infectious period is four days and mandatory self-isolation time is ten days, then $p^{19}=2.5$ and $p^{18}=p^{19}T^{I^s}/T^{I^a:R}$, where $T^{I^s}$ and $T^{I^a:R}$ are expected infectious periods for symptomatic and asymptomatic, respectively). $p^1$ is compliance with the requirement to self isolate and $p^2(t)$ is the fraction of cases identified. Other notations are vaccine status $v$, infectious and asymptomatic $I_{j,v}^{a}$, infectious and symptomatic $I_{j,v}^{s}$, hospitalised $H$, deceased $D$, and probability to be hospitalised $p^H$. 
 
 Then the total GDP is
 
-```math
+\begin{equation}
 Y =  \frac{1 }{365} \sum_{j\neq\text{ed}}^{m_S}y_j\int_{t=0}^{\tau}\hat{x}_{j}(t)dt + \frac{\tau }{365}{y_\text{ed}},
-```
+\end{equation}
 
 and the GDP loss compared to the maximum is 
 
-$$K_2=Y_0-Y.$$
+\begin{equation}
+K_2=Y_0-Y.
+\end{equation}
+
+
 
 # Data 
 
@@ -241,7 +277,7 @@ This section details the data inputs used to parameterise _daedalus_.
 
 ##  Respiratory pathogens
 
-Table: (\#tab:pathogendata) Pathogen parameters and data sources.
+
 
 
 ## Synthetic countries
