@@ -272,15 +272,12 @@ daedalus <- function(
       )
     }
 
-    is_good_response_duration <- checkmate::test_integerish(
-      response_duration,
-      lower = 0L, # no minimum duration
-      any.missing = FALSE,
-      len = 1
+    is_good_response_duration <- checkmate::test_count(
+      response_duration
     )
     if (!is_good_response_duration) {
       cli::cli_abort(
-        "Expected `response_duration` to be a single integer-like"
+        "Expected `response_duration` to be a single positive integer-like"
       )
     }
   }
