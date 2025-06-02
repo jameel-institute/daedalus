@@ -181,7 +181,7 @@ test_that("daedalus: Runs with custom openness values", {
       "elimination",
       response_duration = c(1, 1)
     ),
-    "Expected `response_duration` to be a single integer-like"
+    "Expected `response_duration` to be a single positive integer-like"
   )
 })
 
