@@ -322,11 +322,11 @@ class daedalus_ode {
     }
     daedalus::events::response public_concern(
         std::string("public_concern"), sd_start_time, sd_end_time,
-        sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr});
+        sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr}, 0);
 
     daedalus::events::response hosp_cap_exceeded(
         std::string("hosp_cap_exceeded"), NA_REAL, NA_REAL, hospital_capacity,
-        hospital_capacity, i_hosp_flag, {idx_hosp}, {idx_hosp});
+        hospital_capacity, i_hosp_flag, {idx_hosp}, {idx_hosp}, 0);
 
     // clang-format off
     return shared_state{

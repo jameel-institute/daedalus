@@ -10,13 +10,15 @@ initial_flags <- function() {
   ipr <- 0.0 # incidence-prevalence ratio
   sd_flag <- 0.0 # spontaneous social distancing flag
   hosp_flag <- 0.0 # flag for hosp capacity being exceeded
+  npi_start_time <- 0.0 # true NPI start time
 
   c(
     ipr = ipr,
     npi_flag = npi_flag,
     vax_flag = vax_flag,
     sd_flag = sd_flag,
-    hosp_flag = hosp_flag
+    hosp_flag = hosp_flag,
+    npi_start_time = npi_start_time
   )
 }
 
