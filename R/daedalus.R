@@ -8,8 +8,14 @@ initial_flags <- function() {
   vax_flag <- 0.0
   npi_flag <- 0.0
   ipr <- 0.0 # incidence-prevalence ratio
+  npi_start_time <- 0.0
 
-  c(ipr = ipr, npi_flag = npi_flag, vax_flag = vax_flag)
+  c(
+    ipr = ipr,
+    npi_flag = npi_flag,
+    vax_flag = vax_flag,
+    npi_start_time = npi_start_time
+  )
 }
 
 #' Get model response times from dust2 output
@@ -280,11 +286,9 @@ daedalus <- function(
       )
     }
 
-    is_good_response_duration <- checkmate::test_integerish(
+    is_good_response_duration <- checkmate::test_count(
       response_duration,
-      lower = 0L, # no minimum duration
-      any.missing = FALSE,
-      len = 1
+      positive = TRUE
     )
     if (!is_good_response_duration) {
       cli::cli_abort(
