@@ -1,3 +1,11 @@
+# daedalus 0.2.21
+
+This patch version logs the realised NPI start time. The NPI start time is used to determine the realised NPI end time by testing for a duration, and enables time-limitation for state-triggered events.
+
+- Added class member function `make_duration_test` to class `daedalus::events::response`. Events are now treated as having a start time and a duration, rather than an end time.
+
+- Updates to input checking, output handling, tests, and documentation for time-limitations on state-triggered events.
+
 # daedalus 0.2.20
 
 Restored model functionality where mortality is increased when hospital capacity is exceeded.
