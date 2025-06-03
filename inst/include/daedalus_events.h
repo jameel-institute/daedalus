@@ -184,11 +184,11 @@ class response {
       events.push_back(ev_time_on);
     }
 
-    if (!ISNA(time_off)) {
+    if (!ISNA(duration)) {
       std::string name_ev_time_off = name + "_time_off";
-      dust2::ode::event<double> ev_time_off =
-          make_event(name_ev_time_off, {}, make_time_test(time_off),
-                     make_flag_setter({i_flag}, {0.0}));
+      dust2::ode::event<double> ev_time_off = make_event(
+          name_ev_time_off, {}, make_duration_test(i_time_start, duration),
+          make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}));
 
       events.push_back(ev_time_off);
     }
@@ -196,9 +196,9 @@ class response {
     if (!ISNA(state_on)) {
       std::string name_ev_state_on = name + "_state_on";
       dust2::ode::event<double> ev_state_on = make_event(
-          name_ev_state_on, i_state_on,
+          name_ev_state_on, i_state_on, make_state_test(i_state_on, state_on),
           make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
-          make_flag_setter(i_flag, 1.0), dust2::ode::root_type::increase);
+          dust2::ode::root_type::increase);
 
       events.push_back(ev_state_on);
     }

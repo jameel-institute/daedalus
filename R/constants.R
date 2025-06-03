@@ -130,7 +130,14 @@ N_FLAGS <- 3L
 
 #' @name model_constants
 #' @keywords model_constant
-FLAG_NAMES <- c("ipr", "npi_flag", "vax_flag", "sd_flag", "hosp_flag")
+FLAG_NAMES <- c(
+  "ipr",
+  "npi_flag",
+  "vax_flag",
+  "sd_flag",
+  "hosp_flag",
+  "npi_start_time"
+)
 
 #' @title Epidemiological compartments and indices
 #' @description Names and indices for the epidemiological compartments used in
