@@ -75,7 +75,23 @@ class response {
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_time_test(const double value) const {
     auto fn_test = [value](const double t, const double *y) {
-      return t - value;
+      return t - value;  // time - start_time
+    };
+
+    return fn_test;
+  }
+
+  /// @brief Root-find on a duration after some time read from state.
+  /// @param value The duration to check against, which is added to the
+  /// logged/realised start-time to get the value.
+  /// @return A lambda function suitable for creating a dust2::event test.
+  inline test_type make_duration_test(const size_t &id_state,
+                                      const double value) const {
+    auto fn_test = [id_state, value](const double t, const double *y) {
+      if (y[id_state] > 0.0) {
+        return t - (value + y[id_state]);
+      } else
+        return 1.0;  // prevent (t - value) when event has not launched yet
     };
 
     return fn_test;
