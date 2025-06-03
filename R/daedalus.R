@@ -52,6 +52,13 @@ get_daedalus_response_times <- function(event_data, time_end) {
 
   duration <- resp_time_off_realised - resp_time_on_realised
 
+  # double check duration against NPI flag as there are no other checks
+  duration_raw <- sum(output$data$npi_flag)
+  stopifnot(
+    "Raw response duration does not match event-data duration" = duration ==
+      duration_raw
+  )
+
   # return list for consistency with daedalus
   list(
     closure_time_start = resp_time_on_realised,
