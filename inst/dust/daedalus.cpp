@@ -172,15 +172,12 @@ class daedalus_ode {
                           {"npi_flag", dim_flag},
                           {"vax_flag", dim_flag},
                           {"sd_flag", dim_flag},
-                          {"hosp_flag", dim_flag}};
+                          {"hosp_flag", dim_flag},
+                          {"npi_start_time", dim_flag}};
   }
 
   static size_t size_special() {
-    return 4;  // npi_flag, vax_flag, sd_flag, hosp_flag
-  }
-
-  static size_t size_special() {
-    return 2;  // npi_flag and vax_flag
+    return 5;  // npi_flag, vax_flag, sd_flag, hosp_flag, npi_start_time
   }
 
   /// @brief Initialise shared parameters.
@@ -288,19 +285,22 @@ class daedalus_ode {
         total_compartments + daedalus::constants::i_rel_SD_FLAG;
     const size_t i_hosp_flag =
         total_compartments + daedalus::constants::i_rel_HOSP_FLAG;
+    const size_t i_real_npi_start =
+        total_compartments + daedalus::constants::i_rel_START_TIME;
 
     // RESPONSE AND VACCINATION CLASSES
     std::vector<size_t> idx_hosp =
         daedalus::helpers::get_state_idx({iH + 1}, n_strata, N_VAX_STRATA);
 
     // NOTE: NPI response end time passed as parameter; vax end time remains 0.0
-    daedalus::events::response npi(
-        std::string("npi"), response_time, response_time + response_duration,
-        hosp_cap_response, gamma_Ia, i_npi_flag, idx_hosp, {i_ipr});
+    daedalus::events::response npi(std::string("npi"), response_time,
+                                   response_time + response_duration,
+                                   hosp_cap_response, gamma_Ia, i_npi_flag,
+                                   idx_hosp, {i_ipr}, i_real_npi_start);
 
     daedalus::events::response vaccination(std::string("vaccination"),
                                            vax_start_time, NA_REAL, NA_REAL,
-                                           NA_REAL, i_vax_flag, {0}, {0});
+                                           NA_REAL, i_vax_flag, {0}, {0}, 0);
 
     // predicate public concern social distancing on whether it is off,
     // independent and always on, or linked to NPIs
