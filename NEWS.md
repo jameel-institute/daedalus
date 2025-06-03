@@ -1,3 +1,11 @@
+# daedalus 0.2.16
+
+This patch version uses special variables from _dust2_ for the NPI and vaccination flags, and to log the realised NPI start time. The NPI start time is used to determine the realised NPI end time by testing for a duration, and enables time-limitation for state-triggered events.
+
+- Added class member function `make_duration_test` to class `daedalus::events::response`.
+
+- Updates to input checking, output handling, tests, and documentation for time-limitations on state-triggered events.
+
 # daedalus 0.2.15
 
 Fixes to construction of initial model state.

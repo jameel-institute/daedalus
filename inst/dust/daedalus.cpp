@@ -167,7 +167,12 @@ class daedalus_ode {
                           {"new_vax", dim_vec},
                           {"ipr", dim_flag},
                           {"npi_flag", dim_flag},
-                          {"vax_flag", dim_flag}};
+                          {"vax_flag", dim_flag},
+                          {"npi_start_time", dim_flag}};
+  }
+
+  static size_t size_special() {
+    return 3;  // npi_flag, vax_flag, npi_start_time
   }
 
   /// @brief Initialise shared parameters.
@@ -266,6 +271,8 @@ class daedalus_ode {
         total_compartments + daedalus::constants::i_rel_NPI_FLAG;
     const size_t i_vax_flag =
         total_compartments + daedalus::constants::i_rel_VAX_FLAG;
+    const size_t i_real_npi_start =
+        total_compartments + daedalus::constants::i_rel_START_TIME;
 
     // RESPONSE AND VACCINATION CLASSES
     std::vector<size_t> idx_hosp =
@@ -273,11 +280,11 @@ class daedalus_ode {
 
     // NOTE: NPI response end time passed as parameter; vax end time remains 0.0
     daedalus::events::response npi(
-        std::string("npi"), response_time, response_time + response_duration,
-        hospital_capacity, gamma_Ia, i_npi_flag, idx_hosp, i_ipr);
+        std::string("npi"), response_time, response_duration, hospital_capacity,
+        gamma_Ia, i_npi_flag, idx_hosp, i_ipr, i_real_npi_start);
     daedalus::events::response vaccination(std::string("vaccination"),
                                            vax_start_time, 0.0, 0.0, 0.0,
-                                           i_vax_flag, {0}, 0);
+                                           i_vax_flag, {0}, 0, 0);
 
     // clang-format off
     return shared_state{

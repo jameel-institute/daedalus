@@ -17,6 +17,10 @@ namespace daedalus {
 
 namespace events {
 
+/// @brief A temporary(?) special value to indicate that events should log time
+/// in state.
+const double value_log_time = -999.0;
+
 /// @brief Get values depending on a flag variable
 /// @tparam T
 /// @param value A value, typically of the openness coefficient. For an 80%
@@ -37,17 +41,16 @@ class response {
 
  public:
   const std::string name;
-  const double time_on, time_off, state_on, state_off;
+  const double time_on, duration, state_on, state_off;
   const size_t i_flag;
   const std::vector<size_t> i_state_on;
-  const size_t i_state_off;
+  const size_t i_state_off, i_time_start;
 
   /// @brief Constructor for a response.
   /// @param name A string for the name, used to generate event names.
   /// @param time_on The time at which the response should start. 0.0 indicates
   /// no response.
-  /// @param time_off The time at which the response should end. 0.0 indicates
-  /// no response.
+  /// @param duration The duration of the response. 0.0 indicates no response.
   /// @param state_on The state (sum) value at which the response should start.
   /// @param state_off The state (sum) value at which the response should end.
   /// @param i_flag The index of the state variable holding the flag to modify,
@@ -56,25 +59,47 @@ class response {
   /// calculate the state value which is compared against `state_on`.
   /// @param i_state_off The index of the state variables to be summed to
   /// calculate the state value which is compared against `state_off`.
+  /// @param i_time_start The index of the state variable that holds the
+  /// realised start time for an event. Typically useful for state-triggered
+  /// events.
   response(const std::string &name, const double &time_on,
-           const double &time_off, const double &state_on,
+           const double &duration, const double &state_on,
            const double &state_off, const size_t &i_flag,
-           const std::vector<size_t> &i_state_on, const size_t &i_state_off)
+           const std::vector<size_t> &i_state_on, const size_t &i_state_off,
+           const size_t &i_time_start)
       : name(name),
         time_on(time_on),
-        time_off(time_off),
+        duration(duration),
         state_on(state_on),
         state_off(state_off),
         i_flag(i_flag),
         i_state_on(i_state_on),
-        i_state_off(i_state_off) {}
+        i_state_off(i_state_off),
+        i_time_start(i_time_start) {}
 
   /// @brief Root-find on time.
   /// @param value The time value to check current time against.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_time_test(const double value) const {
     auto fn_test = [value](const double t, const double *y) {
-      return t - value;
+      return t - value;  // time - start_time
+    };
+
+    return fn_test;
+  }
+
+  /// @brief Root-find on a duration after some time read from state.
+  /// @param value The duration to check against, which is added to the
+  /// logged/realised start-time to get the value.
+  /// @return A lambda function suitable for creating a dust2::event test.
+  inline test_type make_duration_test(const size_t &id_state,
+                                      const double value) const {
+    auto fn_test = [id_state, value](const double t, const double *y) {
+      if (y[id_state] > 0.0) {
+        return t - (value + y[id_state]);
+      } else {
+        return 1.0;  // prevent (t - value) when event has not launched yet
+      }
     };
 
     return fn_test;
@@ -98,10 +123,22 @@ class response {
 
   /// @brief Make event action lambda.
   /// @return A lambda suitable as an action in a dust2::event.
-  inline action_type make_flag_setter(const size_t &flag,
-                                      const double &value) const {
-    auto fn_action = [flag, value](const double t, const double sign,
-                                   double *y) { y[flag] = value; };
+  inline action_type make_flag_setter(const std::vector<size_t> &flags,
+                                      const std::vector<double> &values) const {
+    auto fn_action = [flags, values](const double t, const double sign,
+                                     double *y) {
+      for (size_t i = 0; i < flags.size(); i++) {
+        const size_t yi = flags[i];
+
+        // set value to time if special value passed and flag not already set
+        const double val = values[i];
+        if ((val - value_log_time) < 1e-6 && y[yi] < 1.0) {
+          y[yi] = t;  // it's fine if these are decimal values
+        } else {
+          y[yi] = val;
+        }
+      }
+    };
 
     return fn_action;
   }
@@ -132,25 +169,26 @@ class response {
     // 2. end event on time
     // 3. launch event on state threshold
     std::string name_ev_time_on = name + "_time_on";
-    dust2::ode::event<double> ev_time_on =
-        make_event(name_ev_time_on, {}, make_time_test(time_on),
-                   make_flag_setter(i_flag, 1.0));
+    dust2::ode::event<double> ev_time_on = make_event(
+        name_ev_time_on, {}, make_time_test(time_on),
+        make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}));
 
     std::string name_ev_time_off = name + "_time_off";
-    dust2::ode::event<double> ev_time_off =
-        make_event(name_ev_time_off, {}, make_time_test(time_off),
-                   make_flag_setter(i_flag, 0.0));
+    dust2::ode::event<double> ev_time_off = make_event(
+        name_ev_time_off, {}, make_duration_test(i_time_start, duration),
+        make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}));
 
     std::string name_ev_state_on = name + "_state_on";
     dust2::ode::event<double> ev_state_on = make_event(
         name_ev_state_on, i_state_on, make_state_test(i_state_on, state_on),
-        make_flag_setter(i_flag, 1.0), dust2::ode::root_type::increase);
+        make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
+        dust2::ode::root_type::increase);
 
     std::string name_ev_state_off = name + "_state_off";
     dust2::ode::event<double> ev_state_off = make_event(
         name_ev_state_off, {i_state_off},
         make_state_test({i_state_off}, state_off),
-        make_flag_setter(i_flag, 0.0), dust2::ode::root_type::decrease);
+        make_flag_setter({i_flag}, {0.0}), dust2::ode::root_type::decrease);
 
     return dust2::ode::events_type<double>(
         {ev_time_on, ev_time_off, ev_state_on, ev_state_off});

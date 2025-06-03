@@ -8,8 +8,14 @@ initial_flags <- function() {
   vax_flag <- 0.0
   npi_flag <- 0.0
   ipr <- 0.0 # incidence-prevalence ratio
+  npi_start_time <- 0.0
 
-  c(ipr = ipr, npi_flag = npi_flag, vax_flag = vax_flag)
+  c(
+    ipr = ipr,
+    npi_flag = npi_flag,
+    vax_flag = vax_flag,
+    npi_start_time = npi_start_time
+  )
 }
 
 #' Get model response times from dust2 output
@@ -43,6 +49,13 @@ get_daedalus_response_times <- function(output, time_end) {
   }
 
   duration <- resp_time_off_realised - resp_time_on_realised
+
+  # double check duration against NPI flag as there are no other checks
+  duration_raw <- sum(output$data$npi_flag)
+  stopifnot(
+    "Raw response duration does not match event-data duration" = duration ==
+      duration_raw
+  )
 
   # return list for consistency with daedalus
   list(
@@ -267,28 +280,23 @@ daedalus <- function(
 
   # NULL converted to "none"; WIP: this will be moved to a class constructor
   if (response_strategy != "none") {
-    is_good_response_time <- checkmate::test_integerish(
+    is_good_response_time <- checkmate::test_count(
       response_time,
-      upper = time_end - 2L, # for compat with daedalus
-      lower = 1L, # responses cannot start at 0, unless strategy is null
-      any.missing = FALSE,
-      len = 1
+      positive = TRUE
     )
     if (!is_good_response_time) {
       cli::cli_abort(
-        "Expected `response_time` to be between 1 and {time_end - 2L}."
+        "Expected `response_time` to be >= 1."
       )
     }
 
-    is_good_response_duration <- checkmate::test_integerish(
+    is_good_response_duration <- checkmate::test_count(
       response_duration,
-      lower = 0L, # no minimum duration
-      any.missing = FALSE,
-      len = 1
+      positive = TRUE
     )
     if (!is_good_response_duration) {
       cli::cli_abort(
-        "Expected `response_duration` to be a single integer-like and >= 0"
+        "Expected `response_duration` to be a single integer-like and >= 1."
       )
     }
   }
