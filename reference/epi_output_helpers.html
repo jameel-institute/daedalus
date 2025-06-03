@@ -11,7 +11,7 @@ deaths, and vaccinations, while allowing grouping by different strata."></head><
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.14</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.16</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,6 +27,7 @@ deaths, and vaccinations, while allowing grouping by different strata."></head><
     <li><h6 class="dropdown-header" data-toc-skip>Package vignettes and user guides</h6></li>
     <li><a class="dropdown-item" href="../articles/thresholded_response.html">Modelling threshold-dependent economic closures</a></li>
     <li><a class="dropdown-item" href="../articles/pandemic_costs.html">Evaluating the costs of pandemic scenarios</a></li>
+    <li><a class="dropdown-item" href="../articles/infection_parameter_uncertainty.html">Modelling outcomes under uncertainty in infection parameters</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
@@ -129,19 +130,19 @@ Columns for the <code>groups</code> are added when <code>groups</code> are speci
 <span class="r-in"><span>  <span class="va">data</span>,</span></span>
 <span class="r-in"><span>  groups <span class="op">=</span> <span class="st">"age_group"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    age_group      value                measure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        0-4    52336.3           total_deaths</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       5-19   513124.1           total_deaths</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      20-64   424989.3           total_deaths</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4        65+   867296.2           total_deaths</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5        0-4  3621471.9          epidemic_size</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       5-19  9499042.0          epidemic_size</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      20-64 29304819.6          epidemic_size</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8        65+  7986163.3          epidemic_size</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9        0-4   207505.3 total_hospitalisations</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10      5-19  2030342.5 total_hospitalisations</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11     20-64  1681264.8 total_hospitalisations</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12       65+  3428099.4 total_hospitalisations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    age_group       value                measure</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        0-4    51961.33           total_deaths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       5-19   510073.92           total_deaths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      20-64   422477.81           total_deaths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        65+   862653.63           total_deaths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        0-4  3593143.71          epidemic_size</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6       5-19  9441533.46          epidemic_size</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      20-64 29139187.86          epidemic_size</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8        65+  7946422.19          epidemic_size</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9        0-4   205991.79 total_hospitalisations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10      5-19  2018726.43 total_hospitalisations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11     20-64  1672220.20 total_hospitalisations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12       65+  3411639.38 total_hospitalisations</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># get daily vaccinations</span></span></span>
 <span class="r-in"><span><span class="va">daily_vaccinations</span> <span class="op">&lt;-</span> <span class="fu">get_new_vaccinations</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
@@ -157,7 +158,7 @@ Columns for the <code>groups</code> are added when <code>groups</code> are speci
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

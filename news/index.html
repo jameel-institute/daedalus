@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.14</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.16</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,6 +23,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Package vignettes and user guides</h6></li>
     <li><a class="dropdown-item" href="../articles/thresholded_response.html">Modelling threshold-dependent economic closures</a></li>
     <li><a class="dropdown-item" href="../articles/pandemic_costs.html">Evaluating the costs of pandemic scenarios</a></li>
+    <li><a class="dropdown-item" href="../articles/infection_parameter_uncertainty.html">Modelling outcomes under uncertainty in infection parameters</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
@@ -50,6 +51,17 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.16" id="daedalus-0216">daedalus 0.2.16<a class="anchor" aria-label="anchor" href="#daedalus-0216"></a></h2>
+<p>Patch version to allow passing a list of infection objects to the Daedalus model using the new function <code><a href="../reference/daedalus_multi_infection.html">daedalus_multi_infection()</a></code>. This helps model multiple different pandemics on the same population, or to model uncertainty in outcomes due to uncertainty in infection parameters for a single pandemic pathogen.<code><a href="../reference/daedalus_multi_infection.html">daedalus_multi_infection()</a></code> returns a list of output objects.</p>
+<ul><li><p>Added a vignette showing how to use <code><a href="../reference/daedalus_multi_infection.html">daedalus_multi_infection()</a></code>;</p></li>
+<li><p>Added functions to more cleanly handle inputs to <code><a href="../reference/daedalus.html">daedalus()</a></code> and <code><a href="../reference/daedalus_multi_infection.html">daedalus_multi_infection()</a></code>;</p></li>
+<li><p>Some functions used in v0.1.0 have been removed.</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.15" id="daedalus-0215">daedalus 0.2.15<a class="anchor" aria-label="anchor" href="#daedalus-0215"></a></h2>
+<p>Fixes to construction of initial model state.</p>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.14" id="daedalus-0214">daedalus 0.2.14<a class="anchor" aria-label="anchor" href="#daedalus-0214"></a></h2>
 <p>This patch renames <code>daedalus2()</code> to <code><a href="../reference/daedalus.html">daedalus()</a></code>. All references and helper functions for <code>daedalus2()</code> have replaced their <code><a href="../reference/daedalus.html">daedalus()</a></code> equivalents, if any.</p>
@@ -202,7 +214,7 @@
 </ol></div>
 <div class="section level3">
 <h3 id="r-code-0-2-3">R code<a class="anchor" aria-label="anchor" href="#r-code-0-2-3"></a></h3>
-<ol style="list-style-type: decimal"><li>Added intermediate internal helper generic and methods <code>prepare_parameters2()</code> and <code><a href="../reference/make_initial_state2.html">make_initial_state2()</a></code> for use with <code>daedalus2()</code>.</li>
+<ol style="list-style-type: decimal"><li>Added intermediate internal helper generic and methods <code>prepare_parameters2()</code> and <code>make_initial_state2()</code> for use with <code>daedalus2()</code>.</li>
 </ol></div>
 <div class="section level3">
 <h3 id="other-0-2-3">Other<a class="anchor" aria-label="anchor" href="#other-0-2-3"></a></h3>
@@ -337,7 +349,7 @@
 <h2 class="pkg-version" data-toc-text="0.0.18" id="daedalus-0018">daedalus 0.0.18<a class="anchor" aria-label="anchor" href="#daedalus-0018"></a></h2>
 <p>This patch adds logging of daily new vaccinations and provides an output helper function, <code><a href="../reference/epi_output_helpers.html">get_new_vaccinations()</a></code>, to get daily new vaccinations.</p>
 <ul><li><p>Adds a third layer to the fourth dimension to the state array to hold new vaccinations;</p></li>
-<li><p>Adds a new helper function <code><a href="../reference/values_to_state.html">values_to_state()</a></code> to convert a vector to the state array;</p></li>
+<li><p>Adds a new helper function <code>values_to_state()</code> to convert a vector to the state array;</p></li>
 <li><p>Updates a number of indexing operations to disregard the new data layer of new vaccinations;</p></li>
 <li><p>Updates <code><a href="../reference/daedalus.html">daedalus()</a></code>, <code><a href="../reference/prepare_output.html">prepare_output()</a></code> and <code><a href="../reference/make_initial_state.html">make_initial_state()</a></code> to account for the new vaccinations layer;</p></li>
 <li><p>Updates tests for newly added functionality.</p></li>
@@ -463,7 +475,7 @@
 <li><p>The <code>make_parameters()</code> function has been split into <code>make_infect_parameters()</code> and <code>make_country_parameters()</code> to be clearer and more manageable. <code><a href="../reference/daedalus.html">daedalus()</a></code>-level override for parameters which was originally implemented as <code>...</code> has been replaced with three separate overrides: <code>country_params_manual</code>, <code>infect_params_manual</code>, and <code>initial_state_manual</code>, for users to pass custom values.</p></li>
 <li><p><code><a href="../reference/prepare_output.html">prepare_output()</a></code> has been made internal; it omits data for non-working age groups in economic sectors (as these are always 0), and pads all sector numbers to fit the format <code>sector_XX</code>.</p></li>
 <li><p>Internal functions for R effective calculations and getting the total hospitalisations, <code>r_eff()</code> and <code><a href="../reference/get_hospitalisations.html">get_hospitalisations()</a></code> have been added.</p></li>
-<li><p>Closures are implemented as <code><a href="https://rdrr.io/pkg/deSolve/man/events.html" class="external-link">deSolve::events</a></code> triggered by a rootfinding function, with separate functions for activation and termination, which are implemented as <code>make_response_threshold_event()</code> and <code>make_rt_end_event()</code>.</p></li>
+<li><p>Closures are implemented as <code>deSolve::events</code> triggered by a rootfinding function, with separate functions for activation and termination, which are implemented as <code>make_response_threshold_event()</code> and <code>make_rt_end_event()</code>.</p></li>
 <li><p><code>contacts_between_sectors</code> is now set to 0.0, it was previously 1e-6.</p></li>
 <li><p>Added tests for closure triggers having expected effects; but closure end points are not specifically tested.</p></li>
 </ol></div>
@@ -503,7 +515,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.14</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.16</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,6 +23,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Package vignettes and user guides</h6></li>
     <li><a class="dropdown-item" href="../articles/thresholded_response.html">Modelling threshold-dependent economic closures</a></li>
     <li><a class="dropdown-item" href="../articles/pandemic_costs.html">Evaluating the costs of pandemic scenarios</a></li>
+    <li><a class="dropdown-item" href="../articles/infection_parameter_uncertainty.html">Modelling outcomes under uncertainty in infection parameters</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
@@ -66,6 +67,12 @@
 
         </dt>
         <dd>DAEDALUS model for health, social and economic costs of a pandemic</dd>
+      </dl><dl><dt>
+
+          <code><a href="daedalus_multi_infection.html">daedalus_multi_infection()</a></code>
+
+        </dt>
+        <dd>Run daedalus for multiple infection parameter sets</dd>
       </dl></div><div class="section level2">
       <h2 id="class-">Class <code>&lt;daedalus_country&gt;</code><a class="anchor" aria-label="anchor" href="#class-"></a></h2>
 
@@ -264,12 +271,6 @@
         <dd>Calculate transmission parameter from infection and contact parameters</dd>
       </dl><dl><dt>
 
-          <code><a href="get_closure_info.html">get_closure_info()</a></code>
-
-        </dt>
-        <dd>Get closure time limits and calculate duration</dd>
-      </dl><dl><dt>
-
           <code><a href="get_daedalus_response_times.html">get_daedalus_response_times()</a></code>
 
         </dt>
@@ -306,28 +307,22 @@
         <dd>Generate a default initial state for DAEDALUS</dd>
       </dl><dl><dt>
 
-          <code><a href="make_initial_state2.html">make_initial_state2()</a></code>
-
-        </dt>
-        <dd>Generate initial state for daedalus()</dd>
-      </dl><dl><dt>
-
           <code><a href="make_susc_matrix.html">make_susc_matrix()</a></code>
 
         </dt>
         <dd>Prepare susceptibility matrix for a vaccine-country pair</dd>
       </dl><dl><dt>
 
+          <code><a href="out_list_to_df.html">out_list_to_df()</a></code>
+
+        </dt>
+        <dd>Reshape output data</dd>
+      </dl><dl><dt>
+
           <code><a href="prepare_contacts.html">make_conmat_large()</a></code> <code><a href="prepare_contacts.html">make_work_contacts()</a></code> <code><a href="prepare_contacts.html">make_consumer_contacts()</a></code>
 
         </dt>
         <dd>Make large contact matrix for Cpp model.</dd>
-      </dl><dl><dt>
-
-          <code><a href="prepare_mutable_parameters.html">prepare_mutable_parameters()</a></code>
-
-        </dt>
-        <dd>Prepare mutable parameters for the DAEDALUS model</dd>
       </dl><dl><dt>
 
           <code><a href="prepare_output.html">prepare_output()</a></code>
@@ -348,10 +343,28 @@
         <dd>Scale vaccination rate by remaining eligibles</dd>
       </dl><dl><dt>
 
-          <code><a href="values_to_state.html">values_to_state()</a></code>
+          <code><a href="tools.html">drop_null()</a></code>
 
         </dt>
-        <dd>Reshape a vector to the dimensions of the DAEDALUS state array</dd>
+        <dd>Helper functions</dd>
+      </dl><dl><dt>
+
+          <code><a href="validate_country_input.html">validate_country_input()</a></code>
+
+        </dt>
+        <dd>Validate country input</dd>
+      </dl><dl><dt>
+
+          <code><a href="validate_infection_input.html">validate_infection_input()</a></code> <code><a href="validate_infection_input.html">validate_infection_list_input()</a></code>
+
+        </dt>
+        <dd>Validate and return infection input</dd>
+      </dl><dl><dt>
+
+          <code><a href="validate_vaccination_input.html">validate_vaccination_input()</a></code>
+
+        </dt>
+        <dd>Validate vaccination inputs</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
@@ -362,7 +375,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

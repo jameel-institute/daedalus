@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.14</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.16</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,6 +23,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Package vignettes and user guides</h6></li>
     <li><a class="dropdown-item" href="../articles/thresholded_response.html">Modelling threshold-dependent economic closures</a></li>
     <li><a class="dropdown-item" href="../articles/pandemic_costs.html">Evaluating the costs of pandemic scenarios</a></li>
+    <li><a class="dropdown-item" href="../articles/infection_parameter_uncertainty.html">Modelling outcomes under uncertainty in infection parameters</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
@@ -133,60 +134,60 @@ adjustment is applied.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">get_costs</span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $total_cost</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1200136</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1196882</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $economic_costs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $economic_costs$economic_cost_total</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 33002.19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 32830.68</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $economic_costs$economic_cost_closures</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $economic_costs$economic_cost_absences</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 33002.19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 32830.68</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $economic_costs$sector_cost_closures</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [39] 0 0 0 0 0 0 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $economic_costs$sector_cost_absences</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  562.58171   49.30649  996.73294  387.60626  215.77069  561.70108</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7]   40.21803  173.48475  211.55946  181.26496  250.08308   86.58273</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13]  169.09035  126.88216  201.94501  243.84081  105.03575   67.09746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [19]  259.21779  306.88677  196.46817  276.49989  665.58899  170.79351</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [25] 2298.36661 3751.52484  842.68787   28.03776  167.17093  370.15073</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [31]  144.07001  798.61563  316.16967  593.87789  619.51119 2389.86810</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [37] 4096.08767 1470.76172 1069.19493 2384.49034 1912.32493 2560.73863</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [43]  272.42245  359.16802   51.97058</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  559.71817   49.05433  991.65984  385.61745  214.66946  558.81770</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7]   40.01120  172.59869  210.47667  180.33624  248.79899   86.13800</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13]  168.22542  126.23188  200.90790  242.59211  104.49756   66.75248</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19]  257.88395  305.31054  195.46448  275.07942  662.16383  169.91655</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] 2286.65921 3732.08540  838.33975   27.89447  166.31337  368.24089</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31]  143.32305  794.47654  314.54657  590.82697  616.32969 2377.57017</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37] 4074.98864 1463.18905 1063.66494 2372.21114 1902.40237 2547.48575</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [43]  271.00683  357.33019   51.70548</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $education_costs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $education_costs$education_cost_total</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.262964</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.829719</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $education_costs$education_cost_closures</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $education_costs$education_cost_absences</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.262964</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.829719</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $life_value_lost</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $life_value_lost$life_value_lost_total</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1167133</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1164049</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $life_value_lost$life_value_lost_age</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      0-4     5-19    20-64      65+ </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 211758.7 470552.6 319511.3 165310.3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 211166.8 469302.2 318684.7 164894.9 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $life_years_lost</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $life_years_lost$life_years_lost_total</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 25344907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 25277927</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $life_years_lost$life_years_lost_age</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      0-4     5-19    20-64      65+ </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4598452 10218297  6938356  3589801 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4585598 10191144  6920405  3580781 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
@@ -200,7 +201,7 @@ adjustment is applied.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
