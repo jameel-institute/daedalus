@@ -131,15 +131,12 @@ class response {
       for (size_t i = 0; i < flags.size(); i++) {
         const size_t yi = flags[i];
 
-        // set flag only if not already set
-        if (!y[yi]) {
-          // set value to time if special value passed
-          const double val = values[i];
-          if ((val + 999.000) < 1e-6) {
-            y[yi] = t;  // it's fine if these are decimal values
-          } else {
-            y[yi] = values[i];
-          }
+        // set value to time if special value passed and flag not already set
+        const double val = values[i];
+        if ((val - value_log_time) < 1e-6 && y[yi] < 1.0) {
+          y[yi] = t;  // it's fine if these are decimal values
+        } else {
+          y[yi] = val;
         }
       }
     };
