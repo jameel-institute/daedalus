@@ -286,6 +286,39 @@ daedalus <- function(
     # check vaccination start time and set vaccination flag
     flags["vax_flag"] <- 1.0
   }
+  if (is.null(vaccine_investment)) {
+    vaccine_investment <- dummy_vaccination()
+  }
+  if (is.character(vaccine_investment)) {
+    vaccine_investment <- rlang::arg_match(
+      vaccine_investment,
+      daedalus.data::vaccination_scenario_names
+    )
+    vaccine_investment <- daedalus_vaccination(vaccine_investment)
+  }
+
+  # NULL converted to "none"; WIP: this will be moved to a class constructor
+  if (response_strategy != "none") {
+    is_good_response_time <- checkmate::test_count(
+      response_time,
+      positive = TRUE
+    )
+    if (!is_good_response_time) {
+      cli::cli_abort(
+        "Expected `response_time` to be >= 1."
+      )
+    }
+
+    is_good_response_duration <- checkmate::test_count(
+      response_duration,
+      positive = TRUE
+    )
+    if (!is_good_response_duration) {
+      cli::cli_abort(
+        "Expected `response_duration` to be a single integer-like and >= 1."
+      )
+    }
+  }
 
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
   if (!is_good_time_end) {
