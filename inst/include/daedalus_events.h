@@ -18,6 +18,10 @@ namespace daedalus {
 
 namespace events {
 
+/// @brief A temporary(?) special value to indicate that events should log time
+/// in state.
+const double value_log_time = -999.0;
+
 /// @brief Get values depending on a flag variable
 /// @tparam T
 /// @param value A value, typically of the openness coefficient. For an 80%
@@ -38,16 +42,16 @@ class response {
 
  public:
   const std::string name;
-  const double time_on, time_off, state_on, state_off;
+  const double time_on, duration, state_on, state_off;
   const size_t i_flag;
   const std::vector<size_t> i_state_on, i_state_off;
+  const size_t i_time_start;
 
   /// @brief Constructor for a response.
   /// @param name A string for the name, used to generate event names.
   /// @param time_on The time at which the response should start. 0.0 indicates
   /// no response.
-  /// @param time_off The time at which the response should end. 0.0 indicates
-  /// no response.
+  /// @param duration The duration of the response. 0.0 indicates no response.
   /// @param state_on The state (sum) value at which the response should start.
   /// @param state_off The state (sum) value at which the response should end.
   /// @param i_flag The index of the state variable holding the flag to modify,
@@ -56,19 +60,23 @@ class response {
   /// calculate the state value which is compared against `state_on`.
   /// @param i_state_off The indices of the state variables to be summed to
   /// calculate the state value which is compared against `state_off`.
+  /// @param i_time_start The index of the state variable that holds the
+  /// realised start time for an event. Typically useful for state-triggered
+  /// events.
   response(const std::string &name, const double &time_on,
-           const double &time_off, const double &state_on,
+           const double &duration, const double &state_on,
            const double &state_off, const size_t &i_flag,
            const std::vector<size_t> &i_state_on,
-           const std::vector<size_t> &i_state_off)
+           const std::vector<size_t> &i_state_off, const size_t &i_time_start)
       : name(name),
         time_on(time_on),
-        time_off(time_off),
+        duration(duration),
         state_on(state_on),
         state_off(state_off),
         i_flag(i_flag),
         i_state_on(i_state_on),
-        i_state_off(i_state_off) {}
+        i_state_off(i_state_off),
+        i_time_start(i_time_start) {}
 
   /// @brief Root-find on time.
   /// @param value The time value to check current time against.
@@ -90,8 +98,9 @@ class response {
     auto fn_test = [id_state, value](const double t, const double *y) {
       if (y[id_state] > 0.0) {
         return t - (value + y[id_state]);
-      } else
+      } else {
         return 1.0;  // prevent (t - value) when event has not launched yet
+      }
     };
 
     return fn_test;
@@ -168,9 +177,9 @@ class response {
 
     if (!ISNA(time_on)) {
       std::string name_ev_time_on = name + "_time_on";
-      dust2::ode::event<double> ev_time_on =
-          make_event(name_ev_time_on, {}, make_time_test(time_on),
-                     make_flag_setter(i_flag, 1.0));
+      dust2::ode::event<double> ev_time_on = make_event(
+          name_ev_time_on, {}, make_time_test(time_on),
+          make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}));
 
       events.push_back(ev_time_on);
     }
@@ -179,7 +188,7 @@ class response {
       std::string name_ev_time_off = name + "_time_off";
       dust2::ode::event<double> ev_time_off =
           make_event(name_ev_time_off, {}, make_time_test(time_off),
-                     make_flag_setter(i_flag, 0.0));
+                     make_flag_setter({i_flag}, {0.0}));
 
       events.push_back(ev_time_off);
     }
@@ -187,7 +196,8 @@ class response {
     if (!ISNA(state_on)) {
       std::string name_ev_state_on = name + "_state_on";
       dust2::ode::event<double> ev_state_on = make_event(
-          name_ev_state_on, i_state_on, make_state_test(i_state_on, state_on),
+          name_ev_state_on, i_state_on,
+          make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
           make_flag_setter(i_flag, 1.0), dust2::ode::root_type::increase);
 
       events.push_back(ev_state_on);
@@ -196,9 +206,9 @@ class response {
     if (!ISNA(state_off)) {
       std::string name_ev_state_off = name + "_state_off";
       dust2::ode::event<double> ev_state_off = make_event(
-          name_ev_state_off, {i_state_off},
+          name_ev_state_off, i_state_off,
           make_state_test(i_state_off, state_off),
-          make_flag_setter(i_flag, 0.0), dust2::ode::root_type::decrease);
+          make_flag_setter({i_flag}, {0.0}), dust2::ode::root_type::decrease);
 
       events.push_back(ev_state_off);
     }

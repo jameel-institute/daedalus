@@ -39,9 +39,11 @@ constexpr int i_rel_NPI_FLAG = 1;
 constexpr int i_rel_VAX_FLAG = 2;
 constexpr int i_rel_SD_FLAG = 3;
 constexpr int i_rel_HOSP_FLAG = 4;
+constexpr int i_rel_START_TIME = 5;
 
 // magic numbers
 constexpr double d_mort_multiplier = 1.6;
+
 }  // namespace constants
 
 }  // namespace daedalus
