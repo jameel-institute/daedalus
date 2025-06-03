@@ -99,10 +99,25 @@ class response {
 
   /// @brief Make event action lambda.
   /// @return A lambda suitable as an action in a dust2::event.
-  inline action_type make_flag_setter(const size_t &flag,
-                                      const double &value) const {
-    auto fn_action = [flag, value](const double t, const double sign,
-                                   double *y) { y[flag] = value; };
+  inline action_type make_flag_setter(const std::vector<size_t> &flags,
+                                      const std::vector<double> &values) const {
+    auto fn_action = [flags, values](const double t, const double sign,
+                                     double *y) {
+      for (size_t i = 0; i < flags.size(); i++) {
+        const size_t yi = flags[i];
+
+        // set flag only if not already set
+        if (!y[yi]) {
+          // set value to time if special value passed
+          const double val = values[i];
+          if ((val + 999.000) < 1e-6) {
+            y[yi] = t;  // it's fine if these are decimal values
+          } else {
+            y[yi] = values[i];
+          }
+        }
+      }
+    };
 
     return fn_action;
   }
