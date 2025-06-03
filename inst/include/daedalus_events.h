@@ -176,7 +176,7 @@ class response {
     std::string name_ev_time_off = name + "_time_off";
     dust2::ode::event<double> ev_time_off = make_event(
         name_ev_time_off, {}, make_duration_test(i_time_start, duration),
-        make_flag_setter({i_flag}, {0.0}));
+        make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}));
 
     std::string name_ev_state_on = name + "_state_on";
     dust2::ode::event<double> ev_state_on = make_event(
