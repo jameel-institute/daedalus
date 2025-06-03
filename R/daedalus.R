@@ -273,16 +273,13 @@ daedalus <- function(
 
   # NULL converted to "none"; WIP: this will be moved to a class constructor
   if (response_strategy != "none") {
-    is_good_response_time <- checkmate::test_integerish(
+    is_good_response_time <- checkmate::test_count(
       response_time,
-      upper = time_end - 2L, # for compat with daedalus
-      lower = 1L, # responses cannot start at 0, unless strategy is null
-      any.missing = FALSE,
-      len = 1
+      positive = TRUE
     )
     if (!is_good_response_time) {
       cli::cli_abort(
-        "Expected `response_time` to be between 1 and {time_end - 2L}."
+        "Expected `response_time` to be >= 1."
       )
     }
 
@@ -292,7 +289,7 @@ daedalus <- function(
     )
     if (!is_good_response_duration) {
       cli::cli_abort(
-        "Expected `response_duration` to be a single integer-like and >= 0"
+        "Expected `response_duration` to be a single integer-like and >= 1."
       )
     }
   }

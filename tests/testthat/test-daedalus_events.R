@@ -1,4 +1,4 @@
-test_that("daedalus: root-finding events launch at each appropriate root", {
+test_that("daedalus: root-finding events launch at the appropriate root", {
   # check that NPI triggers at response time when response time is low
   response_time <- 22.0
   output <- daedalus(
@@ -32,7 +32,8 @@ test_that("daedalus: root-finding events launch at each appropriate root", {
   )
 })
 
-test_that("daedalus: setting response duration works", {
+test_that("daedalus: response duration is based on correct start time", {
+  # duration is based on user-specified start time
   response_time <- 10
   response_duration <- 30
   output <- daedalus(
@@ -47,28 +48,24 @@ test_that("daedalus: setting response duration works", {
     output$response_data$closure_info$closure_time_end,
     response_time + response_duration
   )
-
-  # check that response duration of 0 is the same as no response
-  # must set hospital capacity to prevent event based triggering
-  cx <- daedalus_country("GBR")
-  cx$hospital_capacity <- 1e9
-  response_time <- 10
-  response_duration <- 0
-  output_alt <- daedalus(
-    cx,
-    "sars_cov_1",
-    "elimination",
-    response_time = response_time,
-    response_duration = response_duration
+  expect_identical(
+    output$response_data$closure_info$closure_duration,
+    response_duration
   )
+
+  # duration is based on state-driven start time
   output <- daedalus(
-    cx,
-    "sars_cov_1"
+    "GBR",
+    "sars_cov_2_delta",
+    "elimination",
+    response_time = 600, # artificially high
+    response_duration = response_duration
   )
 
   expect_identical(
-    get_epidemic_summary(output_alt, "infections"),
-    get_epidemic_summary(output, "infections")
+    output$response_data$closure_info$closure_duration,
+    response_duration,
+    tolerance = 1e-6
   )
 })
 
