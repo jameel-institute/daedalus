@@ -280,6 +280,9 @@ daedalus <- function(
         "Expected `response_duration` to be a single positive integer-like"
       )
     }
+  } else {
+    # set response time to NULL when response is NULL
+    response_time <- NULL
   }
 
   #### Prepare initial state and parameters ####
