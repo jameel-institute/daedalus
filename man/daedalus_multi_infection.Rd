@@ -11,6 +11,7 @@ daedalus_multi_infection(
   vaccine_investment = NULL,
   response_time = 30,
   response_duration = 365,
+  auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
   ...
@@ -56,6 +57,10 @@ Defaults to 30 days.}
 \item{response_duration}{A single integer-ish number that gives the number of
 days after \code{response_time} that an NPI should end.}
 
+\item{auto_social_distancing}{A string giving the option for the form of
+spontaneous social distancing in the model, which reduces infection
+transmission as a function of daily deaths. See \strong{Details} for more.}
+
 \item{initial_state_manual}{An optional \strong{named} list with the names
 \code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and
 symptomatic individuals in each age group and economic sector.
@@ -73,4 +78,8 @@ A list of \verb{<daedalus_output>} objects.
 \description{
 Run \code{\link[=daedalus]{daedalus()}} for multiple parameter sets, with the intended use case of
 running the model under uncertainty in infection parameters.
+}
+\details{
+See details of how \code{auto_social_distancing} affects the model in
+documentation for \code{\link[=daedalus]{daedalus()}}.
 }

@@ -1,3 +1,9 @@
+# daedalus 0.2.17
+
+Splits off spontaneous social distancing from being linked with NPIs, and fixes a bug where specifying `response = "none"` left social distancing on by default.
+
+New argument `auto_social_distancing` in both `daedalus()` and `daedalus_multi_infection()` allows this feature to be off, independent and on all the time, or linked to NPIs and on only when NPIs are active.
+
 # daedalus 0.2.16
 
 Patch version to allow passing a list of infection objects to the Daedalus model using the new function `daedalus_multi_infection()`. This helps model multiple different pandemics on the same population, or to model uncertainty in outcomes due to uncertainty in infection parameters for a single pandemic pathogen.`daedalus_multi_infection()` returns a list of output objects.

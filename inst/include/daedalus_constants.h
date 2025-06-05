@@ -37,6 +37,7 @@ inline const std::vector<size_t> seq_DATA_COMPARTMENTS = {8, 9};
 constexpr int i_rel_IPR = 0;
 constexpr int i_rel_NPI_FLAG = 1;
 constexpr int i_rel_VAX_FLAG = 2;
+constexpr int i_rel_SD_FLAG = 3;
 }  // namespace constants
 
 }  // namespace daedalus

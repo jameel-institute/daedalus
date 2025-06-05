@@ -10,6 +10,11 @@
 #'
 #' @return A list of `<daedalus_output>` objects.
 #'
+#' @details
+#'
+#' See details of how `auto_social_distancing` affects the model in
+#' documentation for [daedalus()].
+#'
 #' @export
 daedalus_multi_infection <- function(
   country,
@@ -18,6 +23,7 @@ daedalus_multi_infection <- function(
   vaccine_investment = NULL,
   response_time = 30,
   response_duration = 365,
+  auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
   ...
@@ -85,7 +91,10 @@ daedalus_multi_infection <- function(
   }
 
   # NULL converted to "none"; WIP: this will be moved to a class constructor
-  if (!identical(response_strategy, "none")) {
+  if (identical(response_strategy, "none")) {
+    # set response time to NULL when response is NULL
+    response_time <- NULL
+  } else {
     is_good_response_time <- checkmate::test_integerish(
       response_time,
       upper = time_end, # for compat with daedalus
@@ -109,6 +118,15 @@ daedalus_multi_infection <- function(
     }
   }
 
+  #### spontaneous social distancing ####
+  auto_social_distancing <- rlang::arg_match(auto_social_distancing)
+  auto_social_distancing <- switch(
+    auto_social_distancing,
+    off = 0,
+    independent = 1,
+    npi_linked = 2
+  )
+
   #### Prepare initial state and parameters ####
   initial_state <- make_initial_state(country, initial_state_manual)
 
@@ -125,7 +143,8 @@ daedalus_multi_infection <- function(
         susc = susc,
         openness = openness,
         response_time = response_time,
-        response_duration = response_duration
+        response_duration = response_duration,
+        auto_social_distancing = auto_social_distancing
       )
     )
   })
