@@ -91,7 +91,10 @@ daedalus_multi_infection <- function(
   }
 
   # NULL converted to "none"; WIP: this will be moved to a class constructor
-  if (!identical(response_strategy, "none")) {
+  if (identical(response_strategy, "none")) {
+    # set response time to NULL when response is NULL
+    response_time <- NULL
+  } else {
     is_good_response_time <- checkmate::test_integerish(
       response_time,
       upper = time_end, # for compat with daedalus
@@ -113,9 +116,6 @@ daedalus_multi_infection <- function(
         "Expected `response_duration` to be a single positive integer-like"
       )
     }
-  } else {
-    # set response time to NULL when response is NULL
-    response_time <- NULL
   }
 
   #### spontaneous social distancing ####
