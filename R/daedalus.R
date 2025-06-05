@@ -8,8 +8,9 @@ initial_flags <- function() {
   vax_flag <- 0.0
   npi_flag <- 0.0
   ipr <- 0.0 # incidence-prevalence ratio
+  sd_flag <- 0.0 # spontaneous social distancing flag
 
-  c(ipr = ipr, npi_flag = npi_flag, vax_flag = vax_flag)
+  c(ipr = ipr, npi_flag = npi_flag, vax_flag = vax_flag, sd_flag = sd_flag)
 }
 
 #' Get model response times from dust2 output
@@ -130,6 +131,10 @@ daedalus_internal <- function(
 #' @param response_duration A single integer-ish number that gives the number of
 #' days after `response_time` that an NPI should end.
 #'
+#' @param auto_social_distancing A string giving the option for the form of
+#' spontaneous social distancing in the model, which reduces infection
+#' transmission as a function of daily deaths. See **Details** for more.
+#'
 #' @param initial_state_manual An optional **named** list with the names
 #' `p_infectious` and `p_asymptomatic` for the proportion of infectious and
 #' symptomatic individuals in each age group and economic sector.
@@ -143,6 +148,8 @@ daedalus_internal <- function(
 #'
 #' @details
 #'
+#' ## Details: Initial state
+#'
 #' Users can pass the following initial state parameters to
 #' `initial_state_manual`:
 #'
@@ -154,6 +161,27 @@ daedalus_internal <- function(
 #' - `p_asymptomatic`: A single numeric value in the range \eqn{[0.0, 1.0]} for
 #' the proportion of initially infectious individuals who are considered to be
 #' asymptomatic. Defaults to 0.0.
+#'
+#' ## Details: Spontaneous social distancing
+#'
+#' There are three possible options for this behavioural module, given below.
+#' **Note that** a major issue with including this in a model run (any value
+#' other than `"off"`) is that it leads to substantially lower response costs,
+#' and generally better health outcomes (lives lost), **without accounting for
+#' any attendant economic or social costs**. As such, please treat this option
+#' as **highly experimental**.
+#'
+#' - `"off"`: There is no effect of daily deaths on infection transmissibility.
+#' This is the **default choice**.
+#'
+#' - `"independent"`: Public-concern over deaths reduces transmissibility, and
+#' is independent of any mandated responses. It begins at the start of the
+#' simulation, and continues until the simulation ends.
+#'
+#' - `"npi_linked`": Public-concern over deaths reduces transmissibility, but
+#' only when a  mandated response is active. Note that there is currently no way
+#' to end a response triggered by a state, i.e., an NPI launched due to hospital
+#' capacity being breached.
 #'
 #' @return A `<daedalus_output>` object if `infection` is a string or a single
 #' `<daedalus_infection>` object. Otherwise, a list of `<daedalus_output>`s
@@ -193,6 +221,7 @@ daedalus <- function(
   vaccine_investment = NULL,
   response_time = 30,
   response_duration = 365,
+  auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
   ...
@@ -285,6 +314,15 @@ daedalus <- function(
     response_time <- NULL
   }
 
+  #### spontaneous social distancing ####
+  auto_social_distancing <- rlang::arg_match(auto_social_distancing)
+  auto_social_distancing <- switch(
+    auto_social_distancing,
+    off = 0,
+    independent = 1,
+    npi_linked = 2
+  )
+
   #### Prepare initial state and parameters ####
   initial_state <- make_initial_state(country, initial_state_manual)
 
@@ -300,7 +338,8 @@ daedalus <- function(
       susc = susc,
       openness = openness,
       response_time = response_time,
-      response_duration = response_duration
+      response_duration = response_duration,
+      auto_social_distancing = auto_social_distancing
     )
   )
 
