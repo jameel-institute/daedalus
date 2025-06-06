@@ -27,7 +27,7 @@ library(knitr)
 library(bookdown)
 ```
 
-This vignette presents a technical description of the _daedalus_ model in its current state. It should be noted _daedalus_ is in constant development; we will attempt to keep this document as updates as possible during the lifespan of the model. If you encounter any issues, contact the package developers or raise a GitHub issue.
+This vignette presents a technical description of the _daedalus_ model in its current state. It should be noted _daedalus_ is in constant development; we will attempt to keep this document as updated as possible during the lifespan of the model. If you encounter any issues, contact the package developers or raise a GitHub issue.
 
 
 
