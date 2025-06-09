@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,6 +65,7 @@
 <span>  vaccine_investment <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  response_time <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  response_duration <span class="op">=</span> <span class="fl">365</span>,</span>
+<span>  auto_social_distancing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"off"</span>, <span class="st">"independent"</span>, <span class="st">"npi_linked"</span><span class="op">)</span>,</span>
 <span>  initial_state_manual <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  time_end <span class="op">=</span> <span class="fl">600</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -131,6 +132,12 @@ Defaults to 30 days.</p></dd>
 days after <code>response_time</code> that an NPI should end.</p></dd>
 
 
+<dt id="arg-auto-social-distancing">auto_social_distancing<a class="anchor" aria-label="anchor" href="#arg-auto-social-distancing"></a></dt>
+<dd><p>A string giving the option for the form of
+spontaneous social distancing in the model, which reduces infection
+transmission as a function of daily deaths. See <strong>Details</strong> for more.</p></dd>
+
+
 <dt id="arg-initial-state-manual">initial_state_manual<a class="anchor" aria-label="anchor" href="#arg-initial-state-manual"></a></dt>
 <dd><p>An optional <strong>named</strong> list with the names
 <code>p_infectious</code> and <code>p_asymptomatic</code> for the proportion of infectious and
@@ -157,7 +164,12 @@ passed to <code>infection</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Users can pass the following initial state parameters to
+
+<div class="section">
+<h3 id="details-initial-state">Details: Initial state<a class="anchor" aria-label="anchor" href="#details-initial-state"></a></h3>
+
+
+<p>Users can pass the following initial state parameters to
 <code>initial_state_manual</code>:</p><ul><li><p><code>p_infectious</code>: A single numeric value in the range \([0.0, 1.0]\) giving
 the proportion of individuals in each age group and economic sector that are
 to be initialised as infectious. Defaults to <code>1e-6</code>, or one in every one
@@ -166,6 +178,28 @@ million as infectious.</p></li>
 the proportion of initially infectious individuals who are considered to be
 asymptomatic. Defaults to 0.0.</p></li>
 </ul></div>
+
+<div class="section">
+<h3 id="details-spontaneous-social-distancing">Details: Spontaneous social distancing<a class="anchor" aria-label="anchor" href="#details-spontaneous-social-distancing"></a></h3>
+
+
+<p>There are three possible options for this behavioural module, given below.
+<strong>Note that</strong> a major issue with including this in a model run (any value
+other than <code>"off"</code>) is that it leads to substantially lower response costs,
+and generally better health outcomes (lives lost), <strong>without accounting for
+any attendant economic or social costs</strong>. As such, please treat this option
+as <strong>highly experimental</strong>.</p><ul><li><p><code>"off"</code>: There is no effect of daily deaths on infection transmissibility.
+This is the <strong>default choice</strong>.</p></li>
+<li><p><code>"independent"</code>: Public-concern over deaths reduces transmissibility, and
+is independent of any mandated responses. It begins at the start of the
+simulation, and continues until the simulation ends.</p></li>
+<li><p><code>"npi_linked</code>": Public-concern over deaths reduces transmissibility, but
+only when a  mandated response is active. Note that there is currently no way
+to end a response triggered by a state, i.e., an NPI launched due to hospital
+capacity being breached.</p></li>
+</ul></div>
+
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>

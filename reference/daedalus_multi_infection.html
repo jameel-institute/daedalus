@@ -9,7 +9,7 @@ running the model under uncertainty in infection parameters."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,6 +68,7 @@ running the model under uncertainty in infection parameters.</p>
 <span>  vaccine_investment <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  response_time <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  response_duration <span class="op">=</span> <span class="fl">365</span>,</span>
+<span>  auto_social_distancing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"off"</span>, <span class="st">"independent"</span>, <span class="st">"npi_linked"</span><span class="op">)</span>,</span>
 <span>  initial_state_manual <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  time_end <span class="op">=</span> <span class="fl">600</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -128,6 +129,12 @@ Defaults to 30 days.</p></dd>
 days after <code>response_time</code> that an NPI should end.</p></dd>
 
 
+<dt id="arg-auto-social-distancing">auto_social_distancing<a class="anchor" aria-label="anchor" href="#arg-auto-social-distancing"></a></dt>
+<dd><p>A string giving the option for the form of
+spontaneous social distancing in the model, which reduces infection
+transmission as a function of daily deaths. See <strong>Details</strong> for more.</p></dd>
+
+
 <dt id="arg-initial-state-manual">initial_state_manual<a class="anchor" aria-label="anchor" href="#arg-initial-state-manual"></a></dt>
 <dd><p>An optional <strong>named</strong> list with the names
 <code>p_infectious</code> and <code>p_asymptomatic</code> for the proportion of infectious and
@@ -148,6 +155,11 @@ returned for each day. Defaults to 300 days.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A list of <code>&lt;daedalus_output&gt;</code> objects.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>See details of how <code>auto_social_distancing</code> affects the model in
+documentation for <code><a href="daedalus.html">daedalus()</a></code>.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
