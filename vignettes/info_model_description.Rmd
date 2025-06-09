@@ -281,36 +281,24 @@ K_2 = \int_{t=0}^t \left( Y_0(t) - Y(t) \right)dt.
 
 ## Years of education lost
 
-In addition to GVA losses from closures, as above, we estimate total education sector losses given
-
-\begin{equation}
-K_3 = \int_{t=0}^t \left( y_{edu}(t) + N^{i=2}(t) \cdot VSD \cdot (1 - \kappa_{edu}(t)) \cdot (1 - \pi) \right)dt
-\end{equation}
-
-where $N^{i=2}(t)$ is the number of pupils available at time $t$ (i.e., population of school-age not infected, hospitalised or deceased), $\pi$ a fixed parameter of the effectiveness of remote education, and $VSD$ is a country-specific parameter of the economic value of a school day, which we estimate as in , given by
+We monetise the value of a school day $VSD$ as a country-specific parameter, as previously done in @psacharopoulos2021, given by
 
 \begin{equation}
 VSD = \frac{VPE \cdot MAE \cdot RYE}{365}
 \end{equation}
 
-where $MAE$ is the mean annual earnings (estimated using GDP multiplied by labour share of income), $RYE$ the rate of return for one year of education, assumed fixed at 0.08, and $VPE$ is the yearly present value of lost earnings given by
+where $MAE$ is the mean annual earnings (estimated using GDP multiplied by labour share of income, as in @feenstra2015), $RYE$ the rate of return for one year of education, assumed fixed at 0.08, and $VPE$ is the yearly present value of lost earnings given by
 
-**TODO**: Rob, could you please check how this was calculated? Is it as in p^{12} of your technical appendix? If so, could you please re-write it here, else please write down the respective equation for it. Thanks.
+**TODO**: Rob, I cannot find any reference in the _daedalus_ code or data of how this was calculated. Is it that the country data files were prepared and saved following the equation for $p^{12}$ in your technical appendix? If you could please corroborate and re-write the correct form of that equation here it will be ace. Thanks!
 
+Thus, in addition to GVA losses from closures, as done for all economic sectors (see section above), we estimate total education sector losses as
 
+\begin{equation}
+K_3 = \int_{t=0}^t \left( y_{edu}(t) + N^{i=2}(t) \cdot VSD \cdot (1 - \kappa_{edu}(t)) \cdot (1 - \pi) \right)dt
+\end{equation}
 
-# Data 
+where $N^{i=2}(t)$ is the number of pupils available at time $t$ (i.e., population of school-age not infected, hospitalised or deceased), $\pi$ a fixed parameter of the effectiveness of remote education.
 
-This section details the data inputs used to parameterise _daedalus_.
-
-##  Respiratory pathogens
-
-
-
-
-## Synthetic countries
-
-Table: (\#tab:countrydata) Country parameters and data sources.
 
 
 
