@@ -5,6 +5,7 @@
 
 // clang-format off
 #include "daedalus_types.h"
+#include "daedalus_helpers.h"
 
 #include <functional>
 #include <string>
@@ -86,11 +87,16 @@ class response {
   /// @param value The value against which to compare the summed state.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_state_test(const std::vector<size_t> &idx_state,
-                                   const double value) const {
-    auto fn_test = [idx_state, value](const double t, const double *y) {
+                                   const double value,
+                                   const bool debug = false) const {
+    auto fn_test = [debug, idx_state, value](const double t, const double *y) {
       const int size_n = idx_state.size();
-      const double sum_state = std::accumulate(y, y + size_n, 0);
-      return sum_state - value;
+      const double sum_state = std::accumulate(y, y + size_n, 0.0);
+      const double rounded_state = daedalus::helpers::round_n(sum_state, 2);
+      if (debug) {
+        Rprintf("t = %f; ipr = %f; ipr_rn = %f\n", t, sum_state, rounded_state);
+      }
+      return rounded_state - value;
     };
 
     return fn_test;
@@ -149,7 +155,7 @@ class response {
     std::string name_ev_state_off = name + "_state_off";
     dust2::ode::event<double> ev_state_off = make_event(
         name_ev_state_off, {i_state_off},
-        make_state_test({i_state_off}, state_off),
+        make_state_test({i_state_off}, state_off, name == "npi"),
         make_flag_setter(i_flag, 0.0), dust2::ode::root_type::decrease);
 
     return dust2::ode::events_type<double>(
