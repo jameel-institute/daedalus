@@ -35,17 +35,16 @@ SEIR
 Sumali
 TSL
 VLY
+VPE
 VSD
 VSL
 VSLY
 VSY
-Wildtype
 YLL
 arg
 asumes
 asymp
 cdot
-countrydata
 cpp
 dD
 dE
@@ -57,7 +56,6 @@ dS
 doi
 dt
 econ
-ed
 edu
 eigen
 erroring
@@ -67,10 +65,8 @@ frac
 ij
 inf
 int
-iso
 lintr
 monty
-neq
 odeint
 org
 pak
@@ -85,6 +81,5 @@ struct
 symp
 sympt
 th
-timeseries
 timesteps
 transitionpars
