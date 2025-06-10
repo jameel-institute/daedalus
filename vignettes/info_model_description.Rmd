@@ -36,11 +36,14 @@ The _daedalus_ package is the implementation of a deterministic epidemiological 
 
 - Health impact in terms of infections, hospitalisations, deaths and years of life lost (YLL), and 
 
-- Economic impact in terms of GDP lost from economic sector closures and workforce depletion (i.e., as a result of self-isolation, infection, hospitalisation or death). 
+- Economic impact in terms of GDP losses from:
+    - Economic sector closures and workforce depletion (i.e., as a result of self-isolation, infection, hospitalisation or death)
+    - Present and life-time economic losses from missed education
+    - Human life losses using the value of statistical life approach
 
-Presently, we have equipped _daedalus_ with parameters to simulate nine potential pathogens (influenza A 2009, influenza A 1957, influenza A 1918, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1, see \@ref(tab:pathogendata)) across 67 synthetic countries (see \@ref(tab:countrydata)). In addition, _daedalus_ allows the user the flexibility to incorporate additional respiratory pathogen and/or country parameters and data, as considered appropriate for their use case.
+Presently, we have equipped _daedalus_ with parameters to simulate nine potential pathogens (influenza A 2009, influenza A 1957, influenza A 1918, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1, see \@ref(tab:pathogendata)) across 67 synthetic countries. In addition, _daedalus_ allows the user the flexibility to incorporate additional respiratory pathogen and/or country parameters and data, as considered appropriate for their use case.
 
-The following sections present a technical description of the epidemiological and economic components of _daedalus_, its parameters and input data. For examples of its implementation in research case studies, see 
+The following sections present a technical description of the epidemiological and economic components of _daedalus_. For examples of its implementation in research case studies, see 
 
 - The original description of _daedalus_ and application to the UK during the COVID-19 pandemic in @haw2022
 
@@ -54,7 +57,7 @@ The following sections present a technical description of the epidemiological an
 
 ## Model structure
 
-_daedalus_ simulates an entire synthetic country's population split into seven possible disease state compartments. Model compartments are stratified by age-economic sector $i$ and vaccination $j$ classes. 
+_daedalus_ simulates a synthetic country's population split into seven possible disease state compartments. Model compartments are stratified by age-economic sector $i$ and vaccination $j$ classes. 
 
 A susceptible individual $S$ can become exposed to the virus and enter a latent state $E$, from which they can develop either a symptomatic $Is$ or asymptomatic $Ia$ infection. Whereas asymptomatic infected individuals are assumed to always recover, symptomatic ones can either recover $R$ or develop a more severe condition requiring hospitalisation $H$, from which they can either recover or die $D$.
 
@@ -90,7 +93,10 @@ There are 49 age-economic classes $i$ in _daedalus_. Age-economic classes $i \in
 
 ### Vaccination classes
 
-As a default, _daedalus_ further disaggregates the population into the vaccination classes $j \in 1:3$ of unvaccinated, fully vaccinated and waned immunity from vaccination. The parameters of full and waned vaccine efficacy, however, can be manipulated by the user with values considered more appropriate for their use case (e.g., vaccinated with doses one and two of a two course vaccine).
+As a default, _daedalus_ further disaggregates the population into the vaccination classes $j \in 1:2$ of unvaccinated and vaccinated. We assume only the population in the susceptible and recovered compartments can be vaccinated, given transition rate $\zeta^{i,j=0}(t)$, which is determined by the user (see Table \@ref(tab:vaccine)). Vaccinated individuals can lose their immunity and transition back to an unvaccinated class, given rate $\rho$. 
+
+
+
 
 
 
@@ -98,7 +104,7 @@ As a default, _daedalus_ further disaggregates the population into the vaccinati
 
 ## Model transition parameters
 
-_daedalus_ can simulate nine different pathogens (influenza A 2009, influenza A 1957, influenza A 1918, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1) with pathogen-specific transition (see \@ref(tab:pathogendata)).
+_daedalus_ can simulate nine different pathogens (influenza A 2009, influenza A 1957, influenza A 1918, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1) with pathogen-specific transition (see Table \@ref(tab:pathogendata)).
 
 | **Parameter** | **Definition** |
 | :----- | :----- |
@@ -194,10 +200,21 @@ The total force of infection acting on susceptible individuals is then assumed t
 | 20-64 years | | 120.9 | 67.5 | 40 | 28.4 | 40.5 | 64    | 86.4 |
 | 65+ years |   | 7.9   | 67.5 | 40 | 17.3 | 26.3 | 41.6  | 86.4 |
 
-Table: (\#tab:pathogendata) Pathogen parameters and data sources. A different pathogen profile can be created by the user by generating a list object specifying these parameter values (see list structure for these pathogens in `daedalus.data::infection_data`). *Note disease severity progression is modelled with competing rates (e.g., for individuals in the $Ia$ compartment, of recovery $\gamma_{Is}$ vs hospitalisation by age $\eta^i$); where NA values are specified, we assume these individuals cannot undergo the respective disease severity transition.
+Table: (\#tab:pathogendata) Pathogen parameters. A different pathogen profile can be created by the user by generating a list object specifying these parameter values (see list structure for these pathogens in `daedalus.data::infection_data`). *Note disease severity progression is modelled with competing rates (e.g., for individuals in the $Ia$ compartment, of recovery $\gamma_{Is}$ vs hospitalisation by age $\eta^i$); where NA values are specified, we assume these individuals cannot undergo the respective disease severity transition.
 
 
-### Vaccination transition rates
+### Vaccination
+
+Vaccination is implemented as a series of default pre-determined vaccine investment scenarios, which can be modified as necessary by the user. 
+
+| **Advance vaccine investment** | **Start time (days)** | **Rate (\% per day)** | **Uptake limit (\%)** | **Efficacy* (\%)** | **Waning period (mean, days)** |
+| :----- | :----- | :----- | :----- | :----- | :----- |
+| None   | 365 | 0.14 | 40 | 50 | 270 |
+| Low    | 300 | 0.29 | 50 | 50 | 270 |
+| Medium | 200 | 0.43 | 60 | 50 | 270 |
+| High   | 100 | 0.5  | 80 | 50 | 270 |
+
+Table: (\#tab:vaccine) Vaccination parameters. These pre-specified parameters can be modified by the user and/or additional strategies can be added by generaliting a list object with the same structure (see `daedalus.data::vaccination_scenario_data`). *Note the default version of _daedalus_ only models vaccine efficacy against infection; for use cases with added functionality to simulate efficacy against other clinical severity end-points see @johnson_indonesia.
 
 
 
