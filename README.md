@@ -81,12 +81,12 @@ data <- daedalus("Canada", "influenza_1918")
 
 # get pandemic costs as a total in million dollars
 get_costs(data, "total")
-#> [1] 1196882
+#> [1] 1049499
 
 # disaggregate total for economic, education, and health costs
 get_costs(data, "domain")
 #>     economic    education   life_value   life_years 
-#> 3.283068e+04 2.829719e+00 1.164049e+06 2.527793e+07
+#> 2.848564e+04 2.829719e+00 1.021011e+06 2.217178e+07
 ```
 
 Users can select infection parameters from among seven epidemics caused
