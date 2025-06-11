@@ -10,6 +10,9 @@ test_that("Costs: basic expectations", {
   expect_no_condition({
     costs_domain <- get_costs(output, "domain")
   })
+  expect_snapshot(
+    costs
+  )
 
   checkmate::expect_list(costs, c("numeric", "list"), any.missing = FALSE)
   checkmate::expect_number(costs_total, lower = 0, finite = TRUE)
@@ -79,7 +82,27 @@ test_that("Costs: scenario expectations", {
   })
 })
 
-test_that("Expectations on schooling costs", {
+test_that("Expectations on education costs", {
+  # tests to check that education costs are correctly handled
+  output <- daedalus("GBR", "sars_cov_1")
+  costs <- get_costs(output)
+
+  # to check that matrix mult and colsums is correct in `get_costs()`
+  expect_gt(
+    round(costs$education_costs$education_cost_absences),
+    1
+  )
+
+  # expect absences in education lead to higher losses
+  # this probably works for UK due to size of education sector
+  expect_gt(
+    costs$education_costs$education_cost_absences,
+    costs$economic_costs$sector_cost_absences[1]
+  )
+
+  output <- daedalus("GBR", "sars_cov_1")
+  costs <- get_costs(output)
+
   # exepct that costs due to closures are non-zero, in scenarios with schools
   # closed
   x <- c("none", "school_closures", "elimination")

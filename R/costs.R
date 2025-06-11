@@ -81,12 +81,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   # calculate daily GVA loss due to illness-related absencees;
   # scale GVA loss by openness when closures are active
   # assuming no working from home
-  gva_loss <- worker_absences %*% diag(gva / workforce)
-
-  # NOTE: education costs of absences are ONLY related to the absence of
-  # educational workers, not students - may need to be updated
-  education_cost_absences <- gva_loss[i_EDUCATION_SECTOR]
-  economic_cost_absences <- sum(gva_loss[-i_EDUCATION_SECTOR])
+  sector_cost_absences <- worker_absences %*% diag(gva / workforce)
 
   # calculate total deaths and multiply by VSL
   total_deaths <- model_data[
@@ -128,13 +123,22 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
     )
 
     # multiply loss due to closures by loss due to absences
-    gva_loss[seq(closure_start, closure_end), ] <- gva_loss[
-      seq(closure_start, closure_end),
-    ] %*%
+    # to get true loss due to absences
+    sector_cost_absences[seq(closure_start, closure_end), ] <-
+      sector_cost_absences[
+        seq(closure_start, closure_end),
+      ] %*%
       diag(openness)
   }
 
-  gva_loss <- colSums(gva_loss)
+  # NOTE: sum costs of illness related absence after accounting for
+  # sector openness
+  sector_cost_absences <- colSums(sector_cost_absences)
+
+  # NOTE: education costs of absences are ONLY related to the absence of
+  # educational workers, not students - may need to be updated
+  education_cost_absences <- sector_cost_absences[i_EDUCATION_SECTOR]
+  economic_cost_absences <- sum(sector_cost_absences[-i_EDUCATION_SECTOR])
 
   cost_list <- list(
     total_cost = NA,
@@ -143,7 +147,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
       economic_cost_closures = economic_cost_closures,
       economic_cost_absences = economic_cost_absences,
       sector_cost_closures = sector_cost_closures,
-      sector_cost_absences = gva_loss
+      sector_cost_absences = sector_cost_absences
     ),
     education_costs = list(
       education_cost_total = education_cost_closures + education_cost_absences,
