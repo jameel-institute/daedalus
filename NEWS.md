@@ -1,3 +1,7 @@
+# daedalus 0.2.18
+
+Patch version to correct erroneous book-keeping of costs due to absences and closures; tests added to check that absence costs are not very low.
+
 # daedalus 0.2.17
 
 Splits off spontaneous social distancing from being linked with NPIs, and fixes a bug where specifying `response = "none"` left social distancing on by default.
