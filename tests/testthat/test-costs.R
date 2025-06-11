@@ -100,9 +100,6 @@ test_that("Expectations on education costs", {
     costs$economic_costs$sector_cost_absences[1]
   )
 
-  output <- daedalus("GBR", "sars_cov_1")
-  costs <- get_costs(output)
-
   # exepct that costs due to closures are non-zero, in scenarios with schools
   # closed
   x <- c("none", "school_closures", "elimination")
