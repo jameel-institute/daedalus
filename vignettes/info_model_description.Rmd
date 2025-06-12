@@ -135,7 +135,7 @@ We let $\delta Icomm^i(t)$ and $\delta Iwork^i(t)$ denote the number of infected
     & \delta Icomm_{ij}(t) = v_{eff_{j=1}} (Ia_{i \in 1:4,j}(t) \epsilon + Is_{i \in 1:4,j}(t))\\
     & \delta Iwork_{ij}(t) = v_{eff_{j=1}} (Ia_{i \in 5:49,j}(t) \epsilon + Is_{i \in 5:49,j}(t)),
 \end{align}
-where $\epsilon$ is the relative infectiousness of an asymptomatically infected individual relative to a symptomatic one, and $v_{eff_{j=1}}$ the infectivity of an individual in strata $j$ relative to an unvaccinated individual of the same age.
+where $\epsilon$ is the relative infectiousness of an asymptomatically infected individual relative to a symptomatic one, and $v_{eff_{j=1}}$ the reduced susceptibility of a vaccinated individual relative to an unvaccinated one of the same age.
 
 
 
