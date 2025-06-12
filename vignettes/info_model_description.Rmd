@@ -142,24 +142,24 @@ where $\epsilon$ is the relative infectiousness of an asymptomatically infected 
 The force of infection from the community $\lambda_{comm_{i,j}} (t)$ on a susceptible individual is thus modelled as 
 \begin{align}
 \lambda_{comm_{i,j}} (t) & =
-    \beta (t) \cdot \chi_{i,j} \cdot \sum_{i'} m_{i,i'} \sum_{j'} \delta Icomm_{i',j'} (t)
+    \beta (t) \cdot \sum_{i'} m_{i,i'} \sum_{j'} \delta Icomm_{i',j'} (t)
 \end{align}
-where $\chi_{i,j}$ is the relative susceptibility to infection of a susceptible individual in strata $i,j$ relative to a non-vaccinated individual of the same strata, $\beta(t)$ represents a time-varying contact rate scaling factor, determined by social distancing interventions simulated, and $m_{i,i'}$ is the (symmetric) person-to-person contact rate between age group $i$ and $i'$.
+where $\beta(t)$ represents a time-varying contact rate scaling factor, determined by social distancing interventions simulated, and $m_{i,i'}$ is the (symmetric) person-to-person contact rate between age group $i$ and $i'$.
 
 
 
 The force of infection within the workplace $\lambda_{work_{i,j}} (t)$ is modelled as 
 \begin{align}
 \lambda_{work_{i,j}} (t) & =
-    \beta (t) \cdot \chi_{i,j} \cdot \Phi(t) \cdot \sum_{i'} C_{i,i'} \sum_{j'} \delta Iwork_{i',j'} (t)
+    \beta (t) \cdot \Phi_i(t) \cdot \sum_{i'=0}^{i'=N} C_{i,i'} \sum_{j'} \delta Iwork_{i',j'} (t)
 \end{align}
-where $C_{i,i'}$ is a contact matrix specific to the workplace, and $\Phi(t)$ is a scaling factor determined by economic closure interventions simulated.
+where $C_{i,i'}$ is a contact matrix specific to the workplace, and $\Phi_i(t)$ is a scaling factor determined by economic closure interventions simulated.
 
 
 Lastly, the force of infection from infected individuals in the community to susceptible workers $\lambda_{c2w_{i,j}} (t)$ (i.e.~asymptomatically infected individuals from the community attending shops, etc.) is given by
 \begin{align}
 \lambda_{c2w_{i,j}} (t) & =
-    \beta (t) \cdot \chi_{i,j} \cdot \Phi(t) \cdot \sum_{i'} CtoW_{i,i'} \sum_{j'} \delta Icomm_{i',j'} (t)
+    \beta (t) \cdot \Phi_i(t) \cdot \sum_{i'=0}^{i'=N} CtoW_{i,i'} \sum_{j'} \delta Icomm_{i',j'} (t)
 \end{align}
 where $CtoW_{i,i'}$ is a contact matrix specific to consumers attending workplaces.
 
