@@ -32,7 +32,7 @@ This vignette presents a technical description of the _daedalus_ model in its cu
 
 # Rationale
 
-The _daedalus_ package is the implementation of a deterministic epidemiological and economic model of the emergence and spread of respiratory pathogen pandemics in synthetic countries. Specifically, _daedalus_ tracks 
+The _daedalus_ package is the implementation of a deterministic epidemiological and economic model of the emergence and spread of respiratory pathogen pandemics in countries. Specifically, _daedalus_ tracks 
 
 - Health impact in terms of infections, hospitalisations, deaths and years of life lost (YLL), and 
 
@@ -41,7 +41,7 @@ The _daedalus_ package is the implementation of a deterministic epidemiological 
     - Present and life-time economic losses from missed education
     - Human life losses using the value of statistical life approach
 
-Presently, we have equipped _daedalus_ with parameters to simulate nine potential pathogens (influenza A 2009, influenza A 1957, influenza A 1918, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1, see \@ref(tab:pathogendata)) across 67 synthetic countries. In addition, _daedalus_ allows the user the flexibility to incorporate additional respiratory pathogen and/or country parameters and data, as considered appropriate for their use case.
+Presently, we have equipped _daedalus_ with parameters to simulate nine potential pathogens (influenza A 2009, influenza A 1957, influenza A 1918, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1, see \@ref(tab:pathogendata)) across 67 countries. In addition, _daedalus_ allows the user the flexibility to incorporate additional respiratory pathogen and/or country parameters and data, as considered appropriate for their use case.
 
 The following sections present a technical description of the epidemiological and economic components of _daedalus_. For examples of its implementation in research case studies, see 
 
@@ -57,26 +57,24 @@ The following sections present a technical description of the epidemiological an
 
 ## Model structure
 
-_daedalus_ simulates a synthetic country's population split into seven possible disease state compartments. Model compartments are stratified by age-economic sector $i$ and vaccination $j$ classes. 
+_daedalus_ simulates a country's population split into seven possible disease state compartments. Model compartments are stratified by age-economic sector $i$ and vaccination $j$ classes. 
 
 A susceptible individual $S$ can become exposed to the virus and enter a latent state $E$, from which they can develop either a symptomatic $Is$ or asymptomatic $Ia$ infection. Whereas asymptomatic infected individuals are assumed to always recover, symptomatic ones can either recover $R$ or develop a more severe condition requiring hospitalisation $H$, from which they can either recover or die $D$.
 
 
-```{r,fig.cap='DAEDALUS epidemiological model diagram.',echo=F,warning=F,message=F, out.width="50%"}
-knitr::include_graphics(path = "figures/daedalus.png")
-```
+<img src="vignettes/figures/daedalus.png" align="center" style = "border: none; float: center;" width = "800px">
 
 
 ### Ordinary differential equations
 
 \begin{align}
-    & \frac{dS^{i,j}}{dt} = \zeta^{i,j-1}(t) S^{i,j-1}(t) - \Lambda^{i,j} (t) S^{i,j}(t)  + \rho R^{i,j}(t)\\
-    & \frac{dE^{i,j}}{dt} = \Lambda^{i,j} (t) S^{i,j}(t) - \sigma E^{i,j}(t) \\
-    & \frac{dIa^{i,j}}{dt} = (1 - p_{symp}) \sigma E^{i,j}(t) - \gamma_{Ia} Ia^{i,j}(t) \\
-    & \frac{dIs^{i,j}}{dt} = p_{symp} \sigma E^{i,j}(t) - \gamma_{Is} Is^{i,j}(t) - \eta^i Is^{i,j}(t) \\
-    & \frac{dH^{i,j}}{dt} = \eta^i Is^{i,j}(t) - \omega^i H^{i,j}(t) - \gamma_H^i H^{i,j}(t) \\
-    & \frac{dR^{i,j}}{dt} = \zeta^{i,j-1}(t) R^{i,j-1}(t) + \gamma_{Is} Is^{i,j}(t) + \gamma_{Ia} Ia^{i,j}(t) + \gamma_H^i H^{i,j}(t) - \rho R^{i,j}(t) \\
-    & \frac{dD^{i,j}}{dt} = \omega^i H^{i,j}(t)\\
+    & \frac{dS_{i,j}}{dt} = \zeta_{i,j-1}(t) S_{i,j-1}(t) - \Lambda_{i,j} (t) S_{i,j}(t)  + \rho R_{i,j}(t)\\
+    & \frac{dE_{i,j}}{dt} = \Lambda_{i,j} (t) S_{i,j}(t) - \sigma E_{i,j}(t) \\
+    & \frac{dIa_{i,j}}{dt} = (1 - p_{symp}) \sigma E_{i,j}(t) - \gamma_{Ia} Ia_{i,j}(t) \\
+    & \frac{dIs_{i,j}}{dt} = p_{symp} \sigma E_{i,j}(t) - \gamma_{Is} Is_{i,j}(t) - \eta^i Is_{i,j}(t) \\
+    & \frac{dH_{i,j}}{dt} = \eta^i Is_{i,j}(t) - \omega^i H_{i,j}(t) - \gamma_H^i H_{i,j}(t) \\
+    & \frac{dR_{i,j}}{dt} = \zeta_{i,j-1}(t) R_{i,j-1}(t) + \gamma_{Is} Is_{i,j}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_H^i H_{i,j}(t) - \rho R_{i,j}(t) \\
+    & \frac{dD_{i,j}}{dt} = \omega^i H_{i,j}(t)\\
 \end{align}
 
 
@@ -88,12 +86,12 @@ knitr::include_graphics(path = "figures/daedalus.png")
 
 ### Age-economic sector classes
 
-There are 49 age-economic classes $i$ in _daedalus_. Age-economic classes $i \in 1:4$ represent the population disaggregated into four age groups $( [0-5], [5-20), [20-65),65+)$. Population in $i=3$ (20-65), however, includes only those that are not in employment (not economically active). The remainder are disaggregated in groups $i \in 5:49$, individuals of working age employed across 45 economic sectors (see in Economic model below).
+There are 49 age-economic classes $i$ in _daedalus_: four age $i \in 1:4$ groups $( [0-5], [5-20), [20-65),65+)$ and, given population in $i=3$ (20-65) represents unemployed adults ofr working age, 45 economic groups $i \in 5:49$ (see in Economic model below).
 
 
 ### Vaccination classes
 
-As a default, _daedalus_ further disaggregates the population into the vaccination classes $j \in 1:2$ of unvaccinated and vaccinated. We assume only the population in the susceptible and recovered compartments can be vaccinated, given transition rate $\zeta^{i,j=0}(t)$, which is determined by the user (see Table \@ref(tab:vaccine)). Vaccinated individuals can lose their immunity and transition back to an unvaccinated class, given rate $\rho$. 
+As a default, _daedalus_ further disaggregates the population into the vaccination classes $j \in 1:2$ of unvaccinated and vaccinated. We assume only the population in the susceptible and recovered compartments can be vaccinated, given transition rate $\zeta_{i,j=0}(t)$, which is determined by the user (see Table \@ref(tab:vaccine)). Vaccinated individuals can lose their immunity and transition back to an unvaccinated class, given rate $\rho$. 
 
 
 
@@ -108,7 +106,7 @@ _daedalus_ can simulate nine different pathogens (influenza A 2009, influenza A 
 
 | **Parameter** | **Definition** |
 | :----- | :----- |
-| $\Lambda^{i,j} (t)$ | Force of infection by age-economic and vaccination class |
+| $\Lambda_{i,j} (t)$ | Force of infection by age-economic and vaccination class |
 | $\sigma$ | Rate of progression from exposed to infectious |
 | $p_{symp}$ | Proportion of exposed individuals becoming symptomatic |
 | $\eta^i$ | Probability of hospitalisation by age|
@@ -127,39 +125,39 @@ Table: (\#tab:transitionpars) Definition of model transition parameters.
 
 For any given pathogen, we assume a seed of 1 infection per-million population, of which 60\% are further assumed to be asymptomatic infections.
 
-The force of infection $\lambda^{i,j} (t)$ accounts for the infection contributions of symptomatically $Is^{ij}(t)$ and asymptomatically $Ia^{ij}(t)$ infected individuals in the community and in workplaces.
+The force of infection $\lambda_{i,j} (t)$ accounts for the infection contributions of symptomatically $Is_{ij}(t)$ and asymptomatically $Ia_{ij}(t)$ infected individuals in the community and in workplaces.
 
 
-We let $\delta I_{comm}^i(t)$ and $\delta I_{work}^i(t)$ denote the number of infected individuals in the community and the workplace, respectively, weighted by their infectivity given
+We let $\delta Icomm^i(t)$ and $\delta Iwork^i(t)$ denote the number of infected individuals in the community and the workplace, respectively, weighted by their infectivity given
 \begin{align}
-    & \delta I_{comm}^{ij}(t) = \zeta^{i,j} (Ia^{i \in 1:4,j}(t) \epsilon + Is^{i \in 1:4,j}(t))\\
-    & \delta I_{work}^{ij}(t) = \zeta^{i,j} (Ia^{i \in 5:49,j}(t) \epsilon + Is^{i \in 5:49,j}(t)),
+    & \delta Icomm_{ij}(t) = \zeta_{i,j} (Ia_{i \in 1:4,j}(t) \epsilon + Is_{i \in 1:4,j}(t))\\
+    & \delta Iwork_{ij}(t) = \zeta_{i,j} (Ia_{i \in 5:49,j}(t) \epsilon + Is_{i \in 5:49,j}(t)),
 \end{align}
-where $\epsilon$ is the relative infectiousness of an asymptomatically infected individual relative to a symptomatic one, and $\zeta^{ij}$ the infectivity of an individual in strata $i,j$ relative to an unvaccinated individual of the same age accounting for vaccine efficacy against onward transmission $e^{ij}_{inf}$. 
+where $\epsilon$ is the relative infectiousness of an asymptomatically infected individual relative to a symptomatic one, and $\zeta_{ij}$ the infectivity of an individual in strata $i,j$ relative to an unvaccinated individual of the same age.
 
 
 
-The force of infection from the community $\lambda^{i,j}_{comm} (t)$ on a susceptible individual is thus modelled as 
+The force of infection from the community $\lambda_{comm_{i,j}} (t)$ on a susceptible individual is thus modelled as 
 \begin{align}
-\lambda^{i,j}_{comm} (t) & =
-    \beta (t) \cdot \chi^{i,j} \cdot \sum_{i'} m_{i,i'} \sum_{j'} \delta I_{comm}^{i',j'} (t)
+\lambda_{comm_{i,j}} (t) & =
+    \beta (t) \cdot \chi_{i,j} \cdot \sum_{i'} m_{i,i'} \sum_{j'} \delta Icomm_{i',j'} (t)
 \end{align}
-where $\chi^{i,j}$ is the relative susceptibility to infection of a susceptible individual in strata $i,j$ relative to a non-vaccinated individual of the same strata, $\beta(t)$ represents a time-varying contact rate scaling factor, determined by social distancing interventions simulated, and $m_{i,i'}$ is the (symmetric) person-to-person contact rate between age group $i$ and $i'$.
+where $\chi_{i,j}$ is the relative susceptibility to infection of a susceptible individual in strata $i,j$ relative to a non-vaccinated individual of the same strata, $\beta(t)$ represents a time-varying contact rate scaling factor, determined by social distancing interventions simulated, and $m_{i,i'}$ is the (symmetric) person-to-person contact rate between age group $i$ and $i'$.
 
 
 
-The force of infection within the workplace $\lambda^{i,j}_{work} (t)$ is modelled as 
+The force of infection within the workplace $\lambda_{work_{i,j}} (t)$ is modelled as 
 \begin{align}
-\lambda^{i,j}_{work} (t) & =
-    \beta (t) \cdot \chi^{i,j} \cdot \Phi(t) \cdot \sum_{i'} C_{i,i'} \sum_{j'} \delta I_{work}^{i',j'} (t)
+\lambda_{work_{i,j}} (t) & =
+    \beta (t) \cdot \chi_{i,j} \cdot \Phi(t) \cdot \sum_{i'} C_{i,i'} \sum_{j'} \delta Iwork_{i',j'} (t)
 \end{align}
 where $C_{i,i'}$ is a contact matrix specific to the workplace, and $\Phi(t)$ is a scaling factor determined by economic closure interventions simulated.
 
 
-Lastly, the force of infection from infected individuals in the community to susceptible workers $\lambda^{i,j}_{c2w} (t)$ (i.e.~asymptomatically infected individuals from the community attending shops, etc.) is given by
+Lastly, the force of infection from infected individuals in the community to susceptible workers $\lambda_{c2w_{i,j}} (t)$ (i.e.~asymptomatically infected individuals from the community attending shops, etc.) is given by
 \begin{align}
-\lambda^{i,j}_{c2w} (t) & =
-    \beta (t) \cdot \chi^{i,j} \cdot \Phi(t) \cdot \sum_{i'} CtoW_{i,i'} \sum_{j'} \delta I_{comm}^{i',j'} (t)
+\lambda_{c2w_{i,j}} (t) & =
+    \beta (t) \cdot \chi_{i,j} \cdot \Phi(t) \cdot \sum_{i'} CtoW_{i,i'} \sum_{j'} \delta Icomm_{i',j'} (t)
 \end{align}
 where $CtoW_{i,i'}$ is a contact matrix specific to consumers attending workplaces.
 
@@ -167,7 +165,7 @@ where $CtoW_{i,i'}$ is a contact matrix specific to consumers attending workplac
 
 The total force of infection acting on susceptible individuals is then assumed to be an addition of the above
 \begin{equation}
-    \Lambda^{ij} (t) = \lambda_{comm}^{ij} (t) + \lambda_{work}^{ij} (t) + \lambda^{i,j}_{c2w} (t).
+    \Lambda_{ij} (t) = \lambda_{comm_{ij}} (t) + \lambda_{work_{ij}} (t) + \lambda_{c2w_{i,j}} (t).
 \end{equation}
 
 
@@ -229,10 +227,10 @@ TSL = K_1 + K_2 + K_3.
 
 ## Years of life lost
 
-We estimate the number of years of life lost by age and synthetic country using life tables from the @gbd_life. Formally, we used the life expectancy by age and country $\hat{L}_i$ to estimate life years lost for deceased individuals given
+We estimate the number of years of life lost by age and country using life tables from the @gbd_life. Formally, we used the life expectancy by age and country $\hat{L}_i$ to estimate life years lost for deceased individuals given
 
 \begin{equation}
-YLL^i = \int_{t=0}^t \sum_{j} D^{i,j}(t)dt \cdot \hat{L}_i.
+YLL^i = \int_{t=0}^t \sum_{j} D_{i,j}(t)dt \cdot \hat{L}_i.
 \end{equation}
 
 We then use the VSL approach to estimate the monetary value of lives lost. The VSL reflects individuals' willingness to trade wealth for a reduction in mortality risk (@cutler2020). Following standardised methods (@hammitt2020;@ananthapavan2021;@robinson2021), we assume the VSL of the USA and adjust for differences in income elasticity by country, which are further assumed to be higher in lower-income settings because the opportunity cost of spending on basic necessities becomes large if incomes are at or below subsistence (@hammitt2020). 
@@ -311,10 +309,10 @@ where $MAE$ is the mean annual earnings (estimated using GDP multiplied by labou
 Thus, in addition to GVA losses from closures, as done for all economic sectors (see section above), we estimate total education sector losses as
 
 \begin{equation}
-K_3 = \int_{t=0}^t \left( y_{edu}(t) + N^{i=2}(t) \cdot VSD \cdot (1 - \kappa_{edu}(t)) \cdot (1 - \pi) \right)dt
+K_3 = \int_{t=0}^t \left( y_{edu}(t) + N_{i=2}(t) \cdot VSD \cdot (1 - \kappa_{edu}(t)) \cdot (1 - \pi) \right)dt
 \end{equation}
 
-where $N^{i=2}(t)$ is the number of pupils available at time $t$ (i.e., population of school-age not infected, hospitalised or deceased), $\pi$ a fixed parameter of the effectiveness of remote education.
+where $N_{i=2}(t)$ is the number of pupils available at time $t$ (i.e., population of school-age not infected, hospitalised or deceased), $\pi$ a fixed parameter of the effectiveness of remote education.
 
 
 
