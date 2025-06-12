@@ -78,6 +78,7 @@ A susceptible individual $S$ can become exposed to the virus and enter a latent 
 \end{align}
 
 
+Should be noted that whilst some model parameters vary over time (e.g., $\zeta_{eff_{j-1}}(t)$ effective vaccination rate scaled for available susceptible population) others are assumed fixed (e.g., $\sigma$ constant rate of $E \rightarrow I$ progression), which is indicated by $(t)$.
 
 ::: {.alert .alert-info}
 **Note that** the compartment transition rate parameters used in a call to `daedalus()` can be modified for a specific respiratory pathogen pandemic, either internally with calls to pre-defined pathogens, or with values considered to be more appropriate by the user.
