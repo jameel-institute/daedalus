@@ -70,8 +70,8 @@ A susceptible individual $S$ can become exposed to the virus and enter a latent 
 \begin{align}
     & \frac{dS_{i,j}}{dt} = \zeta_{eff_{j-1}}(t) S_{i,j-1}(t) - \Lambda_{i,j} (t) S_{i,j}(t)  + \rho R_{i,j}(t)\\
     & \frac{dE_{i,j}}{dt} = \Lambda_{i,j} (t) S_{i,j}(t) - \sigma E_{i,j}(t) \\
-    & \frac{dIa_{i,j}}{dt} = (1 - p_{symp}) \sigma E_{i,j}(t) - \gamma_{Ia} Ia_{i,j}(t) \\
-    & \frac{dIs_{i,j}}{dt} = p_{symp} \sigma E_{i,j}(t) - \gamma_{Is} Is_{i,j}(t) - \eta^i Is_{i,j}(t) \\
+    & \frac{dIa_{i,j}}{dt} = (1 - p_\text{symp}) \sigma E_{i,j}(t) - \gamma_{Ia} Ia_{i,j}(t) \\
+    & \frac{dIs_{i,j}}{dt} = p_\text{symp} \sigma E_{i,j}(t) - \gamma_{Is} Is_{i,j}(t) - \eta^i Is_{i,j}(t) \\
     & \frac{dH_{i,j}}{dt} = \eta^i Is_{i,j}(t) - \omega^i H_{i,j}(t) - \gamma_H^i H_{i,j}(t) \\
     & \frac{dR_{i,j}}{dt} = \zeta_{eff_{j-1}}(t) R_{i,j-1}(t) + \gamma_{Is} Is_{i,j}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_H^i H_{i,j}(t) - \rho R_{i,j}(t) \\
     & \frac{dD_{i,j}}{dt} = \omega^i H_{i,j}(t)\\
@@ -80,8 +80,9 @@ A susceptible individual $S$ can become exposed to the virus and enter a latent 
 
 Should be noted that whilst some model parameters vary over time (e.g., $\zeta_{eff_{j-1}}(t)$ effective vaccination rate scaled for available susceptible population) others are assumed fixed (e.g., $\sigma$ constant rate of $E \rightarrow I$ progression), which is indicated by $(t)$.
 
+
 ::: {.alert .alert-info}
-**Note that** the compartment transition rate parameters used in a call to `daedalus()` can be modified for a specific respiratory pathogen pandemic, either internally with calls to pre-defined pathogens, or with values considered to be more appropriate by the user.
+**Note that**, as default, _daedalus_ ships a collection of pre-defined parameter sets that represent historical respiratory pandemic pathogens (see \@ref(tab:pathogendata)), as contained in _daedalus.data_. These can be saved as an object of class `daedalus_infection` and modified by the user to be then passed to the model function `daedalus::daedalus()`.
 :::
 
 
@@ -109,13 +110,13 @@ _daedalus_ can simulate nine different pathogens (influenza A 2009, influenza A 
 | :----- | :----- |
 | $\Lambda_{i,j} (t)$ | Force of infection by age-economic and vaccination class |
 | $\sigma$ | Rate of progression from exposed to infectious |
-| $p_{symp}$ | Proportion of exposed individuals becoming symptomatic |
-| $\eta^i$ | Probability of hospitalisation by age|
+| $p_\text{symp}$ | Proportion of exposed individuals becoming symptomatic |
+| $\eta^i$ | Probability of hospitalisation by age, conditional on symptomatic infection |
 | $\gamma_{Ia}$ | Recovery rate for asymptomatic infections |
 | $\gamma_{Is}$ | Recovery rate for symptomatic infections |
 | $\gamma_H^i$ | Recovery rate for hospitalised individuals by age |
 | $\rho$ | Rate of waning immunity (recovered to susceptible) |
-| $\omega^i$ | Death rate among hospitalised individuals (age/econ stratified) |
+| $\omega^i$ | Death rate among hospitalised individuals by age |
 | $\zeta_{eff_{j=0}}(t)$ | Vaccination rate |
 
 Table: (\#tab:transitionpars) Definition of model transition parameters.
