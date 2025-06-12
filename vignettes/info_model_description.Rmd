@@ -68,12 +68,12 @@ A susceptible individual $S$ can become exposed to the virus and enter a latent 
 ### Ordinary differential equations
 
 \begin{align}
-    & \frac{dS_{i,j}}{dt} = \zeta_{i,j-1}(t) S_{i,j-1}(t) - \Lambda_{i,j} (t) S_{i,j}(t)  + \rho R_{i,j}(t)\\
+    & \frac{dS_{i,j}}{dt} = \zeta_{eff_{j-1}}(t) S_{i,j-1}(t) - \Lambda_{i,j} (t) S_{i,j}(t)  + \rho R_{i,j}(t)\\
     & \frac{dE_{i,j}}{dt} = \Lambda_{i,j} (t) S_{i,j}(t) - \sigma E_{i,j}(t) \\
     & \frac{dIa_{i,j}}{dt} = (1 - p_{symp}) \sigma E_{i,j}(t) - \gamma_{Ia} Ia_{i,j}(t) \\
     & \frac{dIs_{i,j}}{dt} = p_{symp} \sigma E_{i,j}(t) - \gamma_{Is} Is_{i,j}(t) - \eta^i Is_{i,j}(t) \\
     & \frac{dH_{i,j}}{dt} = \eta^i Is_{i,j}(t) - \omega^i H_{i,j}(t) - \gamma_H^i H_{i,j}(t) \\
-    & \frac{dR_{i,j}}{dt} = \zeta_{i,j-1}(t) R_{i,j-1}(t) + \gamma_{Is} Is_{i,j}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_H^i H_{i,j}(t) - \rho R_{i,j}(t) \\
+    & \frac{dR_{i,j}}{dt} = \zeta_{eff_{j-1}}(t) R_{i,j-1}(t) + \gamma_{Is} Is_{i,j}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_H^i H_{i,j}(t) - \rho R_{i,j}(t) \\
     & \frac{dD_{i,j}}{dt} = \omega^i H_{i,j}(t)\\
 \end{align}
 
@@ -91,7 +91,7 @@ There are 49 age-economic classes $i$ in _daedalus_: four age $i \in 1:4$ groups
 
 ### Vaccination classes
 
-As a default, _daedalus_ further disaggregates the population into the vaccination classes $j \in 1:2$ of unvaccinated and vaccinated. We assume only the population in the susceptible and recovered compartments can be vaccinated, given transition rate $\zeta_{i,j=0}(t)$, which is determined by the user (see Table \@ref(tab:vaccine)). Vaccinated individuals can lose their immunity and transition back to an unvaccinated class, given rate $\rho$. 
+As a default, _daedalus_ further disaggregates the population into the vaccination classes $j \in 1:2$ of unvaccinated and vaccinated. We assume only the population in the susceptible and recovered compartments can be vaccinated, given transition rate $\zeta_{eff_{j=0}}(t)$, which is determined by the user (see Table \@ref(tab:vaccine)). Vaccinated individuals can lose their immunity and transition back to an unvaccinated class, given rate $\rho$. 
 
 
 
@@ -115,7 +115,7 @@ _daedalus_ can simulate nine different pathogens (influenza A 2009, influenza A 
 | $\gamma_H^i$ | Recovery rate for hospitalised individuals by age |
 | $\rho$ | Rate of waning immunity (recovered to susceptible) |
 | $\omega^i$ | Death rate among hospitalised individuals (age/econ stratified) |
-| $\zeta^i(t)$ | Vaccination rate |
+| $\zeta_{eff_{j=0}}(t)$ | Vaccination rate |
 
 Table: (\#tab:transitionpars) Definition of model transition parameters.
 
@@ -130,10 +130,10 @@ The force of infection $\lambda_{i,j} (t)$ accounts for the infection contributi
 
 We let $\delta Icomm^i(t)$ and $\delta Iwork^i(t)$ denote the number of infected individuals in the community and the workplace, respectively, weighted by their infectivity given
 \begin{align}
-    & \delta Icomm_{ij}(t) = \zeta_{i,j} (Ia_{i \in 1:4,j}(t) \epsilon + Is_{i \in 1:4,j}(t))\\
-    & \delta Iwork_{ij}(t) = \zeta_{i,j} (Ia_{i \in 5:49,j}(t) \epsilon + Is_{i \in 5:49,j}(t)),
+    & \delta Icomm_{ij}(t) = v_{eff_{j=1}} (Ia_{i \in 1:4,j}(t) \epsilon + Is_{i \in 1:4,j}(t))\\
+    & \delta Iwork_{ij}(t) = v_{eff_{j=1}} (Ia_{i \in 5:49,j}(t) \epsilon + Is_{i \in 5:49,j}(t)),
 \end{align}
-where $\epsilon$ is the relative infectiousness of an asymptomatically infected individual relative to a symptomatic one, and $\zeta_{ij}$ the infectivity of an individual in strata $i,j$ relative to an unvaccinated individual of the same age.
+where $\epsilon$ is the relative infectiousness of an asymptomatically infected individual relative to a symptomatic one, and $v_{eff_{j=1}}$ the infectivity of an individual in strata $j$ relative to an unvaccinated individual of the same age.
 
 
 
