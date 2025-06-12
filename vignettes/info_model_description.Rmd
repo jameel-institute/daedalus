@@ -125,7 +125,7 @@ Table: (\#tab:transitionpars) Definition of model transition parameters.
 
 ### Seed and force of infection
 
-For any given pathogen, we assume a seed of 1 infection per-million population, of which 60\% are further assumed to be asymptomatic infections.
+For any given pathogen, we assume a seed of $10^{-7}$ infections, all of which are further assumed to be symptomatic.
 
 The force of infection $\lambda_{i,j} (t)$ accounts for the infection contributions of symptomatically $Is_{ij}(t)$ and asymptomatically $Ia_{ij}(t)$ infected individuals in the community and in workplaces.
 
