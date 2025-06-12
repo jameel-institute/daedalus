@@ -86,7 +86,7 @@ get_costs(data, "total")
 # disaggregate total for economic, education, and health costs
 get_costs(data, "domain")
 #>     economic    education   life_value   life_years 
-#> 2.848564e+04 2.829719e+00 1.021011e+06 2.217178e+07
+#>    26819.051     1669.422  1021010.563 22171782.043
 ```
 
 Users can select infection parameters from among seven epidemics caused
