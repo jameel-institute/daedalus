@@ -66,6 +66,7 @@ fn
 frac
 ij
 int
+iso
 lintr
 monty
 odeint
@@ -84,5 +85,6 @@ struct
 symp
 sympt
 th
+timeseries
 timesteps
 transitionpars
