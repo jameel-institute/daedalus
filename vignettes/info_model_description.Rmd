@@ -1,0 +1,324 @@
+---
+title: "General model description"
+output:
+  bookdown::github_document2:
+    toc: true
+    toc_depth: 5
+    toc_float: true
+    number_sections: true
+bibliography: resources/references.json
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Model description}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(daedalus)
+library(daedalus.data)
+library(latex2exp)
+library(knitr)
+library(bookdown)
+```
+
+This vignette presents a technical description of the _daedalus_ model in its current state. It should be noted _daedalus_ is in constant development; we will attempt to keep this document as updated as possible during the lifespan of the model. If you encounter any issues, contact the package developers or raise a GitHub issue.
+
+
+
+# Rationale
+
+The _daedalus_ package is the implementation of a deterministic epidemiological and economic model of the emergence and spread of respiratory pathogen pandemics in countries. Specifically, _daedalus_ tracks 
+
+- Health impact in terms of infections, hospitalisations, deaths and years of life lost (YLL), and 
+
+- Economic impact in terms of GDP losses from:
+    - Economic sector closures and workforce depletion due to infection, hospitalisation or death
+    - Present and life-time economic losses from missed education
+    - Human life losses using the value of statistical life approach
+
+Presently, we have equipped _daedalus_ with parameters to simulate seven potential pathogens (influenza A 2009, influenza A 1957, influenza A 1918, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1, see \@ref(tab:pathogendata)) across 67 countries. In addition, _daedalus_ allows the user the flexibility to incorporate additional respiratory pathogen and/or country parameters and data, as considered appropriate for their use case.
+
+The following sections present a technical description of the epidemiological and economic components of _daedalus_. For examples of its implementation in research case studies, see 
+
+- The original description of _daedalus_ and application to the UK during the COVID-19 pandemic in @haw2022
+
+- Study of the societal value of SARS-CoV-2 booster vaccination in Indonesia in @johnson_indonesia
+
+- Study of promoting healthy populations as a pandemic preparedness strategy in Mexico in @johnson_mexico
+
+
+
+# Epidemiological model
+
+## Model structure
+
+_daedalus_ simulates a country's population split into seven possible disease state compartments. Model compartments are stratified by age-sector sector $i$ and vaccination $j$ classes. 
+
+A susceptible individual $S$ can become exposed to the virus and enter a latent state $E$, from which they can develop either a symptomatic $Is$ or asymptomatic $Ia$ infection. Whereas asymptomatic infected individuals are assumed to always recover, symptomatic ones can either recover $R$ or develop a more severe condition requiring hospitalisation $H$, from which they can either recover or die $D$.
+
+
+<img src="vignettes/figures/daedalus.png" align="center" style = "border: none; float: center;" width = "800px">
+
+
+### Ordinary differential equations
+
+\begin{align}
+    & \frac{dS_{i,j}}{dt} = \zeta_{eff_{j=0}}(t) S_{i,j=0}(t) - \Lambda_{i,j} (t) S_{i,j}(t)  + \rho R_{i,j}(t) - \zeta_{j=1} S_{i,j=1}(t)\\
+    & \frac{dE_{i,j}}{dt} = \Lambda_{i,j} (t) S_{i,j}(t) - \sigma E_{i,j}(t) \\
+    & \frac{dIa_{i,j}}{dt} = (1 - p_\text{symp}) \sigma E_{i,j}(t) - \gamma_{Ia} Ia_{i,j}(t) \\
+    & \frac{dIs_{i,j}}{dt} = p_\text{symp} \sigma E_{i,j}(t) - \gamma_{Is} Is_{i,j}(t) - \eta^i Is_{i,j}(t) \\
+    & \frac{dH_{i,j}}{dt} = \eta^i Is_{i,j}(t) - \omega^i H_{i,j}(t) - \gamma_H^i H_{i,j}(t) \\
+    & \frac{dR_{i,j}}{dt} = \zeta_{eff_{j=0}}(t) R_{i,j=0}(t) + \gamma_{Is} Is_{i,j}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_H^i H_{i,j}(t) - \rho R_{i,j}(t) - \zeta_{j=1} R_{i,j=1}(t)\\
+    & \frac{dD_{i,j}}{dt} = \omega^i H_{i,j}(t)\\
+\end{align}
+
+
+Should be noted that whilst some model parameters vary over time (e.g., $\zeta_{eff_{j=0}}(t)$ effective vaccination rate scaled for available susceptible population) others are assumed fixed (e.g., $\sigma$ constant rate of $E \rightarrow I$ progression), which is indicated by $(t)$.
+
+
+::: {.alert .alert-info}
+**Note that**, as default, _daedalus_ ships a collection of pre-defined parameter sets that represent historical respiratory pandemic pathogens (see \@ref(tab:pathogendata)), as contained in _daedalus.data_. These can be saved as an object of class `daedalus_infection` and modified by the user to be then passed to the model function `daedalus::daedalus()`.
+:::
+
+
+### Age-sector classes
+
+There are 49 age-sector classes $i$ in _daedalus_: four age $i \in 1:4$ groups $( [0-5], [5-20), [20-65),65+)$ and, given population in $i=3$ (20-65) represents unemployed adults ofr working age, 45 economic groups $i \in 5:49$ (see in Economic model below).
+
+
+### Vaccination classes
+
+As a default, _daedalus_ further disaggregates the population into the vaccination classes $j \in 1:2$ of unvaccinated and vaccinated. We assume only the population in the susceptible and recovered compartments can be vaccinated, given transition rate $\zeta_{eff_{j=0}}(t)$, which is determined by the user (see Table \@ref(tab:vaccine)). Vaccinated individuals can lose their immunity and transition back to an unvaccinated class, given rate $\rho$. 
+
+
+
+
+
+
+
+
+## Model transition parameters
+
+_daedalus_ can simulate nine different pathogens (influenza A 2009, influenza A 1957, influenza A 1918, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1) with pathogen-specific transition (see Table \@ref(tab:pathogendata)).
+
+| **Parameter** | **Definition** |
+| :----- | :----- |
+| $\Lambda_{i,j} (t)$ | Force of infection by age-sector and vaccination class |
+| $\sigma$ | Rate of progression from exposed to infectious |
+| $p_\text{symp}$ | Proportion of exposed individuals becoming symptomatic |
+| $\eta^i$ | Probability of hospitalisation by age, conditional on symptomatic infection |
+| $\gamma_{Ia}$ | Recovery rate for asymptomatic infections |
+| $\gamma_{Is}$ | Recovery rate for symptomatic infections |
+| $\gamma_H^i$ | Recovery rate for hospitalised individuals by age |
+| $\rho$ | Rate of waning immunity (recovered to susceptible) |
+| $\omega^i$ | Death rate among hospitalised individuals by age |
+| $\zeta_{eff_{j=0}}(t)$ | Vaccination rate |
+| $\zeta_{j=1}$ | Vaccine protection waning rate |
+
+Table: (\#tab:transitionpars) Definition of model transition parameters.
+
+
+
+### Seed and force of infection
+
+For any given pathogen, we assume a seed of $10^{-7}$ infections, all of which are further assumed to be symptomatic.
+
+The force of infection $\lambda_{i,j} (t)$ accounts for the infection contributions of symptomatically $Is_{ij}(t)$ and asymptomatically $Ia_{ij}(t)$ infected individuals in the community and in workplaces.
+
+
+We let $\delta Icomm^i(t)$ and $\delta Iwork^i(t)$ denote the number of infected individuals in the community and the workplace, respectively, weighted by their infectivity given
+\begin{align}
+    & \delta Icomm_{ij}(t) = v_{eff_{j=1}} (Ia_{i \in 1:4,j}(t) \epsilon + Is_{i \in 1:4,j}(t))\\
+    & \delta Iwork_{ij}(t) = v_{eff_{j=1}} (Ia_{i \in 5:49,j}(t) \epsilon + Is_{i \in 5:49,j}(t)),
+\end{align}
+where $\epsilon$ is the relative infectiousness of an asymptomatically infected individual relative to a symptomatic one, and $v_{eff_{j=1}}$ the reduced susceptibility of a vaccinated individual relative to an unvaccinated one of the same age.
+
+
+
+The force of infection from the community $\lambda_{comm_{i,j}} (t)$ on a susceptible individual is thus modelled as 
+\begin{align}
+\lambda_{comm_{i,j}} (t) & =
+    \beta (t) \cdot \sum_{i'} m_{i,i'} \sum_{j'} \delta Icomm_{i',j'} (t)
+\end{align}
+where $\beta(t)$ represents a time-varying contact rate scaling factor, determined by social distancing interventions simulated, and $m_{i,i'}$ is the (symmetric) person-to-person contact rate between age group $i$ and $i'$.
+
+
+
+The force of infection within the workplace $\lambda_{work_{i,j}} (t)$ is modelled as 
+\begin{align}
+\lambda_{work_{i,j}} (t) & =
+    \beta (t) \cdot \Phi_i(t) \cdot \sum_{i'=0}^{i'=N} C_{i,i'} \sum_{j'} \delta Iwork_{i',j'} (t)
+\end{align}
+where $C_{i,i'}$ is a contact matrix specific to the workplace, and $\Phi_i(t)$ is a scaling factor determined by economic closure interventions simulated.
+
+
+Lastly, the force of infection from infected individuals in the community to susceptible workers $\lambda_{c2w_{i,j}} (t)$ (i.e., infected individuals from the community attending shops) is given by
+\begin{align}
+\lambda_{c2w_{i,j}} (t) & =
+    \beta (t) \cdot \Phi_i(t) \cdot \sum_{i'=0}^{i'=N} CtoW_{i,i'} \sum_{j'} \delta Icomm_{i',j'} (t)
+\end{align}
+where $CtoW_{i,i'}$ is a contact matrix specific to consumers attending workplaces.
+
+
+
+The total force of infection acting on susceptible individuals is then assumed to be an addition of the above. For conciseness, this can be taken as
+\begin{equation}
+    \Lambda_{ij} (t) = \lambda_{comm_{ij}} (t) + \lambda_{work_{ij}} (t) + \lambda_{c2w_{i,j}} (t)
+\end{equation}
+however, it should be noted that the force of infection within the workplace $\lambda_{work_{ij}} (t)$ is a column vector of length 45, given the number of economic sector classes in the model, whilst $\lambda_{comm_{ij}} (t)$ and $\lambda_{c2w_{ij}} (t)$ are of length 49, encompassing all age-sector classes.
+
+
+
+### Disease transition rates
+
+| **Parameter** | **Symbol** | **Influenza 2009** | **Influenza 1957** | **Influenza 1918** | **Covid Omicron** | **Covid Delta** | **Covid Wild-type** | **SARS** |
+| :----- | :----- | :----- | :----- | :----- | :----- | :----- | :----- |
+| Basic reproduction number | $R_0$ | 1.58 | 1.80 | 2.50 | 5.94 | 5.08 | 2.87 | 1.75 |
+| Probability symptomatic | $p_{sympt}$ | 0.669 | 0.669 | 0.669 | 0.592 | 0.595 | 0.595 | 0.867 |
+| Relative infectiousness (asymptomatic:symptomatic) | $\epsilon$ | 0.58 | 0.58 | 0.58 | 0.58 | 0.58 | 0.58 | 0.58 |
+| Latent period (days) | $1/\sigma$ | 1.1 | 1.1 | 1.1 | 4 | 4 | 4.6 | 4.6 |
+| Infectious period asymptomatic (days) | $1/\gamma_{Ia}$ | 2.5 | 2.5 | 2.5 | 2.1 | 2.1 | 2.1 | 2.1 |
+| Infectious period symptomatic (days) | $1/\gamma_{Is}$ | 2.5 | 2.5 | 2.5 | 4 | 4 | 4 | 4 |
+| Infection-induced immune period (days) | $1/\rho$ | 365 | 365 | 365 | 365 | 365 | 365 | 365 |
+| **Age specific parameters*** | 
+| Hospitalisation rate given symptomatic infection (days$^{-1}$) | $1/\eta^i$ | 
+| 0-4 years |   | 358.7 | 1851.9 | 13.7 | 73006.1 | 80405.4 | 148750.0 | 56.2 |
+| 5-19 years |  | 359.5 | 158.7  | 15.6 | 133.7   | 25.4    | 47       | 12.1 |
+| 20-64 years | | 912.4 | 1851.9 | 50.4 | 5900.4  | 4638.8  | 8581.7   | 56.2 |
+| 65+ years |   | 161.7 | 9.3    | 6.6  | 35.8    | 8.1     | 15       | 4.1 |
+| Recovery rate hospitalised (days$^{-1}$) | $1/\gamma_H^i$ | 
+| 0-4 years |   | 5.2  | 5.4 | 5.7 | NA  | NA   | NA   | 29.6 |
+| 5-19 years |  | 5.3  | 5.4 | 5.7 | 5.9 | 8.3  | 13.1 | 29.6 |
+| 20-64 years | | 5.2  | 5.4 | 5.7 | 6.8 | 9.4  | 14.8 | 29.6 |
+| 65+ years |   | 13.7 | 5.4 | 5.7 | 8.1 | 10.7 | 16.9 | 29.6 |
+| Death given hospitalised (days$^{-1}$) | $1/\omega^i$ | 
+| 0-4 years |   | 126.3 | 67.5 | 40 | 5.5  | 7.6  | 12    | 86.4 |
+| 5-19 years |  | 79.8  | 67.5 | 40 | 82.1 | 94.3 | 148.9 | 86.4 |
+| 20-64 years | | 120.9 | 67.5 | 40 | 28.4 | 40.5 | 64    | 86.4 |
+| 65+ years |   | 7.9   | 67.5 | 40 | 17.3 | 26.3 | 41.6  | 86.4 |
+
+Table: (\#tab:pathogendata) Pathogen parameters. A different pathogen profile can be created by the user by generating a list object specifying these parameter values (see list structure for these pathogens in `daedalus.data::infection_data`). *Note disease severity progression is modelled with competing rates (e.g., for individuals in the $Ia$ compartment, of recovery $\gamma_{Is}$ vs hospitalisation by age $\eta^i$); where NA values are specified, we assume these individuals cannot undergo the respective disease severity transition.
+
+
+### Vaccination
+
+Vaccination is implemented as a series of default pre-determined vaccine investment scenarios, which can be modified as necessary by the user. 
+
+| **Advance vaccine investment** | **Start time (days)** | **Rate (\% per day)** | **Uptake limit (\%)** | **Efficacy* (\%)** | **Waning period (mean, days)** |
+| :----- | :----- | :----- | :----- | :----- | :----- |
+| None   | 365 | 0.14 | 40 | 50 | 270 |
+| Low    | 300 | 0.29 | 50 | 50 | 270 |
+| Medium | 200 | 0.43 | 60 | 50 | 270 |
+| High   | 100 | 0.5  | 80 | 50 | 270 |
+
+Table: (\#tab:vaccine) Vaccination parameters. These pre-specified parameters can be modified by the user and/or additional strategies can be added by generating a list object with the same structure (see `daedalus.data::vaccination_scenario_data`). *Note the default version of _daedalus_ only models vaccine efficacy against infection; for use cases with added functionality to simulate efficacy against other clinical severity end-points see @johnson_indonesia.
+
+
+
+
+
+# Economic model
+
+_daedalus_ assigns monetary values to the years of life lost (YLL) $K_1$, economic activity losses $K_2$ and years of education lost $K_3$. The following sections describe the methodology for calculating each of these losses. The total socioeconomic loss (TSL) of a respiratory pandemic is therefore given by
+```math
+TSL = K_1 + K_2 + K_3.
+```
+
+## Years of life lost
+
+We estimate the number of years of life lost by age and country using life tables from the @gbd_life. Formally, we used the life expectancy by age and country $\hat{L}_i$ to estimate life years lost for deceased individuals given
+
+\begin{equation}
+YLL^i = \int_{t=0}^t \sum_{j} D_{i,j}(t)dt \cdot \hat{L}_i.
+\end{equation}
+
+We then use the VSL approach to estimate the monetary value of lives lost. The VSL reflects individuals' willingness to trade wealth for a reduction in mortality risk (@cutler2020). Following standardised methods (@hammitt2020;@ananthapavan2021;@robinson2021), we assume the VSL of the USA and adjust for differences in income elasticity by country, which are further assumed to be higher in lower-income settings because the opportunity cost of spending on basic necessities becomes large if incomes are at or below subsistence (@hammitt2020). 
+
+Formally, for country $a$ we estimate its VSL by age $VSL_a^i$ as a function of GDP given
+
+\begin{equation}
+VSL_a^i = VSL_{USA}^i \left(r_a \frac{GDP^a}{GDP_{USA}}  \right)^{r_e}
+\end{equation}
+
+where $r_a$ is the country's conversion rate of its market exchange rate GDP to a purchasing power parity GDP, and $r_e$ its income elasticity, which we estimated from OECD data as in @robinson2021.
+
+The monetary value of years of life lost $K_1$ is then 
+
+\begin{equation}
+K_1 = \sum_i YLL^i \cdot VSL_a^i.
+\end{equation}
+
+
+
+## Economic activity losses
+
+We calculate the cost of economic closures by each of 45 $k$ sectors in terms of lost gross value added (GVA). _daedalus_ runs in continuous time, with outputs calculated at daily time steps. 
+
+The daily GDP generated by a country in the absence of closures is composed of the maximum daily GVA $y_k(t)$ for each sector $k$. There is a 1:1 mapping of the 45 economic sectors and the age-sector population strata $i \in 5:49$. For conciseness, in this section we index economic sectors and age-sector classes only as $k$.
+
+Formally, the maximum possible GDP generated $Y_0(t)$ by all economic sectors $m_S$ in the absence of mandated closures (i.e., as a result of NPIs) at time $t$ is defined by
+
+\begin{equation}
+Y_0(t)=\sum_{k=1}^{m_S}y_k(t),
+\end{equation}
+
+where all economic sectors contribute their daily GVA $y_k(t)$. 
+
+If an economic sector is, however, affected by closures on a given day, we estimate its GVA losses as
+
+\begin{equation}
+y_k(t) = y_k(0) \cdot (1 - \kappa_k(t))
+\end{equation}
+
+where $y_k(0)$ is the respective sector's daily GVA in the absence of closure and $\kappa_k(t)$ its relative openness (i.e., from 0 to 1, where 0 is completely open and 1 completely closed). We thus assume sectors contribute \$0 USD in GVA on day $t$ if completely closed.
+
+
+In addition to GVA losses from closures, economic sectors can lose productivity whilst being open given depletion of their workforce (i.e., due to self-isolation, sickness, hospitalisation or death). $x_{k}(t)$ is the proportion of the workforce contributing to economic production in sector $k$ out of the total workforce $N_k$ on day $t$. As the workforce of a sector is depleted, we assume a smaller fraction $\hat{x}_{j}(t)$ will be available to contribute to production given
+
+\begin{equation}
+\hat{x}_{k}(t) = x_{k}(t) \left(1 - \sum_{j=0}^{1} \left( \frac{Ia^{j,k}(t) + Is^{j,k}(t) + H^{j,k}(t) + D^{j,k}(t)}{N_k} \right) \right).
+\end{equation}
+
+The total GDP generated at time $t$ is then
+
+\begin{equation}
+Y(t) = \sum_{k=1}^{m_S} y_k(t) \hat{x}_{k}(t),
+\end{equation}
+
+and the GDP loss compared to the maximum is 
+
+\begin{equation}
+K_2 = \int_{t=0}^t \left( Y_0(t) - Y(t) \right)dt.
+\end{equation}
+
+
+
+## Years of education lost
+
+We monetise the value of a school day $VSD$ as a country-specific parameter, as previously done in @psacharopoulos2021, given by
+
+\begin{equation}
+VSD = \frac{VPE \cdot MAE \cdot RYE}{365}
+\end{equation}
+
+where $MAE$ is the mean annual earnings (estimated using GDP multiplied by labour share of income, as in @feenstra2015), $RYE$ the rate of return for one year of education, assumed fixed at 0.08, and $VPE$ is the yearly present value of lost earnings given by
+
+**TODO**: Rob, I cannot find any reference in the _daedalus_ code or data of how this was calculated. Is it that the country data files were prepared and saved following the equation for $p^{12}$ in your technical appendix? If you could please corroborate and re-write the correct form of that equation here it will be ace. Thanks!
+
+Thus, in addition to GVA losses from closures, as done for all economic sectors (see section above), we estimate total education sector losses as
+
+\begin{equation}
+K_3 = \int_{t=0}^t \left( y_{edu}(t) + N_{i=2}(t) \cdot VSD \cdot (1 - \kappa_{edu}(t)) \cdot (1 - \pi) \right)dt
+\end{equation}
+
+where $N_{i=2}(t)$ is the number of pupils available at time $t$ (i.e., population of school-age not infected, hospitalised or deceased), $\pi$ a fixed parameter of the effectiveness of remote education.
+
+
+
+
+# References
