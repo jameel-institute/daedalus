@@ -20,7 +20,7 @@ status](https://www.r-pkg.org/badges/version/daedalus)](https://CRAN.R-project.o
 *daedalus* implements the integrated epidemiological and economic model
 in Haw et al. ([2022](#ref-haw2022)).
 
-<img src="vignettes/figures/daedalus.png" align="center" style = "border: none; float: center;" width = "800px">
+![](vignettes/figures/daedalus.png)
 
 ## Installation
 
@@ -86,7 +86,7 @@ get_costs(data, "total")
 # disaggregate total for economic, education, and health costs
 get_costs(data, "domain")
 #>     economic    education   life_value   life_years 
-#>    26819.051     1669.422  1021010.563 22171782.043
+#>    26819.051     1669.422  1021010.561 22171782.001
 ```
 
 Users can select infection parameters from among seven epidemics caused
