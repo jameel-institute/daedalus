@@ -28,8 +28,6 @@ library(bookdown)
 
 This vignette presents a technical description of the _daedalus_ model in its current state. It should be noted _daedalus_ is in constant development; we will attempt to keep this document as updated as possible during the lifespan of the model. If you encounter any issues, contact the package developers or raise a GitHub issue.
 
-
-
 # Rationale
 
 The _daedalus_ package is the implementation of a deterministic epidemiological and economic model of the emergence and spread of respiratory pathogen pandemics in countries. Specifically, _daedalus_ tracks 
@@ -51,8 +49,6 @@ The following sections present a technical description of the epidemiological an
 
 - Study of promoting healthy populations as a pandemic preparedness strategy in Mexico in @johnson_mexico
 
-
-
 # Epidemiological model
 
 ## Model structure
@@ -61,9 +57,7 @@ _daedalus_ simulates a country's population split into seven possible disease st
 
 A susceptible individual $S$ can become exposed to the virus and enter a latent state $E$, from which they can develop either a symptomatic $Is$ or asymptomatic $Ia$ infection. Whereas asymptomatic infected individuals are assumed to always recover, symptomatic ones can either recover $R$ or develop a more severe condition requiring hospitalisation $H$, from which they can either recover or die $D$.
 
-
-<img src="vignettes/figures/daedalus.png" align="center" style = "border: none; float: center;" width = "800px">
-
+![](figures/daedalus.png)
 
 ### Ordinary differential equations
 
