@@ -26,6 +26,8 @@ knitr::opts_chunk$set(
 
 _daedalus_ implements the integrated epidemiological and economic model in @haw2022.
 
+<img src="vignettes/figures/daedalus.png" align="center" style = "border: none; float: center;" width = "800px">
+
 ## Installation
 
 You can install the development version of daedalus from this repository using the _pak_ package, or from the Jameel Institute R-universe.

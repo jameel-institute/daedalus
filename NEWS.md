@@ -1,3 +1,7 @@
+# daedalus 0.2.19
+
+Implements a new vignette with a technical description of the model.
+
 # daedalus 0.2.18
 
 Patch version to correct erroneous book-keeping of costs due to absences and closures; tests added to check that absence costs are not very low.
