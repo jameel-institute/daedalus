@@ -39,8 +39,7 @@ class response {
   const std::string name;
   const double time_on, time_off, state_on, state_off;
   const size_t i_flag;
-  const std::vector<size_t> i_state_on;
-  const size_t i_state_off;
+  const std::vector<size_t> i_state_on, i_state_off;
 
   /// @brief Constructor for a response.
   /// @param name A string for the name, used to generate event names.
@@ -52,14 +51,15 @@ class response {
   /// @param state_off The state (sum) value at which the response should end.
   /// @param i_flag The index of the state variable holding the flag to modify,
   /// indicating whether the response is active (1.0) or not (0.0).
-  /// @param i_state_on The index of the state variables to be summed to
+  /// @param i_state_on The indices of the state variables to be summed to
   /// calculate the state value which is compared against `state_on`.
-  /// @param i_state_off The index of the state variables to be summed to
+  /// @param i_state_off The indices of the state variables to be summed to
   /// calculate the state value which is compared against `state_off`.
   response(const std::string &name, const double &time_on,
            const double &time_off, const double &state_on,
            const double &state_off, const size_t &i_flag,
-           const std::vector<size_t> &i_state_on, const size_t &i_state_off)
+           const std::vector<size_t> &i_state_on,
+           const std::vector<size_t> &i_state_off)
       : name(name),
         time_on(time_on),
         time_off(time_off),
@@ -149,8 +149,8 @@ class response {
     std::string name_ev_state_off = name + "_state_off";
     dust2::ode::event<double> ev_state_off = make_event(
         name_ev_state_off, {i_state_off},
-        make_state_test({i_state_off}, state_off),
-        make_flag_setter(i_flag, 0.0), dust2::ode::root_type::decrease);
+        make_state_test(i_state_off, state_off), make_flag_setter(i_flag, 0.0),
+        dust2::ode::root_type::decrease);
 
     return dust2::ode::events_type<double>(
         {ev_time_on, ev_time_off, ev_state_on, ev_state_off});
