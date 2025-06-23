@@ -1,3 +1,13 @@
+# daedalus 0.2.20
+
+Restored model functionality where mortality is increased when hospital capacity is exceeded.
+
+- Added a new flag to the state which indicates whether hospital capacity is exceeded or not;
+
+- Promoted the hospital-capacity-exceeded mechanism to a full event that is launched and ended only on a state trigger;
+
+- Updated some `daedalus::events::response` class to accept a vector of states to sum for state-off triggers.
+
 # daedalus 0.2.19
 
 Implements a new vignette with a technical description of the model.
