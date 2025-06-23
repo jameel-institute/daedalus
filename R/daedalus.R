@@ -9,8 +9,15 @@ initial_flags <- function() {
   npi_flag <- 0.0
   ipr <- 0.0 # incidence-prevalence ratio
   sd_flag <- 0.0 # spontaneous social distancing flag
+  hosp_flag <- 0.0 # flag for hosp capacity being exceeded
 
-  c(ipr = ipr, npi_flag = npi_flag, vax_flag = vax_flag, sd_flag = sd_flag)
+  c(
+    ipr = ipr,
+    npi_flag = npi_flag,
+    vax_flag = vax_flag,
+    sd_flag = sd_flag,
+    hosp_flag = hosp_flag
+  )
 }
 
 #' Get model response times from dust2 output
