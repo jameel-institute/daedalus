@@ -74,6 +74,7 @@ A susceptible individual $S$ can become exposed to the virus and enter a latent 
 
 Should be noted that whilst some model parameters vary over time (e.g., $\zeta_{eff_{j=0}}(t)$ effective vaccination rate scaled for available susceptible population) others are assumed fixed (e.g., $\sigma$ constant rate of $E \rightarrow I$ progression), which is indicated by $(t)$.
 
+One parameter that varies endogenously is the age-specific mortality rate $\omega^i$; mortality rates for all groups increased by 160% when the total number of individuals in the 'hospitalised' compartment exceeds the country-specific surge hospital capacity available for responding to the outbreak.
 
 ::: {.alert .alert-info}
 **Note that**, as default, _daedalus_ ships a collection of pre-defined parameter sets that represent historical respiratory pandemic pathogens (see \@ref(tab:pathogendata)), as contained in _daedalus.data_. These can be saved as an object of class `daedalus_infection` and modified by the user to be then passed to the model function `daedalus::daedalus()`.
