@@ -97,7 +97,8 @@ class daedalus_ode {
     const size_t i_ipr, i_npi_flag, i_vax_flag, i_sd_flag, i_hosp_flag;
 
     // event objects
-    daedalus::events::response npi, vaccination, public_concern;
+    daedalus::events::response npi, vaccination, public_concern,
+        hosp_cap_exceeded;
   };
 
   /// @brief Intermediate data.
@@ -315,7 +316,7 @@ class daedalus_ode {
 
     daedalus::events::response hosp_cap_exceeded(
         std::string("hosp_cap_exceeded"), 0.0, 0.0, hospital_capacity,
-        hospital_capacity, i_hosp_flag, {idx_hosp}, {idx_hosp});
+        hospital_capacity - 1.0, i_hosp_flag, {idx_hosp}, {idx_hosp});
 
     // clang-format off
     return shared_state{
@@ -326,9 +327,9 @@ class daedalus_ode {
         popsize,      cm,           cm_cw,
         cm_work,      susc,       openness,
         i_ipr,  // state index holding incidence/prevalence ratio
-        i_npi_flag,   i_vax_flag, i_sd_flag,    i_hosp_flag, 
+        i_npi_flag,   i_vax_flag, i_sd_flag,    i_hosp_flag,
         npi,          vaccination,
-        public_concern};
+        public_concern, hosp_cap_exceeded};
     // clang-format on
   }
 
@@ -348,7 +349,8 @@ class daedalus_ode {
     // return events vector
     return daedalus::events::get_combined_events(
         {shared.vaccination.make_events(), shared.npi.make_events(),
-         shared.public_concern.make_events()});
+         shared.public_concern.make_events(),
+         shared.hosp_cap_exceeded.make_events()});
   }
 
   /// @brief Set initial values of the IVP model.
@@ -526,7 +528,7 @@ class daedalus_ode {
   /// @return Probably an array of zeros.
   static auto zero_every(const shared_state &shared) {
     return dust2::zero_every_type<real_type>{
-        {1, {shared.i_ipr}}, {1, {shared.i_hosp_flag}}};  // zero IPR value
+        {1, {shared.i_ipr}}};  // zero IPR value
   }
 };
 

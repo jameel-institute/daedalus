@@ -55,3 +55,20 @@ test_that("Closures: hospital capacity and closure time", {
     y$response_data$closure_info$closure_time_start
   )
 })
+
+test_that("Deaths increase when hospital capacity is exceeded", {
+  cty <- daedalus_country("GBR")
+  cty$hospital_capacity <- 1e2
+  output <- daedalus(cty, "sars_cov_1", time_end = 300)
+
+  cty$hospital_capacity <- 1e5 # max possible
+  output2 <- daedalus(cty, "sars_cov_1", time_end = 300)
+
+  deaths <- get_epidemic_summary(output, "deaths")
+  deaths2 <- get_epidemic_summary(output2, "deaths")
+
+  expect_lt(
+    deaths2$value,
+    deaths$value
+  )
+})
