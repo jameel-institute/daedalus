@@ -54,8 +54,9 @@ get_daedalus_response_times <- function(output, time_end) {
   duration <- resp_time_off_realised - resp_time_on_realised
 
   # double check duration against NPI flag as there are no other checks
+  # check against difference of 2 as NPIs can last one extra tstep
   duration_raw <- sum(output$data$npi_flag)
-  if (!(abs(duration - duration_raw) <= 1 || is.na(duration))) {
+  if (!(abs(duration - duration_raw) < 2 || is.na(duration))) {
     cli::cli_abort(
       "Raw response duration: {duration_raw} does not match
       event-data duration: {duration}"
@@ -393,4 +394,5 @@ daedalus <- function(
     )
   )
   as_daedalus_output(output)
+  # output
 }
