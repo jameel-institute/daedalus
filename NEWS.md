@@ -4,7 +4,15 @@ This patch version logs the realised NPI start time. The NPI start time is used 
 
 - Added class member function `make_duration_test` to class `daedalus::events::response`. Events are now treated as having a start time and a duration, rather than an end time.
 
+**Note that** this change makes it more likely that short-duration state-triggered events will be launched multiple times in a single simulation run of 600 days.
+
+- Added class member function `make_duration_test` to class `daedalus::events::response`.
+
+- Used `cmath` macro `NAN` for all undefined or null values in events on the C++ side.
+
 - Updates to input checking, output handling, tests, and documentation for time-limitations on state-triggered events.
+
+- Updated snapshot test for costs with correct values, v0.2.19 was found to have an error where social distancing was mistakenly switched on due to how the `daedalus::events::response` class wrapped _dust2_ events.
 
 # daedalus 0.2.20
 
