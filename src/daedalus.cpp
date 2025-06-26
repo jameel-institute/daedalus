@@ -300,15 +300,15 @@ class daedalus_ode {
                                    hosp_cap_response, gamma_Ia, i_npi_flag,
                                    idx_hosp, {i_ipr}, i_real_npi_start);
 
-    daedalus::events::response vaccination(std::string("vaccination"),
-                                           vax_start_time, NA_REAL, NA_REAL,
-                                           NA_REAL, i_vax_flag, {0}, {0}, 0);
+    daedalus::events::response vaccination(
+        std::string("vaccination"), vax_start_time, NA_REAL, NA_REAL, NA_REAL,
+        i_vax_flag, {0}, {0}, NA_INTEGER);
 
     // predicate public concern social distancing on whether it is off,
     // independent and always on, or linked to NPIs
     // params below are for "independent" i.e., always on
     real_type sd_start_time = 1.0;    // cannot start at 0.0
-    real_type sd_end_time = NA_REAL;  // NA_REAL indicates no end time
+    real_type sd_duration = NA_REAL;  // NA_REAL indicates no end time
     real_type sd_start_state = NA_REAL;
     real_type sd_end_state = NA_REAL;
     // prefer enums or strings but dust2 cannot handle these yet?
@@ -316,17 +316,18 @@ class daedalus_ode {
       sd_start_time = NA_REAL;
     } else if (auto_social_distancing == 2) {
       sd_start_time = response_time;
-      sd_end_time = response_time + response_duration;
+      sd_duration = response_duration;
       sd_start_state = hosp_cap_response;
       sd_end_state = gamma_Ia;  // not working anyway; see PR #83
     }
     daedalus::events::response public_concern(
-        std::string("public_concern"), sd_start_time, sd_end_time,
-        sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr}, 0);
+        std::string("public_concern"), sd_start_time, sd_duration,
+        sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr},
+        NA_INTEGER);
 
     daedalus::events::response hosp_cap_exceeded(
         std::string("hosp_cap_exceeded"), NA_REAL, NA_REAL, hospital_capacity,
-        hospital_capacity, i_hosp_flag, {idx_hosp}, {idx_hosp}, 0);
+        hospital_capacity, i_hosp_flag, {idx_hosp}, {idx_hosp}, NA_INTEGER);
 
     // clang-format off
     return shared_state{

@@ -45,7 +45,7 @@ class response {
   const double time_on, duration, state_on, state_off;
   const size_t i_flag;
   const std::vector<size_t> i_state_on, i_state_off;
-  const size_t i_time_start;
+  const int i_time_start;
 
   /// @brief Constructor for a response.
   /// @param name A string for the name, used to generate event names.
@@ -67,7 +67,7 @@ class response {
            const double &duration, const double &state_on,
            const double &state_off, const size_t &i_flag,
            const std::vector<size_t> &i_state_on,
-           const std::vector<size_t> &i_state_off, const size_t &i_time_start)
+           const std::vector<size_t> &i_state_off, const int &i_time_start)
       : name(name),
         time_on(time_on),
         duration(duration),
@@ -131,12 +131,15 @@ class response {
       for (size_t i = 0; i < flags.size(); i++) {
         const size_t yi = flags[i];
 
-        // set value to time if special value passed and flag not already set
-        const double val = values[i];
-        if ((val - value_log_time) < 1e-6 && y[yi] < 1.0) {
-          y[yi] = t;  // it's fine if these are decimal values
-        } else {
-          y[yi] = val;
+        if (!ISNA(yi)) {
+          const size_t yii = static_cast<size_t>(yi);
+          // set value to time if special value passed and flag not already set
+          const double val = values[i];
+          if ((val - value_log_time) < 1e-6 && y[yii] < 1.0) {
+            y[yii] = t;  // it's fine if these are decimal values
+          } else {
+            y[yii] = val;
+          }
         }
       }
     };
