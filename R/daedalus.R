@@ -291,9 +291,12 @@ daedalus <- function(
   }
 
   # checks on vaccination
-  vaccine_investment <- validate_vaccination_input(vaccine_investment)
+  vaccination <- validate_vaccination_input(vaccine_investment)
 
-  if (get_data(vaccine_investment, "start_time") == 0.0) {
+  if (
+    get_data(vaccination, "start_time") == 0.0 &&
+      !is.null(vaccine_investment)
+  ) {
     # check vaccination start time and set vaccination flag
     flags["vax_flag"] <- 1.0
   }
@@ -348,12 +351,12 @@ daedalus <- function(
   initial_state <- make_initial_state(country, initial_state_manual)
 
   # prepare susceptibility matrix for vaccination
-  susc <- make_susc_matrix(vaccine_investment, country)
+  susc <- make_susc_matrix(vaccination, country)
 
   parameters <- c(
     prepare_parameters.daedalus_country(country),
     prepare_parameters.daedalus_infection(infection),
-    prepare_parameters.daedalus_vaccination(vaccine_investment),
+    prepare_parameters.daedalus_vaccination(vaccination),
     list(
       beta = get_beta(infection, country),
       susc = susc,
@@ -394,5 +397,4 @@ daedalus <- function(
     )
   )
   as_daedalus_output(output)
-  # output
 }
