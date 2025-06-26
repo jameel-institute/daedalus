@@ -24,7 +24,7 @@ initial_flags <- function() {
 
 #' Get model response times from dust2 output
 #'
-#' @param event_data dust2 output event data from `daedalus_internal()`.
+#' @param output dust2 output `daedalus_internal()`.
 #' @param time_end The model end time, passed from [daedalus()].
 #'
 #' @return A vector of event start and end times suitable for a
@@ -32,8 +32,9 @@ initial_flags <- function() {
 #' end time.
 #'
 #' @keywords internal
-get_daedalus_response_times <- function(event_data, time_end) {
+get_daedalus_response_times <- function(output, time_end) {
   # internal function with no input checking
+  event_data <- output$event_data[[1]]
   resp_times_on <- event_data[grepl("npi_\\w*_on$", event_data$name), "time"]
   resp_time_on_realised <- if (length(resp_times_on) == 0) {
     NA_real_
@@ -54,10 +55,12 @@ get_daedalus_response_times <- function(event_data, time_end) {
 
   # double check duration against NPI flag as there are no other checks
   duration_raw <- sum(output$data$npi_flag)
-  stopifnot(
-    "Raw response duration does not match event-data duration" = duration ==
-      duration_raw
-  )
+  if (!(abs(duration - duration_raw) <= 1 || is.na(duration))) {
+    cli::cli_abort(
+      "Raw response duration: {duration_raw} does not match
+      event-data duration: {duration}"
+    )
+  }
 
   # return list for consistency with daedalus
   list(
@@ -293,39 +296,6 @@ daedalus <- function(
     # check vaccination start time and set vaccination flag
     flags["vax_flag"] <- 1.0
   }
-  if (is.null(vaccine_investment)) {
-    vaccine_investment <- dummy_vaccination()
-  }
-  if (is.character(vaccine_investment)) {
-    vaccine_investment <- rlang::arg_match(
-      vaccine_investment,
-      daedalus.data::vaccination_scenario_names
-    )
-    vaccine_investment <- daedalus_vaccination(vaccine_investment)
-  }
-
-  # NULL converted to "none"; WIP: this will be moved to a class constructor
-  if (response_strategy != "none") {
-    is_good_response_time <- checkmate::test_count(
-      response_time,
-      positive = TRUE
-    )
-    if (!is_good_response_time) {
-      cli::cli_abort(
-        "Expected `response_time` to be >= 1."
-      )
-    }
-
-    is_good_response_duration <- checkmate::test_count(
-      response_duration,
-      positive = TRUE
-    )
-    if (!is_good_response_duration) {
-      cli::cli_abort(
-        "Expected `response_duration` to be a single integer-like and >= 1."
-      )
-    }
-  }
 
   is_good_time_end <- checkmate::test_count(time_end, positive = TRUE)
   if (!is_good_time_end) {
@@ -417,7 +387,7 @@ daedalus <- function(
       response_strategy = response_strategy,
       openness = openness,
       closure_info = get_daedalus_response_times(
-        output$event_data[[1]],
+        output,
         time_end
       )
     )
