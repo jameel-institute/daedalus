@@ -1,4 +1,4 @@
-# daedalus 0.2.20
+# daedalus (development version)
 
 Restored model functionality where mortality is increased when hospital capacity is exceeded.
 
@@ -7,6 +7,8 @@ Restored model functionality where mortality is increased when hospital capacity
 - Promoted the hospital-capacity-exceeded mechanism to a full event that is launched and ended only on a state trigger;
 
 - Updated some `daedalus::events::response` class to accept a vector of states to sum for state-off triggers.
+
+- Fixed an issue first seen in PR #91 where using 0.0 as a dummy or null state values caused events to trigger unexpectedly, now using `NAN` in `inst/dust/daedalus.cpp`.
 
 # daedalus 0.2.19
 
