@@ -6,18 +6,36 @@
 #'
 #' @param name A vaccination investment scenario name from among
 #' [daedalus::vaccine_investment_scenarios].
+#'
 #' @param parameters A named list of parameters for the vaccination scenario.
 #'
+#' @param `...` Other parameters passed to `new_daedalus_response()`.
+#'
 #' @return An object of the `<daedalus_vaccination>` class, which inherits from
-#' a `<list>`.
+#' the `<daedalus_response>` super-class.
+#'
 #' @keywords internal
+#'
 #' @noRd
-new_daedalus_vaccination <- function(name, parameters) {
-  x <- c(list(name = name), parameters)
+new_daedalus_vaccination <- function(name, parameters, ...) {
+  new_daedalus_response(
+    name,
+    parameters,
+    class = "daedalus_vaccination",
+    ...
+  )
+}
 
-  class(x) <- "daedalus_vaccination"
-
-  x
+#' Convert an uptake limit from a percentage to a number
+#'
+#' @inheritParams class_vaccination
+#'
+#' @return A single number giving the total number of individuals expected to
+#' take up vaccination. If `country` is `NULL`, the function returns `NULL`.
+#'
+#' @keywords internal
+uptake_percent_to_number <- function(uptake_limit, country) {
+  sum(get_data(country, "demography")) * uptake_limit / 100.0
 }
 
 #' Represent vaccine investment scenarios for DAEDALUS
@@ -49,6 +67,10 @@ new_daedalus_vaccination <- function(name, parameters) {
 #' _percentage_ of the population that can be vaccinated. When this limit is
 #' reached, vaccination ends.
 #'
+#' @param country A `<daedalus_country>` object or a 2- or 3-character string
+#' that can be coerced to a `<daedalus_country>` (e.g. `"GBR"` for the United
+#' Kingdom). Used to determine when vaccination should end.
+#'
 #' @param efficacy A single number in the range `[0, 100]` giving the efficacy
 #' of vaccination in preventing infection. A value of 0 indicates that
 #' vaccinated individuals are as susceptible to infection as unvaccinated ones,
@@ -69,6 +91,7 @@ new_daedalus_vaccination <- function(name, parameters) {
 #' restart once individuals wane out of the vaccinated compartment.
 #'
 #' @export
+#'
 #' @examples
 #' # for no advance vaccine investment
 #' daedalus_vaccination("none")
@@ -78,6 +101,7 @@ new_daedalus_vaccination <- function(name, parameters) {
 #' daedalus_vaccination("low", rate = 1.5)
 daedalus_vaccination <- function(
   name,
+  country,
   start_time = NULL,
   rate = NULL,
   uptake_limit = NULL,
@@ -88,6 +112,10 @@ daedalus_vaccination <- function(
   name <- rlang::arg_match(name, daedalus.data::vaccination_scenario_names)
 
   checkmate::assert_integerish(start_time, lower = 0, null.ok = TRUE)
+
+  # allow conversion of an uptake limit from a percentage to an absolute number
+  country <- daedalus_country(country)
+
   checkmate::assert_number(
     rate,
     null.ok = TRUE,
@@ -110,7 +138,16 @@ daedalus_vaccination <- function(
   params <- daedalus.data::vaccination_scenario_data[[name]]
   params[names(user_params)] <- user_params
 
-  x <- new_daedalus_vaccination(name, params)
+  x <- new_daedalus_vaccination(
+    name,
+    params,
+    time_on = start_time,
+    id_state_off = get_state_indices("new_vax", country),
+    value_state_off = uptake_percent_to_number(
+      params[["uptake_limit"]],
+      country
+    )
+  )
 
   validate_daedalus_vaccination(x)
 
@@ -122,6 +159,7 @@ daedalus_vaccination <- function(
 #' @param x An object to be validated as a `<daedalus_vaccination>` object.
 #'
 #' @keywords internal
+#'
 #' @noRd
 validate_daedalus_vaccination <- function(x) {
   if (!is_daedalus_vaccination(x)) {
@@ -132,9 +170,9 @@ validate_daedalus_vaccination <- function(x) {
   }
 
   # check class members
-  expected_invariants <- c("name", daedalus.data::vaccination_parameter_names)
+  expected_invariants <- c(daedalus.data::vaccination_parameter_names)
   has_invariants <- checkmate::test_names(
-    attributes(x)$names,
+    attributes(x$parameters)$names,
     permutation.of = expected_invariants
   )
   if (!has_invariants) {
@@ -155,7 +193,7 @@ validate_daedalus_vaccination <- function(x) {
   )
 
   invisible(lapply(daedalus.data::vaccination_parameter_names, function(n) {
-    lgl <- checkmate::test_number(x[[n]], lower = 0.0, finite = TRUE)
+    lgl <- checkmate::test_number(x$parameters[[n]], lower = 0.0, finite = TRUE)
     if (!lgl) {
       cli::cli_abort(
         "<daedalus_vaccination> member {.str {n}} must be a single finite
@@ -176,7 +214,9 @@ is_daedalus_vaccination <- function(x) {
 }
 
 #' Print a `<daedalus_vaccination>` object
+#'
 #' @name class_vaccination
+#'
 #' @export
 print.daedalus_vaccination <- function(x, ...) {
   validate_daedalus_vaccination(x)
@@ -186,11 +226,14 @@ print.daedalus_vaccination <- function(x, ...) {
 #' Format a `<daedalus_vaccination>` object
 #'
 #' @param x A `<daedalus_vaccination>` object.
+#'
 #' @param ... Other arguments passed to [format()].
 #'
 #' @return Invisibly returns the `<daedalus_vaccination>` object `x`.
 #' Called for printing side-effects.
+#'
 #' @keywords internal
+#'
 #' @noRd
 format.daedalus_vaccination <- function(x, ...) {
   chkDots(...)
@@ -201,11 +244,11 @@ format.daedalus_vaccination <- function(x, ...) {
   cli::cli_bullets(
     class = divid,
     c(
-      "*" = "Start time (days): {.val {x$start_time}}",
-      "*" = "Rate (% per day): {.val {x$rate}}",
-      "*" = "Uptake limit (%): {x$uptake_limit}",
-      "*" = "Efficacy (%): {x$efficacy * 100}",
-      "*" = "Waning period (mean, days): {x$waning_period}"
+      "*" = "Start time (days): {.val {x$parameters$start_time}}",
+      "*" = "Rate (% per day): {.val {x$parameters$rate}}",
+      "*" = "Uptake limit (%): {x$parameters$uptake_limit}",
+      "*" = "Efficacy (%): {x$parameters$efficacy}",
+      "*" = "Waning period (mean, days): {x$parameters$waning_period}"
     )
   )
   cli::cli_end(divid)
@@ -220,7 +263,7 @@ get_data.daedalus_vaccination <- function(x, to_get, ...) {
   validate_daedalus_vaccination(x)
 
   good_to_get <- checkmate::test_string(to_get) &&
-    checkmate::test_subset(to_get, names(x))
+    checkmate::test_subset(to_get, names(x$parameters))
 
   if (!good_to_get) {
     cli::cli_abort(c(
@@ -229,7 +272,7 @@ get_data.daedalus_vaccination <- function(x, to_get, ...) {
     ))
   }
 
-  x[[to_get]]
+  x$parameters[[to_get]]
 }
 
 #' @name set_data
@@ -250,7 +293,7 @@ set_data.daedalus_vaccination <- function(x, ...) {
     )
   }
 
-  x[names(to_set)] <- to_set
+  x$parameters[names(to_set)] <- to_set
 
   validate_daedalus_vaccination(x)
 
@@ -273,41 +316,6 @@ prepare_parameters.daedalus_vaccination <- function(x, ...) {
     uptake_limit = get_data(x, "uptake_limit") / 100,
     vax_start_time = get_data(x, "start_time")
   )
-}
-
-#' Scale vaccination rate by remaining eligibles
-#'
-#' @param state The system state as a 4-dimensional array.
-#' @param nu The vaccination rate.
-#'
-#' @return The scaled vaccination rate.
-#' @keywords internal
-scale_nu <- function(state, nu, uptake_limit) {
-  # NOTE: state must be a 4D array with only vaccinated and unvaccinated layers
-  # in dim 4
-  total <- sum(state[,
-    i_EPI_COMPARTMENTS,
-    c(i_VACCINATED_STRATUM, i_UNVACCINATED_STRATUM)
-  ])
-  total_vaccinated <- sum(state[, i_EPI_COMPARTMENTS, i_VACCINATED_STRATUM])
-  prop_vaccinated <- total_vaccinated / total
-
-  # NOTE: simplified scaling works only for uniform rates and start times
-  # across age groups
-  # NOTE: scale vaccination rate using a sigmoid function around the uptake
-  # limit for a smoother transition
-  scaled_nu <- (nu / (1 - prop_vaccinated)) /
-    (1.0 + exp(100.0 * (prop_vaccinated - uptake_limit)))
-
-  # handle conditions:
-  # - scaling is finite: return minimum of 1.0 or scaled `nu`
-  # prevent more vaccinations than eligibles
-  # - scaling is inifite due to zero division (no eligibles): return 0
-  if (is.finite(scaled_nu)) {
-    min(1.0, scaled_nu)
-  } else {
-    0.0
-  }
 }
 
 #' Dummy vaccination
@@ -335,10 +343,12 @@ dummy_vaccination <- function() {
 #' @param x An object to be validated as input to the `vaccine_investment`
 #' argument of [daedalus()].
 #'
+#' @inheritParams daedalus
+#'
 #' @keywords internal
 #'
 #' @return A `<daedalus_vaccination>` object.
-validate_vaccination_input <- function(x) {
+validate_vaccination_input <- function(x, country) {
   checkmate::assert_multi_class(
     x,
     c("daedalus_vaccination", "character"),
@@ -352,9 +362,10 @@ validate_vaccination_input <- function(x) {
       x,
       daedalus.data::vaccination_scenario_names
     )
-    x <- daedalus_vaccination(x)
-    invisible(x)
+    x <- daedalus_vaccination(x, country = country)
+
+    x
   } else {
-    invisible(dummy_vaccination())
+    dummy_vaccination()
   }
 }
