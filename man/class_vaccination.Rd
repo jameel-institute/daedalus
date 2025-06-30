@@ -9,6 +9,7 @@
 \usage{
 daedalus_vaccination(
   name,
+  country,
   start_time = NULL,
   rate = NULL,
   uptake_limit = NULL,
@@ -26,6 +27,10 @@ is_daedalus_vaccination(x)
 Selecting an epidemic automatically pulls in vaccination parameters
 associated with the epidemic; these are stored as packaged data in
 \code{daedalus.data::vaccination_scenario_data}.}
+
+\item{country}{A \verb{<daedalus_country>} object or a 2- or 3-character string
+that can be coerced to a \verb{<daedalus_country>} (e.g. \code{"GBR"} for the United
+Kingdom). Used to determine when vaccination should end.}
 
 \item{start_time}{The number of days after the start of the epidemic that
 vaccination begins. Must be a single number. Defaults to \code{NULL} and the start
