@@ -83,6 +83,11 @@ daedalus_country <- function(
   ),
   group_working_age = NULL
 ) {
+  # quick return as is if class is provided
+  if (is_daedalus_country(country)) {
+    return(country)
+  }
+
   # input checking
   name <- country_name_from_arg(country)
   # check list but allow missing and NULL

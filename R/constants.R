@@ -143,13 +143,16 @@ FLAG_NAMES <- c(
 )
 
 #' @title Epidemiological compartments and indices
+#'
 #' @description Names and indices for the epidemiological compartments used in
-#' DAEDALUS, for reuse in model code.
+#' DAEDALUS, for reuse in model code. The duplication is for ease of extracting
+#' indices from a named list, and of extracting names without having to call
+#' `names()`.
 #'
 #' @return
-#'
 #' `COMPARTMENTS` returns a character vector of the epidemiological
-#' compartment names.
+#' compartment names. `idx_COMPARTMENTS` returns a list with the compartment
+#' index.
 #'
 #' All other constants return integer values.
 #'
@@ -158,8 +161,8 @@ FLAG_NAMES <- c(
 #' and symptomatic ("infect_symp"), infectious and asymptomatic ("infect_asymp")
 #' , hospitalised, recovered, and dead.
 #'
-#' There are 3 additional compartments that track the number of new infections,
-#' new hospitalisations, and new deaths (`i_dE`, `i_dH`, and `i_dD`).
+#' There are 2 additional compartments that track the number of new infections
+#' and new hospitalisations.
 #'
 #' @name epi_constants
 #' @rdname epi_constants
@@ -179,50 +182,28 @@ COMPARTMENTS <- c(
 
 #' @name epi_constants
 #' @keywords epi_constant
-N_MODEL_COMPARTMENTS <- 9L
+idx_COMPARTMENTS <- list(
+  susceptible = 1L,
+  exposed = 2L,
+  infect_symp = 3L,
+  infect_asymp = 4L,
+  hospitalised = 5L,
+  recovered = 6L,
+  dead = 7L,
+  new_infectious = 8L,
+  new_hosp = 9L
+)
 
 #' @name epi_constants
 N_EPI_COMPARTMENTS <- 7L
 
 #' @name epi_constants
-N_DATA_COMPARTMENTS <- 2L
-
-#' @name epi_constants
+#' @keywords epi_constants
 i_EPI_COMPARTMENTS <- seq.int(N_EPI_COMPARTMENTS)
 
 #' @name epi_constants
-i_DATA_COMPARTMENTS <- c(8L, 9L)
-
-#' @name epi_constants
 #' @keywords epi_constant
-i_S <- 1L
-
-#' @name epi_constants
-i_E <- 2L
-
-#' @name epi_constants
-i_Is <- 3L
-
-#' @name epi_constants
-i_Ia <- 4L
-
-#' @name epi_constants
-i_H <- 5L
-
-#' @name epi_constants
-i_R <- 6L
-
-#' @name epi_constants
-i_D <- 7L
-
-#' @name epi_constants
-i_dE <- 8L # new infections
-
-#' @name epi_constants
-i_dH <- 9L # new hospitalisations
-
-#' @name epi_constants
-i_dD <- 10L # new deaths
+N_MODEL_COMPARTMENTS <- 9L
 
 #' @name epi_constants
 N_INFECTION_SUBSYSTEM <- 3L # compartments in the infectious subsystem
