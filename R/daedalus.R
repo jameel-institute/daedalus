@@ -304,7 +304,7 @@ daedalus <- function(
   }
 
   # checks on vaccination
-  vaccination <- validate_vaccination_input(vaccine_investment)
+  vaccine_investment <- validate_vaccination_input(vaccine_investment, country)
 
   if (
     get_data(vaccination, "start_time") == 0.0 &&
