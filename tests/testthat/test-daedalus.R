@@ -246,7 +246,7 @@ test_that("daedalus: vaccination works", {
   # NOTE: test for truly no vaccination are in default daedalus test above
 
   # NOTE: event starting at t = 0 does not work
-  vax <- daedalus_vaccination("low", 10, 0.1, 100)
+  vax <- daedalus_vaccination("low", "THA", 10, 0.1, 100)
   expect_no_condition(
     daedalus("THA", "sars_cov_1", vaccine_investment = vax)
   )
@@ -287,6 +287,7 @@ test_that("daedalus: advanced vaccination features", {
   vax <- daedalus_vaccination(
     "high",
     uptake_limit = uptake_limit,
+    country = x,
     waning_period = 3000
   )
   # final size is zero
