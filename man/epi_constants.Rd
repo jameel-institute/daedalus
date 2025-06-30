@@ -4,53 +4,20 @@
 \name{epi_constants}
 \alias{epi_constants}
 \alias{COMPARTMENTS}
-\alias{N_MODEL_COMPARTMENTS}
+\alias{idx_COMPARTMENTS}
 \alias{N_EPI_COMPARTMENTS}
-\alias{N_DATA_COMPARTMENTS}
 \alias{i_EPI_COMPARTMENTS}
-\alias{i_DATA_COMPARTMENTS}
-\alias{i_S}
-\alias{i_E}
-\alias{i_Is}
-\alias{i_Ia}
-\alias{i_H}
-\alias{i_R}
-\alias{i_D}
-\alias{i_dE}
-\alias{i_dH}
-\alias{i_dD}
+\alias{N_MODEL_COMPARTMENTS}
 \alias{N_INFECTION_SUBSYSTEM}
 \title{Epidemiological compartments and indices}
 \format{
 An object of class \code{character} of length 9.
 
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
+An object of class \code{list} of length 9.
 
 An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 7.
-
-An object of class \code{integer} of length 2.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
-
-An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
 
@@ -59,55 +26,37 @@ An object of class \code{integer} of length 1.
 \usage{
 COMPARTMENTS
 
-N_MODEL_COMPARTMENTS
+idx_COMPARTMENTS
 
 N_EPI_COMPARTMENTS
 
-N_DATA_COMPARTMENTS
-
 i_EPI_COMPARTMENTS
 
-i_DATA_COMPARTMENTS
-
-i_S
-
-i_E
-
-i_Is
-
-i_Ia
-
-i_H
-
-i_R
-
-i_D
-
-i_dE
-
-i_dH
-
-i_dD
+N_MODEL_COMPARTMENTS
 
 N_INFECTION_SUBSYSTEM
 }
 \value{
 \code{COMPARTMENTS} returns a character vector of the epidemiological
-compartment names.
+compartment names. \code{idx_COMPARTMENTS} returns a list with the compartment
+index.
 
 All other constants return integer values.
 }
 \description{
 Names and indices for the epidemiological compartments used in
-DAEDALUS, for reuse in model code.
+DAEDALUS, for reuse in model code. The duplication is for ease of extracting
+indices from a named list, and of extracting names without having to call
+\code{names()}.
 }
 \details{
 DAEDALUS has 7 epidemiological compartments: susceptible, exposed, infectious
 and symptomatic ("infect_symp"), infectious and asymptomatic ("infect_asymp")
 , hospitalised, recovered, and dead.
 
-There are 3 additional compartments that track the number of new infections,
-new hospitalisations, and new deaths (\code{i_dE}, \code{i_dH}, and \code{i_dD}).
+There are 2 additional compartments that track the number of new infections
+and new hospitalisations.
 }
 \keyword{datasets}
 \keyword{epi_constant}
+\keyword{epi_constants}
