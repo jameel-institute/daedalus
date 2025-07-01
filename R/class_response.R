@@ -8,6 +8,11 @@
 #' super-class constructor; each sub-class has a fixed name to aid
 #' identifiability in `dust2` events outputs.
 #'
+#' @param class Sub-class name. This is only ever passed from each sub-class
+#' constructor.
+#'
+#' @param parameters Sub-class parameters passed from sub-class constructors.
+#'
 #' @param time_on Intended to be a numeric vector of start times.
 #'
 #' @param duration Intended to be a numeric vector of durations.
@@ -50,7 +55,7 @@
 new_daedalus_response <- function(
   name,
   class,
-  parameters = NULL,
+  parameters,
   time_on = NULL,
   duration = NULL,
   id_state_on = NULL,
@@ -80,17 +85,17 @@ new_daedalus_response <- function(
 
 #' @name class_response
 new_daedalus_npi <- function() {
-  new_daedalus_response(name = "npi", class = "daedalus_npi")
+  new_daedalus_response("npi", "daedalus_npi", list())
 }
 
 #' @name class_response
 new_daedalus_behaviour <- function() {
-  new_daedalus_response(name = "behaviour", class = "daedalus_behaviour")
+  new_daedalus_response("behaviour", "daedalus_behaviour", list())
 }
 
 #' @name class_response
 new_daedalus_mortality <- function() {
-  new_daedalus_response(name = "mortality", class = "daedalus_mortality")
+  new_daedalus_response("mortality", "daedalus_mortality", list())
 }
 
 #' @name class_response
@@ -108,7 +113,7 @@ validate_daedalus_response <- function(x) {
   }
 
   # check class members apart from parameters
-  expected_invariants <- c(
+  expected_fields <- c(
     "name",
     "parameters",
     "time_on",
@@ -120,7 +125,7 @@ validate_daedalus_response <- function(x) {
   )
   has_invariants <- checkmate::test_names(
     attributes(x)$names,
-    permutation.of = expected_invariants
+    permutation.of = expected_fields
   )
   if (!has_invariants) {
     cli::cli_abort(
@@ -130,7 +135,7 @@ validate_daedalus_response <- function(x) {
   }
 
   # no check on name for now; parameters should be checked in sub-classes
-  if (!checkmate::test_list(x$parameters)) {
+  if (!checkmate::test_list(x$parameters, null.ok = TRUE)) {
     cli::cli_abort(
       "{.cls daedalus_response} member {.str parameters} must be a list but\
       is not."
