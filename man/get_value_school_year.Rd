@@ -8,7 +8,7 @@ get_value_school_year(gni)
 }
 \arguments{
 \item{gni}{The GNI per capita of a country. Must be a single value. See
-\link{country_gni} for values.}
+\link[daedalus.data:life_value]{daedalus.data::country_gni} for values.}
 }
 \value{
 A single value giving the value of a school year given the country
