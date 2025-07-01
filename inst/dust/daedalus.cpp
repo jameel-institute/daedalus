@@ -6,6 +6,7 @@
 // clang-format off
 #include <daedalus.h>
 
+#include <R_ext/Arith.h>
 #include <RcppEigen.h>
 #include <unsupported/Eigen/CXX11/Tensor>
 
@@ -249,20 +250,21 @@ class daedalus_ode {
 
     // EVENT/RESPONSE PARAMETERS
     // response time is only 0.0 when response is NULL or 'none'
-    // this is used to set hosp capacity to NAN so the response is not triggered
+    // this is used to set hosp capacity to NA_REAL so the response is not
+    // triggered
     const real_type response_time =
-        dust2::r::read_real(pars, "response_time", NAN);
+        dust2::r::read_real(pars, "response_time", NA_REAL);
     const real_type response_duration =
-        dust2::r::read_real(pars, "response_duration", NAN);
+        dust2::r::read_real(pars, "response_duration", NA_REAL);
     const int auto_social_distancing =
         dust2::r::read_size(pars, "auto_social_distancing", 0);
 
     // hospital capacity data; make a copy conditional on response time to
     // prevent hospital-capacity triggered responses
     const real_type hospital_capacity =
-        dust2::r::read_real(pars, "hospital_capacity", NAN);
+        dust2::r::read_real(pars, "hospital_capacity", NA_REAL);
     const real_type hosp_cap_response =
-        std::isnan(response_time) ? NAN : hospital_capacity;
+        std::isnan(response_time) ? NA_REAL : hospital_capacity;
 
     // handling openness vector
     TensorMat openness(n_econ_groups, 1);
@@ -293,19 +295,19 @@ class daedalus_ode {
         hosp_cap_response, gamma_Ia, i_npi_flag, idx_hosp, {i_ipr});
 
     daedalus::events::response vaccination(std::string("vaccination"),
-                                           vax_start_time, NAN, NAN, NAN,
-                                           i_vax_flag, {0}, {0});
+                                           vax_start_time, NA_REAL, NA_REAL,
+                                           NA_REAL, i_vax_flag, {0}, {0});
 
     // predicate public concern social distancing on whether it is off,
     // independent and always on, or linked to NPIs
     // params below are for "independent" i.e., always on
-    real_type sd_start_time = 1.0;  // cannot start at 0.0
-    real_type sd_end_time = NAN;    // NAN indicates no end time
-    real_type sd_start_state = NAN;
-    real_type sd_end_state = NAN;
+    real_type sd_start_time = 1.0;    // cannot start at 0.0
+    real_type sd_end_time = NA_REAL;  // NA_REAL indicates no end time
+    real_type sd_start_state = NA_REAL;
+    real_type sd_end_state = NA_REAL;
     // prefer enums or strings but dust2 cannot handle these yet?
     if (auto_social_distancing == 0) {
-      sd_start_time = NAN;
+      sd_start_time = NA_REAL;
     } else if (auto_social_distancing == 2) {
       sd_start_time = response_time;
       sd_end_time = response_time + response_duration;
@@ -317,7 +319,7 @@ class daedalus_ode {
         sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr});
 
     daedalus::events::response hosp_cap_exceeded(
-        std::string("hosp_cap_exceeded"), NAN, NAN, hospital_capacity,
+        std::string("hosp_cap_exceeded"), NA_REAL, NA_REAL, hospital_capacity,
         hospital_capacity, i_hosp_flag, {idx_hosp}, {idx_hosp});
 
     // clang-format off

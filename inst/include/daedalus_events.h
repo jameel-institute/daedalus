@@ -6,6 +6,7 @@
 // clang-format off
 #include "daedalus_types.h"
 
+#include <R_ext/Arith.h>
 #include <functional>
 #include <string>
 #include <vector>
@@ -131,29 +132,47 @@ class response {
     // 1. launch event by some threshold time
     // 2. end event on time
     // 3. launch event on state threshold
-    std::string name_ev_time_on = name + "_time_on";
-    dust2::ode::event<double> ev_time_on =
-        make_event(name_ev_time_on, {}, make_time_test(time_on),
-                   make_flag_setter(i_flag, 1.0));
 
-    std::string name_ev_time_off = name + "_time_off";
-    dust2::ode::event<double> ev_time_off =
-        make_event(name_ev_time_off, {}, make_time_test(time_off),
-                   make_flag_setter(i_flag, 0.0));
+    dust2::ode::events_type<double> events;
 
-    std::string name_ev_state_on = name + "_state_on";
-    dust2::ode::event<double> ev_state_on = make_event(
-        name_ev_state_on, i_state_on, make_state_test(i_state_on, state_on),
-        make_flag_setter(i_flag, 1.0), dust2::ode::root_type::increase);
+    if (!ISNA(time_on)) {
+      std::string name_ev_time_on = name + "_time_on";
+      dust2::ode::event<double> ev_time_on =
+          make_event(name_ev_time_on, {}, make_time_test(time_on),
+                     make_flag_setter(i_flag, 1.0));
 
-    std::string name_ev_state_off = name + "_state_off";
-    dust2::ode::event<double> ev_state_off = make_event(
-        name_ev_state_off, {i_state_off},
-        make_state_test(i_state_off, state_off), make_flag_setter(i_flag, 0.0),
-        dust2::ode::root_type::decrease);
+      events.push_back(ev_time_on);
+    }
 
-    return dust2::ode::events_type<double>(
-        {ev_time_on, ev_time_off, ev_state_on, ev_state_off});
+    if (!ISNA(time_off)) {
+      std::string name_ev_time_off = name + "_time_off";
+      dust2::ode::event<double> ev_time_off =
+          make_event(name_ev_time_off, {}, make_time_test(time_off),
+                     make_flag_setter(i_flag, 0.0));
+
+      events.push_back(ev_time_off);
+    }
+
+    if (!ISNA(state_on)) {
+      std::string name_ev_state_on = name + "_state_on";
+      dust2::ode::event<double> ev_state_on = make_event(
+          name_ev_state_on, i_state_on, make_state_test(i_state_on, state_on),
+          make_flag_setter(i_flag, 1.0), dust2::ode::root_type::increase);
+
+      events.push_back(ev_state_on);
+    }
+
+    if (!ISNA(state_off)) {
+      std::string name_ev_state_off = name + "_state_off";
+      dust2::ode::event<double> ev_state_off = make_event(
+          name_ev_state_off, {i_state_off},
+          make_state_test(i_state_off, state_off),
+          make_flag_setter(i_flag, 0.0), dust2::ode::root_type::decrease);
+
+      events.push_back(ev_state_off);
+    }
+
+    return events;
   }
 };
 
