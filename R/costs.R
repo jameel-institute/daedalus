@@ -209,7 +209,7 @@ get_value_lost_earnings <- function() {
 #' Calculate the value of a school year
 #'
 #' @param gni The GNI per capita of a country. Must be a single value. See
-#' [daedalus::country_gni] for values.
+#' [daedalus.data::country_gni] for values.
 #'
 #' @return A single value giving the value of a school year given the country
 #' GNI per capita and an expected work period of 45 years.
