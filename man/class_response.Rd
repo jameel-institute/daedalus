@@ -13,7 +13,7 @@
 new_daedalus_response(
   name,
   class,
-  parameters = NULL,
+  parameters,
   time_on = NULL,
   duration = NULL,
   id_state_on = NULL,
@@ -41,6 +41,8 @@ identifiability in \code{dust2} events outputs.}
 \item{class}{The name of the sub-class being created. May be one of
 "daedalus_npi", "daedalus_vaccination", "daedalus_behaviour", or
 "daedalus_mortality".}
+
+\item{parameters}{Sub-class parameters passed from sub-class constructors.}
 
 \item{time_on}{Intended to be a numeric vector of start times.}
 

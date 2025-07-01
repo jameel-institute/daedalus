@@ -8,6 +8,10 @@
 #' [daedalus::vaccine_investment_scenarios].
 #'
 #' @param parameters A named list of parameters for the vaccination scenario.
+#' These must be `start_time` (single numeric), `rate` (single numeric),
+#' `uptake_limit` (single numeric), `country`
+#' (coercible to `<daedalus_country>`), `efficacy` (single numeric), and
+#' `waning_period` (single numeric).
 #'
 #' @param `...` Other parameters passed to `new_daedalus_response()`.
 #'
