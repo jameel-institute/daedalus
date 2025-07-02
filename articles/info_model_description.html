@@ -22,7 +22,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.19</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.20</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -185,6 +185,13 @@ constant rate of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mo>→</mo><mi>I</mi></mrow><annotation encoding="application/x-tex">E \rightarrow I</annotation></semantics></math>
 progression), which is indicated by
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(t)</annotation></semantics></math>.</p>
+<p>One parameter that varies endogenously is the age-specific mortality
+rate
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>ω</mi><mi>i</mi></msup><annotation encoding="application/x-tex">\omega^i</annotation></semantics></math>;
+mortality rates for all groups increased by 160% when the total number
+of individuals in the ‘hospitalised’ compartment exceeds the
+country-specific surge hospital capacity available for responding to the
+outbreak.</p>
 <div class="alert alert-info">
 <p><strong>Note that</strong>, as default, <em>daedalus</em> ships a
 collection of pre-defined parameter sets that represent historical
@@ -382,7 +389,7 @@ are of length 49, encompassing all age-sector classes.</p>
 <caption>(#tab:pathogendata) Pathogen parameters. A different pathogen
 profile can be created by the user by generating a list object
 specifying these parameter values (see list structure for these
-pathogens in <code><a href="https://rdrr.io/pkg/daedalus.data/man/epidemic_data.html" class="external-link">daedalus.data::infection_data</a></code>). *Note disease
+pathogens in <code><a href="https://jameel-institute.github.io/daedalus.data/reference/epidemic_data.html">daedalus.data::infection_data</a></code>). *Note disease
 severity progression is modelled with competing rates (e.g., for
 individuals in the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mi>a</mi></mrow><annotation encoding="application/x-tex">Ia</annotation></semantics></math>
@@ -660,7 +667,7 @@ user.</p>
 <caption>(#tab:vaccine) Vaccination parameters. These pre-specified
 parameters can be modified by the user and/or additional strategies can
 be added by generating a list object with the same structure (see
-<code><a href="https://rdrr.io/pkg/daedalus.data/man/vaccine_scenarios.html" class="external-link">daedalus.data::vaccination_scenario_data</a></code>). *Note the
+<code><a href="https://jameel-institute.github.io/daedalus.data/reference/vaccine_scenarios.html">daedalus.data::vaccination_scenario_data</a></code>). *Note the
 default version of <em>daedalus</em> only models vaccine efficacy
 against infection; for use cases with added functionality to simulate
 efficacy against other clinical severity end-points see <span class="citation">Johnson et al. (<a href="#ref-johnson_indonesia">2023</a>)</span>.</caption>
