@@ -249,7 +249,7 @@ validate_daedalus_country <- function(x) {
 
   # check class members
   # NOTE: gva = gross value added; vsl = value of statistical life
-  expected_invariants <- c(
+  expected_fields <- c(
     "name",
     "demography",
     "contact_matrix",
@@ -265,11 +265,11 @@ validate_daedalus_country <- function(x) {
     "n_strata",
     "group_working_age"
   )
-  has_invariants <- checkmate::test_names(
+  has_fields <- checkmate::test_names(
     attributes(x)$names,
-    permutation.of = expected_invariants
+    permutation.of = expected_fields
   )
-  if (!has_invariants) {
+  if (!has_fields) {
     cli::cli_abort("{.cls country} does not have the correct attributes")
   }
 

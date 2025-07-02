@@ -25,7 +25,7 @@ as_daedalus_output <- function(x) {
 #' erroring when the object does not satisfy the `<daedalus_output>` class
 #' requirements.
 validate_daedalus_output <- function(x) {
-  expected_invariants <- c(
+  expected_fields <- c(
     "model_data",
     # NOTE: reserving 'parameters' for values fixed before model run
     "country_parameters",
@@ -37,7 +37,7 @@ validate_daedalus_output <- function(x) {
     "Object should be of class `daedalus_output`" = is_daedalus_output(x),
     "Object does not have expected members" = checkmate::test_names(
       names(x),
-      must.include = expected_invariants
+      must.include = expected_fields
     )
   )
 

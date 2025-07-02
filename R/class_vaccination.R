@@ -174,12 +174,12 @@ validate_daedalus_vaccination <- function(x) {
   }
 
   # check class members
-  expected_invariants <- c(daedalus.data::vaccination_parameter_names)
-  has_invariants <- checkmate::test_names(
-    attributes(x$parameters)$names,
-    permutation.of = expected_invariants
+  expected_fields <- daedalus.data::vaccination_parameter_names
+  has_fields <- checkmate::test_names(
+    attr(x$parameters, "names"),
+    permutation.of = expected_fields
   )
-  if (!has_invariants) {
+  if (!has_fields) {
     cli::cli_abort(
       "`x` is class {.cls daedalus_vaccination} but does not have the correct
       attributes"

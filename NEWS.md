@@ -1,3 +1,7 @@
+# daedalus (development version)
+
+Adds the `<daedalus_response>` super-class from which event sub-classes should inherit.
+
 # daedalus 0.2.21
 
 This patch version logs the realised times of all events. When events are launched multiple times, the start time is updated. All start times are held as special variables in `state`. The NPI start time is used to determine the realised NPI end time by testing for a duration, and enables time-limitation for state-triggered events. Other events do not have a fixed end time (other than NPI-linked social distancing).
