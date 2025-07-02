@@ -9,9 +9,10 @@
 #' identifiability in `dust2` events outputs.
 #'
 #' @param class Sub-class name. This is only ever passed from each sub-class
-#' constructor.
+#' constructor. Only a fixed set of values is currently allowed.
 #'
 #' @param parameters Sub-class parameters passed from sub-class constructors.
+#' Defaults to an empty list to aid development.
 #'
 #' @param time_on Intended to be a numeric vector of start times.
 #'
@@ -54,8 +55,8 @@
 #' @keywords internal
 new_daedalus_response <- function(
   name,
-  class,
-  parameters,
+  class = response_class_names,
+  parameters = list(),
   time_on = NULL,
   duration = NULL,
   id_state_on = NULL,
@@ -64,9 +65,11 @@ new_daedalus_response <- function(
   value_state_off = NULL
 ) {
   # class arg empty to force responses to have a sub-class
+  class <- rlang::arg_match0(class, response_class_names) # no defaults
 
   x <- list(
     name = name,
+    class = class,
     parameters = parameters,
     time_on = time_on,
     duration = duration,
@@ -82,6 +85,14 @@ new_daedalus_response <- function(
 
   x
 }
+
+#' @name class_response
+response_class_names <- c(
+  "daedalus_npi",
+  "daedalus_vaccination",
+  "daedalus_behaviour",
+  "daedalus_mortality"
+)
 
 #' @name class_response
 new_daedalus_npi <- function() {
@@ -115,6 +126,7 @@ validate_daedalus_response <- function(x) {
   # check class members apart from parameters
   expected_fields <- c(
     "name",
+    "class",
     "parameters",
     "time_on",
     "duration",
@@ -123,19 +135,11 @@ validate_daedalus_response <- function(x) {
     "id_state_off",
     "value_state_off"
   )
-  has_invariants <- checkmate::test_names(
-    attributes(x)$names,
-    permutation.of = expected_fields
-  )
-  if (!has_invariants) {
-    cli::cli_abort(
-      "`x` is class {.cls daedalus_response} but does not have the correct
-      attributes"
-    )
-  }
+
+  assert_class_fields(x, expected_fields)
 
   # no check on name for now; parameters should be checked in sub-classes
-  if (!checkmate::test_list(x$parameters, null.ok = TRUE)) {
+  if (!checkmate::test_list(x$parameters)) {
     cli::cli_abort(
       "{.cls daedalus_response} member {.str parameters} must be a list but\
       is not."
@@ -165,11 +169,13 @@ validate_daedalus_response <- function(x) {
   if (!is_good_duration) {
     cli::cli_abort(
       "{.cls daedalus_response} member {.str duration} must be a vector of\
-      integer-ish numbers, but it is not."
+      integer-ish numbers of the same length as `time_on`, but it is not."
     )
   }
 
-  # possibly needs an upper bound?
+  # NOTE: possibly needs an upper bound?
+  # NOTE: may need to be a list allowing integer vectors if an event is
+  # expected to be triggered by more than one state being reached
   is_good_state_on <- checkmate::test_integerish(
     x$id_state_on,
     lower = 0,
@@ -196,6 +202,7 @@ validate_daedalus_response <- function(x) {
     )
   }
 
+  # NOTE: no negative values expected
   is_good_value_on <- checkmate::test_numeric(
     x$value_state_on,
     lower = 0.0,
@@ -205,7 +212,7 @@ validate_daedalus_response <- function(x) {
   if (!is_good_value_on) {
     cli::cli_abort(
       "{.cls daedalus_response} member {.str value_state_on} must be a\
-      numeric vector, but it is not."
+      numeric vector with no missing values allowed, but it is not."
     )
   }
 
@@ -218,7 +225,7 @@ validate_daedalus_response <- function(x) {
   if (!is_good_value_off) {
     cli::cli_abort(
       "{.cls daedalus_response} member {.str value_state_off} must be a\
-      numeric vector, but it is not."
+      numeric vector with no missing values allowed, but it is not."
     )
   }
 
