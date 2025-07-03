@@ -306,11 +306,11 @@ class daedalus_ode {
     // NOTE: NPI response end time passed as parameter; vax end time remains 0.0
     daedalus::events::response npi(
         std::string("npi"), response_time, response_duration, hosp_cap_response,
-        gamma_Ia, i_npi_flag, idx_hosp, {i_ipr}, true, i_real_npi_start);
+        gamma_Ia, i_npi_flag, idx_hosp, {i_ipr}, i_real_npi_start);
 
     daedalus::events::response vaccination(
         std::string("vaccination"), vax_start_time, NA_REAL, NA_REAL, NA_REAL,
-        i_vax_flag, {0}, {0}, false, i_real_vax_start);
+        i_vax_flag, {0}, {0}, i_real_vax_start);
 
     // predicate public concern social distancing on whether it is off,
     // independent and always on, or linked to NPIs
@@ -330,12 +330,12 @@ class daedalus_ode {
     }
     daedalus::events::response public_concern(
         std::string("public_concern"), sd_start_time, sd_duration,
-        sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr}, false,
+        sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr},
         i_real_sd_start);
 
     daedalus::events::response hosp_cap_exceeded(
         std::string("hosp_cap_exceeded"), NA_REAL, NA_REAL, hospital_capacity,
-        hospital_capacity, i_hovflow_flag, {idx_hosp}, {idx_hosp}, false,
+        hospital_capacity, i_hovflow_flag, {idx_hosp}, {idx_hosp},
         i_real_hovflow_start);
 
     // clang-format off
