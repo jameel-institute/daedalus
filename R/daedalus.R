@@ -10,19 +10,27 @@ initial_flags <- function() {
   ipr <- 0.0 # incidence-prevalence ratio
   sd_flag <- 0.0 # spontaneous social distancing flag
   hosp_flag <- 0.0 # flag for hosp capacity being exceeded
+  npi_start_time <- 0.0 # true NPI start time
+  vax_start_time <- 0.0 # true vaccination start time
+  sd_start_time <- 0.0 # true social distancing start time
+  hovflow_start_time <- 0.0 # true hospital overflow start time
 
   c(
     ipr = ipr,
     npi_flag = npi_flag,
     vax_flag = vax_flag,
     sd_flag = sd_flag,
-    hosp_flag = hosp_flag
+    hosp_flag = hosp_flag,
+    npi_start_time = npi_start_time,
+    vax_start_time = vax_start_time,
+    sd_start_time = sd_start_time,
+    hovflow_start_time = hovflow_start_time
   )
 }
 
 #' Get model response times from dust2 output
 #'
-#' @param event_data dust2 output event data from `daedalus_internal()`.
+#' @param output dust2 output `daedalus_internal()`.
 #' @param time_end The model end time, passed from [daedalus()].
 #'
 #' @return A vector of event start and end times suitable for a
@@ -30,8 +38,9 @@ initial_flags <- function() {
 #' end time.
 #'
 #' @keywords internal
-get_daedalus_response_times <- function(event_data, time_end) {
+get_daedalus_response_times <- function(output, time_end) {
   # internal function with no input checking
+  event_data <- output$event_data[[1]]
   resp_times_on <- event_data[grepl("npi_\\w*_on$", event_data$name), "time"]
   resp_time_on_realised <- if (length(resp_times_on) == 0) {
     NA_real_
@@ -49,6 +58,16 @@ get_daedalus_response_times <- function(event_data, time_end) {
   }
 
   duration <- resp_time_off_realised - resp_time_on_realised
+
+  # double check duration against NPI flag as there are no other checks
+  # check against difference of 2 as NPIs can last one extra tstep
+  duration_raw <- sum(output$data$npi_flag)
+  if (!(abs(duration - duration_raw) < 2 || is.na(duration))) {
+    cli::cli_abort(
+      "Raw response duration: {duration_raw} does not match
+      event-data duration: {duration}"
+    )
+  }
 
   # return list for consistency with daedalus
   list(
@@ -278,9 +297,12 @@ daedalus <- function(
   }
 
   # checks on vaccination
-  vaccine_investment <- validate_vaccination_input(vaccine_investment)
+  vaccination <- validate_vaccination_input(vaccine_investment)
 
-  if (get_data(vaccine_investment, "start_time") == 0.0) {
+  if (
+    get_data(vaccination, "start_time") == 0.0 &&
+      !is.null(vaccine_investment)
+  ) {
     # check vaccination start time and set vaccination flag
     flags["vax_flag"] <- 1.0
   }
@@ -335,12 +357,12 @@ daedalus <- function(
   initial_state <- make_initial_state(country, initial_state_manual)
 
   # prepare susceptibility matrix for vaccination
-  susc <- make_susc_matrix(vaccine_investment, country)
+  susc <- make_susc_matrix(vaccination, country)
 
   parameters <- c(
     prepare_parameters.daedalus_country(country),
     prepare_parameters.daedalus_infection(infection),
-    prepare_parameters.daedalus_vaccination(vaccine_investment),
+    prepare_parameters.daedalus_vaccination(vaccination),
     list(
       beta = get_beta(infection, country),
       susc = susc,
@@ -375,7 +397,7 @@ daedalus <- function(
       response_strategy = response_strategy,
       openness = openness,
       closure_info = get_daedalus_response_times(
-        output$event_data[[1]],
+        output,
         time_end
       )
     )

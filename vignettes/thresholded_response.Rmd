@@ -55,6 +55,15 @@ data_intervention <- get_data(data_intervention)
 data_intervention$scenario <- "elimination"
 ```
 
+::: {.alert .alert-info}
+**Note that** the default duration of a pandemic response in _daedalus_ is 365 days. This duration applies from the time of the first response trigger.
+That is, if a model is set up such that a response is mandated from day 30, the response will end on day `30 + 365 =` 395 by default.
+
+However, if the response begins earlier than the `response_time` due to hospital capacity being breached, the duration applies from this earlier time.
+In this scenario, the start and end times of the response can only be known by running the model.
+The response duration will still be the value passed to `response_duration` (or the default if no specific value is passed).
+:::
+
 Plot the total hospital occupancy for both scenarios to view the effect of interventions.
 
 ```{r}
