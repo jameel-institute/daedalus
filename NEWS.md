@@ -1,6 +1,6 @@
 # daedalus 0.2.21
 
-This patch version logs the realised NPI start time. The NPI start time is used to determine the realised NPI end time by testing for a duration, and enables time-limitation for state-triggered events.
+This patch version logs the realised times of all events. When events are launched multiple times, the start time is updated. All start times are held as special variables in `state`. The NPI start time is used to determine the realised NPI end time by testing for a duration, and enables time-limitation for state-triggered events. Other events do not have a fixed end time (other than NPI-linked social distancing).
 
 - Added class member function `make_duration_test` to class `daedalus::events::response`. Events are now treated as having a start time and a duration, rather than an end time.
 
@@ -8,11 +8,7 @@ This patch version logs the realised NPI start time. The NPI start time is used 
 
 - Added class member function `make_duration_test` to class `daedalus::events::response`.
 
-- Used `cmath` macro `NAN` for all undefined or null values in events on the C++ side.
-
 - Updates to input checking, output handling, tests, and documentation for time-limitations on state-triggered events.
-
-- Updated snapshot test for costs with correct values, v0.2.19 was found to have an error where social distancing was mistakenly switched on due to how the `daedalus::events::response` class wrapped _dust2_ events.
 
 # daedalus 0.2.20
 
