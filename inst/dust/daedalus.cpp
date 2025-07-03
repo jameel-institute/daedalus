@@ -180,7 +180,7 @@ class daedalus_ode {
   }
 
   static size_t size_special() {
-    return 5;  // npi_flag, vax_flag, sd_flag, hovflow_flag, npi_start_time
+    return 8;  // flags and start times
   }
 
   /// @brief Initialise shared parameters.
