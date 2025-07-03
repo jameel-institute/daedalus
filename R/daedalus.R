@@ -11,6 +11,9 @@ initial_flags <- function() {
   sd_flag <- 0.0 # spontaneous social distancing flag
   hosp_flag <- 0.0 # flag for hosp capacity being exceeded
   npi_start_time <- 0.0 # true NPI start time
+  vax_start_time <- 0.0 # true vaccination start time
+  sd_start_time <- 0.0 # true social distancing start time
+  hovflow_start_time <- 0.0 # true hospital overflow start time
 
   c(
     ipr = ipr,
@@ -18,7 +21,10 @@ initial_flags <- function() {
     vax_flag = vax_flag,
     sd_flag = sd_flag,
     hosp_flag = hosp_flag,
-    npi_start_time = npi_start_time
+    npi_start_time = npi_start_time,
+    vax_start_time = vax_start_time,
+    sd_start_time = sd_start_time,
+    hovflow_start_time = hovflow_start_time
   )
 }
 

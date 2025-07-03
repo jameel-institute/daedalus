@@ -45,6 +45,7 @@ class response {
   const double time_on, duration, state_on, state_off;
   const size_t i_flag;
   const std::vector<size_t> i_state_on, i_state_off;
+  const bool log_time_start;
   const int i_time_start;
 
   /// @brief Constructor for a response.
@@ -60,6 +61,8 @@ class response {
   /// calculate the state value which is compared against `state_on`.
   /// @param i_state_off The indices of the state variables to be summed to
   /// calculate the state value which is compared against `state_off`.
+  /// @param log_time_start A boolean for whether the start time should be
+  /// logged.
   /// @param i_time_start The index of the state variable that holds the
   /// realised start time for an event. Typically useful for state-triggered
   /// events.
@@ -67,7 +70,8 @@ class response {
            const double &duration, const double &state_on,
            const double &state_off, const size_t &i_flag,
            const std::vector<size_t> &i_state_on,
-           const std::vector<size_t> &i_state_off, const int &i_time_start)
+           const std::vector<size_t> &i_state_off, const bool &log_time_start,
+           const size_t &i_time_start)
       : name(name),
         time_on(time_on),
         duration(duration),
@@ -76,6 +80,7 @@ class response {
         i_flag(i_flag),
         i_state_on(i_state_on),
         i_state_off(i_state_off),
+        log_time_start(log_time_start),
         i_time_start(i_time_start) {}
 
   /// @brief Root-find on time.
@@ -131,15 +136,12 @@ class response {
       for (size_t i = 0; i < flags.size(); i++) {
         const size_t yi = flags[i];
 
-        if (!ISNA(yi)) {
-          const size_t yii = static_cast<size_t>(yi);
-          // set value to time if special value passed and flag not already set
-          const double val = values[i];
-          if ((val - value_log_time) < 1e-6 && y[yii] < 1.0) {
-            y[yii] = t;  // it's fine if these are decimal values
-          } else {
-            y[yii] = val;
-          }
+        // log current time if special value passed and flag not already set
+        const double val = values[i];
+        if ((val - value_log_time) < 1e-6 && y[yi] < 1.0) {
+          y[yi] = t;
+        } else {
+          y[yi] = val;
         }
       }
     };
@@ -184,6 +186,7 @@ class response {
       events.push_back(ev_time_on);
     }
 
+    // event ended on duration
     if (!ISNA(duration)) {
       std::string name_ev_time_off = name + "_time_off";
       dust2::ode::event<double> ev_time_off = make_event(
@@ -193,6 +196,7 @@ class response {
       events.push_back(ev_time_off);
     }
 
+    // event launched by state
     if (!ISNA(state_on)) {
       std::string name_ev_state_on = name + "_state_on";
       dust2::ode::event<double> ev_state_on = make_event(
@@ -203,6 +207,7 @@ class response {
       events.push_back(ev_state_on);
     }
 
+    // event ended by state
     if (!ISNA(state_off)) {
       std::string name_ev_state_off = name + "_state_off";
       dust2::ode::event<double> ev_state_off = make_event(

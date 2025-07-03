@@ -72,7 +72,7 @@ An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
 
-An object of class \code{character} of length 5.
+An object of class \code{character} of length 9.
 }
 \usage{
 N_AGE_GROUPS
