@@ -34,16 +34,16 @@ inline const std::vector<size_t> seq_DATA_COMPARTMENTS = {8, 9};
 
 // flag positions relative to state size
 // NOTE: IPR is continuous value
-constexpr int i_rel_IPR = 0;
-constexpr int i_rel_NPI_FLAG = 1;
-constexpr int i_rel_VAX_FLAG = 2;
-constexpr int i_rel_SD_FLAG = 3;
-constexpr int i_rel_HOVFLOW_FLAG = 4;
+constexpr size_t i_rel_IPR = 0;
+constexpr size_t i_rel_NPI_FLAG = 1;
+constexpr size_t i_rel_VAX_FLAG = 2;
+constexpr size_t i_rel_SD_FLAG = 3;
+constexpr size_t i_rel_HOVFLOW_FLAG = 4;
 
-constexpr int i_rel_NPI_START_TIME = 5;
-constexpr int i_rel_VAX_START_TIME = 6;
-constexpr int i_rel_SD_START_TIME = 7;
-constexpr int i_rel_HOVFLOW_START_TIME = 8;
+constexpr size_t i_rel_NPI_START_TIME = 5;
+constexpr size_t i_rel_VAX_START_TIME = 6;
+constexpr size_t i_rel_SD_START_TIME = 7;
+constexpr size_t i_rel_HOVFLOW_START_TIME = 8;
 
 // magic numbers
 constexpr double d_mort_multiplier = 1.6;

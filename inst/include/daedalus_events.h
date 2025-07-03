@@ -45,8 +45,7 @@ class response {
   const double time_on, duration, state_on, state_off;
   const size_t i_flag;
   const std::vector<size_t> i_state_on, i_state_off;
-  const bool log_time_start;
-  const int i_time_start;
+  const size_t i_time_start;
 
   /// @brief Constructor for a response.
   /// @param name A string for the name, used to generate event names.
@@ -61,8 +60,6 @@ class response {
   /// calculate the state value which is compared against `state_on`.
   /// @param i_state_off The indices of the state variables to be summed to
   /// calculate the state value which is compared against `state_off`.
-  /// @param log_time_start A boolean for whether the start time should be
-  /// logged.
   /// @param i_time_start The index of the state variable that holds the
   /// realised start time for an event. Typically useful for state-triggered
   /// events.
@@ -70,8 +67,7 @@ class response {
            const double &duration, const double &state_on,
            const double &state_off, const size_t &i_flag,
            const std::vector<size_t> &i_state_on,
-           const std::vector<size_t> &i_state_off, const bool &log_time_start,
-           const size_t &i_time_start)
+           const std::vector<size_t> &i_state_off, const size_t &i_time_start)
       : name(name),
         time_on(time_on),
         duration(duration),
@@ -80,7 +76,6 @@ class response {
         i_flag(i_flag),
         i_state_on(i_state_on),
         i_state_off(i_state_off),
-        log_time_start(log_time_start),
         i_time_start(i_time_start) {}
 
   /// @brief Root-find on time.
