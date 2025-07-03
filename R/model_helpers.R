@@ -164,3 +164,34 @@ make_initial_state <- function(country, initial_state_manual) {
 
   initial_state
 }
+
+#' Get a vector of state indices
+#'
+#' @description
+#' A helper function to get a vector of state indices for use in the
+#' response sub-class constructors.
+#'
+#' @param state_name The state name as a string.
+#'
+#' @param country The country as a `<daedalus_country>`. Needed to
+#' correctly calculate the number of age and economic sector groups.
+#'
+#' @return A vector of numbers representing indices.
+get_state_indices <- function(state_name, country) {
+  groups <- length(
+    c(get_data(country, "demography"), get_data(country, "workers"))
+  )
+
+  # handle special cases
+  if (state_name == "new_vax") {
+    min_index <- N_MODEL_COMPARTMENTS * N_VACCINE_STRATA * groups
+    max_index <- min_index + groups
+
+    seq.int(min_index, max_index - 1)
+  } else {
+    compartment_index <- idx_COMPARTMENTS[[state_name]] # temporary
+    max_index <- compartment_index * groups
+
+    seq.int(max_index - groups, max_index - 1)
+  }
+}

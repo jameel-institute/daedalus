@@ -52,15 +52,3 @@ get_beta <- function(infection, country) {
   beta <- r0 / R0a
   beta
 }
-
-
-#' @title Calculate total hospitalisations
-#'
-#' @param state The ODE state variable as an array. Must have at least `i_H`
-#' columns.
-#' @keywords internal
-get_hospitalisations <- function(state) {
-  # NOTE: assumes state is a 4D array; not checked as this is internal
-  # remove the new vaccinations stratum from sum
-  sum(state[, i_H, -i_NEW_VAX_STRATUM])
-}

@@ -75,7 +75,7 @@ daedalus_multi_infection <- function(
   }
 
   # checks on vaccination
-  vaccine_investment <- validate_vaccination_input(vaccine_investment)
+  vaccine_investment <- validate_vaccination_input(vaccine_investment, country)
 
   if (get_data(vaccine_investment, "start_time") == 0.0) {
     # check vaccination start time and set vaccination flag

@@ -95,7 +95,7 @@ class daedalus_ode {
     const TensorMat susc, openness;
 
     // flag positions
-    const size_t i_ipr, i_npi_flag, i_vax_flag, i_sd_flag, i_hosp_flag;
+    const size_t i_ipr, i_npi_flag, i_vax_flag, i_sd_flag, i_hovflow_flag;
 
     // event objects
     daedalus::events::response npi, vaccination, public_concern,
@@ -174,11 +174,15 @@ class daedalus_ode {
                           {"npi_flag", dim_flag},
                           {"vax_flag", dim_flag},
                           {"sd_flag", dim_flag},
-                          {"hosp_flag", dim_flag}};
+                          {"hovflow_flag", dim_flag},
+                          {"npi_start_time", dim_flag},
+                          {"vax_start_time", dim_flag},
+                          {"sd_start_time", dim_flag},
+                          {"hovflow_start_time", dim_flag}};
   }
 
   static size_t size_special() {
-    return 4;  // npi_flag, vax_flag, sd_flag, hosp_flag
+    return 8;  // flags and start times
   }
 
   /// @brief Initialise shared parameters.
@@ -284,8 +288,18 @@ class daedalus_ode {
         total_compartments + daedalus::constants::i_rel_VAX_FLAG;
     const size_t i_sd_flag =
         total_compartments + daedalus::constants::i_rel_SD_FLAG;
-    const size_t i_hosp_flag =
-        total_compartments + daedalus::constants::i_rel_HOSP_FLAG;
+    const size_t i_hovflow_flag =
+        total_compartments + daedalus::constants::i_rel_HOVFLOW_FLAG;
+
+    // start times for events
+    const size_t i_real_npi_start =
+        total_compartments + daedalus::constants::i_rel_NPI_START_TIME;
+    const size_t i_real_vax_start =
+        total_compartments + daedalus::constants::i_rel_VAX_START_TIME;
+    const size_t i_real_sd_start =
+        total_compartments + daedalus::constants::i_rel_SD_START_TIME;
+    const size_t i_real_hovflow_start =
+        total_compartments + daedalus::constants::i_rel_HOVFLOW_START_TIME;
 
     // RESPONSE AND VACCINATION CLASSES
     std::vector<size_t> idx_hosp =
@@ -293,18 +307,18 @@ class daedalus_ode {
 
     // NOTE: NPI response end time passed as parameter; vax end time remains 0.0
     daedalus::events::response npi(
-        std::string("npi"), response_time, response_time + response_duration,
-        hosp_cap_response, gamma_Ia, i_npi_flag, idx_hosp, {i_ipr});
+        std::string("npi"), response_time, response_duration, hosp_cap_response,
+        gamma_Ia, i_npi_flag, idx_hosp, {i_ipr}, i_real_npi_start);
 
-    daedalus::events::response vaccination(std::string("vaccination"),
-                                           vax_start_time, NA_REAL, NA_REAL,
-                                           NA_REAL, i_vax_flag, {0}, {0});
+    daedalus::events::response vaccination(
+        std::string("vaccination"), vax_start_time, NA_REAL, NA_REAL, NA_REAL,
+        i_vax_flag, {0}, {0}, i_real_vax_start);
 
     // predicate public concern social distancing on whether it is off,
     // independent and always on, or linked to NPIs
     // params below are for "independent" i.e., always on
     real_type sd_start_time = 1.0;    // cannot start at 0.0
-    real_type sd_end_time = NA_REAL;  // NA_REAL indicates no end time
+    real_type sd_duration = NA_REAL;  // NA_REAL indicates no end time
     real_type sd_start_state = NA_REAL;
     real_type sd_end_state = NA_REAL;
     // prefer enums or strings but dust2 cannot handle these yet?
@@ -312,17 +326,19 @@ class daedalus_ode {
       sd_start_time = NA_REAL;
     } else if (auto_social_distancing == 2) {
       sd_start_time = response_time;
-      sd_end_time = response_time + response_duration;
+      sd_duration = response_duration;
       sd_start_state = hosp_cap_response;
       sd_end_state = gamma_Ia;  // not working anyway; see PR #83
     }
     daedalus::events::response public_concern(
-        std::string("public_concern"), sd_start_time, sd_end_time,
-        sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr});
+        std::string("public_concern"), sd_start_time, sd_duration,
+        sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr},
+        i_real_sd_start);
 
     daedalus::events::response hosp_cap_exceeded(
         std::string("hosp_cap_exceeded"), NA_REAL, NA_REAL, hospital_capacity,
-        hospital_capacity, i_hosp_flag, {idx_hosp}, {idx_hosp});
+        hospital_capacity, i_hovflow_flag, {idx_hosp}, {idx_hosp},
+        i_real_hovflow_start);
 
     // clang-format off
     return shared_state{
@@ -333,7 +349,7 @@ class daedalus_ode {
         popsize,      cm,           cm_cw,
         cm_work,      susc,       openness,
         i_ipr,  // state index holding incidence/prevalence ratio
-        i_npi_flag,   i_vax_flag, i_sd_flag,    i_hosp_flag,
+        i_npi_flag,   i_vax_flag, i_sd_flag,    i_hovflow_flag,
         npi,          vaccination,
         public_concern, hosp_cap_exceeded};
     // clang-format on
@@ -400,7 +416,7 @@ class daedalus_ode {
     Eigen::Tensor<double, 0> total_hosp = t_x.chip(iH, i_COMPS).sum();
 
     const double omega_modifier = daedalus::events::switch_by_flag(
-        daedalus::constants::d_mort_multiplier, state[shared.i_hosp_flag]);
+        daedalus::constants::d_mort_multiplier, state[shared.i_hovflow_flag]);
 
     // calculate total deaths and scale beta by concern, but only if an
     // NPI is active
