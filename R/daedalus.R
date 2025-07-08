@@ -303,8 +303,9 @@ daedalus <- function(
     )
   }
 
-  # checks on vaccination
-  vaccine_investment <- validate_vaccination_input(vaccine_investment, country)
+  # checks on vaccination input; make copy to allow for true vax start at 0.0
+  # if users want that
+  vaccination <- validate_vaccination_input(vaccine_investment, country)
 
   if (
     get_data(vaccination, "start_time") == 0.0 &&
@@ -322,7 +323,6 @@ daedalus <- function(
     ))
   }
 
-  # NULL converted to "none"; WIP: this will be moved to a class constructor
   # NULL converted to "none"; WIP: this will be moved to a class constructor
   if (identical(response_strategy, "none")) {
     # set response time to NULL when response is NULL
@@ -367,16 +367,17 @@ daedalus <- function(
   susc <- make_susc_matrix(vaccination, country)
 
   parameters <- c(
-    prepare_parameters.daedalus_country(country),
-    prepare_parameters.daedalus_infection(infection),
-    prepare_parameters.daedalus_vaccination(vaccination),
+    prepare_parameters(country),
+    prepare_parameters(infection),
+    prepare_parameters(vaccination),
     list(
       beta = get_beta(infection, country),
       susc = susc,
       openness = openness,
       response_time = response_time,
       response_duration = response_duration,
-      auto_social_distancing = auto_social_distancing
+      auto_social_distancing = auto_social_distancing,
+      vaccination = vaccination
     )
   )
 
