@@ -8,11 +8,17 @@
 #' super-class constructor; each sub-class has a fixed name to aid
 #' identifiability in `dust2` events outputs.
 #'
-#' @param class Sub-class name. This is only ever passed from each sub-class
-#' constructor. Only a fixed set of values is currently allowed.
+#' @param class The name of the sub-class being created. May be one of
+#' "daedalus_npi", "daedalus_vaccination", "daedalus_behaviour", or
+#' "daedalus_mortality". No default argument, users are forced to specify a
+#' class when building off this constructor.
 #'
 #' @param parameters Sub-class parameters passed from sub-class constructors.
 #' Defaults to an empty list to aid development.
+#'
+#' @param id_flag Index for the state-flag that should be changed when this
+#' response is on or off. Typically auto-calculated by sub-class constructor or
+#' helper functions; see e.g. [daedalus_vaccination()].
 #'
 #' @param time_on Intended to be a numeric vector of start times.
 #'
@@ -32,9 +38,9 @@
 #' @param value_state_off Intended to be a numeric vector of roots which when
 #' found change a switch-like state-flag to 'off'.
 #'
-#' @param class The name of the sub-class being created. May be one of
-#' "daedalus_npi", "daedalus_vaccination", "daedalus_behaviour", or
-#' "daedalus_mortality".
+#' @param id_time_log Intended to be a single number for the state index where
+#' the start-time of this response is stored. See also [initial_flags()]. This
+#' attribute is intended solely to enable time-limitation on state-triggers.
 #'
 #' @param x For all functions taking `x`, must be an object of class
 #' `<daedalus_response>`, or an object to be validated as of the class.
@@ -57,12 +63,14 @@ new_daedalus_response <- function(
   name,
   class = response_class_names,
   parameters = list(),
-  time_on = NULL,
-  duration = NULL,
-  id_state_on = NULL,
-  value_state_on = NULL,
-  id_state_off = NULL,
-  value_state_off = NULL
+  id_flag = NA_integer_,
+  time_on = NA_real_,
+  duration = NA_real_,
+  id_state_on = NA_integer_,
+  value_state_on = NA_real_,
+  id_state_off = NA_integer_,
+  value_state_off = NA_real_,
+  id_time_log = NA_integer_
 ) {
   # class arg empty to force responses to have a sub-class
   class <- rlang::arg_match0(class, response_class_names) # no defaults
@@ -71,12 +79,14 @@ new_daedalus_response <- function(
     name = name,
     class = class,
     parameters = parameters,
+    id_flag = id_flag,
     time_on = time_on,
     duration = duration,
     id_state_on = id_state_on,
     value_state_on = value_state_on,
     id_state_off = id_state_off,
-    value_state_off = value_state_off
+    value_state_off = value_state_off,
+    id_time_log = id_time_log
   )
 
   class(x) <- c(class, "daedalus_response")
@@ -96,17 +106,17 @@ response_class_names <- c(
 
 #' @name class_response
 new_daedalus_npi <- function() {
-  new_daedalus_response("npi", "daedalus_npi", list())
+  new_daedalus_response("npi", "daedalus_npi")
 }
 
 #' @name class_response
 new_daedalus_behaviour <- function() {
-  new_daedalus_response("behaviour", "daedalus_behaviour", list())
+  new_daedalus_response("behaviour", "daedalus_behaviour")
 }
 
 #' @name class_response
 new_daedalus_mortality <- function() {
-  new_daedalus_response("mortality", "daedalus_mortality", list())
+  new_daedalus_response("mortality", "daedalus_mortality")
 }
 
 #' @name class_response
@@ -128,12 +138,14 @@ validate_daedalus_response <- function(x) {
     "name",
     "class",
     "parameters",
+    "id_flag",
     "time_on",
     "duration",
     "id_state_on",
     "value_state_on",
     "id_state_off",
-    "value_state_off"
+    "value_state_off",
+    "id_time_log"
   )
 
   assert_class_fields(x, expected_fields)
@@ -148,23 +160,19 @@ validate_daedalus_response <- function(x) {
 
   is_good_time_on <- checkmate::test_integerish(
     x$time_on,
-    lower = 0,
-    any.missing = FALSE,
-    null.ok = TRUE
+    lower = 0
   )
   if (!is_good_time_on) {
     cli::cli_abort(
       "{.cls daedalus_response} member {.str time_on} must be a vector of\
-      integer-ish numbers, but it is not."
+      integer-ish numbers, but it is a {.cls {class(x$time_on)}}"
     )
   }
 
   is_good_duration <- checkmate::test_integerish(
     x$duration,
     lower = 0,
-    any.missing = FALSE,
-    len = length(x$time_on),
-    null.ok = TRUE
+    len = length(x$time_on)
   )
   if (!is_good_duration) {
     cli::cli_abort(
@@ -178,9 +186,7 @@ validate_daedalus_response <- function(x) {
   # expected to be triggered by more than one state being reached
   is_good_state_on <- checkmate::test_integerish(
     x$id_state_on,
-    lower = 0,
-    any.missing = FALSE,
-    null.ok = TRUE
+    lower = 0
   )
   if (!is_good_state_on) {
     cli::cli_abort(
@@ -191,9 +197,7 @@ validate_daedalus_response <- function(x) {
 
   is_good_state_off <- checkmate::test_integerish(
     x$id_state_off,
-    lower = 0,
-    any.missing = FALSE,
-    null.ok = TRUE
+    lower = 0
   )
   if (!is_good_state_off) {
     cli::cli_abort(
@@ -205,9 +209,7 @@ validate_daedalus_response <- function(x) {
   # NOTE: no negative values expected
   is_good_value_on <- checkmate::test_numeric(
     x$value_state_on,
-    lower = 0.0,
-    any.missing = FALSE,
-    null.ok = TRUE
+    lower = 0.0
   )
   if (!is_good_value_on) {
     cli::cli_abort(
@@ -218,9 +220,7 @@ validate_daedalus_response <- function(x) {
 
   is_good_value_off <- checkmate::test_numeric(
     x$value_state_off,
-    lower = 0.0,
-    any.missing = FALSE,
-    null.ok = TRUE
+    lower = 0.0
   )
   if (!is_good_value_off) {
     cli::cli_abort(
