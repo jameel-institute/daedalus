@@ -1,6 +1,12 @@
 # daedalus (development version)
 
-Adds the `<daedalus_response>` super-class from which event sub-classes should inherit.
+This patch version overhauls how events are represented and handled.
+
+- Adds the `<daedalus_response>` S3 super-class in R from which event sub-classes should inherit;
+
+- Adds the `daedalus::inputs` namespace to C++ with a function to read the response class from R and generate a `daedalus::events::response`;
+
+- Implements `<daedalus_vaccination>` inheriting from `<daedalus_response>` and passing to C++ using `read_response`. Also changes how `<daedalus_vaccination>` is initialised to account for state-based event-ending.
 
 # daedalus 0.2.21
 

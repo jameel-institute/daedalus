@@ -74,10 +74,11 @@ daedalus_multi_infection <- function(
     )
   }
 
-  # checks on vaccination
-  vaccine_investment <- validate_vaccination_input(vaccine_investment, country)
+  # checks on vaccination input; make copy to allow for true vax start at 0.0
+  # if users want that
+  vaccination <- validate_vaccination_input(vaccine_investment, country)
 
-  if (get_data(vaccine_investment, "start_time") == 0.0) {
+  if (get_data(vaccination, "start_time") == 0.0) {
     # check vaccination start time and set vaccination flag
     flags["vax_flag"] <- 1.0
   }
@@ -131,20 +132,21 @@ daedalus_multi_infection <- function(
   initial_state <- make_initial_state(country, initial_state_manual)
 
   # prepare susceptibility matrix for vaccination
-  susc <- make_susc_matrix(vaccine_investment, country)
+  susc <- make_susc_matrix(vaccination, country)
 
   parameters <- lapply(infection, function(x) {
     c(
       prepare_parameters(country),
       prepare_parameters(x),
-      prepare_parameters(vaccine_investment),
+      prepare_parameters(vaccination),
       list(
         beta = get_beta(x, country),
         susc = susc,
         openness = openness,
         response_time = response_time,
         response_duration = response_duration,
-        auto_social_distancing = auto_social_distancing
+        auto_social_distancing = auto_social_distancing,
+        vaccination = vaccination
       )
     )
   })
