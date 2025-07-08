@@ -91,12 +91,14 @@ This scenario (`vaccine_investment = "none"`) is intended to represent the Covid
 
 These parameters are contained in the package data `daedalus::vaccine_scenario_data`, for a total of four scenarios of advance vaccine investment ("none", "low", "medium", and "high").
 
-Vaccine investment scenarios can be passed a string to `daedalus()` to use the default parameters for each scenario, or as a `<daedalus_vaccination>` object using `daedalus_vaccination(name, <PARAMETERS>)` to modify vaccination parameters.
+Vaccine investment scenarios can be passed a string to `daedalus()` to use the default parameters for each scenario, or as a `<daedalus_vaccination>` object using `daedalus_vaccination(name, country)` to modify vaccination parameters.
 
 ```{r}
-# the default vaccine investment scenario
-daedalus_vaccination("none")
+# the default vaccine investment scenario for the UK
+daedalus_vaccination("none", "GBR")
 ```
+
+**Note that** the country information is needed to calculate the numerical uptake limit for each scenario.
 
 ## Running the model
 

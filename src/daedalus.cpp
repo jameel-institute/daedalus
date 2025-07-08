@@ -245,8 +245,6 @@ class daedalus_ode {
     const real_type psi = dust2::r::read_real(pars, "psi", 0.0);
     const real_type uptake_limit =
         dust2::r::read_real(pars, "uptake_limit", 0.0);
-    const real_type vax_start_time =
-        dust2::r::read_real(pars, "vax_start_time", NA_REAL);
 
     // VACCINATION EFFECT PARAMETERS: rows are age+econ grps, cols are vax grps
     const std::vector<size_t> vec_susc_dims = {n_strata, N_VAX_STRATA};
@@ -294,8 +292,6 @@ class daedalus_ode {
     // start times for events
     const size_t i_real_npi_start =
         total_compartments + daedalus::constants::i_rel_NPI_START_TIME;
-    const size_t i_real_vax_start =
-        total_compartments + daedalus::constants::i_rel_VAX_START_TIME;
     const size_t i_real_sd_start =
         total_compartments + daedalus::constants::i_rel_SD_START_TIME;
     const size_t i_real_hosp_overflow_start =
@@ -311,9 +307,8 @@ class daedalus_ode {
         std::string("npi"), response_time, response_duration, hosp_cap_response,
         gamma_Ia, i_npi_flag, idx_hosp, {i_ipr}, i_real_npi_start);
 
-    daedalus::events::response vaccination(
-        std::string("vaccination"), vax_start_time, NA_REAL, NA_REAL, NA_REAL,
-        i_vax_flag, {}, {}, i_real_vax_start);
+    daedalus::events::response vaccination =
+        daedalus::inputs::read_response(pars, "vaccination");
 
     // predicate public concern social distancing on whether it is off,
     // independent and always on, or linked to NPIs

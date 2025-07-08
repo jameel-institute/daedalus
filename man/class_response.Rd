@@ -19,12 +19,14 @@ new_daedalus_response(
   name,
   class = response_class_names,
   parameters = list(),
-  time_on = NULL,
-  duration = NULL,
-  id_state_on = NULL,
-  value_state_on = NULL,
-  id_state_off = NULL,
-  value_state_off = NULL
+  id_flag = NA_integer_,
+  time_on = NA_real_,
+  duration = NA_real_,
+  id_state_on = NA_integer_,
+  value_state_on = NA_real_,
+  id_state_off = NA_integer_,
+  value_state_off = NA_real_,
+  id_time_log = NA_integer_
 )
 
 response_class_names
@@ -47,10 +49,15 @@ identifiability in \code{dust2} events outputs.}
 
 \item{class}{The name of the sub-class being created. May be one of
 "daedalus_npi", "daedalus_vaccination", "daedalus_behaviour", or
-"daedalus_mortality".}
+"daedalus_mortality". No default argument, users are forced to specify a
+class when building off this constructor.}
 
 \item{parameters}{Sub-class parameters passed from sub-class constructors.
 Defaults to an empty list to aid development.}
+
+\item{id_flag}{Index for the state-flag that should be changed when this
+response is on or off. Typically auto-calculated by sub-class constructor or
+helper functions; see e.g. \code{\link[=daedalus_vaccination]{daedalus_vaccination()}}.}
 
 \item{time_on}{Intended to be a numeric vector of start times.}
 
@@ -69,6 +76,10 @@ which are checked for roots that when found end an event.}
 
 \item{value_state_off}{Intended to be a numeric vector of roots which when
 found change a switch-like state-flag to 'off'.}
+
+\item{id_time_log}{Intended to be a single number for the state index where
+the start-time of this response is stored. See also \code{\link[=initial_flags]{initial_flags()}}. This
+attribute is intended solely to enable time-limitation on state-triggers.}
 
 \item{x}{For all functions taking \code{x}, must be an object of class
 \verb{<daedalus_response>}, or an object to be validated as of the class.}
