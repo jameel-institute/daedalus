@@ -195,3 +195,28 @@ get_state_indices <- function(state_name, country) {
     seq.int(max_index - groups, max_index - 1)
   }
 }
+
+get_total_compartments <- function(country) {
+  groups <- length(
+    c(get_data(country, "demography"), get_data(country, "workers"))
+  )
+
+  # add groups at end for new vaccinations data
+  total_compartments <- groups *
+    N_MODEL_COMPARTMENTS *
+    N_VACCINE_STRATA +
+    groups
+
+  total_compartments
+}
+
+get_flag_index <- function(flag_name, country) {
+  # get relative flag position
+  rel_flag_pos <- which(FLAG_NAMES == flag_name)
+
+  # calculate country state compartments
+  total_compartments <- get_total_compartments(country)
+
+  # return absolute flag pos
+  total_compartments - 1L + rel_flag_pos
+}
