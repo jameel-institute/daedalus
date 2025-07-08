@@ -61,7 +61,9 @@ uptake_percent_to_number <- function(uptake_limit, country) {
 #'
 #' @param start_time The number of days after the start of the epidemic that
 #' vaccination begins. Must be a single number. Defaults to `NULL` and the start
-#' time is taken from the vaccination scenarios specified by `name`.
+#' time is taken from the vaccination scenarios specified by `name`. Passed to
+#' the `time_on` argument in [new_daedalus_response()] via the class constructor
+#' `new_daedalus_vaccination()`.
 #'
 #' @param rate A single number for the _percentage_ of the total population that
 #' can be vaccinated each day. This is converted into a proportion automatically
@@ -69,7 +71,9 @@ uptake_percent_to_number <- function(uptake_limit, country) {
 #'
 #' @param uptake_limit A single number giving the upper limit for the
 #' _percentage_ of the population that can be vaccinated. When this limit is
-#' reached, vaccination ends.
+#' reached, vaccination ends. Passed to the `value_state_off` argument in
+#' [new_daedalus_response()] via the class constructor
+#' `new_daedalus_vaccination()`.
 #'
 #' @param country A `<daedalus_country>` object or a 2- or 3-character string
 #' that can be coerced to a `<daedalus_country>` (e.g. `"GBR"` for the United
@@ -88,7 +92,9 @@ uptake_percent_to_number <- function(uptake_limit, country) {
 #'
 #' @param x An object to be tested or printed as a `<daedalus_vaccination>`.
 #'
-#' @param ... For the `print` method, other parameters passed to [print()].
+#' @param ... For `daedalus_vaccination()`, other parameters passed to
+#' [new_daedalus_response()].
+#' For the `print` method, other parameters passed to [print()].
 #'
 #' @details
 #' Note that vaccination once ended by reaching the `uptake_limit` does not
@@ -97,12 +103,12 @@ uptake_percent_to_number <- function(uptake_limit, country) {
 #' @export
 #'
 #' @examples
-#' # for no advance vaccine investment
-#' daedalus_vaccination("none")
+#' # for no advance vaccine investment in the UK
+#' daedalus_vaccination("none", "GBR")
 #'
 #' # modifying parameters during initialisation
 #' # set daily vaccination rate to 1.5% of population
-#' daedalus_vaccination("low", rate = 1.5)
+#' daedalus_vaccination("low", "GBR", rate = 1.5)
 daedalus_vaccination <- function(
   name,
   country,
@@ -145,12 +151,14 @@ daedalus_vaccination <- function(
   x <- new_daedalus_vaccination(
     name,
     params,
-    time_on = start_time,
+    id_flag = get_flag_index("vax_flag", country),
+    time_on = params[["start_time"]],
     id_state_off = get_state_indices("new_vax", country),
     value_state_off = uptake_percent_to_number(
       params[["uptake_limit"]],
       country
-    )
+    ),
+    id_time_log = get_flag_index("vax_start_time", country)
   )
 
   validate_daedalus_vaccination(x)
@@ -337,7 +345,7 @@ dummy_vaccination <- function() {
     uptake_limit = 0,
     waning_period = 1
   )
-  x <- new_daedalus_vaccination("dummy", params)
+  x <- new_daedalus_vaccination("dummy", params, id_flag = NA_integer_)
   validate_daedalus_vaccination(x)
   x
 }
