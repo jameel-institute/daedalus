@@ -19,3 +19,4 @@ A vector of numbers representing indices.
 A helper function to get a vector of state indices for use in the
 response sub-class constructors.
 }
+\keyword{internal}
