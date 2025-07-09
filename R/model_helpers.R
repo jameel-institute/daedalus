@@ -177,6 +177,8 @@ make_initial_state <- function(country, initial_state_manual) {
 #' correctly calculate the number of age and economic sector groups.
 #'
 #' @return A vector of numbers representing indices.
+#'
+#' @keywords internal
 get_state_indices <- function(state_name, country) {
   groups <- length(
     c(get_data(country, "demography"), get_data(country, "workers"))
