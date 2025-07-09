@@ -38,12 +38,12 @@ constexpr size_t i_rel_IPR = 0;
 constexpr size_t i_rel_NPI_FLAG = 1;
 constexpr size_t i_rel_VAX_FLAG = 2;
 constexpr size_t i_rel_SD_FLAG = 3;
-constexpr size_t i_rel_HOVFLOW_FLAG = 4;
+constexpr size_t i_rel_hosp_overflow_FLAG = 4;
 
 constexpr size_t i_rel_NPI_START_TIME = 5;
 constexpr size_t i_rel_VAX_START_TIME = 6;
 constexpr size_t i_rel_SD_START_TIME = 7;
-constexpr size_t i_rel_HOVFLOW_START_TIME = 8;
+constexpr size_t i_rel_hosp_overflow_START_TIME = 8;
 
 // magic numbers
 constexpr double d_mort_multiplier = 1.6;

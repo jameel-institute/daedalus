@@ -93,7 +93,7 @@ class daedalus_ode {
     const TensorMat susc, openness;
 
     // flag positions
-    const size_t i_ipr, i_npi_flag, i_vax_flag, i_sd_flag, i_hovflow_flag;
+    const size_t i_ipr, i_npi_flag, i_vax_flag, i_sd_flag, i_hosp_overflow_flag;
 
     // event objects
     daedalus::events::response npi, vaccination, public_concern,
@@ -145,7 +145,7 @@ class daedalus_ode {
   /// @return A custom packing specification object.
   static dust2::packing packing_state(const shared_state &shared) {
     const std::vector<size_t> dim_vec(1, shared.n_strata);
-    const std::vector<size_t> dim_flag(1, 1);
+    const std::vector<size_t> dim_flag{};
     // TODO(pratik): write a function to return this - names may need to be
     // more generic
 
@@ -172,11 +172,11 @@ class daedalus_ode {
                           {"npi_flag", dim_flag},
                           {"vax_flag", dim_flag},
                           {"sd_flag", dim_flag},
-                          {"hovflow_flag", dim_flag},
+                          {"hosp_overflow_flag", dim_flag},
                           {"npi_start_time", dim_flag},
                           {"vax_start_time", dim_flag},
                           {"sd_start_time", dim_flag},
-                          {"hovflow_start_time", dim_flag}};
+                          {"hosp_overflow_start_time", dim_flag}};
   }
 
   static size_t size_special() {
@@ -286,8 +286,8 @@ class daedalus_ode {
         total_compartments + daedalus::constants::i_rel_VAX_FLAG;
     const size_t i_sd_flag =
         total_compartments + daedalus::constants::i_rel_SD_FLAG;
-    const size_t i_hovflow_flag =
-        total_compartments + daedalus::constants::i_rel_HOVFLOW_FLAG;
+    const size_t i_hosp_overflow_flag =
+        total_compartments + daedalus::constants::i_rel_hosp_overflow_FLAG;
 
     // start times for events
     const size_t i_real_npi_start =
@@ -296,8 +296,9 @@ class daedalus_ode {
         total_compartments + daedalus::constants::i_rel_VAX_START_TIME;
     const size_t i_real_sd_start =
         total_compartments + daedalus::constants::i_rel_SD_START_TIME;
-    const size_t i_real_hovflow_start =
-        total_compartments + daedalus::constants::i_rel_HOVFLOW_START_TIME;
+    const size_t i_real_hosp_overflow_start =
+        total_compartments +
+        daedalus::constants::i_rel_hosp_overflow_START_TIME;
 
     // RESPONSE AND VACCINATION CLASSES
     std::vector<size_t> idx_hosp =
@@ -335,8 +336,8 @@ class daedalus_ode {
 
     daedalus::events::response hosp_cap_exceeded(
         std::string("hosp_cap_exceeded"), NA_REAL, NA_REAL, hospital_capacity,
-        hospital_capacity, i_hovflow_flag, {idx_hosp}, {idx_hosp},
-        i_real_hovflow_start);
+        hospital_capacity, i_hosp_overflow_flag, {idx_hosp}, {idx_hosp},
+        i_real_hosp_overflow_start);
 
     // clang-format off
     return shared_state{
@@ -347,7 +348,7 @@ class daedalus_ode {
         popsize,      cm,           cm_cw,
         cm_work,      susc,       openness,
         i_ipr,  // state index holding incidence/prevalence ratio
-        i_npi_flag,   i_vax_flag, i_sd_flag,    i_hovflow_flag,
+        i_npi_flag,   i_vax_flag, i_sd_flag,    i_hosp_overflow_flag,
         npi,          vaccination,
         public_concern, hosp_cap_exceeded};
     // clang-format on
@@ -413,8 +414,9 @@ class daedalus_ode {
     // scale mortality rate by 1.6 if so
     Eigen::Tensor<double, 0> total_hosp = t_x.chip(iH, i_COMPS).sum();
 
-    const double omega_modifier = daedalus::events::switch_by_flag(
-        daedalus::constants::d_mort_multiplier, state[shared.i_hovflow_flag]);
+    const double omega_modifier =
+        daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
+                                         state[shared.i_hosp_overflow_flag]);
 
     // calculate total deaths and scale beta by concern, but only if an
     // NPI is active

@@ -135,11 +135,11 @@ FLAG_NAMES <- c(
   "npi_flag",
   "vax_flag",
   "sd_flag",
-  "hovflow_flag", # indicating hospital capacity overwhelmed
+  "hosp_overflow_flag", # indicating hospital capacity overwhelmed
   "npi_start_time",
   "vax_start_time",
   "sd_start_time",
-  "hovflow_start_time"
+  "hosp_overflow_start_time"
 )
 
 #' @title Epidemiological compartments and indices
