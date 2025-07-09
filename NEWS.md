@@ -2,11 +2,21 @@
 
 This patch version overhauls how events are represented and handled.
 
+## Breaking changes
+
+- `<daedalus_vaccination>` now requires a `country` to be specified so that the uptake-limit can be respected by the event (but it does not yet, see Notes and PR #91).
+
+## Other changes
+
 - Adds the `<daedalus_response>` S3 super-class in R from which event sub-classes should inherit;
 
 - Adds the `daedalus::inputs` namespace to C++ with a function to read the response class from R and generate a `daedalus::events::response`;
 
 - Implements `<daedalus_vaccination>` inheriting from `<daedalus_response>` and passing to C++ using `read_response`. Also changes how `<daedalus_vaccination>` is initialised to account for state-based event-ending.
+
+## Notes
+
+`<daedalus_vaccination>`s require changes to `daedalus::events::response` to allow for the event to end on an increasing root (the uptake-limit); for now a pre-existing mechanism is used to ensure that the uptake-limit is respected.
 
 # daedalus 0.2.21
 
