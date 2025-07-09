@@ -147,7 +147,7 @@ class daedalus_ode {
   /// @return A custom packing specification object.
   static dust2::packing packing_state(const shared_state &shared) {
     const std::vector<size_t> dim_vec(1, shared.n_strata);
-    const std::vector<size_t> dim_flag(1, 1);
+    const std::vector<size_t> dim_flag{};
     // TODO(pratik): write a function to return this - names may need to be
     // more generic
 
@@ -299,7 +299,8 @@ class daedalus_ode {
     const size_t i_real_sd_start =
         total_compartments + daedalus::constants::i_rel_SD_START_TIME;
     const size_t i_real_hosp_overflow_start =
-        total_compartments + daedalus::constants::i_rel_hosp_overflow_START_TIME;
+        total_compartments +
+        daedalus::constants::i_rel_hosp_overflow_START_TIME;
 
     // RESPONSE AND VACCINATION CLASSES
     std::vector<size_t> idx_hosp =
@@ -415,8 +416,9 @@ class daedalus_ode {
     // scale mortality rate by 1.6 if so
     Eigen::Tensor<double, 0> total_hosp = t_x.chip(iH, i_COMPS).sum();
 
-    const double omega_modifier = daedalus::events::switch_by_flag(
-        daedalus::constants::d_mort_multiplier, state[shared.i_hosp_overflow_flag]);
+    const double omega_modifier =
+        daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
+                                         state[shared.i_hosp_overflow_flag]);
 
     // calculate total deaths and scale beta by concern, but only if an
     // NPI is active
