@@ -9,6 +9,7 @@
 \usage{
 daedalus_vaccination(
   name,
+  country,
   start_time = NULL,
   rate = NULL,
   uptake_limit = NULL,
@@ -27,9 +28,15 @@ Selecting an epidemic automatically pulls in vaccination parameters
 associated with the epidemic; these are stored as packaged data in
 \code{daedalus.data::vaccination_scenario_data}.}
 
+\item{country}{A \verb{<daedalus_country>} object or a 2- or 3-character string
+that can be coerced to a \verb{<daedalus_country>} (e.g. \code{"GBR"} for the United
+Kingdom). Used to determine when vaccination should end.}
+
 \item{start_time}{The number of days after the start of the epidemic that
 vaccination begins. Must be a single number. Defaults to \code{NULL} and the start
-time is taken from the vaccination scenarios specified by \code{name}.}
+time is taken from the vaccination scenarios specified by \code{name}. Passed to
+the \code{time_on} argument in \code{\link[=new_daedalus_response]{new_daedalus_response()}} via the class constructor
+\code{new_daedalus_vaccination()}.}
 
 \item{rate}{A single number for the \emph{percentage} of the total population that
 can be vaccinated each day. This is converted into a proportion automatically
@@ -37,7 +44,9 @@ within \code{\link[=daedalus]{daedalus()}}.}
 
 \item{uptake_limit}{A single number giving the upper limit for the
 \emph{percentage} of the population that can be vaccinated. When this limit is
-reached, vaccination ends.}
+reached, vaccination ends. Passed to the \code{value_state_off} argument in
+\code{\link[=new_daedalus_response]{new_daedalus_response()}} via the class constructor
+\code{new_daedalus_vaccination()}.}
 
 \item{efficacy}{A single number in the range \verb{[0, 100]} giving the efficacy
 of vaccination in preventing infection. A value of 0 indicates that
@@ -52,7 +61,9 @@ compartments can wane out of being vaccinated.}
 
 \item{x}{An object to be tested or printed as a \verb{<daedalus_vaccination>}.}
 
-\item{...}{For the \code{print} method, other parameters passed to \code{\link[=print]{print()}}.}
+\item{...}{For \code{daedalus_vaccination()}, other parameters passed to
+\code{\link[=new_daedalus_response]{new_daedalus_response()}}.
+For the \code{print} method, other parameters passed to \code{\link[=print]{print()}}.}
 }
 \description{
 Helper functions to create and work with S3 class
@@ -66,10 +77,10 @@ Note that vaccination once ended by reaching the \code{uptake_limit} does not
 restart once individuals wane out of the vaccinated compartment.
 }
 \examples{
-# for no advance vaccine investment
-daedalus_vaccination("none")
+# for no advance vaccine investment in the UK
+daedalus_vaccination("none", "GBR")
 
 # modifying parameters during initialisation
 # set daily vaccination rate to 1.5\% of population
-daedalus_vaccination("low", rate = 1.5)
+daedalus_vaccination("low", "GBR", rate = 1.5)
 }

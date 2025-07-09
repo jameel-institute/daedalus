@@ -4,11 +4,23 @@
 \alias{validate_vaccination_input}
 \title{Validate vaccination inputs}
 \usage{
-validate_vaccination_input(x)
+validate_vaccination_input(x, country)
 }
 \arguments{
 \item{x}{An object to be validated as input to the \code{vaccine_investment}
 argument of \code{\link[=daedalus]{daedalus()}}.}
+
+\item{country}{A country or territory object of class \verb{<daedalus_country>},
+\strong{or} a country or territory name from those included in the package;
+see \link[daedalus.data:country_names_codes]{daedalus.data::country_names}, \strong{or} a country ISO2 or ISO3 code; see
+\link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso2c} and
+\link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso3c}.
+Country-specific data such as the community and workplace contacts, the
+demography, and the distribution of the workforce into economic sectors is
+automatically accessed from package data for the relevant country name if it
+is passed as a string.
+To override package defaults for country characteristics, pass a
+\verb{<daedalus_country>} object instead. See \code{\link[=daedalus_country]{daedalus_country()}} for more.}
 }
 \value{
 A \verb{<daedalus_vaccination>} object.

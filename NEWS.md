@@ -1,3 +1,35 @@
+# daedalus (development version)
+
+This patch version overhauls how events are represented and handled.
+
+## Breaking changes
+
+- `<daedalus_vaccination>` now requires a `country` to be specified so that the uptake-limit can be respected by the event (but it does not yet, see Notes and PR #91).
+
+## Other changes
+
+- Adds the `<daedalus_response>` S3 super-class in R from which event sub-classes should inherit;
+
+- Adds the `daedalus::inputs` namespace to C++ with a function to read the response class from R and generate a `daedalus::events::response`;
+
+- Implements `<daedalus_vaccination>` inheriting from `<daedalus_response>` and passing to C++ using `read_response`. Also changes how `<daedalus_vaccination>` is initialised to account for state-based event-ending.
+
+## Notes
+
+`<daedalus_vaccination>`s require changes to `daedalus::events::response` to allow for the event to end on an increasing root (the uptake-limit); for now a pre-existing mechanism is used to ensure that the uptake-limit is respected.
+
+# daedalus 0.2.21
+
+This patch version logs the realised times of all events. When events are launched multiple times, the start time is updated. All start times are held as special variables in `state`. The NPI start time is used to determine the realised NPI end time by testing for a duration, and enables time-limitation for state-triggered events. Other events do not have a fixed end time (other than NPI-linked social distancing).
+
+- Added class member function `make_duration_test` to class `daedalus::events::response`. Events are now treated as having a start time and a duration, rather than an end time.
+
+**Note that** this change makes it more likely that short-duration state-triggered events will be launched multiple times in a single simulation run of 600 days.
+
+- Added class member function `make_duration_test` to class `daedalus::events::response`.
+
+- Updates to input checking, output handling, tests, and documentation for time-limitations on state-triggered events.
+
 # daedalus 0.2.20
 
 Restored model functionality where mortality is increased when hospital capacity is exceeded.

@@ -11,5 +11,6 @@
 #include "daedalus_dims.h"
 #include "daedalus_helpers.h"
 #include "daedalus_events.h"
+#include "daedalus_input.h"
 
 // clang-format on
