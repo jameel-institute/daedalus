@@ -13,7 +13,7 @@ initial_flags <- function() {
   npi_start_time <- 0.0 # true NPI start time
   vax_start_time <- 0.0 # true vaccination start time
   sd_start_time <- 0.0 # true social distancing start time
-  hovflow_start_time <- 0.0 # true hospital overflow start time
+  hosp_overflow_start_time <- 0.0 # true hospital overflow start time
 
   c(
     ipr = ipr,
@@ -24,7 +24,7 @@ initial_flags <- function() {
     npi_start_time = npi_start_time,
     vax_start_time = vax_start_time,
     sd_start_time = sd_start_time,
-    hovflow_start_time = hovflow_start_time
+    hosp_overflow_start_time = hosp_overflow_start_time
   )
 }
 

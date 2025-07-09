@@ -205,10 +205,11 @@ class response {
     // event ended by state
     if (!ISNA(state_off)) {
       std::string name_ev_state_off = name + "_state_off";
-      dust2::ode::event<double> ev_state_off = make_event(
-          name_ev_state_off, i_state_off,
-          make_state_test(i_state_off, state_off),
-          make_flag_setter({i_flag}, {0.0}), dust2::ode::root_type::decrease);
+      dust2::ode::event<double> ev_state_off =
+          make_event(name_ev_state_off, i_state_off,
+                     make_state_test(i_state_off, state_off),
+                     make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
+                     dust2::ode::root_type::decrease);
 
       events.push_back(ev_state_off);
     }
