@@ -130,13 +130,20 @@ class response {
                                      double *y) {
       for (size_t i = 0; i < flags.size(); i++) {
         const size_t yi = flags[i];
+        const double new_value = values[i];
+        const double flag_value = y[yi];
 
-        // log current time if special value passed and flag not already set
-        const double val = values[i];
-        if ((val - value_log_time) < 1e-6 && y[yi] < 1.0) {
-          y[yi] = t;
-        } else {
-          y[yi] = val;
+        const bool is_flag_on = flag_value > 0.0;
+        const bool is_special_value =
+            std::abs(new_value - value_log_time) < 1e-6;
+        const bool is_flag_changing = std::abs(new_value - flag_value) > 0.0;
+
+        if (is_special_value) {
+          if (!is_flag_on) {
+            y[yi] = t;
+          }
+        } else if (is_flag_changing) {
+          y[yi] = new_value;
         }
       }
     };
