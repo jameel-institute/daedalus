@@ -1,3 +1,7 @@
+# daedalus 0.2.23
+
+This patch version adds the function `get_fiscal_costs()` to calculate the costs to governments of pandemic response. These are calculated as post-processing on a model run, given some user-specified assumptions about public spending, interest rates, and tax rates.
+
 # daedalus 0.2.22
 
 This patch version overhauls how events are represented and handled in R.
