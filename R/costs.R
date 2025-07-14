@@ -356,7 +356,7 @@ get_fiscal_costs <- function(
     closure_start <- x$response_data$closure_info$closure_time_start
     closure_end <- x$response_data$closure_info$closure_time_end
     closure_period <- seq(closure_start, closure_end)
-    
+
     # cost of getting NPIs to work: price_npi * number of alive individuals *
     # some uptake param
     npi_support <- sum(x$country_parameters$demography) -
@@ -390,7 +390,7 @@ get_fiscal_costs <- function(
       y + (interest_rate * x)
     },
     total_support,
-    accumulate = T
+    accumulate = TRUE
   )
 
   # get total public debt, net of spending and revenue
