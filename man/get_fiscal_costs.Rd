@@ -6,13 +6,14 @@
 \usage{
 get_fiscal_costs(
   x,
-  support_level = 0.33,
+  support_level = 0.2,
   price_vax = 1,
   price_npi = 1,
   uptake_npi = 1,
   interest_rate = 4,
-  tax_rate = 25,
-  spending_rate = 45
+  tax_rate = 35,
+  spending_rate = 45,
+  starting_debt = 0
 )
 }
 \arguments{
@@ -38,13 +39,16 @@ calculate government revenue.}
 
 \item{spending_rate}{The annual mean rate of public spending as a percentage
 of GDP.}
+
+\item{starting_debt}{The value of national starting debt. Currently assumed
+to be zero while country-specific data are collected.}
 }
 \value{
 A two-element list giving:
 \itemize{
-\item A list of \code{fiscal_costs} with elements giving the daily fiscal costs
+\item A list of \code{fiscal_costs} with elements giving the fiscal costs
 \eqn{\text{TCG_t}} and a breakdown of these costs, as well as interest;
-\item A time-series \code{daily_public_debt} of the public debt \eqn{b_t}, which is
+\item A list of \code{public_debt} of the public debt \eqn{b_t}, which is
 the net of baseline public spending, pandemic response costs, and
 pandemic-impacted revenue.
 }
@@ -63,14 +67,60 @@ outputs.
 Note that all rates (interest rate, spending rate, and tax rate) are given as
 annual percentages, and are simply divided by 365 to give the daily
 rate.
+\subsection{Public spending}{
+
+Spending is calculated as:
+\eqn{G_t = \sigma(\text{GVA}^* - \text{GVA}_t) + Cv_t + Cp_t}
+
+where \eqn{Cv_t} is the time-specific cost of vaccination, and is calculated
+as the cost of new vaccinations in each timestep: \eqn{P_v \times \delta V_t}
+.
+
+\eqn{Cp_t} is the time-specific cost of implementing pandemic response,
+and is calculated as \eqn{\psi (\bar N - D_t) P_p}, where
+\eqn{\bar N - D_t} is the remaining number of individuals in the population,
+and \eqn{\psi} is the proportion taking up any protection offered by the
+response.
+
+The total cost to the public of the pandemic over each day of the pandemic
+is assumed to be made up of borrowing, and is then
+\eqn{\text{TCG}_t = G_t + (1 + R_t^T) \text{TCG}_{t - 1}}, where
+\eqn{R_t^T} is the daily rate of interest to be paid on the borrowed amount.
+This rate is currently modelled as being constant over time.
+
+The total public debt at the end of the pandemic \eqn{b_t} is then the sum of
+total public spending on the pandemic \eqn{\text{TCG}_t},
+existing day-to-day public spending \eqn{\bar G} which is assumed to be a
+fraction of daily GDP \eqn{\nu \text{GDP}}, existing debt owed due to past
+daily spending, interest to be paid on the debt, less the revenues collected
+\eqn{\mu \text{GVA}_{t-1}}. The daily GVA is the pre-pandemic GVA scaled by
+the available labour supply during the pandemic, taking into account labour
+restrictions due to illness-related absences and deaths, and response-related
+restrictions.
+
+GDP is calculated as the sum of sector-specific daily GVA, and existing debt
+is currently assumed to be zero and is not included in the equation.
+
+\eqn{b_t = \bar G + \text{TCG}_{t-1} + (1 + R_{t-1}^T) b_{t-1} -
+  \mu \text{GVA}_{t-1}
+}
+}
 }
 \examples{
 # get fiscal costs for UK with SARS-CoV-2
 # and both closures and vaccinations
-o <- daedalus("GBR", "sars_cov_2_pre_alpha", "economic_closures", "high")
-get_fiscal_costs(o)
+o <- daedalus(
+  "GBR", "sars_cov_2_pre_alpha",
+  "economic_closures", "high",
+  time_end = 30
+)
+fc <- get_fiscal_costs(o)
 
 # also works when no closures are applied
-o <- daedalus("CAN", "influenza_2009")
+o <- daedalus(
+  "CAN", "influenza_2009",
+  "economic_closures", "high",
+  time_end = 30
+)
 get_fiscal_costs(o)
 }

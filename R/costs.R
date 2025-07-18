@@ -249,12 +249,15 @@ get_value_school_year <- function(gni) {
 #' @param spending_rate The annual mean rate of public spending as a percentage
 #' of GDP.
 #'
+#' @param starting_debt The value of national starting debt. Currently assumed
+#' to be zero while country-specific data are collected.
+#'
 #' @return A two-element list giving:
 #'
-#' - A list of `fiscal_costs` with elements giving the daily fiscal costs
+#' - A list of `fiscal_costs` with elements giving the fiscal costs
 #' \eqn{\text{TCG_t}} and a breakdown of these costs, as well as interest;
 #'
-#' - A time-series `daily_public_debt` of the public debt \eqn{b_t}, which is
+#' - A list of `public_debt` of the public debt \eqn{b_t}, which is
 #' the net of baseline public spending, pandemic response costs, and
 #' pandemic-impacted revenue.
 #'
@@ -267,26 +270,73 @@ get_value_school_year <- function(gni) {
 #' annual percentages, and are simply divided by 365 to give the daily
 #' rate.
 #'
+#' ## Public spending
+#'
+#' Spending is calculated as:
+#' \eqn{G_t = \sigma(\text{GVA}^* - \text{GVA}_t) + Cv_t + Cp_t}
+#'
+#' where \eqn{Cv_t} is the time-specific cost of vaccination, and is calculated
+#' as the cost of new vaccinations in each timestep: \eqn{P_v \times \delta V_t}
+#' .
+#'
+#' \eqn{Cp_t} is the time-specific cost of implementing pandemic response,
+#' and is calculated as \eqn{\psi (\bar N - D_t) P_p}, where
+#' \eqn{\bar N - D_t} is the remaining number of individuals in the population,
+#' and \eqn{\psi} is the proportion taking up any protection offered by the
+#' response.
+#'
+#' The total cost to the public of the pandemic over each day of the pandemic
+#' is assumed to be made up of borrowing, and is then
+#' \eqn{\text{TCG}_t = G_t + (1 + R_t^T) \text{TCG}_{t - 1}}, where
+#' \eqn{R_t^T} is the daily rate of interest to be paid on the borrowed amount.
+#' This rate is currently modelled as being constant over time.
+#'
+#' The total public debt at the end of the pandemic \eqn{b_t} is then the sum of
+#' total public spending on the pandemic \eqn{\text{TCG}_t},
+#' existing day-to-day public spending \eqn{\bar G} which is assumed to be a
+#' fraction of daily GDP \eqn{\nu \text{GDP}}, existing debt owed due to past
+#' daily spending, interest to be paid on the debt, less the revenues collected
+#' \eqn{\mu \text{GVA}_{t-1}}. The daily GVA is the pre-pandemic GVA scaled by
+#' the available labour supply during the pandemic, taking into account labour
+#' restrictions due to illness-related absences and deaths, and response-related
+#' restrictions.
+#'
+#' GDP is calculated as the sum of sector-specific daily GVA, and existing debt
+#' is currently assumed to be zero and is not included in the equation.
+#'
+#' \eqn{b_t = \bar G + \text{TCG}_{t-1} + (1 + R_{t-1}^T) b_{t-1} -
+#'   \mu \text{GVA}_{t-1}
+#' }
+#'
 #' @export
 #'
 #' @examples
 #' # get fiscal costs for UK with SARS-CoV-2
 #' # and both closures and vaccinations
-#' o <- daedalus("GBR", "sars_cov_2_pre_alpha", "economic_closures", "high")
-#' get_fiscal_costs(o)
+#' o <- daedalus(
+#'   "GBR", "sars_cov_2_pre_alpha",
+#'   "economic_closures", "high",
+#'   time_end = 30
+#' )
+#' fc <- get_fiscal_costs(o)
 #'
 #' # also works when no closures are applied
-#' o <- daedalus("CAN", "influenza_2009")
+#' o <- daedalus(
+#'   "CAN", "influenza_2009",
+#'   "economic_closures", "high",
+#'   time_end = 30
+#' )
 #' get_fiscal_costs(o)
 get_fiscal_costs <- function(
   x,
-  support_level = 0.33,
+  support_level = 0.2,
   price_vax = 1.0,
   price_npi = 1.0,
   uptake_npi = 1.0,
   interest_rate = 4.0,
-  tax_rate = 25.0,
-  spending_rate = 45.0
+  tax_rate = 35.0,
+  spending_rate = 45.0,
+  starting_debt = 0.0
 ) {
   # Needs better error messages
   checkmate::assert_class(x, "daedalus_output")
@@ -325,6 +375,10 @@ get_fiscal_costs <- function(
     lower = 0,
     upper = 100
   )
+  checkmate::assert_number(
+    starting_debt,
+    finite = TRUE
+  )
 
   gva <- x$country_parameters$gva
   openness <- x$response_data$openness
@@ -360,7 +414,7 @@ get_fiscal_costs <- function(
     # cost of getting NPIs to work: price_npi * number of alive individuals *
     # some uptake param
     npi_support <- sum(x$country_parameters$demography) -
-      get_incidence(x, "deaths")$value * uptake_npi
+      get_incidence(x, "deaths")$value * uptake_npi * price_npi
     npi_support[-closure_period] <- 0.0
     npi_support <- npi_support / 1e6
 
@@ -382,12 +436,13 @@ get_fiscal_costs <- function(
 
   total_support <- gva_support + vax_support + npi_support
   names(total_support) <- NULL
+  names(gva_support) <- NULL
 
   # get total fiscal cost with interest rate
   interest_rate <- interest_rate / 365.0
   fiscal_cost <- Reduce(
     function(x, y) {
-      y + (interest_rate * x)
+      y + ((1 + interest_rate) * x)
     },
     total_support,
     accumulate = TRUE
@@ -398,24 +453,28 @@ get_fiscal_costs <- function(
   tax_rate <- tax_rate / 365.0
 
   public_debt <- numeric(x$total_time + 1L)
-  public_debt[1L] <- daily_spending - tax_rate * gva_achieved[1L]
+  public_debt[1L] <- starting_debt
 
   for (i in seq(2, x$total_time + 1)) {
     public_debt[i] <- daily_spending +
       total_support[i - 1] +
-      (interest_rate * public_debt[i - 1]) -
+      ((1.0 + interest_rate) * public_debt[i - 1]) -
       (tax_rate * gva_achieved[i - 1])
   }
 
   # return cost timeseries
   list(
     fiscal_costs = list(
-      daily_fiscal_cost = fiscal_cost,
-      daily_gva_support = gva_support,
-      daily_vax_support = vax_support,
-      daily_npi_support = npi_support,
+      fiscal_cost = fiscal_cost,
+      gva_support = gva_support,
+      vax_support = vax_support,
+      npi_support = npi_support,
       interest_value = sum(fiscal_cost - total_support)
     ),
-    daily_public_debt = public_debt
+    public_debt = list(
+      public_debt = public_debt,
+      added_public_debt = tail(public_debt, 1L) -
+        public_debt[1L]
+    )
   )
 }
