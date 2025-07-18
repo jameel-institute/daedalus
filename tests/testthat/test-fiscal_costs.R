@@ -49,7 +49,7 @@ test_that("Calculating fiscal costs works", {
   )
   fc2 <- get_fiscal_costs(o2)
 
-  exepct_gt(
+  expect_gt(
     sum(fc2$fiscal_costs$vax_support),
     sum(fc1$fiscal_costs$vax_support)
   )
