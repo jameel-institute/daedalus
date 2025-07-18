@@ -112,14 +112,13 @@ is currently assumed to be zero and is not included in the equation.
 o <- daedalus(
   "GBR", "sars_cov_2_pre_alpha",
   "economic_closures", "high",
-  time_end = 30
+  time_end = 100
 )
 fc <- get_fiscal_costs(o)
 
 # also works when no closures are applied
 o <- daedalus(
   "CAN", "influenza_2009",
-  "economic_closures", "high",
   time_end = 30
 )
 get_fiscal_costs(o)
