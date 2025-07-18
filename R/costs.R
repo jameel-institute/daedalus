@@ -316,14 +316,13 @@ get_value_school_year <- function(gni) {
 #' o <- daedalus(
 #'   "GBR", "sars_cov_2_pre_alpha",
 #'   "economic_closures", "high",
-#'   time_end = 30
+#'   time_end = 100
 #' )
 #' fc <- get_fiscal_costs(o)
 #'
 #' # also works when no closures are applied
 #' o <- daedalus(
 #'   "CAN", "influenza_2009",
-#'   "economic_closures", "high",
 #'   time_end = 30
 #' )
 #' get_fiscal_costs(o)
@@ -404,7 +403,7 @@ get_fiscal_costs <- function(
   # calculate closure duration if any
   closure_duration <- x$response_data$closure_info$closure_duration
 
-  if (is.na(closure_duration)) {
+  if (is.na(closure_duration) || closure_duration == 0) {
     npi_support <- 0.0
   } else {
     closure_start <- x$response_data$closure_info$closure_time_start
@@ -473,7 +472,7 @@ get_fiscal_costs <- function(
     ),
     public_debt = list(
       public_debt = public_debt,
-      added_public_debt = tail(public_debt, 1L) -
+      added_public_debt = utils::tail(public_debt, 1L) -
         public_debt[1L]
     )
   )
