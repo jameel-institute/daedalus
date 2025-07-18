@@ -1,3 +1,7 @@
+# daedalus (development version)
+
+This patch version adds the function `get_fiscal_costs()` to calculate the costs to governments of pandemic response. These are calculated as post-processing on a model run, given some user-specified assumptions about public spending, interest rates, and tax rates.
+
 # daedalus 0.2.20
 
 Restored model functionality where mortality is increased when hospital capacity is exceeded.

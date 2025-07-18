@@ -20,5 +20,5 @@ scratch*
 /Meta/
 format-cpp.sh
 lint-cpp.sh
-format-R.sh
+format-r.sh
 .vscode

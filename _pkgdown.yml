@@ -47,6 +47,7 @@ reference:
     desc: Functions to process model output to calculate pandemic costs and other characteristics
     contents:
     - get_costs
+    - get_fiscal_costs
     - epi_output_helpers
     - get_life_years_lost
   - title: Package generics
