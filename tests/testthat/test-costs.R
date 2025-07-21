@@ -114,7 +114,8 @@ test_that("Expectations on education costs", {
     x,
     daedalus,
     country = "United Kingdom",
-    infection = daedalus_infection("sars_cov_1")
+    infection = daedalus_infection("sars_cov_1"),
+    time_end = 100
   )
 
   a <- vapply(

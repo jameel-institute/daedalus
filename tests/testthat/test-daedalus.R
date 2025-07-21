@@ -146,7 +146,8 @@ test_that("daedalus: Runs with custom openness values", {
     daedalus(
       "GBR",
       "sars_cov_1",
-      response_strategy = rep(0.5, N_ECON_SECTORS)
+      response_strategy = rep(0.5, N_ECON_SECTORS),
+      time_end = 100
     )
   )
   expect_error(
