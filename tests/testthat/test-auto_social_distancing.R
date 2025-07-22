@@ -4,8 +4,7 @@ test_that("daedalus: Auto-social distancing works", {
       "GBR",
       "sars_cov_1",
       "elimination",
-      auto_social_distancing = "off",
-      time_end = 100
+      auto_social_distancing = "off"
     )
   )
   expect_no_condition(
@@ -13,8 +12,7 @@ test_that("daedalus: Auto-social distancing works", {
       "GBR",
       "sars_cov_1",
       "elimination",
-      auto_social_distancing = "independent",
-      time_end = 100
+      auto_social_distancing = "independent"
     )
   )
   expect_no_condition(
@@ -22,8 +20,7 @@ test_that("daedalus: Auto-social distancing works", {
       "GBR",
       "sars_cov_1",
       "elimination",
-      auto_social_distancing = "npi_linked",
-      time_end = 100
+      auto_social_distancing = "npi_linked"
     )
   )
 
@@ -32,22 +29,19 @@ test_that("daedalus: Auto-social distancing works", {
     "GBR",
     "sars_cov_1",
     "none",
-    auto_social_distancing = "off",
-    time_end = 100
+    auto_social_distancing = "off"
   )
   data_sd_ind <- daedalus(
     "GBR",
     "sars_cov_1",
     "none",
-    auto_social_distancing = "independent",
-    time_end = 100
+    auto_social_distancing = "independent"
   )
   data_sd_npi <- daedalus(
     "GBR",
     "sars_cov_1",
     "none",
-    auto_social_distancing = "npi_linked",
-    time_end = 100
+    auto_social_distancing = "npi_linked"
   )
 
   fs_sd_off <- get_epidemic_summary(data_sd_off, "infections")
@@ -69,15 +63,13 @@ test_that("daedalus: Auto-social distancing works", {
     "GBR",
     "sars_cov_1",
     "elimination",
-    auto_social_distancing = "off",
-    time_end = 100
+    auto_social_distancing = "off"
   )
   data_sd_npi <- daedalus(
     "GBR",
     "sars_cov_1",
     "elimination",
-    auto_social_distancing = "npi_linked",
-    time_end = 100
+    auto_social_distancing = "npi_linked"
   )
 
   fs_sd_off <- get_epidemic_summary(data_sd_off, "infections")
@@ -99,8 +91,7 @@ test_that("daedalus_multi_infection: Auto-social distancing works", {
       "GBR",
       infection_list,
       "elimination",
-      auto_social_distancing = "off",
-      time_end = 100
+      auto_social_distancing = "off"
     )
   )
   expect_no_condition(
@@ -108,8 +99,7 @@ test_that("daedalus_multi_infection: Auto-social distancing works", {
       "GBR",
       infection_list,
       "elimination",
-      auto_social_distancing = "independent",
-      time_end = 100
+      auto_social_distancing = "independent"
     )
   )
   expect_no_condition(
@@ -117,8 +107,7 @@ test_that("daedalus_multi_infection: Auto-social distancing works", {
       "GBR",
       infection_list,
       "elimination",
-      auto_social_distancing = "npi_linked",
-      time_end = 100
+      auto_social_distancing = "npi_linked"
     )
   )
 })

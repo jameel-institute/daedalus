@@ -52,8 +52,7 @@ test_that("Costs: scenario expectations", {
       daedalus(
         "GBR",
         infection = "influenza_1957",
-        response_strategy = x,
-        time_end = 100
+        response_strategy = x
       )
     }
   )
@@ -72,15 +71,14 @@ test_that("Costs: scenario expectations", {
       output <- daedalus(
         "Canada",
         "influenza_1918",
-        response_strategy = x,
-        time_end = 100
+        response_strategy = x
       )
       costs <- get_costs(output)
 
       # closure costs must be at least one day of reduced GVA
       expected_cost_closures <- output$country_parameters$gva *
         (1 - output$response_data$openness) *
-        output$response_data$closure_info$closure_duration
+        sum(output$response_data$closure_info$closure_durations)
 
       expect_identical(
         costs$economic_costs$economic_cost_closures,
@@ -116,8 +114,7 @@ test_that("Expectations on education costs", {
     x,
     daedalus,
     country = "United Kingdom",
-    infection = daedalus_infection("sars_cov_1"),
-    time_end = 100
+    infection = daedalus_infection("sars_cov_1")
   )
 
   a <- vapply(
