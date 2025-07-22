@@ -82,22 +82,28 @@ class response {
   /// @param value The time value to check current time against.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_time_test(const double value) const {
-    auto fn_test = [value](const double t, const double *y) {
+    auto fn_test = [value, &i_flag = i_flag](const double t, const double *y) {
+      if (y[i_flag] > 0.0) {
+        return 1.0;  // return FALSE if flag already on
+      } else {
       return t - value;  // time - start_time
+      }
     };
 
     return fn_test;
   }
 
   /// @brief Root-find on a duration after some time read from state.
+  /// @param id_state The index of state where the start time is recorded.
   /// @param value The duration to check against, which is added to the
   /// logged/realised start-time to get the value.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_duration_test(const size_t &id_state,
                                       const double value) const {
-    auto fn_test = [id_state, value](const double t, const double *y) {
+    auto fn_test = [id_state, value, &i_flag = i_flag](const double t,
+                                                       const double *y) {
       if (y[id_state] > 0.0) {
-        return t - (value + y[id_state]);
+        return t - (value + y[id_state]);  // return val only if flag already on
       } else {
         return 1.0;  // prevent (t - value) when event has not launched yet
       }
@@ -110,16 +116,49 @@ class response {
   /// won't need other operations.
   /// @param idx_state The indices at which to sum state.
   /// @param value The value against which to compare the summed state.
+  /// @expected_value Either 0.0 or 1.0 for whether the existing flag state is
+  /// off or on, respectively.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_state_test(const std::vector<size_t> &idx_state,
-                                   const double value) const {
-    auto fn_test = [idx_state, value](const double t, const double *y) {
+                                   const double value,
+                                   const double expected_value) const {
+    if (expected_value < 1.0) {
+      // flag expected off
+      auto fn_test = [idx_state, value, &i_flag = i_flag](const double t,
+                                                          const double *y) {
+        if (y[i_flag] > 0.0) {
+          return 1.0;  // handle case where flag is already on, return false
+        } else {
+          const int size_n = idx_state.size();
+          const double sum_state = std::accumulate(y, y + size_n, 0);
+          return sum_state - value;
+        }
+      };
+
+      return fn_test;
+    } else if (expected_value > 0.0) {
+      // flag expected on
+      auto fn_test = [idx_state, value, &i_flag = i_flag](const double t,
+                                                          const double *y) {
+        if (y[i_flag] < 1.0) {
+          return 1.0;  // handle case where flag is already off, return false
+        } else {
       const int size_n = idx_state.size();
       const double sum_state = std::accumulate(y, y + size_n, 0);
       return sum_state - value;
+        }
     };
 
     return fn_test;
+    } else {
+      // NOTE: included to satisfy cppcheck
+      auto fn_default = [](const double t, const double *y) {
+        cpp11::warning("Invalid expected_value passed to state_test factory.");
+        return 1.0;
+      };
+
+      return fn_default;
+    }
   }
 
   /// @brief Make event action lambda.
