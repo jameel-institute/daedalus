@@ -180,7 +180,8 @@ daedalus_multi_infection <- function(
     output_data,
     infection,
     closure_info,
-    f = function(x, y, z) {
+    output$event_data,
+    f = function(x, y, z, zz) {
       o <- list(
         total_time = time_end,
         model_data = x,
@@ -190,7 +191,8 @@ daedalus_multi_infection <- function(
           response_strategy = response_strategy,
           openness = openness,
           closure_info = z
-        )
+        ),
+        event_data = zz
       )
 
       as_daedalus_output(o)

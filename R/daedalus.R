@@ -400,7 +400,8 @@ daedalus <- function(
         output,
         time_end
       )
-    )
+    ),
+    event_data = output$event_data[[1]]
   )
   as_daedalus_output(output)
 }
