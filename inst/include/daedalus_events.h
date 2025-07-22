@@ -86,7 +86,7 @@ class response {
       if (y[i_flag] > 0.0) {
         return 1.0;  // return FALSE if flag already on
       } else {
-      return t - value;  // time - start_time
+        return t - value;  // time - start_time
       }
     };
 
@@ -143,13 +143,13 @@ class response {
         if (y[i_flag] < 1.0) {
           return 1.0;  // handle case where flag is already off, return false
         } else {
-      const int size_n = idx_state.size();
-      const double sum_state = std::accumulate(y, y + size_n, 0);
-      return sum_state - value;
+          const int size_n = idx_state.size();
+          const double sum_state = std::accumulate(y, y + size_n, 0);
+          return sum_state - value;
         }
-    };
+      };
 
-    return fn_test;
+      return fn_test;
     } else {
       // NOTE: included to satisfy cppcheck
       auto fn_default = [](const double t, const double *y) {
@@ -222,7 +222,8 @@ class response {
       std::string name_ev_time_on = name + "_time_on";
       dust2::ode::event<double> ev_time_on = make_event(
           name_ev_time_on, {}, make_time_test(time_on),
-          make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}));
+          make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
+          dust2::ode::root_type::increase);
 
       events.push_back(ev_time_on);
     }
@@ -232,7 +233,8 @@ class response {
       std::string name_ev_time_off = name + "_time_off";
       dust2::ode::event<double> ev_time_off = make_event(
           name_ev_time_off, {}, make_duration_test(i_time_start, duration),
-          make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}));
+          make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
+          dust2::ode::root_type::increase);
 
       events.push_back(ev_time_off);
     }
@@ -241,7 +243,8 @@ class response {
     if (!ISNA(state_on)) {
       std::string name_ev_state_on = name + "_state_on";
       dust2::ode::event<double> ev_state_on = make_event(
-          name_ev_state_on, i_state_on, make_state_test(i_state_on, state_on),
+          name_ev_state_on, i_state_on,
+          make_state_test(i_state_on, state_on, 0.0),
           make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
           dust2::ode::root_type::increase);
 
@@ -253,7 +256,7 @@ class response {
       std::string name_ev_state_off = name + "_state_off";
       dust2::ode::event<double> ev_state_off =
           make_event(name_ev_state_off, i_state_off,
-                     make_state_test(i_state_off, state_off),
+                     make_state_test(i_state_off, state_off, 1.0),
                      make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
                      dust2::ode::root_type::decrease);
 
