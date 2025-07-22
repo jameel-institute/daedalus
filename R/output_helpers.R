@@ -91,9 +91,13 @@ get_incidence <- function(
 
   # subset compartments needed
   compartments_needed <- c("new_infections", "new_hosp", "dead")
+  compartments_needed <- c(
+    compartments_needed,
+    sprintf("%s_vax", compartments_needed)
+  )
   df_measures <- data.frame(
     compartment = compartments_needed,
-    measure = SUMMARY_MEASURES
+    measure = rep(SUMMARY_MEASURES, 2L)
   )
   df_measures <- df_measures[df_measures$measure %in% measures, ]
 
