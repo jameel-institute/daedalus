@@ -9,8 +9,8 @@
 as_daedalus_output <- function(x) {
   checkmate::assert_list(
     x,
-    c("data.frame", "list", "numeric"),
-    any.missing = FALSE
+    c("data.frame", "list", "numeric", "NULL"),
+    any.missing = TRUE # event data may be missing
   )
   class(x) <- "daedalus_output"
   validate_daedalus_output(x)
@@ -25,19 +25,20 @@ as_daedalus_output <- function(x) {
 #' erroring when the object does not satisfy the `<daedalus_output>` class
 #' requirements.
 validate_daedalus_output <- function(x) {
-  expected_invariants <- c(
+  expected_fields <- c(
     "model_data",
     # NOTE: reserving 'parameters' for values fixed before model run
     "country_parameters",
     "infection_parameters",
-    "response_data" # includes response strategy
+    "response_data", # includes response strategy
+    "event_data"
   )
 
   stopifnot(
     "Object should be of class `daedalus_output`" = is_daedalus_output(x),
     "Object does not have expected members" = checkmate::test_names(
       names(x),
-      must.include = expected_invariants
+      must.include = expected_fields
     )
   )
 
