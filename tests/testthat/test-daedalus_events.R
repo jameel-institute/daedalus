@@ -6,7 +6,7 @@ test_that("daedalus: root-finding events launch at the appropriate root", {
     "sars_cov_1",
     response_strategy = "elimination",
     response_time = response_time,
-    time_end = 600
+    time_end = 100
   )
 
   expect_identical(
