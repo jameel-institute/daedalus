@@ -69,7 +69,12 @@ test_that("Costs: scenario expectations", {
   response_names <- c("elimination", "economic_closures", "school_closures")
   invisible({
     lapply(response_names, function(x) {
-      output <- daedalus("Canada", "influenza_1918", response_strategy = x)
+      output <- daedalus(
+        "Canada",
+        "influenza_1918",
+        response_strategy = x,
+        time_end = 100
+      )
       costs <- get_costs(output)
 
       # closure costs must be at least one day of reduced GVA
@@ -111,7 +116,8 @@ test_that("Expectations on education costs", {
     x,
     daedalus,
     country = "United Kingdom",
-    infection = daedalus_infection("sars_cov_1")
+    infection = daedalus_infection("sars_cov_1"),
+    time_end = 100
   )
 
   a <- vapply(
