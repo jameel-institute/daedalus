@@ -12,9 +12,8 @@ get_daedalus_response_times(output, time_end)
 \item{time_end}{The model end time, passed from \code{\link[=daedalus]{daedalus()}}.}
 }
 \value{
-A vector of event start and end times suitable for a
-\verb{<daedalus_output>} object. Returns model end time if there is no response
-end time.
+A list of event start and end times, closure periods, and the
+duration of each closure event, suitable for a \verb{<daedalus_output>} object.
 }
 \description{
 Get model response times from dust2 output

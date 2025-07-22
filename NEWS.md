@@ -4,11 +4,19 @@ This patch version logs the realised times of all events. When events are launch
 
 - Added class member function `make_duration_test` to class `daedalus::events::response`. Events are now treated as having a start time and a duration, rather than an end time.
 
-**Note that** this change makes it more likely that short-duration state-triggered events will be launched multiple times in a single simulation run of 600 days.
+**Note that** this change makes it more likely that short-duration state-triggered events will be launched multiple times in a single simulation run of 600 days. This **will** result in unpredictable closure durations in most cases, as closures can be launched by breaching hospital capacity.
 
 - Added class member function `make_duration_test` to class `daedalus::events::response`.
 
+- Updated `get_daedalus_response_times()` and `get_costs()` to correctly accommodate multiple closures.
+
 - Updates to input checking, output handling, tests, and documentation for time-limitations on state-triggered events.
+
+- Event data are now included in `<daedalus_output>` from `daedalus()` and `daedalus_multi_infection()`.
+
+- `daedalus::events::response` member functions for event condition checks now include a check on expected flag status to prevent events which would not change flag status.
+
+- Most tests account for new closure duration calculations due to multiple epidemic peaks and event launches.
 
 # daedalus 0.2.20
 

@@ -33,9 +33,8 @@ initial_flags <- function() {
 #' @param output dust2 output `daedalus_internal()`.
 #' @param time_end The model end time, passed from [daedalus()].
 #'
-#' @return A vector of event start and end times suitable for a
-#' `<daedalus_output>` object. Returns model end time if there is no response
-#' end time.
+#' @return A list of event start and end times, closure periods, and the
+#' duration of each closure event, suitable for a `<daedalus_output>` object.
 #'
 #' @keywords internal
 get_daedalus_response_times <- function(output, time_end) {
@@ -45,35 +44,43 @@ get_daedalus_response_times <- function(output, time_end) {
   resp_time_on_realised <- if (length(resp_times_on) == 0) {
     NA_real_
   } else {
-    min(resp_times_on)
+    floor(resp_times_on)
   }
 
   resp_times_off <- event_data[grepl("npi_\\w*_off$", event_data$name), "time"]
-  resp_time_off_realised <- if (is.na(resp_time_on_realised)) {
+  resp_time_off_realised <- if (all(is.na(resp_time_on_realised))) {
     NA_real_
   } else if (length(resp_times_off) == 0) {
     time_end
   } else {
-    min(resp_times_off)
+    floor(resp_times_off)
   }
 
-  duration <- resp_time_off_realised - resp_time_on_realised
-
-  # double check duration against NPI flag as there are no other checks
-  # check against difference of 2 as NPIs can last one extra tstep
-  duration_raw <- sum(output$data$npi_flag)
-  if (!(abs(duration - duration_raw) < 2 || is.na(duration))) {
+  # handle unterminated npi
+  if (length(resp_time_off_realised) == (length(resp_time_on_realised) - 1)) {
+    resp_time_off_realised <- c(resp_time_off_realised, time_end)
+  } else if (length(resp_time_on_realised) < length(resp_time_off_realised)) {
     cli::cli_abort(
-      "Raw response duration: {duration_raw} does not match
-      event-data duration: {duration}"
+      "Model NPIs: More end events than start events! Check model dynamics."
+    )
+  }
+
+  durations <- resp_time_off_realised - resp_time_on_realised
+
+  if (all(is.na(durations))) {
+    closure_periods <- NA_integer_
+  } else {
+    closure_periods <- unlist(
+      Map(seq, resp_time_on_realised, resp_time_off_realised)
     )
   }
 
   # return list for consistency with daedalus
   list(
-    closure_time_start = resp_time_on_realised,
-    closure_time_end = resp_time_off_realised,
-    closure_duration = duration
+    closure_times_start = resp_time_on_realised,
+    closure_times_end = resp_time_off_realised,
+    closure_durations = durations,
+    closure_periods = closure_periods
   )
 }
 

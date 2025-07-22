@@ -1,16 +1,18 @@
 test_that("daedalus: root-finding events launch at the appropriate root", {
   # check that NPI triggers at response time when response time is low
   response_time <- 22.0
+  x <- daedalus_country("THA")
+  x$hospital_capacity <- 1e8 # artificially high
+
   output <- daedalus(
-    "THA",
+    x,
     "sars_cov_1",
     response_strategy = "elimination",
-    response_time = response_time,
-    time_end = 100
+    response_time = response_time
   )
 
   expect_identical(
-    output$response_data$closure_info$closure_time_start,
+    output$response_data$closure_info$closure_times_start,
     response_time
   )
 
@@ -27,7 +29,7 @@ test_that("daedalus: root-finding events launch at the appropriate root", {
     time_end = 600
   )
   expect_lt(
-    output$response_data$closure_info$closure_time_start,
+    output$response_data$closure_info$closure_times_start,
     response_time
   )
 })
@@ -48,11 +50,11 @@ test_that("daedalus: time-launched response duration is correct", {
   )
 
   expect_identical(
-    output$response_data$closure_info$closure_time_end,
+    output$response_data$closure_info$closure_times_end,
     response_time + response_duration
   )
   expect_identical(
-    output$response_data$closure_info$closure_duration,
+    output$response_data$closure_info$closure_durations,
     response_duration
   )
 })
@@ -73,14 +75,14 @@ test_that("daedalus: state-launched response duration is correct", {
   )
 
   expect_identical(
-    output$response_data$closure_info$closure_duration,
+    sum(output$response_data$closure_info$closure_durations),
     response_duration,
     tolerance = 1e-6
   )
 })
 
 # NOTE: this test will/should be reinstated when daedalus() replaces daedalus()
-skip("Full event data is no longer returned for compliance with output class")
+skip("Needs updating to account for new output class")
 test_that("Vaccination events launch as expected", {
   # expect vaccination is launched if chosen and does not end
   vax_time <- 33
@@ -88,8 +90,7 @@ test_that("Vaccination events launch as expected", {
   output <- daedalus(
     x,
     "sars_cov_1",
-    vaccine_investment = v,
-    time_end = 100
+    vaccine_investment = v
   )
 
   checkmate::expect_subset(

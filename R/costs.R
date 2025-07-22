@@ -99,16 +99,15 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   # NOTE: in million $s
   life_value_lost <- x$country_parameters$vsl * total_deaths / 1e6
 
-  closure_duration <- x$response_data$closure_info$closure_duration
+  closure_duration <- sum(x$response_data$closure_info$closure_durations)
 
   # handle daedalus
-  if (is.na(closure_duration)) {
+  if (all(is.na(closure_duration))) {
     economic_cost_closures <- 0
     education_cost_closures <- 0
     sector_cost_closures <- rep(0, length(x$country_parameters$workers))
   } else {
-    closure_start <- x$response_data$closure_info$closure_time_start
-    closure_end <- x$response_data$closure_info$closure_time_end
+    closure_periods <- x$response_data$closure_info$closure_periods
 
     # cost of closures, per sector and total
     sector_cost_closures <- gva * (1 - openness) * closure_duration
@@ -124,9 +123,9 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
 
     # multiply loss due to closures by loss due to absences
     # to get true loss due to absences
-    sector_cost_absences[seq(closure_start, closure_end), ] <-
+    sector_cost_absences[closure_periods, ] <-
       sector_cost_absences[
-        seq(closure_start, closure_end),
+        closure_periods,
       ] %*%
       diag(openness)
   }
