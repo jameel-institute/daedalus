@@ -426,8 +426,8 @@ get_fiscal_costs <- function(
   }
 
   # cost of support for GVA loss per sector per day
-  gva_achieved <- rowSums(avail_labour %*% diag(gva))
-  gva_support <- rowSums((1.0 - avail_labour) %*% diag(support_level * gva))
+  gva_achieved <- weighted_rowsums(avail_labour, gva)
+  gva_support <- weighted_rowsums(1.0 - avail_labour, support_level * gva)
 
   # cost of vaccination assumed to be instantaneous
   # NOTE: this is only over the model horizon!
@@ -439,13 +439,14 @@ get_fiscal_costs <- function(
 
   # get total fiscal cost with interest rate
   interest_rate <- interest_rate / 365.0
-  fiscal_cost <- Reduce(
-    function(x, y) {
-      y + ((1 + interest_rate) * x)
-    },
-    total_support,
-    accumulate = TRUE
-  )
+  fiscal_cost <- numeric(x$total_time + 1L)
+  for (i in seq_len(x$total_time)) {
+    fiscal_cost[i + 1] <- interest_accumulation(
+      fiscal_cost[i],
+      total_support[i],
+      interest_rate
+    )
+  }
 
   # get total public debt, net of spending and revenue
   daily_spending <- sum(gva) * spending_rate / 365.0 # mean daily spend
@@ -454,11 +455,11 @@ get_fiscal_costs <- function(
   public_debt <- numeric(x$total_time + 1L)
   public_debt[1L] <- starting_debt
 
-  for (i in seq(2, x$total_time + 1)) {
-    public_debt[i] <- daily_spending +
-      total_support[i - 1] +
-      ((1.0 + interest_rate) * public_debt[i - 1]) -
-      (tax_rate * gva_achieved[i - 1])
+  # iterate over 1:150, but public_debt has length 151 as t=0 included
+  for (i in seq_len(x$total_time)) {
+    public_debt[i + 1] <- daily_spending +
+      interest_accumulation(public_debt[i], total_support[i], interest_rate) -
+      (tax_rate * gva_achieved[i])
   }
 
   # return cost timeseries
@@ -472,8 +473,7 @@ get_fiscal_costs <- function(
     ),
     public_debt = list(
       public_debt = public_debt,
-      added_public_debt = utils::tail(public_debt, 1L) -
-        public_debt[1L]
+      added_public_debt = last(public_debt) - first(public_debt)
     )
   )
 }
