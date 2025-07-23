@@ -3,6 +3,10 @@
 #' @name tools
 #' @rdname tools
 #'
+#' @details
+#' `weighted_rowsums()` is used to get the row-wise sums of a matrix after
+#' column-wise multiplication by a vector of weights.
+#'
 #' @keywords internal
 drop_null <- function(x) {
   Filter(function(y) !is.null(y), x)
@@ -38,4 +42,34 @@ assert_class_fields <- function(x, expected_fields) {
   }
 
   invisible(x)
+}
+
+#' @name tools
+#' @keywords internal
+first <- function(x) {
+  x[[1L]]
+}
+
+#' @name tools
+#' @keywords internal
+last <- function(x) {
+  x[[length(x)]]
+}
+
+#' @name tools
+#' @keywords internal
+weighted_rowsums <- function(x, weights) {
+  checkmate::assert_matrix(x, "numeric", any.missing = FALSE)
+  checkmate::assert_numeric(
+    weights,
+    len = ncol(x)
+  )
+
+  rowSums(x %*% diag(weights))
+}
+
+#' @name tools
+#' @keywords internal
+interest_accumulation <- function(principal, contribution, rate) {
+  contribution + (1.0 + rate) * principal
 }

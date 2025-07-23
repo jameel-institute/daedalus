@@ -3,11 +3,27 @@
 \name{tools}
 \alias{tools}
 \alias{drop_null}
+\alias{first}
+\alias{last}
+\alias{weighted_rowsums}
+\alias{interest_accumulation}
 \title{Helper functions}
 \usage{
 drop_null(x)
+
+first(x)
+
+last(x)
+
+weighted_rowsums(x, weights)
+
+interest_accumulation(principal, contribution, rate)
 }
 \description{
 Helper functions
+}
+\details{
+\code{weighted_rowsums()} is used to get the row-wise sums of a matrix after
+column-wise multiplication by a vector of weights.
 }
 \keyword{internal}
