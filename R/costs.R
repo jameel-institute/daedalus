@@ -401,24 +401,22 @@ get_fiscal_costs <- function(
   avail_labour <- 1.0 - worker_absences %*% diag(1.0 / workforce)
 
   # calculate closure duration if any
-  closure_duration <- x$response_data$closure_info$closure_duration
+  closure_duration <- sum(x$response_data$closure_info$closure_durations)
 
   if (is.na(closure_duration) || closure_duration == 0) {
     npi_support <- 0.0
   } else {
-    closure_start <- x$response_data$closure_info$closure_time_start
-    closure_end <- x$response_data$closure_info$closure_time_end
-    closure_period <- seq(closure_start, closure_end)
+    closure_periods <- x$response_data$closure_info$closure_periods
 
     # cost of getting NPIs to work: price_npi * number of alive individuals *
     # some uptake param
     npi_support <- sum(x$country_parameters$demography) -
       get_incidence(x, "deaths")$value * uptake_npi * price_npi
-    npi_support[-closure_period] <- 0.0
+    npi_support[-closure_periods] <- 0.0
     npi_support <- npi_support / 1e6
 
-    avail_labour[closure_period, ] <- t(apply(
-      avail_labour[closure_period, ],
+    avail_labour[closure_periods, ] <- t(apply(
+      avail_labour[closure_periods, ],
       1L,
       pmin,
       openness
