@@ -416,6 +416,13 @@ class daedalus_ode {
         daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
                                          state[shared.i_hosp_overflow_flag]);
 
+    /* CHANGE omega based on current HFR
+        omega = daedalus::helpers::process_hfr(
+            hosp_capacity, hfr, t_hosp_death, t_hosp_recovery
+        );
+    */
+
+
     // calculate total deaths and scale beta by concern, but only if an
     // NPI is active
     // TODO(pratik): change in future so public-concern is independent of NPIs
