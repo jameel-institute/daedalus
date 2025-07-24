@@ -22,7 +22,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.20</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.21</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -120,6 +120,20 @@ after 30 days, whichever is sooner.</p>
 <span><span class="co"># get the model timeseries</span></span>
 <span><span class="va">data_intervention</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data.html">get_data</a></span><span class="op">(</span><span class="va">data_intervention</span><span class="op">)</span></span>
 <span><span class="va">data_intervention</span><span class="op">$</span><span class="va">scenario</span> <span class="op">&lt;-</span> <span class="st">"elimination"</span></span></code></pre></div>
+<div class="alert alert-info">
+<p><strong>Note that</strong> the default duration of a pandemic
+response in <em>daedalus</em> is 365 days. This duration applies from
+the time of the first response trigger. That is, if a model is set up
+such that a response is mandated from day 30, the response will end on
+day <code>30 + 365 =</code> 395 by default.</p>
+<p>However, if the response begins earlier than the
+<code>response_time</code> due to hospital capacity being breached, the
+duration applies from this earlier time. In this scenario, the start and
+end times of the response can only be known by running the model. The
+response duration will still be the value passed to
+<code>response_duration</code> (or the default if no specific value is
+passed).</p>
+</div>
 <p>Plot the total hospital occupancy for both scenarios to view the
 effect of interventions.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">

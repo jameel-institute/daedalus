@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.20</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.21</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,6 +54,18 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.21" id="daedalus-0221">daedalus 0.2.21<a class="anchor" aria-label="anchor" href="#daedalus-0221"></a></h2>
+<p>This patch version logs the realised times of all events. When events are launched multiple times, the start time is updated. All start times are held as special variables in <code>state</code>. The NPI start time is used to determine the realised NPI end time by testing for a duration, and enables time-limitation for state-triggered events. Other events do not have a fixed end time (other than NPI-linked social distancing).</p>
+<ul><li>Added class member function <code>make_duration_test</code> to class <code>daedalus::events::response</code>. Events are now treated as having a start time and a duration, rather than an end time.</li>
+</ul><p><strong>Note that</strong> this change makes it more likely that short-duration state-triggered events will be launched multiple times in a single simulation run of 600 days. This <strong>will</strong> result in unpredictable closure durations in most cases, as closures can be launched by breaching hospital capacity.</p>
+<ul><li><p>Added class member function <code>make_duration_test</code> to class <code>daedalus::events::response</code>.</p></li>
+<li><p>Updated <code><a href="../reference/get_daedalus_response_times.html">get_daedalus_response_times()</a></code> and <code><a href="../reference/get_costs.html">get_costs()</a></code> to correctly accommodate multiple closures.</p></li>
+<li><p>Updates to input checking, output handling, tests, and documentation for time-limitations on state-triggered events.</p></li>
+<li><p>Event data are now included in <code>&lt;daedalus_output&gt;</code> from <code><a href="../reference/daedalus.html">daedalus()</a></code> and <code><a href="../reference/daedalus_multi_infection.html">daedalus_multi_infection()</a></code>.</p></li>
+<li><p><code>daedalus::events::response</code> member functions for event condition checks now include a check on expected flag status to prevent events which would not change flag status.</p></li>
+<li><p>Most tests account for new closure duration calculations due to multiple epidemic peaks and event launches.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.20" id="daedalus-0220">daedalus 0.2.20<a class="anchor" aria-label="anchor" href="#daedalus-0220"></a></h2>
 <p>Restored model functionality where mortality is increased when hospital capacity is exceeded.</p>
