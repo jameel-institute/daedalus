@@ -1,6 +1,6 @@
-# daedalus (development version)
+# daedalus 0.2.22
 
-This patch version overhauls how events are represented and handled.
+This patch version overhauls how events are represented and handled in R.
 
 ## Breaking changes
 
