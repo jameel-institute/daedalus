@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.22</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -215,7 +215,7 @@
         <dd>DAEDALUS model constants</dd>
       </dl><dl><dt>
 
-          <code><a href="epi_constants.html">COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_MODEL_COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_EPI_COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_DATA_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_EPI_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_DATA_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_S</a></code> <code><a href="epi_constants.html">i_E</a></code> <code><a href="epi_constants.html">i_Is</a></code> <code><a href="epi_constants.html">i_Ia</a></code> <code><a href="epi_constants.html">i_H</a></code> <code><a href="epi_constants.html">i_R</a></code> <code><a href="epi_constants.html">i_D</a></code> <code><a href="epi_constants.html">i_dE</a></code> <code><a href="epi_constants.html">i_dH</a></code> <code><a href="epi_constants.html">i_dD</a></code> <code><a href="epi_constants.html">N_INFECTION_SUBSYSTEM</a></code>
+          <code><a href="epi_constants.html">COMPARTMENTS</a></code> <code><a href="epi_constants.html">idx_COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_EPI_COMPARTMENTS</a></code> <code><a href="epi_constants.html">i_EPI_COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_MODEL_COMPARTMENTS</a></code> <code><a href="epi_constants.html">N_INFECTION_SUBSYSTEM</a></code>
 
         </dt>
         <dd>Epidemiological compartments and indices</dd>
@@ -243,6 +243,12 @@
 
 
       <dl><dt>
+
+          <code><a href="class_response.html">new_daedalus_response()</a></code> <code><a href="class_response.html">response_class_names</a></code> <code><a href="class_response.html">new_daedalus_npi()</a></code> <code><a href="class_response.html">new_daedalus_behaviour()</a></code> <code><a href="class_response.html">new_daedalus_mortality()</a></code> <code><a href="class_response.html">is_daedalus_response()</a></code> <code><a href="class_response.html">validate_daedalus_response()</a></code>
+
+        </dt>
+        <dd>Constructor for the &lt;daedalus_response&gt; super-class and sub-classes</dd>
+      </dl><dl><dt>
 
           <code><a href="country_name_from_arg.html">country_name_from_arg()</a></code>
 
@@ -280,10 +286,10 @@
         <dd>Get model response times from dust2 output</dd>
       </dl><dl><dt>
 
-          <code><a href="get_hospitalisations.html">get_hospitalisations()</a></code>
+          <code><a href="get_state_indices.html">get_state_indices()</a></code>
 
         </dt>
-        <dd>Calculate total hospitalisations</dd>
+        <dd>Get a vector of state indices</dd>
       </dl><dl><dt>
 
           <code><a href="get_value_lost_earnings.html">get_value_lost_earnings()</a></code>
@@ -302,6 +308,12 @@
 
         </dt>
         <dd>Initial values for model flags</dd>
+      </dl><dl><dt>
+
+          <code><a href="input_checks.html">assert_class_fields()</a></code>
+
+        </dt>
+        <dd>Check that a class has expected names</dd>
       </dl><dl><dt>
 
           <code><a href="make_initial_state.html">make_initial_state()</a></code>
@@ -340,16 +352,16 @@
         <dd>Prepare country parameters for model</dd>
       </dl><dl><dt>
 
-          <code><a href="scale_nu.html">scale_nu()</a></code>
-
-        </dt>
-        <dd>Scale vaccination rate by remaining eligibles</dd>
-      </dl><dl><dt>
-
           <code><a href="tools.html">drop_null()</a></code>
 
         </dt>
         <dd>Helper functions</dd>
+      </dl><dl><dt>
+
+          <code><a href="uptake_percent_to_number.html">uptake_percent_to_number()</a></code>
+
+        </dt>
+        <dd>Convert an uptake limit from a percentage to a number</dd>
       </dl><dl><dt>
 
           <code><a href="validate_country_input.html">validate_country_input()</a></code>

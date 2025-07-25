@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.22</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,6 +54,25 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.22" id="daedalus-0222">daedalus 0.2.22<a class="anchor" aria-label="anchor" href="#daedalus-0222"></a></h2>
+<p>This patch version overhauls how events are represented and handled in R.</p>
+<div class="section level3">
+<h3 id="breaking-changes-0-2-22">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-22"></a></h3>
+<ul><li>
+<code>&lt;daedalus_vaccination&gt;</code> now requires a <code>country</code> to be specified so that the uptake-limit can be respected by the event (but it does not yet, see Notes and PR <a href="https://github.com/jameel-institute/daedalus/issues/91" class="external-link">#91</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="other-changes-0-2-22">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-2-22"></a></h3>
+<ul><li><p>Adds the <code>&lt;daedalus_response&gt;</code> S3 super-class in R from which event sub-classes should inherit;</p></li>
+<li><p>Adds the <code>daedalus::inputs</code> namespace to C++ with a function to read the response class from R and generate a <code>daedalus::events::response</code>;</p></li>
+<li><p>Implements <code>&lt;daedalus_vaccination&gt;</code> inheriting from <code>&lt;daedalus_response&gt;</code> and passing to C++ using <code>read_response</code>. Also changes how <code>&lt;daedalus_vaccination&gt;</code> is initialised to account for state-based event-ending.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="notes-0-2-22">Notes<a class="anchor" aria-label="anchor" href="#notes-0-2-22"></a></h3>
+<p><code>&lt;daedalus_vaccination&gt;</code>s require changes to <code>daedalus::events::response</code> to allow for the event to end on an increasing root (the uptake-limit); for now a pre-existing mechanism is used to ensure that the uptake-limit is respected.</p>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.21" id="daedalus-0221">daedalus 0.2.21<a class="anchor" aria-label="anchor" href="#daedalus-0221"></a></h2>
 <p>This patch version logs the realised times of all events. When events are launched multiple times, the start time is updated. All start times are held as special variables in <code>state</code>. The NPI start time is used to determine the realised NPI end time by testing for a duration, and enables time-limitation for state-triggered events. Other events do not have a fixed end time (other than NPI-linked social distancing).</p>
@@ -199,7 +218,7 @@
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.5" id="daedalus-025">daedalus 0.2.5<a class="anchor" aria-label="anchor" href="#daedalus-025"></a></h2>
-<ul><li><p>Adds a correction for reducing eligibles to vaccination in <code>daedalus2()</code> by re-implementing <code><a href="../reference/scale_nu.html">scale_nu()</a></code> in C++. Adds a simple test for vaccination uptake limit.</p></li>
+<ul><li><p>Adds a correction for reducing eligibles to vaccination in <code>daedalus2()</code> by re-implementing <code>scale_nu()</code> in C++. Adds a simple test for vaccination uptake limit.</p></li>
 <li><p>Adds C++ headers for types and dimensions.</p></li>
 </ul></div>
     <div class="section level2">
@@ -452,7 +471,7 @@
 </ul><p>Internal changes include:</p>
 <ul><li><p>The system state is now represented as a 4-dimensional array, with the vaccination groups/strata on the 4th dimension (see package constant <code>DIM_VACCINE_STRATA</code>);</p></li>
 <li><p>ODE system has been updated to include reduced susceptibility and movements between vaccination strata;</p></li>
-<li><p>Vaccination rate <code>nu</code> is represented in terms of the proportion of the total population, and the internal function <code><a href="../reference/scale_nu.html">scale_nu()</a></code> increases <code>nu</code> as the number of individuals eligible for vaccination decreases.</p></li>
+<li><p>Vaccination rate <code>nu</code> is represented in terms of the proportion of the total population, and the internal function <code>scale_nu()</code> increases <code>nu</code> as the number of individuals eligible for vaccination decreases.</p></li>
 <li><p>Added tests for vaccination functionality.</p></li>
 </ul></div>
     <div class="section level2">
@@ -511,7 +530,7 @@
 <li><p>Closures are triggered by the response time being reached, or the total hospitalisation reaching the response threshold. The state variable has been expanded by one to accommodate a switch that is initially zero, is changed to one (for on) when the response is activated, and back to zero when the response ends. Responses currently end on the same trigger of the effective R being less than 1.0.</p></li>
 <li><p>The <code>make_parameters()</code> function has been split into <code>make_infect_parameters()</code> and <code>make_country_parameters()</code> to be clearer and more manageable. <code><a href="../reference/daedalus.html">daedalus()</a></code>-level override for parameters which was originally implemented as <code>...</code> has been replaced with three separate overrides: <code>country_params_manual</code>, <code>infect_params_manual</code>, and <code>initial_state_manual</code>, for users to pass custom values.</p></li>
 <li><p><code><a href="../reference/prepare_output.html">prepare_output()</a></code> has been made internal; it omits data for non-working age groups in economic sectors (as these are always 0), and pads all sector numbers to fit the format <code>sector_XX</code>.</p></li>
-<li><p>Internal functions for R effective calculations and getting the total hospitalisations, <code>r_eff()</code> and <code><a href="../reference/get_hospitalisations.html">get_hospitalisations()</a></code> have been added.</p></li>
+<li><p>Internal functions for R effective calculations and getting the total hospitalisations, <code>r_eff()</code> and <code>get_hospitalisations()</code> have been added.</p></li>
 <li><p>Closures are implemented as <code>deSolve::events</code> triggered by a rootfinding function, with separate functions for activation and termination, which are implemented as <code>make_response_threshold_event()</code> and <code>make_rt_end_event()</code>.</p></li>
 <li><p><code>contacts_between_sectors</code> is now set to 0.0, it was previously 1e-6.</p></li>
 <li><p>Added tests for closure triggers having expected effects; but closure end points are not specifically tested.</p></li>
