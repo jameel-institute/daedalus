@@ -88,7 +88,7 @@ class daedalus_ode {
     const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
     const TensorMat eta, omega, gamma_H;
 
-    const real_type nu, psi, uptake_limit;
+    const real_type nu, psi;
 
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
     const TensorMat cm, cm_cons_work, cm_work;
@@ -243,8 +243,6 @@ class daedalus_ode {
     // VACCINATION PARAMETERS
     const real_type nu = dust2::r::read_real(pars, "nu", 0.0);
     const real_type psi = dust2::r::read_real(pars, "psi", 0.0);
-    const real_type uptake_limit =
-        dust2::r::read_real(pars, "uptake_limit", 0.0);
 
     // VACCINATION EFFECT PARAMETERS: rows are age+econ grps, cols are vax grps
     const std::vector<size_t> vec_susc_dims = {n_strata, N_VAX_STRATA};
@@ -298,6 +296,11 @@ class daedalus_ode {
         total_compartments +
         daedalus::constants::i_rel_hosp_overflow_START_TIME;
 
+    // INTEGERS FOR ROOT TYPES FOR STATE-DEPENDENT EVENTS
+    // NOTE: these are handled internally in most classes and not exposed in R
+    const int root_type_increasing = 1;
+    const int root_type_decreasing = -1;
+
     // RESPONSE AND VACCINATION CLASSES
     std::vector<size_t> idx_hosp =
         daedalus::helpers::get_state_idx({iH + 1}, n_strata, N_VAX_STRATA);
@@ -305,7 +308,8 @@ class daedalus_ode {
     // NOTE: NPI response end time passed as parameter; vax end time remains 0.0
     daedalus::events::response npi(
         std::string("npi"), response_time, response_duration, hosp_cap_response,
-        gamma_Ia, i_npi_flag, idx_hosp, {i_ipr}, i_real_npi_start);
+        gamma_Ia, i_npi_flag, idx_hosp, {i_ipr}, root_type_increasing,
+        root_type_decreasing, i_real_npi_start);
 
     daedalus::events::response vaccination =
         daedalus::inputs::read_response(pars, "vaccination");
@@ -329,19 +333,19 @@ class daedalus_ode {
     daedalus::events::response public_concern(
         std::string("public_concern"), sd_start_time, sd_duration,
         sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr},
-        i_real_sd_start);
+        root_type_increasing, root_type_decreasing, i_real_sd_start);
 
     daedalus::events::response hosp_cap_exceeded(
         std::string("hosp_cap_exceeded"), NA_REAL, NA_REAL, hospital_capacity,
         hospital_capacity, i_hosp_overflow_flag, {idx_hosp}, {idx_hosp},
-        i_real_hosp_overflow_start);
+        root_type_increasing, root_type_decreasing, i_real_hosp_overflow_start);
 
     // clang-format off
     return shared_state{
         beta,         sigma,      p_sigma,      epsilon,
         rho,          gamma_Ia,   gamma_Is,     eta,
         omega,        gamma_H,    nu,           psi,
-        uptake_limit, n_strata,   n_age_groups, n_econ_groups,
+        n_strata,   n_age_groups, n_econ_groups,
         popsize,      cm,           cm_cw,
         cm_work,      susc,       openness,
         i_ipr,  // state index holding incidence/prevalence ratio
@@ -511,8 +515,7 @@ class daedalus_ode {
     // vaccination related changes
     // calculate vaccination rate
     const double nu_eff =
-        daedalus::helpers::scale_nu(t_x, shared.nu, shared.uptake_limit,
-                                    shared.popsize, n_strata) *
+        daedalus::helpers::scale_nu(t_x, shared.nu, shared.popsize, n_strata) *
         state[shared.i_vax_flag];
 
     // TODO(pratik): flexible way of selecting multiple cols from i-th layer
