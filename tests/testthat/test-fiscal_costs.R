@@ -45,7 +45,7 @@ test_that("Calculating fiscal costs works", {
   )
 
   # expect vaccination costs are higher when applied
-  vax <- daedalus_vaccination("high", 10)
+  vax <- daedalus_vaccination("high", "GBR", 10)
   o2 <- daedalus(
     "GBR",
     "sars_cov_1",
