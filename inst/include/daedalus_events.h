@@ -45,6 +45,7 @@ class response {
   const double time_on, duration, state_on, state_off;
   const size_t i_flag;
   const std::vector<size_t> i_state_on, i_state_off;
+  const int root_state_on, root_state_off;
   const size_t i_time_start;
 
   /// @brief Constructor for a response.
@@ -60,6 +61,8 @@ class response {
   /// calculate the state value which is compared against `state_on`.
   /// @param i_state_off The indices of the state variables to be summed to
   /// calculate the state value which is compared against `state_off`.
+  /// @param root_state_on The root type for state-dependent launch.
+  /// @param root_state_off The root type for state-dependent end.
   /// @param i_time_start The index of the state variable that holds the
   /// realised start time for an event. Typically useful for state-triggered
   /// events.
@@ -67,7 +70,8 @@ class response {
            const double &duration, const double &state_on,
            const double &state_off, const size_t &i_flag,
            const std::vector<size_t> &i_state_on,
-           const std::vector<size_t> &i_state_off, const size_t &i_time_start)
+           const std::vector<size_t> &i_state_off, const int &root_state_on,
+           const int &root_state_off, const size_t &i_time_start)
       : name(name),
         time_on(time_on),
         duration(duration),
@@ -76,6 +80,8 @@ class response {
         i_flag(i_flag),
         i_state_on(i_state_on),
         i_state_off(i_state_off),
+        root_state_on(root_state_on),
+        root_state_off(root_state_off),
         i_time_start(i_time_start) {}
 
   /// @brief Root-find on time.
@@ -219,7 +225,7 @@ class response {
     dust2::ode::events_type<double> events;
 
     if (!ISNA(time_on)) {
-      std::string name_ev_time_on = name + "_time_on";
+      const std::string name_ev_time_on = name + "_time_on";
       dust2::ode::event<double> ev_time_on = make_event(
           name_ev_time_on, {}, make_time_test(time_on),
           make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
@@ -230,7 +236,7 @@ class response {
 
     // event ended on duration
     if (!ISNA(duration)) {
-      std::string name_ev_time_off = name + "_time_off";
+      const std::string name_ev_time_off = name + "_time_off";
       dust2::ode::event<double> ev_time_off = make_event(
           name_ev_time_off, {}, make_duration_test(i_time_start, duration),
           make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
@@ -241,24 +247,29 @@ class response {
 
     // event launched by state
     if (!ISNA(state_on)) {
-      std::string name_ev_state_on = name + "_state_on";
+      const std::string name_ev_state_on = name + "_state_on";
+      const dust2::ode::root_type root_type_on =
+          root_state_on > 0 ? dust2::ode::root_type::increase
+                            : dust2::ode::root_type::decrease;
       dust2::ode::event<double> ev_state_on = make_event(
           name_ev_state_on, i_state_on,
           make_state_test(i_state_on, state_on, 0.0),
           make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
-          dust2::ode::root_type::increase);
+          root_type_on);
 
       events.push_back(ev_state_on);
     }
 
     // event ended by state
     if (!ISNA(state_off)) {
-      std::string name_ev_state_off = name + "_state_off";
-      dust2::ode::event<double> ev_state_off =
-          make_event(name_ev_state_off, i_state_off,
-                     make_state_test(i_state_off, state_off, 1.0),
-                     make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
-                     dust2::ode::root_type::decrease);
+      const std::string name_ev_state_off = name + "_state_off";
+      const dust2::ode::root_type root_type_off =
+          root_state_on > 0 ? dust2::ode::root_type::increase
+                            : dust2::ode::root_type::decrease;
+      dust2::ode::event<double> ev_state_off = make_event(
+          name_ev_state_off, i_state_off,
+          make_state_test(i_state_off, state_off, 1.0),
+          make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}), root_type_off);
 
       events.push_back(ev_state_off);
     }

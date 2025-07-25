@@ -26,6 +26,8 @@ new_daedalus_response(
   value_state_on = NA_real_,
   id_state_off = NA_integer_,
   value_state_off = NA_real_,
+  root_state_on = 1L,
+  root_state_off = -1L,
   id_time_log = NA_integer_
 )
 
@@ -76,6 +78,14 @@ which are checked for roots that when found end an event.}
 
 \item{value_state_off}{Intended to be a numeric vector of roots which when
 found change a switch-like state-flag to 'off'.}
+
+\item{root_state_on}{A single integer, either 1 or -1, for whether
+state-dependent launch is on an increasing or decreasing root, respectively.
+Defaults to 1 for an increasing root as this is the most common use case.}
+
+\item{root_state_off}{A single integer, either 1 or -1, for whether
+state-dependent end is on an increasing or decreasing root, respectively.
+Defaults to -1 for a decreasing root as this is the most common use case.}
 
 \item{id_time_log}{Intended to be a single number for the state index where
 the start-time of this response is stored. See also \code{\link[=initial_flags]{initial_flags()}}. This

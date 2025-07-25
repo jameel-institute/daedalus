@@ -81,14 +81,15 @@ test_that("daedalus: state-launched response duration is correct", {
   )
 })
 
-# NOTE: this test will/should be reinstated when daedalus() replaces daedalus()
-skip("Needs updating to account for new output class")
-test_that("Vaccination events launch as expected", {
+test_that("Vaccination events launch and end as expected", {
   # expect vaccination is launched if chosen and does not end
+  cty <- "THA"
   vax_time <- 33
-  v <- daedalus_vaccination("high", start_time = vax_time)
+  v <- daedalus_vaccination("low", cty, start_time = vax_time)
+  expected_vaccinations <- v$value_state_off
+
   output <- daedalus(
-    x,
+    cty,
     "sars_cov_1",
     vaccine_investment = v
   )
@@ -102,10 +103,10 @@ test_that("Vaccination events launch as expected", {
     vax_time
   )
 
-  expect_false(
-    checkmate::test_subset(
-      "vaccination_time_off",
-      output$event_data$name
-    )
+  total_vaccinations <- sum(get_new_vaccinations(output)$new_vaccinations)
+  expect_identical(
+    total_vaccinations,
+    expected_vaccinations,
+    tolerance = 1e-6
   )
 })

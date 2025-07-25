@@ -158,6 +158,8 @@ daedalus_vaccination <- function(
       params[["uptake_limit"]],
       country
     ),
+    root_state_on = 1L, # meaningless as id_state_on is NA
+    root_state_off = 1L, # increasing root on total new vaccinations
     id_time_log = get_flag_index("vax_start_time", country)
   )
 
@@ -345,7 +347,14 @@ dummy_vaccination <- function() {
     uptake_limit = 0,
     waning_period = 1
   )
-  x <- new_daedalus_vaccination("dummy", params, id_flag = NA_integer_)
+  x <- new_daedalus_vaccination(
+    "dummy",
+    params,
+    id_flag = NA_integer_,
+    root_state_on = 1L,
+    root_state_off = 1L,
+    id_time_log = 1L # NOTE: this is never used as vax is never switched on
+  )
   validate_daedalus_vaccination(x)
   x
 }

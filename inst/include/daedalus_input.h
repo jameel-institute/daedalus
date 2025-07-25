@@ -30,7 +30,8 @@ inline daedalus::events::response read_response(cpp11::list args,
   }
 
   // collect params
-  std::string ev_name = "some_vax_name";
+  // NOTE: needs to be generalised
+  std::string ev_name = "vaccination";
 
   // only allow single values on all `value_*`
   // no checks as these are handled on the R side
@@ -59,12 +60,18 @@ inline daedalus::events::response read_response(cpp11::list args,
   cpp11::integers sxp_id_time_log(this_list["id_time_log"]);
   const size_t id_time_log = static_cast<size_t>(sxp_id_time_log[0]);
 
+  cpp11::integers sxp_root_state_on(this_list["root_state_on"]);
+  const int root_state_on = sxp_root_state_on[0];
+
+  cpp11::integers sxp_root_state_off(this_list["root_state_off"]);
+  const int root_state_off = sxp_root_state_off[0];
+
   cpp11::integers sxp_id_flag(this_list["id_flag"]);
   const size_t id_flag = static_cast<size_t>(sxp_id_flag[0]);
 
   daedalus::events::response this_response(
       ev_name, time_on, duration, value_state_on, value_state_off, id_flag,
-      id_state_on, id_state_off, id_time_log);
+      id_state_on, id_state_off, root_state_on, root_state_off, id_time_log);
 
   return this_response;
 }
