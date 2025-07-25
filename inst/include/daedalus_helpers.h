@@ -72,8 +72,7 @@ inline std::vector<size_t> get_state_idx(
 /// @return The scaled vaccination rate.
 inline double scale_nu(
     const Eigen::TensorMap<const daedalus::types::TensorAry<double>> &state,
-    const double &nu, const double &uptake_limit, const double &pop_size,
-    const int &n_strata, const double a = 100.0, const double b = 0.01) {
+    const double &nu, const double &pop_size, const int &n_strata) {
   // vaccinated stratum slice dims
   Eigen::array<Eigen::Index, 3> offsets = {0, 0, constants::i_VAX_STRATUM};
   Eigen::array<Eigen::Index, 3> extent = {n_strata,
@@ -87,8 +86,7 @@ inline double scale_nu(
 
   // NOTE: scale vaccination rate using a sigmoid function around the uptake
   // limit for a smoother transition
-  const double scaled_nu = (nu / (1.0 - prop_vax)) /
-                           (1.0 + std::exp(a * (prop_vax - uptake_limit + b)));
+  const double scaled_nu = nu / (1.0 - prop_vax);
 
   return scaled_nu;
 }
