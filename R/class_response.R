@@ -38,6 +38,14 @@
 #' @param value_state_off Intended to be a numeric vector of roots which when
 #' found change a switch-like state-flag to 'off'.
 #'
+#' @param root_state_on A single integer, either 1 or -1, for whether
+#' state-dependent launch is on an increasing or decreasing root, respectively.
+#' Defaults to 1 for an increasing root as this is the most common use case.
+#'
+#' @param root_state_off A single integer, either 1 or -1, for whether
+#' state-dependent end is on an increasing or decreasing root, respectively.
+#' Defaults to -1 for a decreasing root as this is the most common use case.
+#'
 #' @param id_time_log Intended to be a single number for the state index where
 #' the start-time of this response is stored. See also [initial_flags()]. This
 #' attribute is intended solely to enable time-limitation on state-triggers.
@@ -70,6 +78,8 @@ new_daedalus_response <- function(
   value_state_on = NA_real_,
   id_state_off = NA_integer_,
   value_state_off = NA_real_,
+  root_state_on = 1L,
+  root_state_off = -1L,
   id_time_log = NA_integer_
 ) {
   # class arg empty to force responses to have a sub-class
@@ -86,6 +96,8 @@ new_daedalus_response <- function(
     value_state_on = value_state_on,
     id_state_off = id_state_off,
     value_state_off = value_state_off,
+    root_state_on = root_state_on,
+    root_state_off = root_state_off,
     id_time_log = id_time_log
   )
 
@@ -145,6 +157,8 @@ validate_daedalus_response <- function(x) {
     "value_state_on",
     "id_state_off",
     "value_state_off",
+    "root_state_on",
+    "root_state_off",
     "id_time_log"
   )
 
@@ -226,6 +240,43 @@ validate_daedalus_response <- function(x) {
     cli::cli_abort(
       "{.cls daedalus_response} member {.str value_state_off} must be a\
       numeric vector with no missing values allowed, but it is not."
+    )
+  }
+
+  is_good_value_off <- checkmate::test_numeric(
+    x$value_state_off,
+    lower = 0.0
+  )
+  if (!is_good_value_off) {
+    cli::cli_abort(
+      "{.cls daedalus_response} member {.str value_state_off} must be a\
+      numeric vector with no missing values allowed, but it is not."
+    )
+  }
+
+  is_good_root_type <- checkmate::test_subset(
+    c(x$root_state_on, x$root_state_off),
+    c(-1L, 1L),
+    empty.ok = FALSE
+  )
+  if (!is_good_root_type) {
+    cli::cli_abort(
+      "{.cls daedalus_response} members {.str root_state_on} and\
+      {.str root_state_off} must be either -1 or 1, and one of them is not."
+    )
+  }
+
+  # allow nearly any values, but probably needs more checks as use cases
+  # become obvious
+  is_good_id_time_log <- checkmate::test_count(
+    x$id_time_log,
+    positive = FALSE,
+    na.ok = TRUE
+  )
+  if (!is_good_id_time_log) {
+    cli::cli_abort(
+      "{.cls daedalus_response} member {.str id_time_log} must be an\
+      integer > 0 (no missing values allowed), but it is not."
     )
   }
 
