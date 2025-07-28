@@ -59,13 +59,13 @@ test_that("class <daedalus_infection>: getting parameters", {
   infection_x <- daedalus_infection("influenza_1918")
   expect_no_condition({
     x <- get_data(infection_x, "r0") # nolint
-    y <- get_data(infection_x, "omega") # nolint
+    y <- get_data(infection_x, "hfr") # nolint
   })
   checkmate::expect_number(x, lower = 0, finite = TRUE)
   checkmate::expect_numeric(y, len = N_AGE_GROUPS, lower = 0, finite = TRUE)
 
   expect_error(
-    get_data(infection_x, c("r0", "omega")),
+    get_data(infection_x, c("r0", "hfr")),
     regexp = "must be a string"
   )
 })
@@ -105,7 +105,7 @@ test_that("class <daedalus_infection>: validator", {
 
   x <- daedalus_infection("influenza_1918")
   x <- unclass(x)
-  x$omega <- rep(1, N_AGE_GROUPS - 1)
+  x$hfr <- rep(1, N_AGE_GROUPS - 1)
   class(x) <- "daedalus_infection"
   expect_error(validate_daedalus_infection(x))
 })
@@ -129,7 +129,7 @@ test_that("class <daedalus_infection>: errors", {
   )
 
   expect_error(
-    daedalus_infection("sars_cov_1", omega = rep(1, N_AGE_GROUPS - 1)),
+    daedalus_infection("sars_cov_1", hfr = rep(1, N_AGE_GROUPS - 1)),
     regexp = "Expected.*following parameters.*to be numeric.*length 4"
   )
 
