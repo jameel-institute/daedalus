@@ -54,10 +54,11 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(epsilon, constant = TRUE)]]
 // [[dust2::parameter(rho, constant = TRUE)]]
 // [[dust2::parameter(eta, constant = TRUE)]]
-// [[dust2::parameter(omega, constant = TRUE)]]
+// [[dust2::parameter(hfr, constant = TRUE)]]
 // [[dust2::parameter(gamma_Ia, constant = TRUE)]]
 // [[dust2::parameter(gamma_Is, constant = TRUE)]]
-// [[dust2::parameter(gamma_H, constant = TRUE)]]
+// [[dust2::parameter(gamma_H_recovery, constant = TRUE)]]
+// [[dust2::parameter(gamma_H_death, constant = TRUE)]]
 // [[dust2::parameter(nu, constant = TRUE)]]
 // [[dust2::parameter(susc, constant = TRUE)]]
 // [[dust2::parameter(psi, constant = TRUE)]]
@@ -82,8 +83,9 @@ class daedalus_ode {
   /// @brief Shared parameters and values. All const as not expected to update.
   struct shared_state {
     // NOTE: n_strata unknown at compile time
-    const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
-    const TensorMat eta, omega, gamma_H;
+    const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is,
+    gamma_H_recovery, gamma_H_death;
+    const TensorMat eta, hfr;
 
     const real_type nu, psi;
 
@@ -203,11 +205,14 @@ class daedalus_ode {
     const real_type rho = dust2::r::read_real(pars, "rho", 0.0);
     const real_type gamma_Ia = dust2::r::read_real(pars, "gamma_Ia", 0.0);
     const real_type gamma_Is = dust2::r::read_real(pars, "gamma_Is", 0.0);
+    const real_type gamma_H_recovery = 
+      dust2::r::read_real(pars, "gamma_H_recovery", 0.0);
+    const real_type gamma_H_death = 
+      dust2::r::read_real(pars, "gamma_H_death", 0.0);
 
     // EPI PARAMETERS: AGE VARYING
     TensorMat eta_temp(n_strata, 1);
-    TensorMat omega_temp(n_strata, 1);
-    TensorMat gamma_H_temp(n_strata, 1);
+    TensorMat hfr_temp(n_strata, 1);
 
     dust2::r::read_real_vector(pars, n_strata, eta_temp.data(), "eta", true);
     dust2::r::read_real_vector(pars, n_strata, omega_temp.data(), "omega",
@@ -341,8 +346,9 @@ class daedalus_ode {
     return shared_state{
         beta,         sigma,      p_sigma,      epsilon,
         rho,          gamma_Ia,   gamma_Is,     eta,
-        omega,        gamma_H,    nu,           psi,
-        n_strata,   n_age_groups, n_econ_groups,
+        hfr,          nu,           psi,        gamma_H_recovery,
+        gamma_H_death,
+        uptake_limit, n_strata,   n_age_groups, n_econ_groups,
         popsize,      cm,           cm_cw,
         cm_work,      susc,       openness,
         i_ipr,  // state index holding incidence/prevalence ratio
@@ -416,11 +422,15 @@ class daedalus_ode {
         daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
                                          state[shared.i_hosp_overflow_flag]);
 
-    /* CHANGE omega based on current HFR
-        omega = daedalus::helpers::process_hfr(
-            hosp_capacity, hfr, t_hosp_death, t_hosp_recovery
-        );
-    */
+    
+    omega = daedalus::helpers::get_omega(
+      hfr, gamma_H_recovery, gamma_H_death
+    );
+    
+    gamma_H = daedalus::helpers::get_gamma_H(
+      hfr, gamma_H_recovery, gamma_H_death
+    );
+    
 
 
     // calculate total deaths and scale beta by concern, but only if an

@@ -55,6 +55,35 @@ inline std::vector<size_t> get_state_idx(
   return i_to_zero;
 }
 
+
+
+/// @brief Process severity parameters to define a death death, based on the
+/// HFR and lengths of hospital stay of the pathogen being simulated, as 
+/// specified in `daedalus.data`.
+inline double get_omega(const double hfr, 
+                        const double gamma_H_recovery,
+                        const double gamma_H_death) {
+  
+  const double t_hosp = hfr * gamma_H_death + (1 - hfr) * gamma_H_recovery;
+  const double omega = hfr / t_hosp;
+  
+  return omega;
+}
+
+
+/// @brief Process severity parameters to define a death death, based on the
+/// HFR and lengths of hospital stay of the pathogen being simulated, as 
+/// specified in `daedalus.data`.
+inline double get_gamma_H(const double hfr, 
+                          const double gamma_H_recovery,
+                          const double gamma_H_death) {
+  
+  const double t_hosp = hfr * gamma_H_death + (1 - hfr) * gamma_H_recovery;
+  const double gamma_H = (1 - hfr) / t_hosp;
+  
+  return gamma_H;
+}
+
 /// @brief Get a scaled vaccination rate to ensure that initial vaccination rate
 /// is maintained as the number of eligible individuals decreases (doses remain
 /// constant).
