@@ -1,3 +1,9 @@
+# daedalus (development version)
+
+This patch version updates event functionality to allow events to end on a value of state that is an increasing root. This patch currently only applies to vaccination, with other events being updated later.
+
+- **NOTE** that state-dependent events now have a minimum duration of 7 days; this is to prevent unexpected termination when the solver finds both an increasing and decreasing root within a single step, leading to immediate event termination after launch.
+
 # daedalus 0.2.23
 
 This patch version adds the function `get_fiscal_costs()` to calculate the costs to governments of pandemic response. These are calculated as post-processing on a model run, given some user-specified assumptions about public spending, interest rates, and tax rates.
