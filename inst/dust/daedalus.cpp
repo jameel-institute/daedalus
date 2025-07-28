@@ -215,13 +215,18 @@ class daedalus_ode {
     TensorMat hfr_temp(n_strata, 1);
 
     dust2::r::read_real_vector(pars, n_strata, eta_temp.data(), "eta", true);
-    dust2::r::read_real_vector(pars, n_strata, omega_temp.data(), "omega",
-                               true);
-    dust2::r::read_real_vector(pars, n_strata, gamma_H_temp.data(), "gamma_H",
-                               true);
+    dust2::r::read_real_vector(pars, n_strata, hfr_temp.data(), "hfr", true);
     TensorMat eta = eta_temp.broadcast(bcast);
-    TensorMat omega = omega_temp.broadcast(bcast);
-    TensorMat gamma_H = gamma_H_temp.broadcast(bcast);
+    TensorMat hfr = hfr_temp.broadcast(bcast);
+    
+    // CALCULATE AGE VARYING OMEGA AND Gamma_h
+    omega = daedalus::helpers::get_omega(
+      hfr, gamma_H_recovery, gamma_H_death
+    );
+    
+    gamma_H = daedalus::helpers::get_gamma_H(
+      hfr, gamma_H_recovery, gamma_H_death
+    );
 
     // CONTACT PARAMETERS (MATRICES)
     // contact matrix
@@ -346,10 +351,9 @@ class daedalus_ode {
     return shared_state{
         beta,         sigma,      p_sigma,      epsilon,
         rho,          gamma_Ia,   gamma_Is,     eta,
-        hfr,          nu,           psi,        gamma_H_recovery,
-        gamma_H_death,
+        omega,        nu,         psi,          gamma_H,
         uptake_limit, n_strata,   n_age_groups, n_econ_groups,
-        popsize,      cm,           cm_cw,
+        popsize,      cm,         cm_cw,
         cm_work,      susc,       openness,
         i_ipr,  // state index holding incidence/prevalence ratio
         i_npi_flag,   i_vax_flag, i_sd_flag,    i_hosp_overflow_flag,
@@ -417,21 +421,10 @@ class daedalus_ode {
     // calculate total hospitalisations to check if hosp capacity is exceeded;
     // scale mortality rate by 1.6 if so
     Eigen::Tensor<double, 0> total_hosp = t_x.chip(iH, i_COMPS).sum();
-
+    
     const double omega_modifier =
-        daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
-                                         state[shared.i_hosp_overflow_flag]);
-
-    
-    omega = daedalus::helpers::get_omega(
-      hfr, gamma_H_recovery, gamma_H_death
-    );
-    
-    gamma_H = daedalus::helpers::get_gamma_H(
-      hfr, gamma_H_recovery, gamma_H_death
-    );
-    
-
+      daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
+                                       state[shared.i_hosp_overflow_flag]);
 
     // calculate total deaths and scale beta by concern, but only if an
     // NPI is active

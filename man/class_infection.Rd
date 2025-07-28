@@ -81,12 +81,14 @@ individuals who are not hospitalised.
 infection.
 \item \code{ifr}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the
 age-specific infection fatality risk.
-\item \code{gamma_H}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the
-age-specific recovery rate for individuals who are hospitalised.
 \item \code{eta}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the age-specific
 hospitalisation rate for individuals who are infectious and symptomatic.
-\item \code{omega}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the age-specific
-mortality rate for individuals who are hospitalised.
+\item \code{hfr}: A numeric vector of length \code{N_AGE_GROUPS} (4) for the age-specific
+probability of death conditional on hospitalisation.
+\item \code{gamma_H_recovery}: A single numeric value for the recovery rate of
+hospitalised individuals.
+\item \code{gamma_H_death}: A single numeric value for the death rate of
+hospitalised individuals.
 \item \code{rho}: A single numeric value for the rate at which infection-derived
 immunity wanes, returning individuals in the 'recovered' compartment to the
 'susceptible' compartment.
