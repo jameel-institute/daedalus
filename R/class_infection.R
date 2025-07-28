@@ -104,14 +104,17 @@ new_daedalus_infection <- function(name, parameters) {
 #' - `ifr`: A numeric vector of length `N_AGE_GROUPS` (4) for the
 #' age-specific infection fatality risk.
 #'
-#' - `gamma_H`: A numeric vector of length `N_AGE_GROUPS` (4) for the
-#' age-specific recovery rate for individuals who are hospitalised.
-#'
 #' - `eta`: A numeric vector of length `N_AGE_GROUPS` (4) for the age-specific
 #' hospitalisation rate for individuals who are infectious and symptomatic.
 #'
-#' - `omega`: A numeric vector of length `N_AGE_GROUPS` (4) for the age-specific
-#' mortality rate for individuals who are hospitalised.
+#' - `hfr`: A numeric vector of length `N_AGE_GROUPS` (4) for the age-specific
+#' probability of death conditional on hospitalisation.
+#'
+#' - `gamma_H_recovery`: A single numeric value for the recovery rate of
+#' hospitalised individuals.
+#'
+#' - `gamma_H_death`: A single numeric value for the death rate of
+#' hospitalised individuals.
 #'
 #' - `rho`: A single numeric value for the rate at which infection-derived
 #' immunity wanes, returning individuals in the 'recovered' compartment to the
@@ -151,7 +154,7 @@ daedalus_infection <- function(name, ...) {
       )
     }
 
-    allowed_numerics_names <- c("ifr", "eta", "gamma_H", "omega")
+    allowed_numerics_names <- c("ifr", "eta", "hfr")
     is_each_number <- all(vapply(
       parameters[!names(parameters) %in% allowed_numerics_names],
       checkmate::test_number,
@@ -236,7 +239,7 @@ validate_daedalus_infection <- function(x) {
   }
 
   # check class members
-  allowed_numerics_names <- c("ifr", "eta", "gamma_H", "omega")
+  allowed_numerics_names <- c("ifr", "eta", "hfr")
   expected_number <- setdiff(
     daedalus.data::infection_parameter_names,
     allowed_numerics_names
@@ -320,10 +323,11 @@ format.daedalus_infection <- function(x, ...) {
       "*" = "epsilon: {.val {x$epsilon}}",
       "*" = "rho: {.val {x$rho}}",
       "*" = "eta: {.val {x$eta}}",
-      "*" = "omega: {.val {x$omega}}",
+      "*" = "hfr: {.val {x$hfr}}",
       "*" = "gamma_Ia: {.val {x$gamma_Ia}}",
       "*" = "gamma_Is: {.val {x$gamma_Is}}",
-      "*" = "gamma_H: {.val {x$gamma_H}}"
+      "*" = "gamma_H_recovery: {.val {x$gamma_H_recovery}}",
+      "*" = "gamma_H_death: {.val {x$gamma_H_death}}"
     )
   )
   cli::cli_end(divid)
@@ -386,7 +390,7 @@ prepare_parameters.daedalus_infection <- function(x, ...) {
   validate_daedalus_infection(x)
   x <- unclass(x)
 
-  age_varying_params <- c("eta", "omega", "gamma_H")
+  age_varying_params <- c("eta", "hfr")
 
   x[age_varying_params] <- lapply(x[age_varying_params], function(p) {
     p <- c(p, rep(p[i_WORKING_AGE], N_ECON_SECTORS))
