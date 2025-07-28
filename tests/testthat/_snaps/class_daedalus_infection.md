@@ -11,8 +11,9 @@
       * epsilon: 0.58
       * rho: 0.003
       * eta: 0.018, 0.082, 0.018, and 0.246
-      * omega: 0.012, 0.012, 0.012, and 0.012
+      * hfr: 0.255, 0.255, 0.255, and 0.255
       * gamma_Ia: 0.476
       * gamma_Is: 0.25
-      * gamma_H: 0.034, 0.034, 0.034, and 0.034
+      * gamma_H_recovery: 0.044
+      * gamma_H_death: 0.05
 
