@@ -47,6 +47,7 @@ class response {
   const std::vector<size_t> i_state_on, i_state_off;
   const int root_state_on, root_state_off;
   const size_t i_time_start;
+  const double min_dur;
 
   /// @brief Constructor for a response.
   /// @param name A string for the name, used to generate event names.
@@ -66,6 +67,8 @@ class response {
   /// @param i_time_start The index of the state variable that holds the
   /// realised start time for an event. Typically useful for state-triggered
   /// events.
+  /// @param min_dur The minimum event duration (7 days). Used to prevent
+  /// unexpected event termination if two state roots are found in one step.
   response(const std::string &name, const double &time_on,
            const double &duration, const double &state_on,
            const double &state_off, const size_t &i_flag,
@@ -82,7 +85,8 @@ class response {
         i_state_off(i_state_off),
         root_state_on(root_state_on),
         root_state_off(root_state_off),
-        i_time_start(i_time_start) {}
+        i_time_start(i_time_start),
+        min_dur(7.0) {}
 
   /// @brief Root-find on time.
   /// @param value The time value to check current time against.
@@ -106,8 +110,7 @@ class response {
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_duration_test(const size_t &id_state,
                                       const double value) const {
-    auto fn_test = [id_state, value, &i_flag = i_flag](const double t,
-                                                       const double *y) {
+    auto fn_test = [id_state, value](const double t, const double *y) {
       if (y[id_state] > 0.0) {
         return t - (value + y[id_state]);  // return val only if flag already on
       } else {
@@ -135,7 +138,7 @@ class response {
         if (y[i_flag] > 0.0) {
           return 1.0;  // handle case where flag is already on, return false
         } else {
-          const int size_n = idx_state.size();
+          const int size_n = idx_state.size() - 1;
           const double sum_state = std::accumulate(y, y + size_n, 0);
           return sum_state - value;
         }
@@ -144,14 +147,23 @@ class response {
       return fn_test;
     } else if (expected_value > 0.0) {
       // flag expected on
-      auto fn_test = [idx_state, value, &i_flag = i_flag](const double t,
-                                                          const double *y) {
+      auto fn_test = [idx_state, value, &i_flag = i_flag, &min_dur = min_dur,
+                      &i_time_start = i_time_start](const double t,
+                                                    const double *y) {
         if (y[i_flag] < 1.0) {
           return 1.0;  // handle case where flag is already off, return false
         } else {
-          const int size_n = idx_state.size();
-          const double sum_state = std::accumulate(y, y + size_n, 0);
-          return sum_state - value;
+          // check duration that event has been on and return FALSE if min
+          // duration hasn't been met
+          const int size_n = idx_state.size() - 1;
+          const double current_dur = t - (min_dur + y[size_n]);
+
+          if (current_dur < min_dur) {
+            return 1.0;
+          } else {
+            const double sum_state = std::accumulate(y, y + size_n, 0);
+            return sum_state - value;
+          }
         }
       };
 
@@ -251,9 +263,13 @@ class response {
       const dust2::ode::root_type root_type_on =
           root_state_on > 0 ? dust2::ode::root_type::increase
                             : dust2::ode::root_type::decrease;
+
+      std::vector<size_t> tmp_i_state_on = i_state_on;
+      tmp_i_state_on.push_back(i_time_start);
+
       dust2::ode::event<double> ev_state_on = make_event(
-          name_ev_state_on, i_state_on,
-          make_state_test(i_state_on, state_on, 0.0),
+          name_ev_state_on, tmp_i_state_on,
+          make_state_test(tmp_i_state_on, state_on, 0.0),
           make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
           root_type_on);
 
@@ -266,9 +282,13 @@ class response {
       const dust2::ode::root_type root_type_off =
           root_state_on > 0 ? dust2::ode::root_type::increase
                             : dust2::ode::root_type::decrease;
+
+      std::vector<size_t> tmp_i_state_off = i_state_off;
+      tmp_i_state_off.push_back(i_time_start);
+
       dust2::ode::event<double> ev_state_off = make_event(
-          name_ev_state_off, i_state_off,
-          make_state_test(i_state_off, state_off, 1.0),
+          name_ev_state_off, tmp_i_state_off,
+          make_state_test(tmp_i_state_off, state_off, 1.0),
           make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}), root_type_off);
 
       events.push_back(ev_state_off);
