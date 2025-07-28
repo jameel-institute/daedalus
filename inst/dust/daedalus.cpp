@@ -83,9 +83,8 @@ class daedalus_ode {
   /// @brief Shared parameters and values. All const as not expected to update.
   struct shared_state {
     // NOTE: n_strata unknown at compile time
-    const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is,
-    gamma_H_recovery, gamma_H_death;
-    const TensorMat eta, hfr;
+    const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
+    const TensorMat eta, omega, gamma_H;
 
     const real_type nu, psi;
 
@@ -220,11 +219,11 @@ class daedalus_ode {
     TensorMat hfr = hfr_temp.broadcast(bcast);
     
     // CALCULATE AGE VARYING OMEGA AND Gamma_h
-    omega = daedalus::helpers::get_omega(
+    const TensorMat omega = daedalus::helpers::get_omega(
       hfr, gamma_H_recovery, gamma_H_death
     );
     
-    gamma_H = daedalus::helpers::get_gamma_H(
+    const TensorMat gamma_H = daedalus::helpers::get_gamma_H(
       hfr, gamma_H_recovery, gamma_H_death
     );
 
@@ -351,7 +350,7 @@ class daedalus_ode {
     return shared_state{
         beta,         sigma,      p_sigma,      epsilon,
         rho,          gamma_Ia,   gamma_Is,     eta,
-        omega,        nu,         psi,          gamma_H,
+        omega,        gamma_H,    nu,           psi,
         uptake_limit, n_strata,   n_age_groups, n_econ_groups,
         popsize,      cm,         cm_cw,
         cm_work,      susc,       openness,
