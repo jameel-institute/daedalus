@@ -59,7 +59,6 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(gamma_Is, constant = TRUE)]]
 // [[dust2::parameter(gamma_H, constant = TRUE)]]
 // [[dust2::parameter(nu, constant = TRUE)]]
-// [[dust2::parameter(uptake_limit, constant = TRUE)]]
 // [[dust2::parameter(susc, constant = TRUE)]]
 // [[dust2::parameter(psi, constant = TRUE)]]
 // [[dust2::parameter(vax_start_time, type = "real_type", constant = TRUE)]]

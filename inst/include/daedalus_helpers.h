@@ -61,7 +61,6 @@ inline std::vector<size_t> get_state_idx(
 /// @param state A tensor map of state values.
 /// @param nu The initial daily vaccination rate as a prportion of the total
 /// population.
-/// @param uptake_limit Uptake limit as a proportion of the total population.
 /// @param pop_size Total population size.
 /// @param n_strata Total number of strata: age + econ groups.
 /// @param a A scaling parameter that controls the smoothness of a sigmoid
