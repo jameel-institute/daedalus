@@ -64,7 +64,7 @@ inline daedalus::types::TensorMat<double> get_omega(
     const daedalus::types::TensorMat<double> &hfr,
     const double &gamma_H_recovery,
     const double &gamma_H_death) {
-  
+
   const double thD = 1.0 / gamma_H_death;
   const double thR = 1.0 / gamma_H_recovery;
 
