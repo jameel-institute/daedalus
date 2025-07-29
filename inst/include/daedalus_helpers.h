@@ -58,33 +58,33 @@ inline std::vector<size_t> get_state_idx(
 
 
 /// @brief Process severity parameters to define a death death, based on the
-/// HFR and lengths of hospital stay of the pathogen being simulated, as 
+/// HFR and lengths of hospital stay of the pathogen being simulated, as
 /// specified in `daedalus.data`.
 inline daedalus::types::TensorMat<double> get_omega(
-    const daedalus::types::TensorMat<double> &hfr, 
+    const daedalus::types::TensorMat<double> &hfr,
     const double &gamma_H_recovery,
     const double &gamma_H_death) {
-  
-  const daedalus::types::TensorMat<double> t_hosp = 
+
+  const daedalus::types::TensorMat<double> t_hosp =
     hfr * gamma_H_death + (1.0 - hfr) * gamma_H_recovery;
   const daedalus::types::TensorMat<double> omega = hfr / t_hosp;
-  
+
   return omega;
 }
 
 
 /// @brief Process severity parameters to define a death death, based on the
-/// HFR and lengths of hospital stay of the pathogen being simulated, as 
+/// HFR and lengths of hospital stay of the pathogen being simulated, as
 /// specified in `daedalus.data`.
 inline daedalus::types::TensorMat<double> get_gamma_H(
-    const daedalus::types::TensorMat<double> &hfr, 
+    const daedalus::types::TensorMat<double> &hfr,
     const double &gamma_H_recovery,
     const double &gamma_H_death) {
-  
-  const daedalus::types::TensorMat<double> t_hosp = 
+
+  const daedalus::types::TensorMat<double> t_hosp =
     hfr * gamma_H_death + (1.0 - hfr) * gamma_H_recovery;
   const daedalus::types::TensorMat<double> gamma_H = (1.0 - hfr) / t_hosp;
-  
+
   return gamma_H;
 }
 
