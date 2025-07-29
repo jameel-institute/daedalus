@@ -167,7 +167,7 @@ validate_daedalus_response <- function(x) {
   # no check on name for now; parameters should be checked in sub-classes
   if (!checkmate::test_list(x$parameters)) {
     cli::cli_abort(
-      "{.cls daedalus_response} member {.str parameters} must be a list but\
+      "{.cls daedalus_response} member {.str parameters} must be a list but
       is not."
     )
   }
@@ -178,7 +178,7 @@ validate_daedalus_response <- function(x) {
   )
   if (!is_good_time_on) {
     cli::cli_abort(
-      "{.cls daedalus_response} member {.str time_on} must be a vector of\
+      "{.cls daedalus_response} member {.str time_on} must be a vector of
       integer-ish numbers, but it is a {.cls {class(x$time_on)}}"
     )
   }
@@ -190,7 +190,7 @@ validate_daedalus_response <- function(x) {
   )
   if (!is_good_duration) {
     cli::cli_abort(
-      "{.cls daedalus_response} member {.str duration} must be a vector of\
+      "{.cls daedalus_response} member {.str duration} must be a vector of
       integer-ish numbers of the same length as `time_on`, but it is not."
     )
   }
@@ -204,7 +204,7 @@ validate_daedalus_response <- function(x) {
   )
   if (!is_good_state_on) {
     cli::cli_abort(
-      "{.cls daedalus_response} member {.str id_state_on} must be a vector of\
+      "{.cls daedalus_response} member {.str id_state_on} must be a vector of
       integer-ish numbers, but it is not."
     )
   }
@@ -215,7 +215,7 @@ validate_daedalus_response <- function(x) {
   )
   if (!is_good_state_off) {
     cli::cli_abort(
-      "{.cls daedalus_response} member {.str id_state_off} must be a vector\
+      "{.cls daedalus_response} member {.str id_state_off} must be a vector
       of integer-ish numbers, but it is not."
     )
   }
@@ -227,7 +227,7 @@ validate_daedalus_response <- function(x) {
   )
   if (!is_good_value_on) {
     cli::cli_abort(
-      "{.cls daedalus_response} member {.str value_state_on} must be a\
+      "{.cls daedalus_response} member {.str value_state_on} must be a
       numeric vector with no missing values allowed, but it is not."
     )
   }
@@ -238,7 +238,7 @@ validate_daedalus_response <- function(x) {
   )
   if (!is_good_value_off) {
     cli::cli_abort(
-      "{.cls daedalus_response} member {.str value_state_off} must be a\
+      "{.cls daedalus_response} member {.str value_state_off} must be a
       numeric vector with no missing values allowed, but it is not."
     )
   }
@@ -249,7 +249,7 @@ validate_daedalus_response <- function(x) {
   )
   if (!is_good_value_off) {
     cli::cli_abort(
-      "{.cls daedalus_response} member {.str value_state_off} must be a\
+      "{.cls daedalus_response} member {.str value_state_off} must be a
       numeric vector with no missing values allowed, but it is not."
     )
   }
@@ -261,7 +261,7 @@ validate_daedalus_response <- function(x) {
   )
   if (!is_good_root_type) {
     cli::cli_abort(
-      "{.cls daedalus_response} members {.str root_state_on} and\
+      "{.cls daedalus_response} members {.str root_state_on} and
       {.str root_state_off} must be either -1 or 1, and one of them is not."
     )
   }
@@ -275,7 +275,7 @@ validate_daedalus_response <- function(x) {
   )
   if (!is_good_id_time_log) {
     cli::cli_abort(
-      "{.cls daedalus_response} member {.str id_time_log} must be an\
+      "{.cls daedalus_response} member {.str id_time_log} must be an
       integer > 0 (no missing values allowed), but it is not."
     )
   }
