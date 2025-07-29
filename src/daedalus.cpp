@@ -206,9 +206,9 @@ class daedalus_ode {
     const real_type rho = dust2::r::read_real(pars, "rho", 0.0);
     const real_type gamma_Ia = dust2::r::read_real(pars, "gamma_Ia", 0.0);
     const real_type gamma_Is = dust2::r::read_real(pars, "gamma_Is", 0.0);
-    const real_type gamma_H_recovery = 
+    const real_type gamma_H_recovery =
       dust2::r::read_real(pars, "gamma_H_recovery", 0.0);
-    const real_type gamma_H_death = 
+    const real_type gamma_H_death =
       dust2::r::read_real(pars, "gamma_H_death", 0.0);
 
     // EPI PARAMETERS: AGE VARYING
@@ -219,15 +219,13 @@ class daedalus_ode {
     dust2::r::read_real_vector(pars, n_strata, hfr_temp.data(), "hfr", true);
     TensorMat eta = eta_temp.broadcast(bcast);
     TensorMat hfr = hfr_temp.broadcast(bcast);
-    
+
     // CALCULATE AGE VARYING OMEGA AND Gamma_h
     const TensorMat omega = daedalus::helpers::get_omega(
-      hfr, gamma_H_recovery, gamma_H_death
-    );
-    
+      hfr, gamma_H_recovery, gamma_H_death);
+
     const TensorMat gamma_H = daedalus::helpers::get_gamma_H(
-      hfr, gamma_H_recovery, gamma_H_death
-    );
+      hfr, gamma_H_recovery, gamma_H_death);
 
     // CONTACT PARAMETERS (MATRICES)
     // contact matrix
@@ -350,12 +348,12 @@ class daedalus_ode {
 
     // clang-format off
     return shared_state{
-        beta,         sigma,      p_sigma,      epsilon,
-        rho,          gamma_Ia,   gamma_Is,     eta,
-        omega,        gamma_H,    nu,           psi,
-        uptake_limit, n_strata,   n_age_groups, n_econ_groups,
-        popsize,      cm,         cm_cw,
-        cm_work,      susc,       openness,
+        beta,         sigma,          p_sigma,      epsilon,
+        rho,          gamma_Ia,       gamma_Is,     eta,
+        omega,        gamma_H,        nu,           psi,
+        n_strata,     n_age_groups,   n_econ_groups,
+        popsize,      cm,             cm_cw,
+        cm_work,      susc,           openness,
         i_ipr,  // state index holding incidence/prevalence ratio
         i_npi_flag,   i_vax_flag, i_sd_flag,    i_hosp_overflow_flag,
         npi,          vaccination,
@@ -422,7 +420,7 @@ class daedalus_ode {
     // calculate total hospitalisations to check if hosp capacity is exceeded;
     // scale mortality rate by 1.6 if so
     Eigen::Tensor<double, 0> total_hosp = t_x.chip(iH, i_COMPS).sum();
-    
+
     const double omega_modifier =
       daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
                                        state[shared.i_hosp_overflow_flag]);
