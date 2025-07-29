@@ -1,3 +1,11 @@
+# daedalus 0.2.25
+
+This patch version adds the use of HFR and hospital transition rates to calculate competing rates within the C++ code, which was previously handled in `daedalus.data`.
+
+## Notes
+
+A next step will be to implement transitions out of the `H` compartment as conditional probabilities, rather than competing rates.
+
 # daedalus 0.2.24
 
 This patch version implements changes to the `<daedalus_response>` super-class that allows events to end on increasing _or_ decreasing roots on state. This is mostly (and currently only) to help end vaccination after a specific number of doses have been given out. This patch currently only applies to vaccination, with other events being updated later.
