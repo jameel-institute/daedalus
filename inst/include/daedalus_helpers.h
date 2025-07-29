@@ -64,9 +64,12 @@ inline daedalus::types::TensorMat<double> get_omega(
     const daedalus::types::TensorMat<double> &hfr,
     const double &gamma_H_recovery,
     const double &gamma_H_death) {
+  
+  const double thD = 1.0 / gamma_H_death;
+  const double thR = 1.0 / gamma_H_recovery;
 
   const daedalus::types::TensorMat<double> t_hosp =
-    hfr * gamma_H_death + (1.0 - hfr) * gamma_H_recovery;
+    hfr * thD + (1.0 - hfr) * thR;
   const daedalus::types::TensorMat<double> omega = hfr / t_hosp;
 
   return omega;
@@ -81,8 +84,11 @@ inline daedalus::types::TensorMat<double> get_gamma_H(
     const double &gamma_H_recovery,
     const double &gamma_H_death) {
 
+  const double thD = 1.0 / gamma_H_death;
+  const double thR = 1.0 / gamma_H_recovery;
+
   const daedalus::types::TensorMat<double> t_hosp =
-    hfr * gamma_H_death + (1.0 - hfr) * gamma_H_recovery;
+    hfr * thD + (1.0 - hfr) * thR;
   const daedalus::types::TensorMat<double> gamma_H = (1.0 - hfr) / t_hosp;
 
   return gamma_H;
