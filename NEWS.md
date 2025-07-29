@@ -1,4 +1,4 @@
-# daedalus (development version)
+# daedalus 0.2.24
 
 This patch version implements changes to the `<daedalus_response>` super-class that allows events to end on increasing _or_ decreasing roots on state. This is mostly (and currently only) to help end vaccination after a specific number of doses have been given out. This patch currently only applies to vaccination, with other events being updated later.
 
