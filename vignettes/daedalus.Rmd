@@ -80,7 +80,7 @@ Users can also override epidemic-specific infection parameter values when creati
 daedalus_infection("sars_cov_1", r0 = 2.3)
 
 # Influenza 1918 but with mortality rising with age
-daedalus_infection("influenza_1918", omega = c(0.01, 0.02, 0.03, 0.1))
+daedalus_infection("influenza_1918", hfr = c(0.01, 0.02, 0.03, 0.1))
 ```
 
 ## Representing vaccine investment for pandemic preparedness
