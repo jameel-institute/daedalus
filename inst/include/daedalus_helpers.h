@@ -103,6 +103,15 @@ inline double get_concern_coefficient(const double &new_deaths,
                                       const double &lower_limit = 0.2) {
   return std::pow(1.0 - rate, new_deaths) * (1.0 - lower_limit) + lower_limit;
 }
+
+/// @brief Round a float to decimal place.
+/// @param value 
+/// @param decimal_places 
+/// @return 
+inline const double round_n(const double &value, const int decimal_places = 2) {
+  const double pow10 = std::pow(10.0, decimal_places);
+  return std::round(value * pow10) / pow10;
+}
 }  // namespace helpers
 
 }  // namespace daedalus
