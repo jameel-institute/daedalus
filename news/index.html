@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.23</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.25</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,6 +54,21 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.25" id="daedalus-0225">daedalus 0.2.25<a class="anchor" aria-label="anchor" href="#daedalus-0225"></a></h2>
+<p>This patch version adds the use of HFR and hospital transition rates to calculate competing rates within the C++ code, which was previously handled in <code>daedalus.data</code>.</p>
+<div class="section level3">
+<h3 id="notes-0-2-25">Notes<a class="anchor" aria-label="anchor" href="#notes-0-2-25"></a></h3>
+<ul><li><p>A next step will be to implement transitions out of the <code>H</code> compartment as conditional probabilities, rather than competing rates.</p></li>
+<li><p>Previous versions of <code>daedalus</code> which rely on <code>daedalus.data</code> and the old parameter sets are now superseded. Please update <code>daedalus.data</code> to version 0.0.2 if you intend to continue working with this new version of <code>daedalus</code>.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.24" id="daedalus-0224">daedalus 0.2.24<a class="anchor" aria-label="anchor" href="#daedalus-0224"></a></h2>
+<p>This patch version implements changes to the <code>&lt;daedalus_response&gt;</code> super-class that allows events to end on increasing <em>or</em> decreasing roots on state. This is mostly (and currently only) to help end vaccination after a specific number of doses have been given out. This patch currently only applies to vaccination, with other events being updated later.</p>
+<ul><li>
+<strong>NOTE</strong> that state-dependent events now have a minimum duration of 7 days; this is to prevent unexpected termination when the solver finds both an increasing and decreasing root within a single step, leading to immediate event termination after launch.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.23" id="daedalus-0223">daedalus 0.2.23<a class="anchor" aria-label="anchor" href="#daedalus-0223"></a></h2>
 <p>This patch version adds the function <code><a href="../reference/get_fiscal_costs.html">get_fiscal_costs()</a></code> to calculate the costs to governments of pandemic response. These are calculated as post-processing on a model run, given some user-specified assumptions about public spending, interest rates, and tax rates.</p>

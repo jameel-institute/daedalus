@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.23</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.25</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,6 +72,8 @@
 <span>  value_state_on <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
 <span>  id_state_off <span class="op">=</span> <span class="cn">NA_integer_</span>,</span>
 <span>  value_state_off <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
+<span>  root_state_on <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  root_state_off <span class="op">=</span> <span class="op">-</span><span class="fl">1L</span>,</span>
 <span>  id_time_log <span class="op">=</span> <span class="cn">NA_integer_</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -149,6 +151,18 @@ which are checked for roots that when found end an event.</p></dd>
 <dt id="arg-value-state-off">value_state_off<a class="anchor" aria-label="anchor" href="#arg-value-state-off"></a></dt>
 <dd><p>Intended to be a numeric vector of roots which when
 found change a switch-like state-flag to 'off'.</p></dd>
+
+
+<dt id="arg-root-state-on">root_state_on<a class="anchor" aria-label="anchor" href="#arg-root-state-on"></a></dt>
+<dd><p>A single integer, either 1 or -1, for whether
+state-dependent launch is on an increasing or decreasing root, respectively.
+Defaults to 1 for an increasing root as this is the most common use case.</p></dd>
+
+
+<dt id="arg-root-state-off">root_state_off<a class="anchor" aria-label="anchor" href="#arg-root-state-off"></a></dt>
+<dd><p>A single integer, either 1 or -1, for whether
+state-dependent end is on an increasing or decreasing root, respectively.
+Defaults to -1 for a decreasing root as this is the most common use case.</p></dd>
 
 
 <dt id="arg-id-time-log">id_time_log<a class="anchor" aria-label="anchor" href="#arg-id-time-log"></a></dt>

@@ -15,7 +15,7 @@ characteristics for the DAEDALUS model."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.23</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.25</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -152,12 +152,14 @@ individuals who are not hospitalised.</p></li>
 infection.</p></li>
 <li><p><code>ifr</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4) for the
 age-specific infection fatality risk.</p></li>
-<li><p><code>gamma_H</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4) for the
-age-specific recovery rate for individuals who are hospitalised.</p></li>
 <li><p><code>eta</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4) for the age-specific
 hospitalisation rate for individuals who are infectious and symptomatic.</p></li>
-<li><p><code>omega</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4) for the age-specific
-mortality rate for individuals who are hospitalised.</p></li>
+<li><p><code>hfr</code>: A numeric vector of length <code>N_AGE_GROUPS</code> (4) for the age-specific
+probability of death conditional on hospitalisation.</p></li>
+<li><p><code>gamma_H_recovery</code>: A single numeric value for the recovery rate of
+hospitalised individuals.</p></li>
+<li><p><code>gamma_H_death</code>: A single numeric value for the death rate of
+hospitalised individuals.</p></li>
 <li><p><code>rho</code>: A single numeric value for the rate at which infection-derived
 immunity wanes, returning individuals in the 'recovered' compartment to the
 'susceptible' compartment.</p></li>
@@ -177,10 +179,11 @@ immunity wanes, returning individuals in the 'recovered' compartment to the
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> epsilon: <span style="color: #0000BB;">0.58</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> rho: <span style="color: #0000BB;">0.003</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> eta: <span style="color: #0000BB;">0.018</span>, <span style="color: #0000BB;">0.082</span>, <span style="color: #0000BB;">0.018</span>, and <span style="color: #0000BB;">0.246</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> omega: <span style="color: #0000BB;">0.012</span>, <span style="color: #0000BB;">0.012</span>, <span style="color: #0000BB;">0.012</span>, and <span style="color: #0000BB;">0.012</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> hfr: <span style="color: #0000BB;">0.255</span>, <span style="color: #0000BB;">0.255</span>, <span style="color: #0000BB;">0.255</span>, and <span style="color: #0000BB;">0.255</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> gamma_Ia: <span style="color: #0000BB;">0.476</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> gamma_Is: <span style="color: #0000BB;">0.25</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> gamma_H: <span style="color: #0000BB;">0.034</span>, <span style="color: #0000BB;">0.034</span>, <span style="color: #0000BB;">0.034</span>, and <span style="color: #0000BB;">0.034</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> gamma_H_recovery: <span style="color: #0000BB;">0.044</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> gamma_H_death: <span style="color: #0000BB;">0.05</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># modify infection parameters R0 and immunity waning rate</span></span></span>
 <span class="r-in"><span><span class="fu">daedalus_infection</span><span class="op">(</span><span class="st">"influenza_1918"</span>, r0 <span class="op">=</span> <span class="fl">2.5</span>, rho <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span></span>
@@ -192,10 +195,11 @@ immunity wanes, returning individuals in the 'recovered' compartment to the
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> epsilon: <span style="color: #0000BB;">0.58</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> rho: <span style="color: #0000BB;">0.01</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> eta: <span style="color: #0000BB;">0.073</span>, <span style="color: #0000BB;">0.064</span>, <span style="color: #0000BB;">0.02</span>, and <span style="color: #0000BB;">0.152</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> omega: <span style="color: #0000BB;">0.025</span>, <span style="color: #0000BB;">0.025</span>, <span style="color: #0000BB;">0.025</span>, and <span style="color: #0000BB;">0.025</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> hfr: <span style="color: #0000BB;">0.125</span>, <span style="color: #0000BB;">0.125</span>, <span style="color: #0000BB;">0.125</span>, and <span style="color: #0000BB;">0.125</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> gamma_Ia: <span style="color: #0000BB;">0.4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> gamma_Is: <span style="color: #0000BB;">0.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> gamma_H: <span style="color: #0000BB;">0.175</span>, <span style="color: #0000BB;">0.175</span>, <span style="color: #0000BB;">0.175</span>, and <span style="color: #0000BB;">0.175</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> gamma_H_recovery: <span style="color: #0000BB;">0.2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> gamma_H_death: <span style="color: #0000BB;">0.2</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
