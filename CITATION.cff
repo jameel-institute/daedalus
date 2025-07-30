@@ -8,7 +8,7 @@ message: 'To cite package "daedalus" in publications use:'
 type: software
 license: MIT
 title: 'daedalus: Model Health, Social, and Economic Costs of a Pandemic'
-version: 0.2.3
+version: 0.2.25
 abstract: Model the health, education, and economic costs of directly transmitted
   respiratory virus pandemics, under different scenarios of prior vaccine investment
   and reactive interventions, using the 'DAEDALUS' integrated health-economics model
@@ -24,6 +24,9 @@ authors:
 - family-names: Johnson
   given-names: Robert
   orcid: https://orcid.org/0000-0002-7365-0042
+- family-names: Perez-Guzman
+  given-names: Pablo
+  orcid: https://orcid.org/0000-0002-5277-5196
 - family-names: FitzJohn
   given-names: Rich
   orcid: https://orcid.org/0000-0001-8888-3837
@@ -61,7 +64,7 @@ references:
     name: R Foundation for Statistical Computing
     address: Vienna, Austria
   year: '2025'
-  version: '>= 2.10'
+  version: '>= 3.5'
 - type: software
   title: checkmate
   abstract: 'checkmate: Fast and Versatile Argument Checks'
@@ -87,6 +90,27 @@ references:
     email: gabor@posit.co
   year: '2025'
   doi: 10.32614/CRAN.package.cli
+- type: software
+  title: daedalus.data
+  abstract: 'daedalus.data: DAEDALUS Data'
+  notes: Imports
+  url: https://jameel-institute.github.io/daedalus.data/
+  authors:
+  - family-names: Perez-Guzman
+    given-names: Pablo
+    email: p.perez-guzman@imperial.ac.uk
+    orcid: https://orcid.org/0000-0002-5277-5196
+  - family-names: Gupte
+    given-names: Pratik
+    email: pratik.gupte@lshtm.ac.uk
+    orcid: https://orcid.org/0000-0001-5294-7819
+  - family-names: Doohan
+    given-names: Patrick
+    orcid: https://orcid.org/0000-0001-8076-1106
+  - family-names: Johnson
+    given-names: Robert
+    orcid: https://orcid.org/0000-0002-7365-0042
+  year: '2025'
 - type: software
   title: data.table
   abstract: 'data.table: Extension of `data.frame`'
@@ -121,28 +145,6 @@ references:
     orcid: https://orcid.org/0000-0002-0172-3812
   year: '2025'
   doi: 10.32614/CRAN.package.data.table
-- type: software
-  title: deSolve
-  abstract: 'deSolve: Solvers for Initial Value Problems of Differential Equations
-    (''ODE'', ''DAE'', ''DDE'')'
-  notes: Imports
-  url: http://desolve.r-forge.r-project.org/
-  repository: https://CRAN.R-project.org/package=deSolve
-  authors:
-  - family-names: Soetaert
-    given-names: Karline
-    email: karline.soetaert@nioz.nl
-    orcid: https://orcid.org/0000-0003-4603-7100
-  - family-names: Petzoldt
-    given-names: Thomas
-    email: thomas.petzoldt@tu-dresden.de
-    orcid: https://orcid.org/0000-0002-4951-6468
-  - family-names: Setzer
-    given-names: R. Woodrow
-    email: setzer.woodrow@epa.gov
-    orcid: https://orcid.org/0000-0002-6709-9186
-  year: '2025'
-  doi: 10.32614/CRAN.package.deSolve
 - type: software
   title: dust2
   abstract: 'dust2: Next Generation dust'
@@ -203,6 +205,16 @@ references:
     email: hadley@posit.co
   year: '2025'
   doi: 10.32614/CRAN.package.rlang
+- type: software
+  title: utils
+  abstract: 'R: A Language and Environment for Statistical Computing'
+  notes: Imports
+  authors:
+  - name: R Core Team
+  institution:
+    name: R Foundation for Statistical Computing
+    address: Vienna, Austria
+  year: '2025'
 - type: software
   title: countrycode
   abstract: 'countrycode: Convert Country Names and Country Codes'
@@ -350,6 +362,31 @@ references:
     orcid: https://orcid.org/0000-0003-3925-190X
   year: '2025'
   doi: 10.32614/CRAN.package.rmarkdown
+- type: software
+  title: bookdown
+  abstract: 'bookdown: Authoring Books and Technical Documents with R Markdown'
+  notes: Suggests
+  url: https://pkgs.rstudio.com/bookdown/
+  repository: https://CRAN.R-project.org/package=bookdown
+  authors:
+  - family-names: Xie
+    given-names: Yihui
+    email: xie@yihui.name
+    orcid: https://orcid.org/0000-0003-0645-5666
+  year: '2025'
+  doi: 10.32614/CRAN.package.bookdown
+- type: software
+  title: latex2exp
+  abstract: 'latex2exp: Use LaTeX Expressions in Plots'
+  notes: Suggests
+  url: https://www.stefanom.io/latex2exp/
+  repository: https://CRAN.R-project.org/package=latex2exp
+  authors:
+  - family-names: Meschiari
+    given-names: Stefano
+    email: stefano.meschiari@gmail.com
+  year: '2025'
+  doi: 10.32614/CRAN.package.latex2exp
 - type: software
   title: scales
   abstract: 'scales: Scale Functions for Visualization'
