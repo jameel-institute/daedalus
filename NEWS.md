@@ -4,7 +4,9 @@ This patch version adds the use of HFR and hospital transition rates to calculat
 
 ## Notes
 
-A next step will be to implement transitions out of the `H` compartment as conditional probabilities, rather than competing rates.
+- A next step will be to implement transitions out of the `H` compartment as conditional probabilities, rather than competing rates.
+
+- Previous versions of `daedalus` which rely on `daedalus.data` and the old parameter sets are now superseded. Please update `daedalus.data` to version 0.0.2 if you intend to continue working with this new version of `daedalus`.
 
 # daedalus 0.2.24
 
