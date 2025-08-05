@@ -4,9 +4,6 @@
 #' `<daedalus_vaccination>`. See [daedalus_vaccination()] for the user-facing
 #' helper function which calls this function internally.
 #'
-#' @param name A vaccination investment scenario name from among
-#' [daedalus::vaccine_investment_scenarios].
-#'
 #' @param parameters A named list of parameters for the vaccination scenario.
 #' These must be `start_time` (single numeric), `rate` (single numeric),
 #' `uptake_limit` (single numeric), `country`
@@ -21,9 +18,9 @@
 #' @keywords internal
 #'
 #' @noRd
-new_daedalus_vaccination <- function(name, parameters, ...) {
+new_daedalus_vaccination <- function(parameters, ...) {
   new_daedalus_response(
-    name,
+    name = "vaccination", # used by daedalus::response class to gen event names
     parameters,
     class = "daedalus_vaccination",
     ...
@@ -149,7 +146,6 @@ daedalus_vaccination <- function(
   params[names(user_params)] <- user_params
 
   x <- new_daedalus_vaccination(
-    name,
     params,
     id_flag = get_flag_index("vax_flag", country),
     time_on = params[["start_time"]],
@@ -195,16 +191,6 @@ validate_daedalus_vaccination <- function(x) {
       attributes"
     )
   }
-
-  # fmt: skip
-  stopifnot(
-    "Vaccination `name` must be among
-    `daedalus.data::vaccination_scenario_names`" =
-      checkmate::test_string(x$name) &&
-        checkmate::test_subset(
-          x$name, c(daedalus.data::vaccination_scenario_names, "dummy")
-        )
-  )
 
   invisible(lapply(daedalus.data::vaccination_parameter_names, function(n) {
     lgl <- checkmate::test_number(x$parameters[[n]], lower = 0.0, finite = TRUE)
@@ -348,7 +334,6 @@ dummy_vaccination <- function() {
     waning_period = 1
   )
   x <- new_daedalus_vaccination(
-    "dummy",
     params,
     id_flag = NA_integer_,
     root_state_on = 1L,
@@ -389,4 +374,32 @@ validate_vaccination_input <- function(x, country) {
   } else {
     dummy_vaccination()
   }
+}
+
+#' Prepare susceptibility matrix for a vaccine-country pair
+#'
+#' @description
+#' Helper function to prepare a susceptibility matrix to be used internally to
+#' modulate the number of infections in vaccinated groups.
+#'
+#' @inheritParams daedalus
+#'
+#' @returns A matrix with dimensions as follows:
+#' - Rows: number of age and economic groups in `country`;
+#' - Cols: number of vaccination strata in the DAEDALUS model, given as
+#' `N_VAX_STRATA`.
+#'
+#' @keywords internal
+make_susc_matrix <- function(vaccination, country) {
+  # no input checks for this internal function
+  efficacy <- get_data(vaccination, "efficacy")
+  tau <- 1.0 - efficacy / 100.0
+
+  n_strata <- get_data(country, "n_strata")
+
+  # default assumption is full susceptibility
+  susc_matrix <- matrix(1, n_strata, N_VACCINE_STRATA)
+  susc_matrix[, i_VACCINATED_STRATUM] <- rep(tau, n_strata)
+
+  susc_matrix
 }
