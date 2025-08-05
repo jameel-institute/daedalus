@@ -307,7 +307,7 @@ dummy_npi <- function() {
     id_flag = NA_integer_,
     root_state_on = 1L,
     root_state_off = 1L,
-    id_time_log = 1L, # NOTE: this is never used as NPI is never switched on
+    id_time_log = 1L # NOTE: this is never used as NPI is never switched on
   )
   validate_daedalus_npi(x)
   x

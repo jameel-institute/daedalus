@@ -117,11 +117,6 @@ response_class_names <- c(
 )
 
 #' @name class_response
-new_daedalus_npi <- function() {
-  new_daedalus_response("npi", "daedalus_npi")
-}
-
-#' @name class_response
 new_daedalus_behaviour <- function() {
   new_daedalus_response("behaviour", "daedalus_behaviour")
 }
@@ -174,7 +169,8 @@ validate_daedalus_response <- function(x) {
 
   is_good_time_on <- checkmate::test_integerish(
     x$time_on,
-    lower = 0
+    lower = 0,
+    any.missing = TRUE
   )
   if (!is_good_time_on) {
     cli::cli_abort(
