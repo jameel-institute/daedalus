@@ -28,6 +28,7 @@ const size_t iS = daedalus::constants::iS, iE = daedalus::constants::iE,
              iH = daedalus::constants::iH, iR = daedalus::constants::iR,
              iD = daedalus::constants::iD, idE = daedalus::constants::idE,
              idH = daedalus::constants::idH;
+// declare new Hd and Hr compartments here
 
 // groups = rows, compartments = cols, vax strata = layers
 const size_t i_GRPS = daedalus::constants::i_GRPS,
@@ -83,8 +84,9 @@ class daedalus_ode {
   /// @brief Shared parameters and values. All const as not expected to update.
   struct shared_state {
     // NOTE: n_strata unknown at compile time
-    const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
-    const TensorMat eta, omega, gamma_H;
+    const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is,
+    gamma_H_recovery, gamma_H_death;
+    const TensorMat eta, hfr;
 
     const real_type nu, psi;
 
@@ -114,6 +116,7 @@ class daedalus_ode {
     TensorMat sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
               iaToR = mat2d, isToH = mat2d, hToR = mat2d, hToD = mat2d,
               rToS = mat2d, t_comm_inf = mat2d, t_foi = mat2d;
+    // declare new TensorMat isToHd and isToHr here
 
     // infection related
     TensorMat mat2d_econ(shared.n_econ_groups, N_VAX_STRATA);
@@ -132,6 +135,7 @@ class daedalus_ode {
       consumer_worker_infections,
       susc_workers,
       sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS
+      //and here
     };
     // clang-format on
   }
@@ -498,6 +502,42 @@ class daedalus_ode {
     internal.isToR = shared.gamma_Is * t_x.chip(iIs, i_COMPS);
     internal.iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
 
+    
+    
+    /* PSEUDOCODE OF REQUIRED CHANGES
+     state variables object t_x.chip has dimensions
+          i = age groups
+          j = compartment
+          k = vaccination strata
+     
+    there's a mapping done to Eigen tensor type so that age group dimension is
+    implicit in calls to t_x
+     Eigen::TensorMap<const TensorAry> t_x(
+        state, n_strata, daedalus::constants::N_COMPARTMENTS, N_VAX_STRATA);
+     
+     
+    What we're aiming to achieve is draw from a binomial distribution that
+    treats HFR as the age-specific probability of death conditional on being
+    hospitalised
+     
+    1. Determine individuals who will progress from I_s to H
+        internal.iToH = shared.eta * t_x.chip(iIs, i_COMPS);
+     
+    2. Calculate effective HFR given VE
+        const TensorMat eff_hfr = hfr * (1 - ve_death);
+     
+    3. Movement of isToHd given eff_HFR
+        internal.Hd = itoH * eff_hfr;
+     
+    4. Remainder goes to Hr
+        internal.Hr = iToH - Hd;
+     
+    5. Transitions out ofr Hr and Hd are determined by gamma parameters
+        internal.hrToR = shared.gamma_H_recovery * t_x.chip(Hr, i_COMPS);
+        internal.hdToD = shared.gamma_H_death * t_x.chip(Hd, i_COMPS);
+     
+    */
+    
     internal.isToH = shared.eta * t_x.chip(iIs, i_COMPS);
     internal.hToR = shared.gamma_H * t_x.chip(iH, i_COMPS);
 
@@ -515,6 +555,8 @@ class daedalus_ode {
     t_dx.chip(iD, i_COMPS) = internal.hToD;
     t_dx.chip(idE, i_COMPS) = internal.sToE;
     t_dx.chip(idH, i_COMPS) = internal.isToH;
+    
+    //update next step of new compartments here
 
     // vaccination related changes
     // calculate vaccination rate
