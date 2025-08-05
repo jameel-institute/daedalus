@@ -223,11 +223,11 @@ class daedalus_ode {
     TensorMat hfr = hfr_temp.broadcast(bcast);
 
     // CALCULATE AGE VARYING OMEGA AND Gamma_h
-    const TensorMat omega = daedalus::helpers::get_omega(
-      hfr, gamma_H_recovery, gamma_H_death);
+    //const TensorMat omega = daedalus::helpers::get_omega(
+    //  hfr, gamma_H_recovery, gamma_H_death);
 
-    const TensorMat gamma_H = daedalus::helpers::get_gamma_H(
-      hfr, gamma_H_recovery, gamma_H_death);
+    //const TensorMat gamma_H = daedalus::helpers::get_gamma_H(
+    //  hfr, gamma_H_recovery, gamma_H_death);
 
     // CONTACT PARAMETERS (MATRICES)
     // contact matrix
@@ -350,12 +350,12 @@ class daedalus_ode {
 
     // clang-format off
     return shared_state{
-        beta,         sigma,          p_sigma,      epsilon,
-        rho,          gamma_Ia,       gamma_Is,     eta,
-        omega,        gamma_H,        nu,           psi,
-        n_strata,     n_age_groups,   n_econ_groups,
-        popsize,      cm,             cm_cw,
-        cm_work,      susc,           openness,
+        beta,           sigma,            p_sigma,      epsilon,
+        rho,            gamma_Ia,         gamma_Is,     eta,
+        gamma_H_death,  gamma_H_recovery, hfr,          nu,           
+        psi,            n_strata,         n_age_groups, n_econ_groups,
+        popsize,        cm,               cm_cw,
+        cm_work,        susc,             openness,
         i_ipr,  // state index holding incidence/prevalence ratio
         i_npi_flag,   i_vax_flag, i_sd_flag,    i_hosp_overflow_flag,
         npi,          vaccination,
