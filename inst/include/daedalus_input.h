@@ -31,7 +31,8 @@ inline daedalus::events::response read_response(cpp11::list args,
 
   // collect params
   // NOTE: needs to be generalised
-  std::string ev_name = "vaccination";
+  cpp11::strings sxp_ev_name(this_list["name"]);
+  const std::string ev_name = sxp_ev_name[0];
 
   // only allow single values on all `value_*`
   // no checks as these are handled on the R side
