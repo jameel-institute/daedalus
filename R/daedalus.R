@@ -139,13 +139,11 @@ daedalus_internal <- function(
 #' of an infection. Create and pass a `<daedalus_infection>` to tweak infection
 #' parameters using [daedalus_infection()].
 #'
-#' @param response_strategy A string for the name of response strategy followed;
-#' defaults to "none". The response strategy determines the country-specific
-#' response threshold following which the response is activated. See
-#' `response_threshold`.
-#'
+#' @param response_strategy A string for the name of response strategy followed,
+#' a numeric of length 45 (number of economic sectors), or a `<daedalus_npi>`
+#' object. Defaults to "none".
 #' While the response strategy is active, economic contacts are scaled using the
-#' package data object `daedalus.data::closure_data`.
+#' package data object `daedalus.data::closure_strategy_data`.
 #'
 #' @param vaccine_investment Either a single string or a
 #' `<daedalus_vaccination>` object specifying the vaccination parameters
@@ -162,7 +160,7 @@ daedalus_internal <- function(
 #' Defaults to 30 days.
 #'
 #' @param response_duration A single integer-ish number that gives the number of
-#' days after `response_time` that an NPI should end.
+#' days after activation that an NPI should end.
 #'
 #' @param auto_social_distancing A string giving the option for the form of
 #' spontaneous social distancing in the model, which reduces infection
@@ -276,35 +274,16 @@ daedalus <- function(
     ode_control <- NULL
   }
 
-  # checks on interventions
-  # also prepare the appropriate economic openness vectors
-  # allowing for a numeric vector, or NULL for truly no response
-  if (is.null(response_strategy)) {
-    response_strategy <- "none" # for output class
-    openness <- rep(1.0, N_ECON_SECTORS)
-    response_time <- NULL # to be filtered out later
-  } else if (is.numeric(response_strategy)) {
-    checkmate::assert_numeric(
-      response_strategy,
-      lower = 0,
-      upper = 1,
-      len = N_ECON_SECTORS
-    )
-    openness <- response_strategy
-  } else if (
-    length(response_strategy) == 1 &&
-      response_strategy %in% names(daedalus.data::closure_data)
-  ) {
-    openness <- daedalus.data::closure_data[[response_strategy]]
-  } else {
-    cli::cli_abort(
-      "Got an unexpected value for `response_strategy`. Options are `NULL`, \
-      a numeric vector, or a recognised strategy. See function docs."
-    )
-  }
+  npi <- validate_npi_input(
+    response_strategy,
+    country,
+    infection,
+    response_time,
+    response_duration
+  )
 
-  # checks on vaccination input; make copy to allow for true vax start at 0.0
-  # if users want that
+  response_identifier <- npi$parameters$identifier
+
   vaccination <- validate_vaccination_input(vaccine_investment, country)
 
   if (
@@ -323,32 +302,14 @@ daedalus <- function(
     ))
   }
 
-  # NULL converted to "none"; WIP: this will be moved to a class constructor
-  if (identical(response_strategy, "none")) {
+  # prevent passing NAs as these are not correctly handled on C++ side
+  if (identical(response_strategy, "none") || is.null(response_strategy)) {
     # set response time to NULL when response is NULL
     response_time <- NULL
+    duration <- NULL
   } else {
-    is_good_response_time <- checkmate::test_integerish(
-      response_time,
-      upper = time_end, # for compat with daedalus
-      lower = 1L, # responses cannot start at 0, unless strategy is null
-      any.missing = FALSE,
-      len = 1
-    )
-    if (!is_good_response_time) {
-      cli::cli_abort(
-        "Expected `response_time` to be between 1 and {time_end}."
-      )
-    }
-
-    is_good_response_duration <- checkmate::test_count(
-      response_duration
-    )
-    if (!is_good_response_duration) {
-      cli::cli_abort(
-        "Expected `response_duration` to be a single positive integer-like"
-      )
-    }
+    response_time <- npi$time_on
+    duration <- npi$duration
   }
 
   #### spontaneous social distancing ####
@@ -373,15 +334,17 @@ daedalus <- function(
     list(
       beta = get_beta(infection, country),
       susc = susc,
-      openness = openness,
+      # all three below needed for npi-linked behaviour response
+      openness = get_data(npi, "openness"),
       response_time = response_time,
-      response_duration = response_duration,
+      response_duration = duration,
       auto_social_distancing = auto_social_distancing,
-      vaccination = vaccination
+      vaccination = vaccination,
+      npi = npi
     )
   )
 
-  # filter out NULLs so missing values can be read as NAN in C++
+  # filter out NULLs so missing values can be treated as NA_REAL in C++
   parameters <- drop_null(parameters)
 
   output <- daedalus_internal(
@@ -402,8 +365,8 @@ daedalus <- function(
     country_parameters = unclass(country),
     infection_parameters = unclass(infection), # infection is list
     response_data = list(
-      response_strategy = response_strategy,
-      openness = openness,
+      response_strategy = response_identifier,
+      openness = get_data(npi, "openness"),
       closure_info = get_daedalus_response_times(
         output,
         time_end
