@@ -25,9 +25,9 @@
 // hardcoded as key to model structure
 const size_t iS = daedalus::constants::iS, iE = daedalus::constants::iE,
              iIs = daedalus::constants::iIs, iIa = daedalus::constants::iIa,
-             iH = daedalus::constants::iH, iR = daedalus::constants::iR,
-             iD = daedalus::constants::iD, idE = daedalus::constants::idE,
-             idH = daedalus::constants::idH;
+             iHr = daedalus::constants::iHr, iHd = daedalus::constants::iHd,
+             iR = daedalus::constants::iR, iD = daedalus::constants::iD,
+             idE = daedalus::constants::idE, idH = daedalus::constants::idH;
 // declare new Hd and Hr compartments here
 
 // groups = rows, compartments = cols, vax strata = layers
@@ -548,13 +548,14 @@ class daedalus_ode {
     t_dx.chip(iE, i_COMPS) = internal.sToE - internal.eToIs - internal.eToIa;
     t_dx.chip(iIs, i_COMPS) = internal.eToIs - internal.isToR - internal.isToH;
     t_dx.chip(iIa, i_COMPS) = internal.eToIa - internal.iaToR;
-    t_dx.chip(iH, i_COMPS) = internal.isToH - internal.hToD - internal.hToR;
+    t_dx.chip(iHr, i_COMPS) = internal.isToHr - internal.hrToR;
+    t_dx.chip(iHd, i_COMPS) = internal.isToHd - internal.hdToD;
     t_dx.chip(iR, i_COMPS) =
-        internal.isToR + internal.iaToR + internal.hToR - internal.rToS;
+        internal.isToR + internal.iaToR + internal.hrToR - internal.rToS;
 
-    t_dx.chip(iD, i_COMPS) = internal.hToD;
+    t_dx.chip(iD, i_COMPS) = internal.hdToD;
     t_dx.chip(idE, i_COMPS) = internal.sToE;
-    t_dx.chip(idH, i_COMPS) = internal.isToH;
+    t_dx.chip(idH, i_COMPS) = internal.isToHr + internal.isToHd;
     
     //update next step of new compartments here
 
