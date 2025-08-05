@@ -99,6 +99,13 @@ extern "C" SEXP _daedalus_dust2_system_daedalus_ode_simulate(SEXP ptr, SEXP r_ti
     return cpp11::as_sexp(dust2_system_daedalus_ode_simulate(cpp11::as_cpp<cpp11::decay_t<cpp11::sexp>>(ptr), cpp11::as_cpp<cpp11::decay_t<cpp11::sexp>>(r_times), cpp11::as_cpp<cpp11::decay_t<cpp11::sexp>>(r_index_state), cpp11::as_cpp<cpp11::decay_t<bool>>(preserve_particle_dimension), cpp11::as_cpp<cpp11::decay_t<bool>>(preserve_group_dimension)));
   END_CPP11
 }
+// scratch.cpp
+cpp11::doubles get_omega_cpp11(cpp11::doubles hfr, const double gamma_H_recovery, const double gamma_H_death);
+extern "C" SEXP _daedalus_get_omega_cpp11(SEXP hfr, SEXP gamma_H_recovery, SEXP gamma_H_death) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(get_omega_cpp11(cpp11::as_cpp<cpp11::decay_t<cpp11::doubles>>(hfr), cpp11::as_cpp<cpp11::decay_t<const double>>(gamma_H_recovery), cpp11::as_cpp<cpp11::decay_t<const double>>(gamma_H_death)));
+  END_CPP11
+}
 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
@@ -115,6 +122,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_daedalus_dust2_system_daedalus_ode_state",             (DL_FUNC) &_daedalus_dust2_system_daedalus_ode_state,             6},
     {"_daedalus_dust2_system_daedalus_ode_time",              (DL_FUNC) &_daedalus_dust2_system_daedalus_ode_time,              1},
     {"_daedalus_dust2_system_daedalus_ode_update_pars",       (DL_FUNC) &_daedalus_dust2_system_daedalus_ode_update_pars,       2},
+    {"_daedalus_get_omega_cpp11",                             (DL_FUNC) &_daedalus_get_omega_cpp11,                             3},
     {NULL, NULL, 0}
 };
 }
