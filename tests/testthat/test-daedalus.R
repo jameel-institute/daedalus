@@ -156,7 +156,7 @@ test_that("daedalus: Runs with custom openness values", {
       "sars_cov_1",
       response_strategy = rep(0.5, N_ECON_SECTORS - 1)
     ),
-    "Must have length 45"
+    "(<daedalus_npi> parameter)*(openness)*(must be a numeric of length 45)"
   )
   expect_error(
     daedalus(
@@ -164,16 +164,7 @@ test_that("daedalus: Runs with custom openness values", {
       "sars_cov_1",
       NA_character_
     ),
-    "Got an unexpected value for `response_strategy`"
-  )
-  expect_error(
-    daedalus(
-      "GBR",
-      "sars_cov_1",
-      "elimination",
-      response_time = 0
-    ),
-    "Expected `response_time` to be between 1"
+    "`response_strategy` must be a single string, not a character `NA`"
   )
   expect_error(
     daedalus(
@@ -182,7 +173,7 @@ test_that("daedalus: Runs with custom openness values", {
       "elimination",
       response_duration = c(1, 1)
     ),
-    "Expected `response_duration` to be a single positive integer-like"
+    "(duration)*(must be)*(integer-ish)*(same length as `time_on`)"
   )
 })
 
@@ -329,7 +320,7 @@ test_that("daedalus: responses triggered by hospital capacity event", {
   # with named responses (none = absolutely no resp)
   invisible(
     lapply(
-      names(daedalus.data::closure_data),
+      names(daedalus.data::closure_strategy_data),
       function(x) {
         expect_no_condition({
           daedalus("GBR", "sars_cov_1", x, time_end = 100)
@@ -344,12 +335,12 @@ test_that("daedalus: responses triggered by hospital capacity event", {
   x$hospital_capacity <- 1e4
 
   output_list <- lapply(
-    names(daedalus.data::closure_data),
+    names(daedalus.data::closure_strategy_data),
     daedalus,
     country = x,
     infection = "sars_cov_1"
   )
-  resp_scenario_names <- names(daedalus.data::closure_data)
+  resp_scenario_names <- names(daedalus.data::closure_strategy_data)
   output_fs <- vapply(
     output_list,
     function(x) {

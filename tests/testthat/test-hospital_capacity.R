@@ -4,7 +4,7 @@ test_that("Hospital capacity: basic expectations", {
   # NOTE: Not testing every country and infection
   response_strategy <- c("elimination", "school_closures", "economic_closures")
   cx <- daedalus_country("China")
-  cx$hospital_capacity <- 100L
+  cx$hospital_capacity <- 100
   invisible(lapply(response_strategy, function(x) {
     expect_no_condition({
       daedalus(
