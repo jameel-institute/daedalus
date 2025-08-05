@@ -114,9 +114,9 @@ class daedalus_ode {
     TensorMat mat2d(shared.n_strata, N_VAX_STRATA);
     mat2d.setZero();
     TensorMat sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
-              iaToR = mat2d, isToH = mat2d, hToR = mat2d, hToD = mat2d,
-              rToS = mat2d, t_comm_inf = mat2d, t_foi = mat2d;
-    // declare new TensorMat isToHd and isToHr here
+              iaToR = mat2d, isToH = mat2d, isToHd = mat2d, isToHr = mat2d,
+              hToR = mat2d, hToD = mat2d, rToS = mat2d, 
+              t_comm_inf = mat2d, t_foi = mat2d;
 
     // infection related
     TensorMat mat2d_econ(shared.n_econ_groups, N_VAX_STRATA);
@@ -134,8 +134,7 @@ class daedalus_ode {
       t_comm_inf_age,
       consumer_worker_infections,
       susc_workers,
-      sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS
-      //and here
+      sToE, eToIs, eToIa, isToR, iaToR, isToH, isToHd, isToHr, hToR, hToD, rToS
     };
     // clang-format on
   }
