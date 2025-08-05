@@ -51,7 +51,3 @@ dust2_system_daedalus_ode_update_pars <- function(ptr, pars) {
 dust2_system_daedalus_ode_simulate <- function(ptr, r_times, r_index_state, preserve_particle_dimension, preserve_group_dimension) {
   .Call(`_daedalus_dust2_system_daedalus_ode_simulate`, ptr, r_times, r_index_state, preserve_particle_dimension, preserve_group_dimension)
 }
-
-get_omega_cpp11 <- function(hfr, gamma_H_recovery, gamma_H_death) {
-  .Call(`_daedalus_get_omega_cpp11`, hfr, gamma_H_recovery, gamma_H_death)
-}
