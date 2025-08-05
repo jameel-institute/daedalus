@@ -5,7 +5,6 @@
 \alias{class_response}
 \alias{new_daedalus_response}
 \alias{response_class_names}
-\alias{new_daedalus_npi}
 \alias{new_daedalus_behaviour}
 \alias{new_daedalus_mortality}
 \alias{is_daedalus_response}
@@ -32,8 +31,6 @@ new_daedalus_response(
 )
 
 response_class_names
-
-new_daedalus_npi()
 
 new_daedalus_behaviour()
 

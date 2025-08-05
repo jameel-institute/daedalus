@@ -32,13 +32,11 @@ To override package defaults for country characteristics, pass a
 
 \item{infection}{A list of \verb{<daedalus_infection>} objects.}
 
-\item{response_strategy}{A string for the name of response strategy followed;
-defaults to "none". The response strategy determines the country-specific
-response threshold following which the response is activated. See
-\code{response_threshold}.
-
+\item{response_strategy}{A string for the name of response strategy followed,
+a numeric of length 45 (number of economic sectors), or a \verb{<daedalus_npi>}
+object. Defaults to "none".
 While the response strategy is active, economic contacts are scaled using the
-package data object \code{daedalus.data::closure_data}.}
+package data object \code{daedalus.data::closure_strategy_data}.}
 
 \item{vaccine_investment}{Either a single string or a
 \verb{<daedalus_vaccination>} object specifying the vaccination parameters
@@ -55,7 +53,7 @@ has already been activated by the hospitalisation threshold being reached.
 Defaults to 30 days.}
 
 \item{response_duration}{A single integer-ish number that gives the number of
-days after \code{response_time} that an NPI should end.}
+days after activation that an NPI should end.}
 
 \item{auto_social_distancing}{A string giving the option for the form of
 spontaneous social distancing in the model, which reduces infection
