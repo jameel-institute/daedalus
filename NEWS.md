@@ -1,3 +1,15 @@
+# daedalus (development version)
+
+This patch adds the `<daedalus_npi>` class which is used to store NPI response parameters. `daedalus()` now accepts these objects as inputs to `response_strategy`.
+
+- Helper functions added for the new NPI class;
+
+- Minor edits to the `<daedalus_response>` super-class to accommodate the NPI class;
+
+- Minor edits to `<daedalus_vaccination>`;
+
+- C++ `daedalus::inputs::read_response` now reads `<daedalus_response>` class member `name`.
+
 # daedalus 0.2.25
 
 This patch version adds the use of HFR and hospital transition rates to calculate competing rates within the C++ code, which was previously handled in `daedalus.data`.

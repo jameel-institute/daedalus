@@ -4,7 +4,6 @@
       x
     Message
       <daedalus_vaccination/daedalus_response>
-      Advance vaccine investment: medium
       * Start time (days): 200
       * Rate (% per day): 0.429
       * Uptake limit (%): 60
