@@ -64,14 +64,13 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(nu, constant = TRUE)]]
 // [[dust2::parameter(susc, constant = TRUE)]]
 // [[dust2::parameter(psi, constant = TRUE)]]
-// [[dust2::parameter(vax_start_time, type = "real_type", constant = TRUE)]]
 // [[dust2::parameter(n_age_groups, constant = TRUE, type = "int")]]
 // [[dust2::parameter(n_econ_groups, constant = TRUE, type = "int")]]
 // [[dust2::parameter(popsize, constant = TRUE, type = "int")]]
 // [[dust2::parameter(cm, constant = TRUE)]]
 // [[dust2::parameter(cm_work, constant = TRUE)]]
 // [[dust2::parameter(cm_cons_work, constant = TRUE)]]
-// [[dust2::parameter(hospital_capacity, type = "real_type", constant = TRUE)]]
+// [[dust2::parameter(hospital_capacity, constant = TRUE)]]
 // [[dust2::parameter(openness, constant = TRUE)]]
 // [[dust2::parameter(response_time, constant = TRUE)]]
 // [[dust2::parameter(response_duration, constant = TRUE)]]
@@ -207,9 +206,9 @@ class daedalus_ode {
     const real_type gamma_Ia = dust2::r::read_real(pars, "gamma_Ia", 0.0);
     const real_type gamma_Is = dust2::r::read_real(pars, "gamma_Is", 0.0);
     const real_type gamma_H_recovery =
-      dust2::r::read_real(pars, "gamma_H_recovery", 0.0);
+        dust2::r::read_real(pars, "gamma_H_recovery", 0.0);
     const real_type gamma_H_death =
-      dust2::r::read_real(pars, "gamma_H_death", 0.0);
+        dust2::r::read_real(pars, "gamma_H_death", 0.0);
 
     // EPI PARAMETERS: AGE VARYING
     TensorMat eta_temp(n_strata, 1);
@@ -221,11 +220,11 @@ class daedalus_ode {
     TensorMat hfr = hfr_temp.broadcast(bcast);
 
     // CALCULATE AGE VARYING OMEGA AND Gamma_h
-    const TensorMat omega = daedalus::helpers::get_omega(
-      hfr, gamma_H_recovery, gamma_H_death);
+    const TensorMat omega =
+        daedalus::helpers::get_omega(hfr, gamma_H_recovery, gamma_H_death);
 
-    const TensorMat gamma_H = daedalus::helpers::get_gamma_H(
-      hfr, gamma_H_recovery, gamma_H_death);
+    const TensorMat gamma_H =
+        daedalus::helpers::get_gamma_H(hfr, gamma_H_recovery, gamma_H_death);
 
     // CONTACT PARAMETERS (MATRICES)
     // contact matrix
@@ -294,8 +293,6 @@ class daedalus_ode {
         total_compartments + daedalus::constants::i_rel_hosp_overflow_FLAG;
 
     // start times for events
-    const size_t i_real_npi_start =
-        total_compartments + daedalus::constants::i_rel_NPI_START_TIME;
     const size_t i_real_sd_start =
         total_compartments + daedalus::constants::i_rel_SD_START_TIME;
     const size_t i_real_hosp_overflow_start =
@@ -312,10 +309,8 @@ class daedalus_ode {
         daedalus::helpers::get_state_idx({iH + 1}, n_strata, N_VAX_STRATA);
 
     // NOTE: NPI response end time passed as parameter; vax end time remains 0.0
-    daedalus::events::response npi(
-        std::string("npi"), response_time, response_duration, hosp_cap_response,
-        gamma_Ia, i_npi_flag, idx_hosp, {i_ipr}, root_type_increasing,
-        root_type_decreasing, i_real_npi_start);
+    daedalus::events::response npi =
+        daedalus::inputs::read_response(pars, "npi");
 
     daedalus::events::response vaccination =
         daedalus::inputs::read_response(pars, "vaccination");
@@ -422,8 +417,8 @@ class daedalus_ode {
     Eigen::Tensor<double, 0> total_hosp = t_x.chip(iH, i_COMPS).sum();
 
     const double omega_modifier =
-      daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
-                                       state[shared.i_hosp_overflow_flag]);
+        daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
+                                         state[shared.i_hosp_overflow_flag]);
 
     // calculate total deaths and scale beta by concern, but only if an
     // NPI is active

@@ -39,6 +39,10 @@ reference:
     desc: Represent and access vaccine investment scenarios
     contents:
     - class_vaccination
+  - title: Class `<daedalus_npi>`
+    desc: Represent and access non-pharmaceutical intervention scenarios
+    contents:
+    - class_npi
   - title: Class `<daedalus_output>`
     desc: Class to store model output for further processing
     contents:
