@@ -2,6 +2,8 @@
 
 This patch adds the `<daedalus_npi>` class which is used to store NPI response parameters. `daedalus()` now accepts these objects as inputs to `response_strategy`.
 
+- Changes to the `<daedalus_response>` super-class to add an optional string identifier to identify pre-defined scenarios.
+
 - Helper functions added for the new NPI class;
 
 - Minor edits to the `<daedalus_response>` super-class to accommodate the NPI class;

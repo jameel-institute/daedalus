@@ -13,6 +13,10 @@
 #' "daedalus_mortality". No default argument, users are forced to specify a
 #' class when building off this constructor.
 #'
+#' @param identifier An optional string giving the name of a pre-defined
+#' response strategy. Sub-class constructors and helper functions provide the
+#' names and handle cases where the strategy is a custom one.
+#'
 #' @param parameters Sub-class parameters passed from sub-class constructors.
 #' Defaults to an empty list to aid development.
 #'
@@ -71,6 +75,7 @@ new_daedalus_response <- function(
   name,
   class = response_class_names,
   parameters = list(),
+  identifier = NA_character_,
   id_flag = NA_integer_,
   time_on = NA_real_,
   duration = NA_real_,
@@ -88,6 +93,7 @@ new_daedalus_response <- function(
   x <- list(
     name = name,
     class = class,
+    identifier = identifier,
     parameters = parameters,
     id_flag = id_flag,
     time_on = time_on,
@@ -144,6 +150,7 @@ validate_daedalus_response <- function(x) {
   expected_fields <- c(
     "name",
     "class",
+    "identifier",
     "parameters",
     "id_flag",
     "time_on",
