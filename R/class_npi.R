@@ -98,12 +98,21 @@ daedalus_npi <- function(
   # input checking
   if (is.na(name)) {
     identifier <- "custom"
-    checkmate::assert_numeric(
+    # check openness
+    is_good_openness <- checkmate::test_numeric(
       openness,
-      finite = TRUE,
-      lower = 0,
-      upper = 1
+      lower = 0.0,
+      upper = 1.0,
+      any.missing = FALSE,
+      len = N_ECON_SECTORS
     )
+
+    if (!is_good_openness) {
+      cli::cli_abort(
+        "<daedalus_npi> parameter {.str openness} must be a numeric of length \
+        {N_ECON_SECTORS}, with values between 0.0 and 1.0."
+      )
+    }
   } else {
     # prevent users from passing both a predefined strategy and custom openness
     name <- rlang::arg_match(name, daedalus.data::closure_strategy_names)
@@ -267,7 +276,7 @@ get_data.daedalus_npi <- function(x, to_get, ...) {
   if (!good_to_get) {
     cli::cli_abort(c(
       "`to_get` must be a string available in the {.cls class(x)}",
-      i = "Allowed values are {.str {names(x)}}"
+      i = "Allowed values are {.str {names(x$parameters)}}"
     ))
   }
 
@@ -390,8 +399,8 @@ get_data.daedalus_npi <- function(x, to_get, ...) {
 
   if (!good_to_get) {
     cli::cli_abort(c(
-      "`to_get` must be a string available in the {.cls class(x)}",
-      i = "Allowed values are {.str {names(x)}}"
+      "`to_get` must be a string available in the {.cls {class(x)}}",
+      i = "Allowed values are {.str {names(x$parameters)}}"
     ))
   }
 
