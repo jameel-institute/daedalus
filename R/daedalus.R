@@ -331,6 +331,7 @@ daedalus <- function(
     prepare_parameters(country),
     prepare_parameters(infection),
     prepare_parameters(vaccination),
+    # NOTE: there is no prepare_parameters.npi method but there might/should be
     list(
       beta = get_beta(infection, country),
       susc = susc,
