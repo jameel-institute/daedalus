@@ -126,11 +126,12 @@ daedalus_npi <- function(
   checkmate::assert_integerish(start_time, lower = 0, null.ok = TRUE)
   checkmate::assert_integerish(duration, lower = 0, null.ok = TRUE)
 
-  params <- list(openness = openness, identifier = identifier)
+  params <- list(openness = openness)
 
   # NOTE: npis start on hospital capacity, but this can be extended
   x <- new_daedalus_npi(
     params,
+    identifier = identifier,
     id_flag = get_flag_index("npi_flag", country),
     time_on = start_time,
     duration = duration,
@@ -162,15 +163,15 @@ validate_daedalus_npi <- function(x) {
   }
 
   # check class members
-  expected_fields <- c("openness", "identifier")
+  expected_fields <- "openness"
   has_fields <- checkmate::test_names(
     attr(x$parameters, "names"),
     permutation.of = expected_fields
   )
   if (!has_fields) {
     cli::cli_abort(
-      "`x` is class {.cls daedalus_npi} but does not have the correct
-      attributes"
+      "`x` is class {.cls daedalus_npi} but does not have the correct \
+      attributes."
     )
   }
 
@@ -239,6 +240,7 @@ format.daedalus_npi <- function(x, ...) {
   chkDots(...)
 
   cli::cli_text("{.cls {class(x)}}")
+  cli::cli_text("NPI strategy: {cli::style_bold(x$identifier)}")
   divid <- cli::cli_div(theme = list(.val = list(digits = 3)))
   cli::cli_bullets(
     class = divid,
@@ -299,11 +301,11 @@ prepare_parameters.daedalus_npi <- function(x, ...) {
 dummy_npi <- function() {
   # a dummy npi with rates and start set to zero
   params <- list(
-    openness = rep(1.0, N_ECON_SECTORS),
-    identifier = "none"
+    openness = rep(1.0, N_ECON_SECTORS)
   )
   x <- new_daedalus_npi(
     params,
+    identifier = "none",
     id_flag = NA_integer_,
     root_state_on = 1L,
     root_state_off = 1L,
@@ -330,16 +332,23 @@ validate_npi_input <- function(
   response_time,
   response_duration
 ) {
-  checkmate::assert_multi_class(
+  is_good_class <- checkmate::test_multi_class(
     x,
     c("daedalus_npi", "character", "numeric"),
     null.ok = TRUE
   )
+  if (!is_good_class) {
+    cli::cli_abort(
+      "daedalus: Got an unexpected value of class {.cls {class(x)}} \
+      for `response_strategy`; it may only be `NULL`, `<daedalus_npi>`, a \
+      numeric vector or a string giving the name of a pre-defined NPI strategy."
+    )
+  }
 
-  if (is.null(x) || identical(x, "none")) {
-    dummy_npi()
-  } else if (is_daedalus_npi(x)) {
+  if (is_daedalus_npi(x)) {
     invisible(x)
+  } else if (is.null(x) || identical(x, "none")) {
+    dummy_npi()
   } else if (is.character(x)) {
     x <- rlang::arg_match(
       x,
@@ -355,7 +364,8 @@ validate_npi_input <- function(
       start_time = response_time,
       duration = response_duration
     )
-  } else if (is.numeric(x)) {
+  } else {
+    # numeric case
     z <- daedalus_npi(
       NA_character_,
       country,
@@ -365,15 +375,7 @@ validate_npi_input <- function(
       response_duration
     )
 
-    z$parameters$identifier <- "custom"
-
     z
-  } else {
-    cli::cli_abort(
-      "daedalus: Got an unexpected value for `response_strategy`;
-      it may only be `NULL`, `<daedalus_npi>`, a numeric vector or
-      a string giving the name of a pre-defined NPI strategy."
-    )
   }
 }
 

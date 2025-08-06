@@ -282,7 +282,7 @@ daedalus <- function(
     response_duration
   )
 
-  response_identifier <- npi$parameters$identifier
+  response_identifier <- npi$identifier
 
   vaccination <- validate_vaccination_input(vaccine_investment, country)
 

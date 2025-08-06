@@ -115,7 +115,8 @@ daedalus_vaccination <- function(
   efficacy = 50,
   waning_period = 180
 ) {
-  # input checking
+  # input checking -- currently we do not allow flexibility in
+  # naming vaccine scenarios
   name <- rlang::arg_match(name, daedalus.data::vaccination_scenario_names)
 
   checkmate::assert_integerish(start_time, lower = 0, null.ok = TRUE)
@@ -147,6 +148,7 @@ daedalus_vaccination <- function(
 
   x <- new_daedalus_vaccination(
     params,
+    identifier = name,
     id_flag = get_flag_index("vax_flag", country),
     time_on = params[["start_time"]],
     id_state_off = get_state_indices("new_vax", country),
@@ -239,7 +241,7 @@ format.daedalus_vaccination <- function(x, ...) {
   chkDots(...)
 
   cli::cli_text("{.cls {class(x)}}")
-  cli::cli_text("Advance vaccine investment: {cli::style_bold(x$name)}")
+  cli::cli_text("Vaccine investment scenario: {cli::style_bold(x$identifier)}")
   divid <- cli::cli_div(theme = list(.val = list(digits = 3)))
   cli::cli_bullets(
     class = divid,
@@ -335,6 +337,7 @@ dummy_vaccination <- function() {
   )
   x <- new_daedalus_vaccination(
     params,
+    identifier = "no vaccination",
     id_flag = NA_integer_,
     root_state_on = 1L,
     root_state_off = 1L,
@@ -355,11 +358,20 @@ dummy_vaccination <- function() {
 #'
 #' @return A `<daedalus_vaccination>` object.
 validate_vaccination_input <- function(x, country) {
-  checkmate::assert_multi_class(
+  is_good_class <- checkmate::test_multi_class(
     x,
     c("daedalus_vaccination", "character"),
     null.ok = TRUE
   )
+
+  if (!is_good_class) {
+    cli::cli_abort(
+      "daedalus: Got an unexpected value of class {.cls {class(x)}} \
+      for `vaccine_investment`; it may only be `NULL`, \
+      `<daedalus_vaccination>`, or a string giving the name of a pre-defined \
+      vaccination strategy."
+    )
+  }
 
   if (is_daedalus_vaccination(x)) {
     invisible(x)
