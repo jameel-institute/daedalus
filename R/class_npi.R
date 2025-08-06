@@ -283,24 +283,6 @@ get_data.daedalus_npi <- function(x, to_get, ...) {
   x$parameters[[to_get]]
 }
 
-#' Prepare vaccination parameters for model
-#'
-#' @name prepare_parameters
-#'
-#' @keywords internal
-prepare_parameters.daedalus_npi <- function(x, ...) {
-  chkDots(...)
-  validate_daedalus_npi(x)
-
-  # only need rates for nu and psi for now
-  list(
-    nu = get_data(x, "rate") / 100,
-    psi = 1 / get_data(x, "waning_period"),
-    uptake_limit = get_data(x, "uptake_limit") / 100,
-    vax_start_time = get_data(x, "start_time")
-  )
-}
-
 #' Dummy NPI
 #'
 #' @return A `<daedalus_npi>` object intended to have no effect; openness is

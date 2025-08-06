@@ -24,10 +24,6 @@ test_that("class <daedalus_npi>: basic expectations pass", {
   expect_snapshot(npi)
 
   expect_no_condition(
-    prepare_parameters(npi)
-  )
-
-  expect_no_condition(
     get_data(npi, "openness")
   )
 })
