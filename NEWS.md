@@ -1,3 +1,7 @@
+# daedalus 0.2.27
+
+IPR is calculated using the transmission rate $\beta$ in the absence of modifiers from an NPI or spontaneous behavioural changes.
+
 # daedalus 0.2.26
 
 This patch adds the `<daedalus_npi>` class which is used to store NPI response parameters. `daedalus()` now accepts these objects as inputs to `response_strategy`.
