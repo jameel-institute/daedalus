@@ -101,9 +101,10 @@ class daedalus_ode {
 
   /// @brief Intermediate data.
   struct internal_state {
-    TensorMat t_comm_inf, t_foi, workplace_infected, t_comm_inf_age,
-        consumer_worker_infections, susc_workers, sToE, eToIs, eToIa, isToR,
-        iaToR, isToH, hToR, hToD, rToS;
+    TensorMat t_infectious, t_comm_inf_contacts, t_foi_comm, alt_new_infections,
+        t_comm_inf_age, t_work_inf_contacts, t_foi_work, t_cw_inf_contacts,
+        t_foi_cw, susc_workers, sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR,
+        hToD, rToS;
   };
 
   static internal_state build_internal(const shared_state &shared) {
@@ -112,13 +113,14 @@ class daedalus_ode {
     mat2d.setZero();
     TensorMat sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
               iaToR = mat2d, isToH = mat2d, hToR = mat2d, hToD = mat2d,
-              rToS = mat2d, t_comm_inf = mat2d, t_foi = mat2d;
+              rToS = mat2d, t_infectious = mat2d, t_comm_inf_contacts = mat2d,
+              t_foi_comm = mat2d, alt_new_infections = mat2d;
 
     // infection related
     TensorMat mat2d_econ(shared.n_econ_groups, N_VAX_STRATA);
     mat2d_econ.setZero();
-    TensorMat workplace_infected = mat2d_econ,
-              consumer_worker_infections = mat2d_econ,
+    TensorMat t_work_inf_contacts = mat2d_econ, t_foi_work = mat2d_econ,
+              t_cw_inf_contacts = mat2d_econ, t_foi_cw = mat2d_econ,
               susc_workers = mat2d_econ;
 
     TensorMat t_comm_inf_age(shared.n_age_groups, N_VAX_STRATA);
@@ -126,9 +128,9 @@ class daedalus_ode {
 
     // clang-format off
     return internal_state{
-      t_comm_inf, t_foi, workplace_infected,
+      t_infectious, t_comm_inf_contacts, t_foi_comm, alt_new_infections,
       t_comm_inf_age,
-      consumer_worker_infections,
+      t_work_inf_contacts, t_foi_work, t_cw_inf_contacts, t_foi_cw,
       susc_workers,
       sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS
     };
@@ -424,6 +426,7 @@ class daedalus_ode {
     internal.hToD =
         omega_modifier * shared.omega * t_x.chip(iH, i_COMPS);  // new deaths
     Eigen::Tensor<double, 0> total_deaths = internal.hToD.sum();
+
     const double beta_tmp =
         shared.beta *
         daedalus::events::switch_by_flag(
@@ -435,42 +438,50 @@ class daedalus_ode {
     // Susceptible (unvaccinated) to exposed
     // sToE comprises three parts - community, workplace, consumer-worker
     // need rowsums for FOI
-    internal.t_comm_inf =
+    internal.t_infectious =
         (t_x.chip(iIs, i_COMPS) + (t_x.chip(iIa, i_COMPS) * shared.epsilon))
             .sum(Eigen::array<Eigen::Index, 1>{1})
             .reshape(Eigen::array<Eigen::Index, 2>{n_strata, 1});
 
-    // FOI must be broadcast for element-wise tensor mult
-    internal.t_foi =
-        shared.cm.contract(internal.t_comm_inf, product_dims).broadcast(bcast);
+    internal.t_comm_inf_contacts =
+        shared.cm.contract(internal.t_infectious, product_dims)
+            .broadcast(bcast);
+
+    internal.t_foi_comm = beta_tmp * internal.t_comm_inf_contacts;
 
     // calculate C * I_w and C * I_cons for a n_econ_groups-length array
-    internal.workplace_infected =
-        beta_tmp *
+    internal.t_work_inf_contacts =
         shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, 1)
-        daedalus::events::switch_by_flag(shared.openness,
-                                         state[shared.i_npi_flag]) *  // scale β
-        internal.t_comm_inf.slice(
+        internal.t_infectious.slice(
             Eigen::array<Eigen::Index, 2>{n_strata - n_econ_groups, 0},
             Eigen::array<Eigen::Index, 2>{n_econ_groups, 1});
 
-    internal.t_comm_inf_age = internal.t_comm_inf.slice(
+    internal.t_foi_work =
+        beta_tmp * internal.t_work_inf_contacts *
+        daedalus::events::switch_by_flag(shared.openness,
+                                         state[shared.i_npi_flag]);  // scale β
+
+    internal.t_comm_inf_age = internal.t_infectious.slice(
         Eigen::array<Eigen::Index, 2>{0, 0},
         Eigen::array<Eigen::Index, 2>{n_age_groups, 1});
 
-    internal.consumer_worker_infections =
+    internal.t_cw_inf_contacts =
+        shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
+
+    internal.t_foi_cw =
         beta_tmp *
         daedalus::events::switch_by_flag(shared.openness,
                                          state[shared.i_npi_flag]) *  // scale β
-        shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
+        internal.t_cw_inf_contacts;
+
+    // initial calculation of new infections in the community
+    internal.sToE =
+        t_x.chip(iS, i_COMPS) * internal.t_foi_comm;  // dims (n_strata, 2)
 
     internal.susc_workers =
         t_x.chip(iS, i_COMPS)
             .slice(Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
                    Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA});
-
-    internal.sToE = t_x.chip(iS, i_COMPS) * internal.t_foi *
-                    beta_tmp;  // dims (n_strata, 2)
 
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
@@ -478,9 +489,8 @@ class daedalus_ode {
     internal.sToE.slice(
         Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
         Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA}) +=
-        (internal.susc_workers *
-         (internal.workplace_infected.broadcast(bcast) +
-          internal.consumer_worker_infections.broadcast(bcast)));
+        (internal.susc_workers * (internal.t_foi_work.broadcast(bcast) +
+                                  internal.t_foi_cw.broadcast(bcast)));
 
     // element-wise mult with susceptibility matrix to reduce number of
     // vaccinated infected S => E
@@ -539,8 +549,23 @@ class daedalus_ode {
                 nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1);
 
     // get IPR (incidence prevalence ratio) as growth flag
-    const Eigen::Tensor<double, 0> incidence = internal.sToE.sum();
-    const Eigen::Tensor<double, 0> prevalence = internal.t_comm_inf.sum();
+    /* calculate new infections without NPIs or behaviour */
+    internal.alt_new_infections =
+        t_x.chip(iS, i_COMPS) * internal.t_comm_inf_contacts;
+
+    internal.alt_new_infections.slice(
+        Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
+        Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA}) +=
+        (internal.susc_workers *
+         (internal.t_work_inf_contacts.broadcast(bcast) +
+          internal.t_cw_inf_contacts.broadcast(bcast)));
+
+    internal.alt_new_infections = internal.alt_new_infections * shared.beta;
+
+    const Eigen::Tensor<double, 0> incidence =
+        internal.alt_new_infections.sum();
+    const Eigen::Tensor<double, 0> prevalence = internal.t_infectious.sum();
+
     state_deriv[shared.i_ipr] = incidence(0) / prevalence(0);
   }
 
