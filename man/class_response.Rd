@@ -5,7 +5,6 @@
 \alias{class_response}
 \alias{new_daedalus_response}
 \alias{response_class_names}
-\alias{new_daedalus_npi}
 \alias{new_daedalus_behaviour}
 \alias{new_daedalus_mortality}
 \alias{is_daedalus_response}
@@ -19,6 +18,7 @@ new_daedalus_response(
   name,
   class = response_class_names,
   parameters = list(),
+  identifier = NA_character_,
   id_flag = NA_integer_,
   time_on = NA_real_,
   duration = NA_real_,
@@ -32,8 +32,6 @@ new_daedalus_response(
 )
 
 response_class_names
-
-new_daedalus_npi()
 
 new_daedalus_behaviour()
 
@@ -56,6 +54,10 @@ class when building off this constructor.}
 
 \item{parameters}{Sub-class parameters passed from sub-class constructors.
 Defaults to an empty list to aid development.}
+
+\item{identifier}{An optional string giving the name of a pre-defined
+response strategy. Sub-class constructors and helper functions provide the
+names and handle cases where the strategy is a custom one.}
 
 \item{id_flag}{Index for the state-flag that should be changed when this
 response is on or off. Typically auto-calculated by sub-class constructor or

@@ -190,6 +190,13 @@ get_state_indices <- function(state_name, country) {
     max_index <- min_index + groups
 
     seq.int(min_index, max_index - 1)
+  } else if (state_name == "ipr") {
+    rel_flag_pos <- which(FLAG_NAMES == state_name)
+
+    # calculate country state compartments
+    total_compartments <- get_total_compartments(country)
+
+    total_compartments + rel_flag_pos - 1L # passed to C++
   } else {
     compartment_index <- idx_COMPARTMENTS[[state_name]] # temporary
     max_index <- compartment_index * groups
@@ -198,6 +205,7 @@ get_state_indices <- function(state_name, country) {
   }
 }
 
+#' @keywords internal
 get_total_compartments <- function(country) {
   groups <- length(
     c(get_data(country, "demography"), get_data(country, "workers"))
@@ -212,6 +220,7 @@ get_total_compartments <- function(country) {
   total_compartments
 }
 
+#' @keywords internal
 get_flag_index <- function(flag_name, country) {
   # get relative flag position
   rel_flag_pos <- which(FLAG_NAMES == flag_name)

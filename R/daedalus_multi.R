@@ -47,32 +47,28 @@ daedalus_multi_infection <- function(
     ode_control <- NULL
   }
 
-  # checks on interventions
-  # also prepare the appropriate economic openness vectors
-  # allowing for a numeric vector, or NULL for truly no response
-  if (is.null(response_strategy)) {
-    response_strategy <- "none" # for output class
-    openness <- rep(1.0, N_ECON_SECTORS)
-    response_time <- NULL # to be filtered out later
-  } else if (is.numeric(response_strategy)) {
-    checkmate::assert_numeric(
+  # for more informative errors as fn uses `parent.frame()`
+  npi <- validate_npi_input(
+    response_strategy,
+    country,
+    first(infection),
+    response_time,
+    response_duration
+  )
+
+  # NPI needs gamma_Ia from each infection
+  npi <- lapply(infection, function(x) {
+    validate_npi_input(
       response_strategy,
-      lower = 0,
-      upper = 1,
-      len = N_ECON_SECTORS
+      country,
+      x,
+      response_time,
+      response_duration
     )
-    openness <- response_strategy
-  } else if (
-    length(response_strategy) == 1 &&
-      response_strategy %in% names(daedalus.data::closure_data)
-  ) {
-    openness <- daedalus.data::closure_data[[response_strategy]]
-  } else {
-    cli::cli_abort(
-      "Got an unexpected value for `response_strategy`. Options are `NULL`, \
-    a numeric vector, or a recognised strategy. See function docs."
-    )
-  }
+  })
+
+  # get only first NPI identifier
+  response_identifier <- npi[[1]]$parameters$identifier
 
   # checks on vaccination input; make copy to allow for true vax start at 0.0
   # if users want that
@@ -91,32 +87,14 @@ daedalus_multi_infection <- function(
     ))
   }
 
-  # NULL converted to "none"; WIP: this will be moved to a class constructor
-  if (identical(response_strategy, "none")) {
+  # prevent passing NAs as these are not correctly handled on C++ side
+  if (identical(response_strategy, "none") || is.null(response_strategy)) {
     # set response time to NULL when response is NULL
     response_time <- NULL
+    duration <- NULL
   } else {
-    is_good_response_time <- checkmate::test_integerish(
-      response_time,
-      upper = time_end, # for compat with daedalus
-      lower = 1L, # responses cannot start at 0, unless strategy is null
-      any.missing = FALSE,
-      len = 1
-    )
-    if (!is_good_response_time) {
-      cli::cli_abort(
-        "Expected `response_time` to be between 1 and {time_end}."
-      )
-    }
-
-    is_good_response_duration <- checkmate::test_count(
-      response_duration
-    )
-    if (!is_good_response_duration) {
-      cli::cli_abort(
-        "Expected `response_duration` to be a single positive integer-like"
-      )
-    }
+    response_time <- npi$time_on
+    duration <- npi$duration
   }
 
   #### spontaneous social distancing ####
@@ -134,7 +112,8 @@ daedalus_multi_infection <- function(
   # prepare susceptibility matrix for vaccination
   susc <- make_susc_matrix(vaccination, country)
 
-  parameters <- lapply(infection, function(x) {
+  # as both infection and npi are now lists
+  parameters <- Map(infection, npi, f = function(x, y) {
     c(
       prepare_parameters(country),
       prepare_parameters(x),
@@ -142,11 +121,12 @@ daedalus_multi_infection <- function(
       list(
         beta = get_beta(x, country),
         susc = susc,
-        openness = openness,
+        openness = get_data(npi[[1]], "openness"),
         response_time = response_time,
-        response_duration = response_duration,
+        response_duration = duration,
         auto_social_distancing = auto_social_distancing,
-        vaccination = vaccination
+        vaccination = vaccination,
+        npi = y
       )
     )
   })
@@ -190,8 +170,8 @@ daedalus_multi_infection <- function(
         country_parameters = unclass(country),
         infection_parameters = unclass(y),
         response_data = list(
-          response_strategy = response_strategy,
-          openness = openness,
+          response_strategy = response_identifier,
+          openness = get_data(npi[[1]], "openness"), # from first NPI
           closure_info = z
         ),
         event_data = zz
