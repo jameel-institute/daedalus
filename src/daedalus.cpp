@@ -117,7 +117,7 @@ class daedalus_ode {
     mat2d.setZero();
     TensorMat sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
               iaToR = mat2d, isToH = mat2d, isToHd = mat2d, isToHr = mat2d,
-              hrToR = mat2d, hdToD = mat2d, rToS = mat2d, 
+              hrToR = mat2d, hdToD = mat2d, rToS = mat2d,
               t_comm_inf = mat2d, t_foi = mat2d;
 
     // infection related
@@ -349,7 +349,7 @@ class daedalus_ode {
         beta,           sigma,            p_sigma,      epsilon,
         rho,            gamma_Ia,         gamma_Is,
         gamma_H_death,  gamma_H_recovery, hfr,          eta,
-        nu,             psi,              n_strata,     n_age_groups, 
+        nu,             psi,              n_strata,     n_age_groups,
         n_econ_groups,  popsize,          cm,           cm_cw,
         cm_work,        susc,             openness,
         i_ipr,  // state index holding incidence/prevalence ratio
@@ -417,7 +417,7 @@ class daedalus_ode {
 
     // calculate total hospitalisations to check if hosp capacity is exceeded;
     // scale mortality rate by 1.6 if so
-    Eigen::Tensor<double, 0> total_hosp = 
+    Eigen::Tensor<double, 0> total_hosp =
       t_x.chip(iHr, i_COMPS).sum() + t_x.chip(iHd, i_COMPS).sum();
 
     const double hfr_modifier =
@@ -427,12 +427,10 @@ class daedalus_ode {
     // calculate total deaths and scale beta by concern, but only if an
     // NPI is active
     // TODO(pratik): change in future so public-concern is independent of NPIs
-    // internal.hToD =
-    //    hfr_modifier * shared.omega * t_x.chip(iH, i_COMPS);  // new deaths
-    
-    internal.hdToD = shared.gamma_H_death * t_x.chip(iHd, i_COMPS);
+    internal.hdToD = 
+      shared.gamma_H_death * t_x.chip(iHd, i_COMPS); // new deaths
     Eigen::Tensor<double, 0> total_deaths = internal.hdToD.sum();
-    
+
     const double beta_tmp =
         shared.beta *
         daedalus::events::switch_by_flag(
@@ -502,53 +500,26 @@ class daedalus_ode {
     internal.isToR = shared.gamma_Is * t_x.chip(iIs, i_COMPS);
     internal.iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
 
-    internal.isToHd = 
+    internal.isToHd =
       shared.eta * t_x.chip(iIs, i_COMPS) * shared.hfr * hfr_modifier;
     internal.isToHr = shared.eta * t_x.chip(iIs, i_COMPS) - internal.isToHd;
     internal.hrToR = shared.gamma_H_recovery * t_x.chip(iHr, i_COMPS);
-    
-    internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
-    
-    /* PSEUDOCODE OF REQUIRED CHANGES
-     state variables object t_x.chip has dimensions
-          i = age groups
-          j = compartment
-          k = vaccination strata
-     
-    there's a mapping done to Eigen tensor type so that age group dimension is
-    implicit in calls to t_x
-     Eigen::TensorMap<const TensorAry> t_x(
-        state, n_strata, daedalus::constants::N_COMPARTMENTS, N_VAX_STRATA);
-     
-     
-    What we're aiming to achieve is draw from a binomial distribution that
-    treats HFR as the age-specific probability of death conditional on being
-    hospitalised
-     
-    1. Split internal.isToH = shared.eta * t_x.chip(iIs, i_COMPS); into
 
-        internal.isToHd = isToH * hfr;
-        internal.isToHr = isToH - Hd;
-     
-    2. Transitions out ofr Hr and Hd are determined by gamma parameters
-        internal.hrToR = shared.gamma_H_recovery * t_x.chip(Hr, i_COMPS);
-        internal.hdToD = shared.gamma_H_death * t_x.chip(Hd, i_COMPS);
-     
-    Also TODO:
-     - Declare additional compartments in daedalus_constants.h
-     - initial_state in R/model_helpers.R
-     - flodia model diagram
-     - info_model_description.Rmd vignette
-     - rename omega_modifier to hfr_modifier
-     - check modifier value (* 1.6) data sources
-     
+    internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
+
+    /* TODO for this PR
+     - redefine how idx_hosp is defined by daedalus::helpers::get_state_idx
+     - check idx_hosp is correctly used subsequently
+     - fix all failing tests
+     - update flodia model diagram
+     - update info_model_description.Rmd vignette
     */
-    
+
 
     // update next step
     t_dx.chip(iS, i_COMPS) = -internal.sToE + internal.rToS;
     t_dx.chip(iE, i_COMPS) = internal.sToE - internal.eToIs - internal.eToIa;
-    t_dx.chip(iIs, i_COMPS) = 
+    t_dx.chip(iIs, i_COMPS) =
       internal.eToIs - internal.isToR - internal.isToHr - internal.isToHd;
     t_dx.chip(iIa, i_COMPS) = internal.eToIa - internal.iaToR;
     t_dx.chip(iHr, i_COMPS) = internal.isToHr - internal.hrToR;
@@ -559,8 +530,8 @@ class daedalus_ode {
     t_dx.chip(iD, i_COMPS) = internal.hdToD;
     t_dx.chip(idE, i_COMPS) = internal.sToE;
     t_dx.chip(idH, i_COMPS) = internal.isToHr + internal.isToHd;
-    
-    //update next step of new compartments here
+
+    // update next step of new compartments here
 
     // vaccination related changes
     // calculate vaccination rate
