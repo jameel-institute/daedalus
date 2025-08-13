@@ -425,8 +425,8 @@ class daedalus_ode {
     // calculate total deaths and scale beta by concern, but only if an
     // NPI is active
     // TODO(pratik): change in future so public-concern is independent of NPIs
-    internal.hdToD = 
-      shared.gamma_H_death * t_x.chip(iHd, i_COMPS); // new deaths
+    internal.hdToD =
+      shared.gamma_H_death * t_x.chip(iHd, i_COMPS);  // new deaths
     Eigen::Tensor<double, 0> total_deaths = internal.hdToD.sum();
 
     const double beta_tmp =
