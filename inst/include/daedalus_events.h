@@ -54,7 +54,9 @@ class response {
 
  public:
   const std::string name;
-  const double time_on, duration, state_on, state_off;
+  const std::vector<double> time_on, time_off;
+  const double max_duration;
+  const double state_on, state_off;
   const size_t i_flag;
   const std::vector<size_t> i_state_on, i_state_off;
   const int root_state_on, root_state_off;
@@ -63,9 +65,9 @@ class response {
 
   /// @brief Constructor for a response.
   /// @param name A string for the name, used to generate event names.
-  /// @param time_on The time at which the response should start. 0.0 indicates
-  /// no response.
-  /// @param duration The duration of the response. 0.0 indicates no response.
+  /// @param time_on The time at which the response should start.
+  /// @param time_off The time off of the response.
+  /// @param max_duration The maximum duration of the response.
   /// @param state_on The state (sum) value at which the response should start.
   /// @param state_off The state (sum) value at which the response should end.
   /// @param i_flag The index of the state variable holding the flag to modify,
@@ -79,17 +81,18 @@ class response {
   /// @param i_time_start The index of the state variable that holds the
   /// realised start time for an event. Typically useful for state-triggered
   /// events.
-  /// @param min_dur The minimum event duration (7 days). Used to prevent
+  /// @param min_dur The minimum event time_off (7 days). Used to prevent
   /// unexpected event termination if two state roots are found in one step.
-  response(const std::string &name, const double &time_on,
-           const double &duration, const double &state_on,
-           const double &state_off, const size_t &i_flag,
-           const std::vector<size_t> &i_state_on,
+  response(const std::string &name, const std::vector<double> &time_on,
+           const std::vector<double> &time_off, const double max_duration,
+           const double &state_on, const double &state_off,
+           const size_t &i_flag, const std::vector<size_t> &i_state_on,
            const std::vector<size_t> &i_state_off, const int &root_state_on,
            const int &root_state_off, const size_t &i_time_start)
       : name(name),
         time_on(time_on),
-        duration(duration),
+        time_off(time_off),
+        max_duration(max_duration),
         state_on(state_on),
         state_off(state_off),
         i_flag(i_flag),
@@ -104,22 +107,42 @@ class response {
   /// `*y` that is not indexed, allowing use of `i_flag` directly. (?)
   /// @param value The time value to check current time against.
   /// @return A lambda function suitable for creating a dust2::event test.
-  inline test_type make_time_test(const double value) const {
-    auto fn_test = [value](const double t, const double *y) {
-      // NOTE: y[0] is flag as time is not passed
-      if (y[0] > 0.0) {
-        return 1.0;  // return FALSE if flag already on
-      } else {
-        return t - value;  // time - start_time
-      }
-    };
+  inline test_type make_time_test(const double value,
+                                  const double &expected_value) const {
+    // flag expected off
+    if (expected_value < 1.0) {
+      auto fn_test = [value, &expected_value = expected_value](
+                         const double t, const double *y) {
+        // NOTE: y[0] is flag as time is not passed
+        if (y[0] > expected_value) {
+          return 1.0;  // return FALSE if flag already on
+        } else {
+          return t - value;  // time -  start_time
+        }
+      };
 
-    return fn_test;
+      return fn_test;
+    }
+
+    // flag expected on
+    if (expected_value > 0.0) {
+      auto fn_test = [value, &expected_value = expected_value](
+                         const double t, const double *y) {
+        // NOTE: y[0] is flag as time is not passed
+        if (y[0] < expected_value) {
+          return 1.0;
+        } else {
+          return t - value;
+        }
+      };
+
+      return fn_test;
+    }
   }
 
-  /// @brief Root-find on a duration after some time read from state.
+  /// @brief Root-find on a time_off after some time read from state.
   /// @param id_state The index of state where the start time is recorded.
-  /// @param value The duration to check against, which is added to the
+  /// @param value The time_off to check against, which is added to the
   /// logged/realised start-time to get the value.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_duration_test(const size_t &id_state,
@@ -255,27 +278,29 @@ class response {
     // 3. launch event on state threshold
 
     dust2::ode::events_type<double> events;
+    const size_t n_timed_events = time_on.size();
 
-    if (!ISNA(time_on)) {
-      const std::string name_ev_time_on = name + "_time_on";
-      dust2::ode::event<double> ev_time_on = make_event(
-          name_ev_time_on, {i_flag}, make_time_test(time_on),
-          make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
-          dust2::ode::root_type::increase);
+    // generate events for each pair of time_on and time_off
+    for (size_t i = 0; i < n_timed_events; i++) {
+      if (!ISNA(time_on[i])) {
+        const std::string name_ev_time_on =
+            name + "_time_on_" + std::to_string(i + 1);
 
-      events.push_back(ev_time_on);
-    }
+        events.push_back(make_event(
+            name_ev_time_on, {i_flag}, make_time_test(time_on[i], 0.0),
+            make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
+            dust2::ode::root_type::increase));
+      }
 
-    // event ended on duration
-    if (!ISNA(duration)) {
-      const std::string name_ev_time_off = name + "_time_off";
-      dust2::ode::event<double> ev_time_off =
-          make_event(name_ev_time_off, {i_time_start, i_flag},
-                     make_duration_test(i_time_start, duration),
-                     make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
-                     dust2::ode::root_type::increase);
+      if (!ISNA(time_off[i])) {
+        const std::string name_ev_time_off =
+            name + "_time_off_" + std::to_string(i + 1);
 
-      events.push_back(ev_time_off);
+        events.push_back(make_event(
+            name_ev_time_off, {i_flag}, make_time_test(time_off[i], 1.0),
+            make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
+            dust2::ode::root_type::increase));
+      }
     }
 
     // event launched by state
@@ -322,6 +347,16 @@ class response {
 
       events.push_back(ev_state_off);
     }
+
+    // test for maximum duration
+    const std::string name_ev_max_dur = name + "_max_duration";
+
+    dust2::ode::event<double> ev_max_dur = make_event(
+        name_ev_max_dur, {}, make_duration_test(i_time_start, max_duration),
+        make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
+        dust2::ode::root_type::increase);
+
+    events.push_back(ev_max_dur);
 
     return events;
   }
