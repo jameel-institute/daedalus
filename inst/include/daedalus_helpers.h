@@ -33,7 +33,8 @@ namespace helpers {
 /// dimension.
 /// @return A vector of compartments which
 inline std::vector<size_t> get_state_idx(
-    const std::vector<size_t> &seq_compartments, const int &n_strata,
+    const std::vector<size_t> &seq_compartments,
+    const int &n_strata,
     const int &n_vax) {
   std::vector<size_t> i_to_zero;
 

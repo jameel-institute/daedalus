@@ -507,39 +507,12 @@ class daedalus_ode {
     
     internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
     
-    /* PSEUDOCODE OF REQUIRED CHANGES
-     state variables object t_x.chip has dimensions
-          i = age groups
-          j = compartment
-          k = vaccination strata
-     
-    there's a mapping done to Eigen tensor type so that age group dimension is
-    implicit in calls to t_x
-     Eigen::TensorMap<const TensorAry> t_x(
-        state, n_strata, daedalus::constants::N_COMPARTMENTS, N_VAX_STRATA);
-     
-     
-    What we're aiming to achieve is draw from a binomial distribution that
-    treats HFR as the age-specific probability of death conditional on being
-    hospitalised
-     
-    1. Split internal.isToH = shared.eta * t_x.chip(iIs, i_COMPS); into
-
-        internal.isToHd = isToH * hfr;
-        internal.isToHr = isToH - Hd;
-     
-    2. Transitions out ofr Hr and Hd are determined by gamma parameters
-        internal.hrToR = shared.gamma_H_recovery * t_x.chip(Hr, i_COMPS);
-        internal.hdToD = shared.gamma_H_death * t_x.chip(Hd, i_COMPS);
-     
-    Also TODO:
-     - Declare additional compartments in daedalus_constants.h
-     - initial_state in R/model_helpers.R
-     - flodia model diagram
-     - info_model_description.Rmd vignette
-     - rename omega_modifier to hfr_modifier
-     - check modifier value (* 1.6) data sources
-     
+    /* TODO for this PR
+     - redefine how idx_hosp is defined by daedalus::helpers::get_state_idx
+     - check idx_hosp is correctly used subsequently
+     - fix all failing tests
+     - update flodia model diagram
+     - update info_model_description.Rmd vignette
     */
     
 
