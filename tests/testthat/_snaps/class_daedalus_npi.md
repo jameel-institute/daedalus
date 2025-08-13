@@ -6,6 +6,7 @@
       <daedalus_npi/daedalus_response>
       NPI strategy: school_closures
       * Start time (days): 30
+      * End time (days): 60
       * Openness (mean prop.): 0.93
-      * Default duration (days): 60
+      * Maximum duration (days): 365
 
