@@ -13,7 +13,8 @@ daedalus_npi(
   infection,
   openness = NULL,
   start_time = 30,
-  duration = 60
+  end_time = 60,
+  max_duration = 365
 )
 
 is_daedalus_npi(x)
@@ -54,11 +55,17 @@ parameters using \code{\link[=daedalus_infection]{daedalus_infection()}}.}
 Expected to have a length of \code{N_ECON_SECTORS} (currently 45).}
 
 \item{start_time}{The number of days after the start of the epidemic that
-the NPI response begins. Must be a single number. Defaults to 30. Passed to
+the NPI response begins. May be a vector. Defaults to 30. Passed to
 the \code{time_on} argument in \code{\link[=new_daedalus_response]{new_daedalus_response()}} via the class constructor
 \code{new_daedalus_npi()}.}
 
-\item{duration}{The maximum number of days that and NPI response is active,
+\item{end_time}{The number of days after the start of the epidemic that
+the NPI response ends. May be a vector, with times taken with reference to
+\code{start_time}. Defaults to 60. Passed to
+the \code{time_on} argument in \code{\link[=new_daedalus_response]{new_daedalus_response()}} via the class constructor
+\code{new_daedalus_npi()}.}
+
+\item{max_duration}{The maximum number of days that an NPI response is active
 whether started by passing the \code{start_time} or when a state threshold is
 crossed. Defaults to 60 days.}
 
