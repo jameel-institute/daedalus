@@ -20,7 +20,8 @@ new_daedalus_response(
   identifier = NA_character_,
   id_flag = NA_integer_,
   time_on = NA_real_,
-  duration = NA_real_,
+  time_off = NA_real_,
+  max_duration = NA_real_,
   id_state_on = NA_integer_,
   value_state_on = NA_real_,
   id_state_off = NA_integer_,
@@ -62,7 +63,9 @@ helper functions; see e.g. \code{\link[=daedalus_vaccination]{daedalus_vaccinati
 
 \item{time_on}{Intended to be a numeric vector of start times.}
 
-\item{duration}{Intended to be a numeric vector of durations.}
+\item{time_off}{Intended to be a numeric vector of end times.}
+
+\item{max_duration}{Intended to be a number for the maximum duration.}
 
 \item{id_state_on}{Intended to be a numeric vector of compartment indices
 which are checked for roots that when found launch an event. The check is
