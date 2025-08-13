@@ -329,7 +329,7 @@ class daedalus_ode {
       sd_end_state = gamma_Ia;  // not working anyway; see PR #83
     }
     daedalus::events::response public_concern(
-        std::string("public_concern"), sd_start_time, sd_duration,
+        std::string("public_concern"), {sd_start_time}, {sd_duration}, NA_REAL,
         sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr},
         root_type_increasing, root_type_decreasing, i_real_sd_start);
 
