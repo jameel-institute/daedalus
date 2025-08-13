@@ -94,9 +94,8 @@ test_that("Vaccination events launch and end as expected", {
     vaccine_investment = v
   )
 
-  checkmate::expect_subset(
-    "vaccination_time_on",
-    output$event_data$name
+  checkmate::expect_true(
+    grepl("vaccination_time_on", output$event_data$name)
   )
   expect_identical(
     output$event_data[output$event_data$name == "vaccination_time_on", "time"],
