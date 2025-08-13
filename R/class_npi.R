@@ -57,11 +57,17 @@ new_daedalus_npi <- function(parameters, ...) {
 #' Expected to have a length of `N_ECON_SECTORS` (currently 45).
 #'
 #' @param start_time The number of days after the start of the epidemic that
-#' the NPI response begins. Must be a single number. Defaults to 30. Passed to
+#' the NPI response begins. May be a vector. Defaults to 30. Passed to
 #' the `time_on` argument in [new_daedalus_response()] via the class constructor
 #' `new_daedalus_npi()`.
 #'
-#' @param duration The maximum number of days that and NPI response is active,
+#' @param end_time The number of days after the start of the epidemic that
+#' the NPI response ends. May be a vector, with times taken with reference to
+#' `start_time`. Defaults to 60. Passed to
+#' the `time_on` argument in [new_daedalus_response()] via the class constructor
+#' `new_daedalus_npi()`.
+#'
+#' @param max_duration The maximum number of days that an NPI response is active
 #' whether started by passing the `start_time` or when a state threshold is
 #' crossed. Defaults to 60 days.
 #'
@@ -93,7 +99,8 @@ daedalus_npi <- function(
   infection,
   openness = NULL,
   start_time = 30,
-  duration = 60
+  end_time = 60,
+  max_duration = 365
 ) {
   # input checking
   if (is.na(name)) {
@@ -133,7 +140,13 @@ daedalus_npi <- function(
   infection <- validate_infection_input(infection)
 
   checkmate::assert_integerish(start_time, lower = 0, null.ok = TRUE)
-  checkmate::assert_integerish(duration, lower = 0, null.ok = TRUE)
+  checkmate::assert_integerish(
+    end_time,
+    lower = 0,
+    null.ok = TRUE,
+    len = length(start_time)
+  )
+  checkmate::assert_count(max_duration)
 
   params <- list(openness = openness)
 
@@ -143,7 +156,8 @@ daedalus_npi <- function(
     identifier = identifier,
     id_flag = get_flag_index("npi_flag", country),
     time_on = start_time,
-    duration = duration,
+    time_off = end_time,
+    max_duration = max_duration,
     id_state_on = get_state_indices("hospitalised", country),
     id_state_off = get_state_indices("ipr", country),
     value_state_on = get_data(country, "hospital_capacity"),
@@ -253,8 +267,9 @@ format.daedalus_npi <- function(x, ...) {
     class = divid,
     c(
       "*" = "Start time (days): {.val {x$time_on}}",
+      "*" = "End time (days): {.val {x$time_off}}",
       "*" = "Openness (mean prop.): {.val {mean(x$parameters$openness)}}",
-      "*" = "Default duration (days): {.val {x$duration}} "
+      "*" = "Maximum duration (days): {.val {x$max_duration}} "
     )
   )
   cli::cli_end(divid)
@@ -319,7 +334,7 @@ validate_npi_input <- function(
   country,
   infection,
   response_time,
-  response_duration
+  response_duration = 365
 ) {
   is_good_class <- checkmate::test_multi_class(
     x,
@@ -346,12 +361,14 @@ validate_npi_input <- function(
       error_call = parent.frame()
     )
 
+    # for compat with existing daedalus implementation
+    # default duration is now 365
     daedalus_npi(
       x,
       country,
       infection,
       start_time = response_time,
-      duration = response_duration
+      end_time = NA_real_
     )
   } else {
     # numeric case
