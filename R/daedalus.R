@@ -40,7 +40,7 @@ initial_flags <- function() {
 get_daedalus_response_times <- function(output, time_end) {
   # internal function with no input checking
   event_data <- output$event_data[[1]]
-  resp_times_on <- event_data[grepl("npi_\\w*_on$", event_data$name), "time"]
+  resp_times_on <- event_data[grepl("npi_\\w*_on", event_data$name), "time"]
   resp_time_on_realised <- if (length(resp_times_on) == 0) {
     NA_real_
   } else {
@@ -267,7 +267,6 @@ daedalus <- function(
   response_strategy = NULL,
   vaccine_investment = NULL,
   response_time = 30,
-  response_duration = 365,
   auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
@@ -294,8 +293,8 @@ daedalus <- function(
     response_strategy,
     country,
     infection,
-    response_time,
-    response_duration
+    response_time
+    # set response duration to default internal value
   )
 
   response_identifier <- npi$identifier
@@ -353,8 +352,8 @@ daedalus <- function(
       susc = susc,
       # all three below needed for npi-linked behaviour response
       openness = get_data(npi, "openness"),
-      response_time = response_time,
-      response_duration = duration,
+      response_time = response_time[1], # TODO: temporary as these can be vecs
+      response_duration = duration[1], # TODO: temporary as these can be vecs
       auto_social_distancing = auto_social_distancing,
       vaccination = vaccination,
       npi = npi,
