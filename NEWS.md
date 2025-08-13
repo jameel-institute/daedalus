@@ -1,3 +1,7 @@
+# daedalus (development version)
+
+This development version splits H into two compartments and uses HFR as the probability of death conditional on hospitalisation.
+
 # daedalus 0.2.25
 
 This patch version adds the use of HFR and hospital transition rates to calculate competing rates within the C++ code, which was previously handled in `daedalus.data`.

@@ -106,7 +106,7 @@ class daedalus_ode {
   struct internal_state {
     TensorMat t_comm_inf, t_foi, workplace_infected, t_comm_inf_age,
         consumer_worker_infections, susc_workers, sToE, eToIs, eToIa, isToR,
-        iaToR, isToH, hToR, hToD, rToS;
+        iaToR, isToHr, isToHd, hrToR, hdToD, rToS;
   };
 
   static internal_state build_internal(const shared_state &shared) {
@@ -115,7 +115,7 @@ class daedalus_ode {
     mat2d.setZero();
     TensorMat sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
               iaToR = mat2d, isToH = mat2d, isToHd = mat2d, isToHr = mat2d,
-              hToR = mat2d, hToD = mat2d, rToS = mat2d, 
+              hrToR = mat2d, hdToD = mat2d, rToS = mat2d, 
               t_comm_inf = mat2d, t_foi = mat2d;
 
     // infection related
@@ -134,7 +134,7 @@ class daedalus_ode {
       t_comm_inf_age,
       consumer_worker_infections,
       susc_workers,
-      sToE, eToIs, eToIa, isToR, iaToR, isToH, isToHd, isToHr, hToR, hToD, rToS
+      sToE, eToIs, eToIa, isToR, iaToR, isToHr, isToHd, hrToR, hdToD, rToS
     };
     // clang-format on
   }
@@ -156,7 +156,8 @@ class daedalus_ode {
                           {"exposed", dim_vec},
                           {"infect_symp", dim_vec},
                           {"infect_asymp", dim_vec},
-                          {"hospitalised", dim_vec},
+                          {"hospitalised_recov", dim_vec},
+                          {"hospitalised_death", dim_vec},
                           {"recovered", dim_vec},
                           {"dead", dim_vec},
                           {"new_infections", dim_vec},
@@ -221,12 +222,6 @@ class daedalus_ode {
     TensorMat eta = eta_temp.broadcast(bcast);
     TensorMat hfr = hfr_temp.broadcast(bcast);
 
-    // CALCULATE AGE VARYING OMEGA AND Gamma_h
-    //const TensorMat omega = daedalus::helpers::get_omega(
-    //  hfr, gamma_H_recovery, gamma_H_death);
-
-    //const TensorMat gamma_H = daedalus::helpers::get_gamma_H(
-    //  hfr, gamma_H_recovery, gamma_H_death);
 
     // CONTACT PARAMETERS (MATRICES)
     // contact matrix
@@ -310,7 +305,7 @@ class daedalus_ode {
 
     // RESPONSE AND VACCINATION CLASSES
     std::vector<size_t> idx_hosp =
-        daedalus::helpers::get_state_idx({iH + 1}, n_strata, N_VAX_STRATA);
+        daedalus::helpers::get_state_idx({iHd + 1}, n_strata, N_VAX_STRATA);
 
     // NOTE: NPI response end time passed as parameter; vax end time remains 0.0
     daedalus::events::response npi(
@@ -350,10 +345,10 @@ class daedalus_ode {
     // clang-format off
     return shared_state{
         beta,           sigma,            p_sigma,      epsilon,
-        rho,            gamma_Ia,         gamma_Is,     eta,
-        gamma_H_death,  gamma_H_recovery, hfr,          nu,           
-        psi,            n_strata,         n_age_groups, n_econ_groups,
-        popsize,        cm,               cm_cw,
+        rho,            gamma_Ia,         gamma_Is,
+        gamma_H_death,  gamma_H_recovery, hfr,          eta,
+        nu,             psi,              n_strata,     n_age_groups, 
+        n_econ_groups,  popsize,          cm,           cm_cw,
         cm_work,        susc,             openness,
         i_ipr,  // state index holding incidence/prevalence ratio
         i_npi_flag,   i_vax_flag, i_sd_flag,    i_hosp_overflow_flag,
@@ -420,18 +415,22 @@ class daedalus_ode {
 
     // calculate total hospitalisations to check if hosp capacity is exceeded;
     // scale mortality rate by 1.6 if so
-    Eigen::Tensor<double, 0> total_hosp = t_x.chip(iH, i_COMPS).sum();
+    Eigen::Tensor<double, 0> total_hosp = 
+      t_x.chip(iHr, i_COMPS).sum() + t_x.chip(iHd, i_COMPS).sum();
 
-    const double omega_modifier =
+    const double hfr_modifier =
       daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
                                        state[shared.i_hosp_overflow_flag]);
 
     // calculate total deaths and scale beta by concern, but only if an
     // NPI is active
     // TODO(pratik): change in future so public-concern is independent of NPIs
-    internal.hToD =
-        omega_modifier * shared.omega * t_x.chip(iH, i_COMPS);  // new deaths
-    Eigen::Tensor<double, 0> total_deaths = internal.hToD.sum();
+    // internal.hToD =
+    //    hfr_modifier * shared.omega * t_x.chip(iH, i_COMPS);  // new deaths
+    
+    internal.hdToD = shared.gamma_H_death * t_x.chip(iHd, i_COMPS);
+    Eigen::Tensor<double, 0> total_deaths = internal.hdToD.sum();
+    
     const double beta_tmp =
         shared.beta *
         daedalus::events::switch_by_flag(
@@ -501,7 +500,12 @@ class daedalus_ode {
     internal.isToR = shared.gamma_Is * t_x.chip(iIs, i_COMPS);
     internal.iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
 
+    internal.isToHd = 
+      shared.eta * t_x.chip(iIs, i_COMPS) * shared.hfr * hfr_modifier;
+    internal.isToHr = shared.eta * t_x.chip(iIs, i_COMPS) - internal.isToHd;
+    internal.hrToR = shared.gamma_H_recovery * t_x.chip(iHr, i_COMPS);
     
+    internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
     
     /* PSEUDOCODE OF REQUIRED CHANGES
      state variables object t_x.chip has dimensions
@@ -538,17 +542,12 @@ class daedalus_ode {
      
     */
     
-    internal.isToH = shared.eta * t_x.chip(iIs, i_COMPS);
-    internal.isToHd = isToH * hfr;
-    internal.isToHr = isToH - internal.isToHd;
-    internal.hToR = shared.gamma_H * t_x.chip(iH, i_COMPS);
-
-    internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
 
     // update next step
     t_dx.chip(iS, i_COMPS) = -internal.sToE + internal.rToS;
     t_dx.chip(iE, i_COMPS) = internal.sToE - internal.eToIs - internal.eToIa;
-    t_dx.chip(iIs, i_COMPS) = internal.eToIs - internal.isToR - internal.isToH;
+    t_dx.chip(iIs, i_COMPS) = 
+      internal.eToIs - internal.isToR - internal.isToHr - internal.isToHd;
     t_dx.chip(iIa, i_COMPS) = internal.eToIa - internal.iaToR;
     t_dx.chip(iHr, i_COMPS) = internal.isToHr - internal.hrToR;
     t_dx.chip(iHd, i_COMPS) = internal.isToHd - internal.hdToD;
