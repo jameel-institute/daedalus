@@ -68,7 +68,7 @@ daedalus_multi_infection <- function(
   })
 
   # get only first NPI identifier
-  response_identifier <- npi[[1]]$parameters$identifier
+  response_identifier <- first(npi)$parameters$identifier
 
   # checks on vaccination input; make copy to allow for true vax start at 0.0
   # if users want that
@@ -121,7 +121,7 @@ daedalus_multi_infection <- function(
       list(
         beta = get_beta(x, country),
         susc = susc,
-        openness = get_data(npi[[1]], "openness"),
+        openness = get_data(first(npi), "openness"),
         response_time = response_time,
         response_duration = duration,
         auto_social_distancing = auto_social_distancing,
