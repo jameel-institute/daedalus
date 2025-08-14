@@ -1,3 +1,7 @@
+# daedalus (development version)
+
+This patch makes a small fix to the internal function `prepare_data()` to make it robust to user-created country demography vectors when the vector names are stripped.
+
 # daedalus 0.2.27
 
 IPR is calculated using the transmission rate $\beta$ in the absence of modifiers from an NPI or spontaneous behavioural changes.
