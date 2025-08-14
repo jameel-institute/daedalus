@@ -47,7 +47,13 @@ get_daedalus_response_times <- function(output, time_end) {
     floor(resp_times_on)
   }
 
-  resp_times_off <- event_data[grepl("npi_\\w*_off$", event_data$name), "time"]
+  resp_times_off <- event_data[
+    grepl(
+      "npi_\\w*_off|npi_max_duration",
+      event_data$name
+    ),
+    "time"
+  ]
   resp_time_off_realised <- if (all(is.na(resp_time_on_realised))) {
     NA_real_
   } else if (length(resp_times_off) == 0) {
@@ -294,7 +300,7 @@ daedalus <- function(
     country,
     infection,
     response_time
-    # set response duration to default internal value
+    # set response duration to default internal value if pre-canned npi passed
   )
 
   response_identifier <- npi$identifier
