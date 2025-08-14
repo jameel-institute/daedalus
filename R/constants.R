@@ -157,9 +157,10 @@ FLAG_NAMES <- c(
 #' All other constants return integer values.
 #'
 #' @details
-#' DAEDALUS has 7 epidemiological compartments: susceptible, exposed, infectious
+#' DAEDALUS has 8 epidemiological compartments: susceptible, exposed, infectious
 #' and symptomatic ("infect_symp"), infectious and asymptomatic ("infect_asymp")
-#' , hospitalised, recovered, and dead.
+#' , hospitalised leading to recovery ("hospitalised_recov"),
+#' hospitalised leading to death ("hospitalised_death"), recovered, and dead.
 #'
 #' There are 2 additional compartments that track the number of new infections
 #' and new hospitalisations.
@@ -173,7 +174,8 @@ COMPARTMENTS <- c(
   "exposed",
   "infect_symp",
   "infect_asymp",
-  "hospitalised",
+  "hospitalised_recov",
+  "hospitalised_death",
   "recovered",
   "dead",
   "new_infections",
@@ -187,15 +189,16 @@ idx_COMPARTMENTS <- list(
   exposed = 2L,
   infect_symp = 3L,
   infect_asymp = 4L,
-  hospitalised = 5L,
-  recovered = 6L,
-  dead = 7L,
-  new_infectious = 8L,
-  new_hosp = 9L
+  hospitalised_recov = 5L,
+  hospitalised_death = 6L,
+  recovered = 7L,
+  dead = 8L,
+  new_infectious = 9L,
+  new_hosp = 10L
 )
 
 #' @name epi_constants
-N_EPI_COMPARTMENTS <- 7L
+N_EPI_COMPARTMENTS <- 8L
 
 #' @name epi_constants
 #' @keywords epi_constants
@@ -203,7 +206,7 @@ i_EPI_COMPARTMENTS <- seq.int(N_EPI_COMPARTMENTS)
 
 #' @name epi_constants
 #' @keywords epi_constant
-N_MODEL_COMPARTMENTS <- 9L
+N_MODEL_COMPARTMENTS <- 10L
 
 #' @name epi_constants
 N_INFECTION_SUBSYSTEM <- 3L # compartments in the infectious subsystem

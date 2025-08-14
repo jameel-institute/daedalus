@@ -11,13 +11,13 @@
 \alias{N_INFECTION_SUBSYSTEM}
 \title{Epidemiological compartments and indices}
 \format{
-An object of class \code{character} of length 9.
+An object of class \code{character} of length 10.
 
-An object of class \code{list} of length 9.
+An object of class \code{list} of length 10.
 
 An object of class \code{integer} of length 1.
 
-An object of class \code{integer} of length 7.
+An object of class \code{integer} of length 8.
 
 An object of class \code{integer} of length 1.
 
