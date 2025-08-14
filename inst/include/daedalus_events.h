@@ -137,6 +137,14 @@ class response {
       };
 
       return fn_test;
+    } else {
+      // NOTE: included to satisfy cppcheck
+      auto fn_default = [](const double t, const double *y) {
+        cpp11::warning("Invalid expected_value passed to state_test factory.");
+        return 1.0;
+      };
+
+      return fn_default;
     }
   }
 
