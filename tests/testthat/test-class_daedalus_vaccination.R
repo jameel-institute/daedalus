@@ -26,7 +26,7 @@ test_that("class <daedalus_vaccination>: basic expectations", {
   )
 
   x <- daedalus_vaccination("medium", country = country)
-  expect_s3_class(x, "daedalus_vaccination")
+  expect_s3_class(x, c("daedalus_vaccination", "daedalus_response"))
   expect_snapshot(x)
   checkmate::expect_list(
     x,
@@ -103,6 +103,38 @@ test_that("class <daedalus_vaccination>: access and assignment", {
   expect_error({
     set_data(x, vax_rate = 0.01)
   })
+})
+
+test_that("Vaccination events launch and end as expected", {
+  # expect vaccination is launched if chosen and does not end
+  cty <- "THA"
+  vax_time <- 33
+  v <- daedalus_vaccination("low", cty, start_time = vax_time)
+  expected_vaccinations <- v$value_state_off
+
+  output <- daedalus(
+    cty,
+    "sars_cov_1",
+    vaccine_investment = v
+  )
+
+  expect_true(
+    any(grepl("vaccination_time_on*", output$event_data$name))
+  )
+  expect_identical(
+    output$event_data[
+      grepl("vaccination_time_on", output$event_data$name),
+      "time"
+    ],
+    vax_time
+  )
+
+  total_vaccinations <- sum(get_new_vaccinations(output)$new_vaccinations)
+  expect_identical(
+    total_vaccinations,
+    expected_vaccinations,
+    tolerance = 1e-6
+  )
 })
 
 test_that("class <daedalus_vaccination>: errors", {
