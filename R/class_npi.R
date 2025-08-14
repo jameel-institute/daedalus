@@ -199,18 +199,16 @@ validate_daedalus_npi <- function(x) {
     )
   }
 
-  invisible(
-    lapply(daedalus.data::vaccination_parameter_names, function(n) {
-      lgl <- checkmate::test_number(
-        x$parameters[[n]],
-        lower = 0.0,
-        finite = TRUE,
-        na.ok = TRUE
-      )
-      if (!lgl) {
-      }
-    })
-  )
+  lapply(daedalus.data::vaccination_parameter_names, function(n) {
+    lgl <- checkmate::test_number(
+      x$parameters[[n]],
+      lower = 0.0,
+      finite = TRUE,
+      na.ok = TRUE
+    )
+    if (!lgl) {
+    }
+  })
 
   invisible(x)
 }
