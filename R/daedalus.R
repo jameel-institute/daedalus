@@ -356,7 +356,9 @@ daedalus <- function(
     ode_control,
     n_groups = 1
   )
-  output_data <- prepare_output(output$data, country)
+
+  timesteps <- seq(0, time_end)
+  output_data <- prepare_output(output$data, country, timesteps)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
