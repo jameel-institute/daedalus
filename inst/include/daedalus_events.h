@@ -109,10 +109,8 @@ class response {
       };
 
       return fn_test;
-    }
-
-    // flag expected on
-    if (expected_value > 0.0) {
+    } else if (expected_value > 0.0) {
+      // flag expected on
       auto fn_test = [value, &i_flag = i_flag,
                       &expected_value = expected_value](const double t,
                                                         const double *y) {
@@ -124,6 +122,14 @@ class response {
       };
 
       return fn_test;
+    } else {
+      // NOTE: included to satisfy cppcheck
+      auto fn_default = [](const double t, const double *y) {
+        cpp11::warning("Invalid expected_value passed to state_test factory.");
+        return 1.0;
+      };
+
+      return fn_default;
     }
   }
 
