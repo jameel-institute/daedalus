@@ -305,7 +305,7 @@ class daedalus_ode {
 
     // RESPONSE AND VACCINATION CLASSES
     std::vector<size_t> idx_hosp =
-        daedalus::helpers::get_state_idx({iHd + 1}, n_strata, N_VAX_STRATA);
+        daedalus::helpers::get_state_idx({iHd + 1, iHr + 1}, n_strata, N_VAX_STRATA);
 
     // NOTE: NPI response end time passed as parameter; vax end time remains 0.0
     daedalus::events::response npi(
