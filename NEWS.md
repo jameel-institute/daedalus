@@ -1,4 +1,4 @@
-# daedalus (development version)
+# daedalus 0.2.26
 
 This development version splits H into two compartments and uses HFR as the probability of death conditional on hospitalisation.
 
