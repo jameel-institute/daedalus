@@ -120,6 +120,29 @@ test_that("daedalus: Can run with ODE control arguments", {
   )
 })
 
+test_that("daedalus: Can run with custom demography", {
+  x <- daedalus_country("GBR")
+  x$demography <- rep(1e7, 4)
+
+  expect_no_condition(
+    daedalus(x, "sars_cov_1", time_end = 30)
+  )
+
+  expect_no_condition(
+    get_data(daedalus(x, "sars_cov_1", time_end = 30))
+  )
+
+  data <- get_data(daedalus(x, "sars_cov_1", time_end = 30))
+  checkmate::expect_data_frame(
+    data,
+    any.missing = FALSE
+  )
+  checkmate::expect_set_equal(
+    unique(data$age_group),
+    sprintf("age_group_%i", seq_along(x$demography))
+  )
+})
+
 # test that daedalus runs for all epidemic infection parameter sets
 skip_on_covr()
 test_that("daedalus: Runs for all country x infection x response", {
