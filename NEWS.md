@@ -1,4 +1,4 @@
-# daedalus (development version)
+# daedalus 0.2.26
 
 This patch adds the `<daedalus_npi>` class which is used to store NPI response parameters. `daedalus()` now accepts these objects as inputs to `response_strategy`.
 
@@ -11,6 +11,10 @@ This patch adds the `<daedalus_npi>` class which is used to store NPI response p
 - Minor edits to `<daedalus_vaccination>`;
 
 - C++ `daedalus::inputs::read_response` now reads `<daedalus_response>` class member `name`.
+
+## Notes
+
+From this version onwards, _daedalus_ requires _daedalus.data_ >= v0.0.3 to provide the data `closure_strategy_names` and `closure_strategy_data`.
 
 # daedalus 0.2.25
 
