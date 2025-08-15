@@ -55,7 +55,7 @@ The following sections present a technical description of the epidemiological an
 
 _daedalus_ simulates a country's population split into seven possible disease state compartments. Model compartments are stratified by age-sector sector $i$ and vaccination $j$ classes. 
 
-A susceptible individual $S$ can become exposed to the virus and enter a latent state $E$, from which they can develop either a symptomatic $Is$ or asymptomatic $Ia$ infection. Whereas asymptomatic infected individuals are assumed to always recover, symptomatic ones can either recover $R$ or develop a more severe condition requiring hospitalisation $H$, from which they can either recover or die $D$.
+A susceptible individual $S$ can become exposed to the virus and enter a latent state $E$, from which they can develop either a symptomatic $Is$ or asymptomatic $Ia$ infection. Whereas asymptomatic infected individuals are assumed to always recover, symptomatic ones can either recover $R$ or develop a more severe condition requiring hospitalisation that would lead to either recovery $Hr$ or death $Hd$. We assume different lengths of hospital stay for this compartments, after which individuals transition to the recovered $R$ or death $D$ compartments.
 
 ![](figures/daedalus.png)
 
@@ -66,9 +66,10 @@ A susceptible individual $S$ can become exposed to the virus and enter a latent 
     & \frac{dE_{i,j}}{dt} = \Lambda_{i,j} (t) S_{i,j}(t) - \sigma E_{i,j}(t) \\
     & \frac{dIa_{i,j}}{dt} = (1 - p_\text{symp}) \sigma E_{i,j}(t) - \gamma_{Ia} Ia_{i,j}(t) \\
     & \frac{dIs_{i,j}}{dt} = p_\text{symp} \sigma E_{i,j}(t) - \gamma_{Is} Is_{i,j}(t) - \eta^i Is_{i,j}(t) \\
-    & \frac{dH_{i,j}}{dt} = \eta^i Is_{i,j}(t) - \omega^i H_{i,j}(t) - \gamma_H^i H_{i,j}(t) \\
-    & \frac{dR_{i,j}}{dt} = \zeta_{eff_{j=0}}(t) R_{i,j=0}(t) + \gamma_{Is} Is_{i,j}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_H^i H_{i,j}(t) - \rho R_{i,j}(t) - \zeta_{j=1} R_{i,j=1}(t)\\
-    & \frac{dD_{i,j}}{dt} = \omega^i H_{i,j}(t)\\
+    & \frac{dHr_{i,j}}{dt} = \eta^i (1 - HFR_{i}) Is_{i,j}(t) - \gamma_{Hr} H_{i,j}(t) \\
+    & \frac{dHd_{i,j}}{dt} = \eta^i HFR_{i} Is_{i,j}(t) - \gamma_{Hd} Hd_{i,j}(t) \\
+    & \frac{dR_{i,j}}{dt} = \zeta_{eff_{j=0}}(t) R_{i,j=0}(t) + \gamma_{Is} Is_{i,j}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_{Hr} Hr_{i,j}(t) - \rho R_{i,j}(t) - \zeta_{j=1} R_{i,j=1}(t)\\
+    & \frac{dD_{i,j}}{dt} = \gamma_{Hd} Hd_{i,j}(t)\\
 \end{align}
 
 
@@ -109,9 +110,9 @@ _daedalus_ can simulate nine different pathogens (influenza A 2009, influenza A 
 | $\eta^i$ | Probability of hospitalisation by age, conditional on symptomatic infection |
 | $\gamma_{Ia}$ | Recovery rate for asymptomatic infections |
 | $\gamma_{Is}$ | Recovery rate for symptomatic infections |
-| $\gamma_H^i$ | Recovery rate for hospitalised individuals by age |
+| $\gamma_{Hr}$ | Recovery rate for hospitalised individuals |
+| $\gamma_{Hd}$ | Death rate for hospitalised individuals |
 | $\rho$ | Rate of waning immunity (recovered to susceptible) |
-| $\omega^i$ | Death rate among hospitalised individuals by age |
 | $\zeta_{eff_{j=0}}(t)$ | Vaccination rate |
 | $\zeta_{j=1}$ | Vaccine protection waning rate |
 
@@ -180,22 +181,19 @@ however, it should be noted that the force of infection within the workplace $\l
 | Infectious period asymptomatic (days) | $1/\gamma_{Ia}$ | 2.5 | 2.5 | 2.5 | 2.1 | 2.1 | 2.1 | 2.1 |
 | Infectious period symptomatic (days) | $1/\gamma_{Is}$ | 2.5 | 2.5 | 2.5 | 4 | 4 | 4 | 4 |
 | Infection-induced immune period (days) | $1/\rho$ | 365 | 365 | 365 | 365 | 365 | 365 | 365 |
+| Length of hospital stay leading to recovery (days) | $1/\gamma_{Hr}$ | 5 | 5 | 5 | 5.5 | 7.6 | 12 | 22.75 |
+| Length of hospital stay leading to death (days) | $1/\gamma_{Hd}$ | 5 | 5 | 5 | 5.5 | 7.6 | 12 | 19.95 |
 | **Age specific parameters*** | 
 | Hospitalisation rate given symptomatic infection (days$^{-1}$) | $1/\eta^i$ | 
 | 0-4 years |   | 358.7 | 1851.9 | 13.7 | 73006.1 | 80405.4 | 148750.0 | 56.2 |
 | 5-19 years |  | 359.5 | 158.7  | 15.6 | 133.7   | 25.4    | 47       | 12.1 |
 | 20-64 years | | 912.4 | 1851.9 | 50.4 | 5900.4  | 4638.8  | 8581.7   | 56.2 |
 | 65+ years |   | 161.7 | 9.3    | 6.6  | 35.8    | 8.1     | 15       | 4.1 |
-| Recovery rate hospitalised (days$^{-1}$) | $1/\gamma_H^i$ | 
-| 0-4 years |   | 5.2  | 5.4 | 5.7 | NA  | NA   | NA   | 29.6 |
-| 5-19 years |  | 5.3  | 5.4 | 5.7 | 5.9 | 8.3  | 13.1 | 29.6 |
-| 20-64 years | | 5.2  | 5.4 | 5.7 | 6.8 | 9.4  | 14.8 | 29.6 |
-| 65+ years |   | 13.7 | 5.4 | 5.7 | 8.1 | 10.7 | 16.9 | 29.6 |
-| Death given hospitalised (days$^{-1}$) | $1/\omega^i$ | 
-| 0-4 years |   | 126.3 | 67.5 | 40 | 5.5  | 7.6  | 12    | 86.4 |
-| 5-19 years |  | 79.8  | 67.5 | 40 | 82.1 | 94.3 | 148.9 | 86.4 |
-| 20-64 years | | 120.9 | 67.5 | 40 | 28.4 | 40.5 | 64    | 86.4 |
-| 65+ years |   | 7.9   | 67.5 | 40 | 17.3 | 26.3 | 41.6  | 86.4 |
+| Hospital fatality ratio conditional on symptomatic infection leading to hospitalisation (%) | $HFR^i$ | 
+| 0-4 years |   | 25.3  | 13.5 | 8 | 1.0  | 1.0   | 1.0   | 3.9 |
+| 5-19 years |  | 16.0  | 13.5 | 8 | 14.9 | 12.4  | 12.4  | 3.9 |
+| 20-64 years | | 24.2  | 13.5 | 8 | 5.2  | 5.3   | 5.3   | 3.9 |
+| 65+ years |   | 1.6   | 13.5 | 8 | 3.2  | 3.5   | 3.5   | 3.9 |
 
 Table: (\#tab:pathogendata) Pathogen parameters. A different pathogen profile can be created by the user by generating a list object specifying these parameter values (see list structure for these pathogens in `daedalus.data::infection_data`). *Note disease severity progression is modelled with competing rates (e.g., for individuals in the $Ia$ compartment, of recovery $\gamma_{Is}$ vs hospitalisation by age $\eta^i$); where NA values are specified, we assume these individuals cannot undergo the respective disease severity transition.
 
