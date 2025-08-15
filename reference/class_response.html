@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.25</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.26</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,6 +65,7 @@
 <span>  <span class="va">name</span>,</span>
 <span>  class <span class="op">=</span> <span class="va">response_class_names</span>,</span>
 <span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  identifier <span class="op">=</span> <span class="cn">NA_character_</span>,</span>
 <span>  id_flag <span class="op">=</span> <span class="cn">NA_integer_</span>,</span>
 <span>  time_on <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
 <span>  duration <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
@@ -78,8 +79,6 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">response_class_names</span></span>
-<span></span>
-<span><span class="fu">new_daedalus_npi</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">new_daedalus_behaviour</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -115,6 +114,12 @@ class when building off this constructor.</p></dd>
 <dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
 <dd><p>Sub-class parameters passed from sub-class constructors.
 Defaults to an empty list to aid development.</p></dd>
+
+
+<dt id="arg-identifier">identifier<a class="anchor" aria-label="anchor" href="#arg-identifier"></a></dt>
+<dd><p>An optional string giving the name of a pre-defined
+response strategy. Sub-class constructors and helper functions provide the
+names and handle cases where the strategy is a custom one.</p></dd>
 
 
 <dt id="arg-id-flag">id_flag<a class="anchor" aria-label="anchor" href="#arg-id-flag"></a></dt>

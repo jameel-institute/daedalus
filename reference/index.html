@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.25</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.26</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -128,7 +128,24 @@
         </dt>
         <dd>Represent vaccine investment scenarios for DAEDALUS</dd>
       </dl></div><div class="section level2">
-      <h2 id="class--3">Class <code>&lt;daedalus_output&gt;</code><a class="anchor" aria-label="anchor" href="#class--3"></a></h2>
+      <h2 id="class--3">Class <code>&lt;daedalus_npi&gt;</code><a class="anchor" aria-label="anchor" href="#class--3"></a></h2>
+
+      <div class="section-desc"><p>Represent and access non-pharmaceutical intervention scenarios</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="class_npi.html">daedalus_npi()</a></code> <code><a href="class_npi.html">is_daedalus_npi()</a></code> <code><a href="class_npi.html">print(<i>&lt;daedalus_npi&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Represent non-pharmaceutical intervention strategies for DAEDALUS</dd>
+      </dl></div><div class="section level2">
+      <h2 id="class--4">Class <code>&lt;daedalus_output&gt;</code><a class="anchor" aria-label="anchor" href="#class--4"></a></h2>
 
       <div class="section-desc"><p>Class to store model output for further processing</p></div>
 
@@ -250,7 +267,7 @@
 
       <dl><dt>
 
-          <code><a href="class_response.html">new_daedalus_response()</a></code> <code><a href="class_response.html">response_class_names</a></code> <code><a href="class_response.html">new_daedalus_npi()</a></code> <code><a href="class_response.html">new_daedalus_behaviour()</a></code> <code><a href="class_response.html">new_daedalus_mortality()</a></code> <code><a href="class_response.html">is_daedalus_response()</a></code> <code><a href="class_response.html">validate_daedalus_response()</a></code>
+          <code><a href="class_response.html">new_daedalus_response()</a></code> <code><a href="class_response.html">response_class_names</a></code> <code><a href="class_response.html">new_daedalus_behaviour()</a></code> <code><a href="class_response.html">new_daedalus_mortality()</a></code> <code><a href="class_response.html">is_daedalus_response()</a></code> <code><a href="class_response.html">validate_daedalus_response()</a></code>
 
         </dt>
         <dd>Constructor for the &lt;daedalus_response&gt; super-class and sub-classes</dd>
@@ -272,6 +289,12 @@
 
         </dt>
         <dd>Internal function for daedalus</dd>
+      </dl><dl><dt>
+
+          <code><a href="dummy_npi.html">dummy_npi()</a></code>
+
+        </dt>
+        <dd>Dummy NPI</dd>
       </dl><dl><dt>
 
           <code><a href="dummy_vaccination.html">dummy_vaccination()</a></code>
@@ -380,6 +403,12 @@
 
         </dt>
         <dd>Validate and return infection input</dd>
+      </dl><dl><dt>
+
+          <code><a href="validate_npi_input.html">validate_npi_input()</a></code>
+
+        </dt>
+        <dd>Validate npi inputs</dd>
       </dl><dl><dt>
 
           <code><a href="validate_vaccination_input.html">validate_vaccination_input()</a></code>

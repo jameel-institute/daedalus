@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.25</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.26</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -104,12 +104,11 @@ parameters using <code><a href="class_infection.html">daedalus_infection()</a></
 
 
 <dt id="arg-response-strategy">response_strategy<a class="anchor" aria-label="anchor" href="#arg-response-strategy"></a></dt>
-<dd><p>A string for the name of response strategy followed;
-defaults to "none". The response strategy determines the country-specific
-response threshold following which the response is activated. See
-<code>response_threshold</code>.</p>
-<p>While the response strategy is active, economic contacts are scaled using the
-package data object <code><a href="https://jameel-institute.github.io/daedalus.data/reference/closure_data.html">daedalus.data::closure_data</a></code>.</p></dd>
+<dd><p>A string for the name of response strategy followed,
+a numeric of length 45 (number of economic sectors), or a <code>&lt;daedalus_npi&gt;</code>
+object. Defaults to "none".
+While the response strategy is active, economic contacts are scaled using the
+package data object <code><a href="https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html">daedalus.data::closure_strategy_data</a></code>.</p></dd>
 
 
 <dt id="arg-vaccine-investment">vaccine_investment<a class="anchor" aria-label="anchor" href="#arg-vaccine-investment"></a></dt>
@@ -132,7 +131,7 @@ Defaults to 30 days.</p></dd>
 
 <dt id="arg-response-duration">response_duration<a class="anchor" aria-label="anchor" href="#arg-response-duration"></a></dt>
 <dd><p>A single integer-ish number that gives the number of
-days after <code>response_time</code> that an NPI should end.</p></dd>
+days after activation that an NPI should end.</p></dd>
 
 
 <dt id="arg-auto-social-distancing">auto_social_distancing<a class="anchor" aria-label="anchor" href="#arg-auto-social-distancing"></a></dt>

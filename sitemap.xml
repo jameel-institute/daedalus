@@ -16,6 +16,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/class_country.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/class_daedalus_output.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/class_infection.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/class_npi.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/class_response.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/class_vaccination.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/country_name_from_arg.html</loc></url>
@@ -23,6 +24,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus_internal.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus_multi_infection.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/dummy_npi.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/dummy_vaccination.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/econ_constants.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/epi_constants.html</loc></url>
@@ -52,6 +54,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/uptake_percent_to_number.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/validate_country_input.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/validate_infection_input.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/validate_npi_input.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/validate_vaccination_input.html</loc></url>
 </urlset>
 
