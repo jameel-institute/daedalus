@@ -22,7 +22,6 @@ daedalus_multi_infection <- function(
   response_strategy = NULL,
   vaccine_investment = NULL,
   response_time = 30,
-  response_duration = 365,
   auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
@@ -52,8 +51,7 @@ daedalus_multi_infection <- function(
     response_strategy,
     country,
     first(infection),
-    response_time,
-    response_duration
+    response_time
   )
 
   # NPI needs gamma_Ia from each infection
@@ -62,8 +60,7 @@ daedalus_multi_infection <- function(
       response_strategy,
       country,
       x,
-      response_time,
-      response_duration
+      response_time
     )
   })
 
