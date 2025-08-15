@@ -166,7 +166,8 @@ class daedalus_ode {
                           {"exposed_vax", dim_vec},
                           {"infect_symp_vax", dim_vec},
                           {"infect_asymp_vax", dim_vec},
-                          {"hospitalised_vax", dim_vec},
+                          {"hospitalised_recov_vax", dim_vec},
+                          {"hospitalised_death_vax", dim_vec},
                           {"recovered_vax", dim_vec},
                           {"dead_vax", dim_vec},
                           {"new_infections_vax", dim_vec},
@@ -504,15 +505,6 @@ class daedalus_ode {
     internal.hrToR = shared.gamma_H_recovery * t_x.chip(iHr, i_COMPS);
 
     internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
-
-    /* TODO for this PR
-     - redefine how idx_hosp is defined by daedalus::helpers::get_state_idx
-     - check idx_hosp is correctly used subsequently
-     - fix all failing tests
-     - update flodia model diagram
-     - update info_model_description.Rmd vignette
-    */
-
 
     // update next step
     t_dx.chip(iS, i_COMPS) = -internal.sToE + internal.rToS;
