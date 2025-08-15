@@ -1,3 +1,7 @@
+# daedalus (development version)
+
+This patch makes a small fix to the internal function `prepare_data()` to make it robust to user-created country demography vectors when the vector names are stripped. Timesteps are now taken from the parent function `daedalus()` and `daedalus_multi_infection()`.
+
 # daedalus 0.2.26
 
 This patch adds the `<daedalus_npi>` class which is used to store NPI response parameters. `daedalus()` now accepts these objects as inputs to `response_strategy`.

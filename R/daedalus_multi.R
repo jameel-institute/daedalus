@@ -142,7 +142,9 @@ daedalus_multi_infection <- function(
     ode_control,
     n_param_sets
   )
-  output_data <- prepare_output(output$data, country)
+
+  timesteps <- seq(0, time_end)
+  output_data <- prepare_output(output$data, country, timesteps)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
