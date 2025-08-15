@@ -10,7 +10,6 @@ daedalus(
   response_strategy = NULL,
   vaccine_investment = NULL,
   response_time = 30,
-  response_duration = 365,
   auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
@@ -56,10 +55,9 @@ across all age groups. Other accepted values are \code{"low"}, \code{"medium"} a
 \item{response_time}{A single numeric value for the time in days
 at which the selected response is activated. This is ignored if the response
 has already been activated by the hospitalisation threshold being reached.
-Defaults to 30 days.}
-
-\item{response_duration}{A single integer-ish number that gives the number of
-days after activation that an NPI should end.}
+Defaults to 30 days. Responses have a default maximum duration of 365 days.
+This can be changed by passing a \verb{<daedalus_npi>} object to
+\code{response_strategy}.}
 
 \item{auto_social_distancing}{A string giving the option for the form of
 spontaneous social distancing in the model, which reduces infection
