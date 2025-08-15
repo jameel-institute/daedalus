@@ -10,7 +10,6 @@ daedalus_multi_infection(
   response_strategy = NULL,
   vaccine_investment = NULL,
   response_time = 30,
-  response_duration = 365,
   auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
