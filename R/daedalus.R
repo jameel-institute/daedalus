@@ -357,8 +357,9 @@ daedalus <- function(
       susc = susc,
       # all three below needed for npi-linked behaviour response
       openness = get_data(npi, "openness"),
-      response_time = response_time[1], # TODO: temporary as these can be vecs
-      response_duration = duration[1], # TODO: temporary as these can be vecs
+      # temporary as these can be vecs, see future PRs
+      response_time = response_time[1],
+      response_duration = duration[1],
       auto_social_distancing = auto_social_distancing,
       vaccination = vaccination,
       npi = npi,
