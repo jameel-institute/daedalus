@@ -4,7 +4,8 @@ test_that("daedalus: Auto-social distancing works", {
       "GBR",
       "sars_cov_1",
       "elimination",
-      auto_social_distancing = "off"
+      auto_social_distancing = "off",
+      time_end = 200
     )
   )
   expect_no_condition(
@@ -12,7 +13,8 @@ test_that("daedalus: Auto-social distancing works", {
       "GBR",
       "sars_cov_1",
       "elimination",
-      auto_social_distancing = "independent"
+      auto_social_distancing = "independent",
+      time_end = 200
     )
   )
   expect_no_condition(
@@ -20,7 +22,8 @@ test_that("daedalus: Auto-social distancing works", {
       "GBR",
       "sars_cov_1",
       "elimination",
-      auto_social_distancing = "npi_linked"
+      auto_social_distancing = "npi_linked",
+      time_end = 200
     )
   )
 
@@ -29,19 +32,22 @@ test_that("daedalus: Auto-social distancing works", {
     "GBR",
     "sars_cov_1",
     "none",
-    auto_social_distancing = "off"
+    auto_social_distancing = "off",
+    time_end = 200
   )
   data_sd_ind <- daedalus(
     "GBR",
     "sars_cov_1",
     "none",
-    auto_social_distancing = "independent"
+    auto_social_distancing = "independent",
+    time_end = 200
   )
   data_sd_npi <- daedalus(
     "GBR",
     "sars_cov_1",
     "none",
-    auto_social_distancing = "npi_linked"
+    auto_social_distancing = "npi_linked",
+    time_end = 200
   )
 
   fs_sd_off <- get_epidemic_summary(data_sd_off, "infections")
@@ -63,13 +69,15 @@ test_that("daedalus: Auto-social distancing works", {
     "GBR",
     "sars_cov_1",
     "elimination",
-    auto_social_distancing = "off"
+    auto_social_distancing = "off",
+    time_end = 200
   )
   data_sd_npi <- daedalus(
     "GBR",
     "sars_cov_1",
     "elimination",
-    auto_social_distancing = "npi_linked"
+    auto_social_distancing = "npi_linked",
+    time_end = 200
   )
 
   fs_sd_off <- get_epidemic_summary(data_sd_off, "infections")
