@@ -334,6 +334,12 @@ daedalus <- function(
 
   #### spontaneous social distancing ####
   auto_social_distancing <- rlang::arg_match(auto_social_distancing)
+
+  if (auto_social_distancing == "independent") {
+    flags["sd_flag"] <- 1.0
+    flags["sd_start_time"] <- 1.0
+  }
+
   auto_social_distancing <- switch(
     auto_social_distancing,
     off = 0,
@@ -358,8 +364,6 @@ daedalus <- function(
       # all three below needed for npi-linked behaviour response
       openness = get_data(npi, "openness"),
       # temporary as these can be vecs, see future PRs
-      response_time = response_time[1],
-      response_duration = duration[1],
       auto_social_distancing = auto_social_distancing,
       vaccination = vaccination,
       npi = npi,
