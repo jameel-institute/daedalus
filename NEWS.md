@@ -1,3 +1,11 @@
+# daedalus (development version)
+
+## PR 113
+
+This patch version demotes `auto_social_distancing` from a full `daedalus::events::response` while retaining the mechanism of behavioural effects.
+The mechanism options are mostly handled on the R side (options `"off"` and `"independent"`, by setting initial flag values), with only `"npi_linked"` handled on the C++ side (by setting the reference flag index to the same as `i_npi_flag`).
+This allows the mechanism to remain NPI-linked when necessary without needing to specify time- and state-dependence rules separately.
+
 # daedalus 0.2.31
 
 This patch version adds functionality to allow multiple, sequential, time-limited NPIs (PR #111 reviewed by @pabloperguz).
