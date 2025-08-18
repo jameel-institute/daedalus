@@ -1,3 +1,29 @@
+# daedalus (development version)
+
+## PR 111
+
+This patch version adds functionality to allow multiple, sequential, time-limited NPIs.
+
+- `<daedalus_response>` and sub-classes have separate `time_off` and `max_duration` members; `time_off` may be a vector while `max_duration` is a single number defaulting to `365` for `<daedalus_npi>` only. `<daedalus_vaccination>` has no default value allowing events to continue indefinitely.
+
+- Events returned from `daedalus()` now differentiate between time-limitation and maximum-duration events; the internal function `get_daedalus_response_times()` handles these different names.
+
+- C++ class `daedalus::events::response` now expects members `time_on` and `time_off` to be vectors; this is handled for `<daedalus_npi>` and `<daedalus_vaccination>` via `daedalus::inputs::read_response` but is manually set for other events.
+
+- C++ class `daedalus::events::response` member function `make_time_test` now checks for start and end time with an `expected_value` argument for the expected value of the flag. Function `make_duration_test` only handles the condition that the maximum duration is reached.
+
+- A new vignette `timed_response.Rmd` shows how to use the time-limitation functionality in `<daedalus_npi>`.
+
+- General tests for events in `test-daedalus_events.R` have been moved to either NPI or vaccination test files.
+
+### Breaking changes
+
+- Older versions of _daedalus_ that pass the `duration` argument to a response object to implement time-limits will fail.
+
+### Notes
+
+- The 'auto social-distancing' option `npi_linked` is not fully compatible with the new changes to `<daedalus_npi>`, and auto social-distancing will only launch during the first interval that an NPI is active; this will be fixed in a future PR.
+
 # daedalus 0.2.30
 
 This patch version:
