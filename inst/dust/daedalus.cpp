@@ -70,8 +70,6 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(cm_cons_work, constant = TRUE)]]
 // [[dust2::parameter(hospital_capacity, constant = TRUE)]]
 // [[dust2::parameter(openness, constant = TRUE)]]
-// [[dust2::parameter(response_time, constant = TRUE)]]
-// [[dust2::parameter(response_duration, constant = TRUE)]]
 // [[dust2::parameter(auto_social_distancing, constant = TRUE)]]
 class daedalus_ode {
  public:
@@ -95,8 +93,7 @@ class daedalus_ode {
     const size_t i_ipr, i_npi_flag, i_vax_flag, i_sd_flag, i_hosp_overflow_flag;
 
     // event objects
-    daedalus::events::response npi, vaccination, public_concern,
-        hosp_cap_exceeded;
+    daedalus::events::response npi, vaccination, hosp_cap_exceeded;
   };
 
   /// @brief Intermediate data.
@@ -259,10 +256,6 @@ class daedalus_ode {
     // response time is only 0.0 when response is NULL or 'none'
     // this is used to set hosp capacity to NA_REAL so the response is not
     // triggered
-    const real_type response_time =
-        dust2::r::read_real(pars, "response_time", NA_REAL);
-    const real_type response_duration =
-        dust2::r::read_real(pars, "response_duration", NA_REAL);
     const int auto_social_distancing =
         dust2::r::read_size(pars, "auto_social_distancing", 0);
 
@@ -270,8 +263,6 @@ class daedalus_ode {
     // prevent hospital-capacity triggered responses
     const real_type hospital_capacity =
         dust2::r::read_real(pars, "hospital_capacity", NA_REAL);
-    const real_type hosp_cap_response =
-        std::isnan(response_time) ? NA_REAL : hospital_capacity;
 
     // handling openness vector
     TensorMat openness(n_econ_groups, 1);
@@ -287,14 +278,14 @@ class daedalus_ode {
         total_compartments + daedalus::constants::i_rel_NPI_FLAG;
     const size_t i_vax_flag =
         total_compartments + daedalus::constants::i_rel_VAX_FLAG;
-    const size_t i_sd_flag =
-        total_compartments + daedalus::constants::i_rel_SD_FLAG;
+    size_t i_sd_flag = total_compartments + daedalus::constants::i_rel_SD_FLAG;
     const size_t i_hosp_overflow_flag =
         total_compartments + daedalus::constants::i_rel_hosp_overflow_FLAG;
 
     // start times for events
-    const size_t i_real_sd_start =
-        total_compartments + daedalus::constants::i_rel_SD_START_TIME;
+    const size_t i_real_hosp_overflow_start =
+        total_compartments +
+        daedalus::constants::i_rel_hosp_overflow_START_TIME;
 
     // INTEGERS FOR ROOT TYPES FOR STATE-DEPENDENT EVENTS
     // NOTE: these are handled internally in most classes and not exposed in R
@@ -312,26 +303,13 @@ class daedalus_ode {
     daedalus::events::response vaccination =
         daedalus::inputs::read_response(pars, "vaccination");
 
-    // predicate public concern social distancing on whether it is off,
-    // independent and always on, or linked to NPIs
-    // params below are for "independent" i.e., always on
-    real_type sd_start_time = 1.0;    // cannot start at 0.0
-    real_type sd_duration = NA_REAL;  // NA_REAL indicates no end time
-    real_type sd_start_state = NA_REAL;
-    real_type sd_end_state = NA_REAL;
-    // prefer enums or strings but dust2 cannot handle these yet?
-    if (auto_social_distancing == 0) {
-      sd_start_time = NA_REAL;
-    } else if (auto_social_distancing == 2) {
-      sd_start_time = response_time;
-      sd_duration = response_duration;
-      sd_start_state = hosp_cap_response;
-      sd_end_state = gamma_Ia;  // not working anyway; see PR #83
+    // public concern social distancing may be off, on, or linked to NPIs;
+    // switching the reference flag index makes it NPI linked; if always on,
+    // set the initial flag value to 1.0 in R
+    // NOTE: this has been demoted from a full event, but may be promoted again
+    if (auto_social_distancing == 2) {
+      i_sd_flag = i_npi_flag;  // refer to NPI state
     }
-    daedalus::events::response public_concern(
-        std::string("public_concern"), {sd_start_time}, {sd_duration}, NA_REAL,
-        sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr},
-        root_type_increasing, root_type_decreasing, i_real_sd_start);
 
     daedalus::events::response hosp_cap_exceeded =
         daedalus::inputs::read_response(pars, "hosp_overflow");
@@ -347,7 +325,7 @@ class daedalus_ode {
         i_ipr,  // state index holding incidence/prevalence ratio
         i_npi_flag,   i_vax_flag, i_sd_flag,    i_hosp_overflow_flag,
         npi,          vaccination,
-        public_concern, hosp_cap_exceeded};
+        hosp_cap_exceeded};
     // clang-format on
   }
 
@@ -367,7 +345,6 @@ class daedalus_ode {
     // return events vector
     return daedalus::events::get_combined_events(
         {shared.vaccination.make_events(), shared.npi.make_events(),
-         shared.public_concern.make_events(),
          shared.hosp_cap_exceeded.make_events()});
   }
 
