@@ -24,7 +24,7 @@ inline daedalus::events::response read_response(cpp11::list args,
                                                 const char *name) {
   cpp11::list this_list = args[name];
   if (this_list == R_NilValue) {
-    cpp11::stop("A this_list is expected for '%s'", name);
+    cpp11::stop("A list is expected for '%s', but it is NULL", name);
   } else if (!Rf_inherits(this_list, "daedalus_response")) {
     cpp11::stop("'%s' must inherit from `<daedalus_response>`", name);
   }
