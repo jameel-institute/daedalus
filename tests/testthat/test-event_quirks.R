@@ -17,6 +17,8 @@ test_that("Vaccination does not trigger hospital-capacity based events", {
     time_end = 300
   )
 
+  # NOTE: public concern is still an event on this branch and is triggered
+  # public concern will be removed after PR #113 is merged
   npi_state_on_time <- round(output$event_data[
     output$event_data$name == "npi_state_on",
     "time"

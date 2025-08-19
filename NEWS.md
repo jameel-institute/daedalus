@@ -1,3 +1,13 @@
+# daedalus (development version)
+
+This patch version:
+
+- Introduces the `<daedalus_hosp_overflow>` class for internal use;
+
+- Fixes issues related to vaccination 'pulling along' other state-dependent events by correcting the R and C++ functions `get_state_indices()` and `daedalus::helpers::get_state_idx`;
+
+- Fixes flag checking in the `daedalus::response` class event factories (previous indexing used the absolute indices of flags in `state` which worked for the wrong reason).
+
 # daedalus 0.2.29
 
 This patch version implements a request from UKHSA to allow modelling pre-existing immunity by placing some proportion of the model population in the vaccinated stratum during model initialisation, by specifying `p_immune` in `initial_state_manual` in `daedalus()` and `daedalus_multi_infection()`. See function documentation details for more (PR #118 reviewed by @OliverPolhillUKHSA).
