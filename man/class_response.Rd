@@ -6,7 +6,6 @@
 \alias{new_daedalus_response}
 \alias{response_class_names}
 \alias{new_daedalus_behaviour}
-\alias{new_daedalus_mortality}
 \alias{is_daedalus_response}
 \alias{validate_daedalus_response}
 \title{Constructor for the <daedalus_response> super-class and sub-classes}
@@ -34,8 +33,6 @@ new_daedalus_response(
 response_class_names
 
 new_daedalus_behaviour()
-
-new_daedalus_mortality()
 
 is_daedalus_response(x)
 
@@ -104,7 +101,8 @@ the sub-classes returned by the sub-class constructors:
 \item \code{new_daedalus_npi()}: \verb{<daedalus_npi>};
 \item \code{new_daedalus_vax()}: \verb{<daedalus_vax>};
 \item \code{new_daedalus_behaviour()}: \verb{<daedalus_behaviour>};
-\item \code{new_daedalus_mortality()}: \verb{<daedalus_mortality>}.
+\item \code{new_daedalus_hosp_overflow()}: \verb{<daedalus_hosp_overflow>}. This function
+is not exposed to users.
 }
 }
 \description{

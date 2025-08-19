@@ -68,7 +68,8 @@
 #'
 #' - `new_daedalus_behaviour()`: `<daedalus_behaviour>`;
 #'
-#' - `new_daedalus_mortality()`: `<daedalus_mortality>`.
+#' - `new_daedalus_hosp_overflow()`: `<daedalus_hosp_overflow>`. This function
+#' is not exposed to users.
 #'
 #' @keywords internal
 new_daedalus_response <- function(
@@ -119,17 +120,12 @@ response_class_names <- c(
   "daedalus_npi",
   "daedalus_vaccination",
   "daedalus_behaviour",
-  "daedalus_mortality"
+  "daedalus_hosp_overflow"
 )
 
 #' @name class_response
 new_daedalus_behaviour <- function() {
   new_daedalus_response("behaviour", "daedalus_behaviour")
-}
-
-#' @name class_response
-new_daedalus_mortality <- function() {
-  new_daedalus_response("mortality", "daedalus_mortality")
 }
 
 #' @name class_response
