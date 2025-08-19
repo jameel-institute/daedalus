@@ -229,8 +229,16 @@ get_state_indices <- function(state_name, country) {
   } else {
     compartment_index <- idx_COMPARTMENTS[[state_name]] # temporary
     max_index <- compartment_index * groups
+    stride <- groups * N_MODEL_COMPARTMENTS
+    max_indices <- max_index + stride * seq.int(0, N_VACCINE_STRATA - 1)
 
-    seq.int(max_index - groups, max_index - 1)
+    as.vector(vapply(
+      max_indices,
+      function(x) {
+        seq.int(x - groups, x - 1)
+      },
+      FUN.VALUE = integer(groups)
+    ))
   }
 }
 
