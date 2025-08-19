@@ -322,15 +322,12 @@ daedalus <- function(
     ))
   }
 
-  # prevent passing NAs as these are not correctly handled on C++ side
-  if (identical(response_strategy, "none") || is.null(response_strategy)) {
-    # set response time to NULL when response is NULL
-    response_time <- NULL
-    duration <- NULL
-  } else {
-    response_time <- npi$time_on
-    duration <- npi$duration
-  }
+  # # prevent passing NAs as these are not correctly handled on C++ side
+  # if (identical(response_strategy, "none") || is.null(response_strategy)) {
+  #   # set response time to NULL when response is NULL
+  # } else {
+  #   response_time <- npi$time_on
+  # }
 
   #### spontaneous social distancing ####
   auto_social_distancing <- rlang::arg_match(auto_social_distancing)
