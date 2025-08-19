@@ -14,7 +14,7 @@ new_daedalus_hosp_overflow <- function(country) {
   identifier <- "hosp_cap_exceeded"
   hospital_capacity <- get_data(country, "hospital_capacity")
 
-  id_state_hosp = get_state_indices("hospitalised", country)
+  id_state_hosp <- get_state_indices("hospitalised", country)
 
   new_daedalus_response(
     "hosp_cap_exceeded",
