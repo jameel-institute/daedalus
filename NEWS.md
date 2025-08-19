@@ -1,4 +1,4 @@
-# daedalus (development version)
+# daedalus 0.2.28
 
 This patch makes a small fix to the internal function `prepare_data()` to make it robust to user-created country demography vectors when the vector names are stripped. Timesteps are now taken from the parent function `daedalus()` and `daedalus_multi_infection()`.
 
