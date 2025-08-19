@@ -297,9 +297,6 @@ class daedalus_ode {
     // start times for events
     const size_t i_real_sd_start =
         total_compartments + daedalus::constants::i_rel_SD_START_TIME;
-    const size_t i_real_hosp_overflow_start =
-        total_compartments +
-        daedalus::constants::i_rel_hosp_overflow_START_TIME;
 
     // INTEGERS FOR ROOT TYPES FOR STATE-DEPENDENT EVENTS
     // NOTE: these are handled internally in most classes and not exposed in R
@@ -338,10 +335,8 @@ class daedalus_ode {
         sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr},
         root_type_increasing, root_type_decreasing, i_real_sd_start);
 
-    daedalus::events::response hosp_cap_exceeded(
-        std::string("hosp_cap_exceeded"), NA_REAL, NA_REAL, hospital_capacity,
-        hospital_capacity, i_hosp_overflow_flag, {idx_hosp}, {idx_hosp},
-        root_type_increasing, root_type_decreasing, i_real_hosp_overflow_start);
+    daedalus::events::response hosp_cap_exceeded =
+        daedalus::inputs::read_response(pars, "hosp_overflow");
 
     // clang-format off
     return shared_state{
@@ -567,7 +562,7 @@ class daedalus_ode {
     const Eigen::Tensor<double, 0> incidence =
         internal.alt_new_infections.sum();
     const Eigen::Tensor<double, 0> prevalence = internal.t_infectious.sum();
-    
+
     state_deriv[shared.i_ipr] = incidence(0) / prevalence(0);
   }
 
