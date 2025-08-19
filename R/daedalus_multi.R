@@ -112,6 +112,8 @@ daedalus_multi_infection <- function(
   # prepare susceptibility matrix for vaccination
   susc <- make_susc_matrix(vaccination, country)
 
+  hosp_overflow <- new_daedalus_hosp_overflow(country)
+
   # as both infection and npi are now lists
   parameters <- Map(infection, npi, f = function(x, y) {
     c(
@@ -126,7 +128,8 @@ daedalus_multi_infection <- function(
         response_duration = duration,
         auto_social_distancing = auto_social_distancing,
         vaccination = vaccination,
-        npi = y
+        npi = y,
+        hosp_overflow = hosp_overflow
       )
     )
   })

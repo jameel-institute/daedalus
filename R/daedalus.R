@@ -357,7 +357,8 @@ daedalus <- function(
       response_duration = duration,
       auto_social_distancing = auto_social_distancing,
       vaccination = vaccination,
-      npi = npi
+      npi = npi,
+      hosp_overflow = new_daedalus_hosp_overflow(country)
     )
   )
 
