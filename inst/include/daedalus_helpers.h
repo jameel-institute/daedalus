@@ -35,7 +35,9 @@ namespace helpers {
 inline std::vector<size_t> get_state_idx(
     const std::vector<size_t> &seq_compartments, const int &n_strata,
     const int &n_vax) {
-  std::vector<size_t> i_to_zero;
+  std::vector<size_t> idx;
+
+  const size_t stride = n_strata * daedalus::constants::N_COMPARTMENTS;
 
   std::vector<int> seq_strata(n_strata);
   std::iota(seq_strata.begin(), seq_strata.end(), 1);
@@ -44,15 +46,16 @@ inline std::vector<size_t> get_state_idx(
   std::iota(seq_vax.begin(), seq_vax.end(), 1);
 
   for (const auto &i : seq_compartments) {
+    const size_t max_index = i * n_strata;
     for (const auto &j : seq_strata) {
       for (const auto &k : seq_vax) {
         // cppcheck-suppress useStlAlgorithm
-        i_to_zero.push_back(static_cast<size_t>(i * n_strata * k - j));
+        idx.push_back(static_cast<size_t>(max_index + stride * (k - 1) - j));
       }
     }
   }
 
-  return i_to_zero;
+  return idx;
 }
 
 /// @brief Process severity parameters to define a death death, based on the
