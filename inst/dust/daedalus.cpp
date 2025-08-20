@@ -85,7 +85,7 @@ class daedalus_ode {
   struct shared_state {
     // NOTE: n_strata unknown at compile time
     const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is,
-    gamma_H_recovery, gamma_H_death;
+        gamma_H_recovery, gamma_H_death;
     const TensorMat eta, hfr;
 
     const real_type nu, psi;
@@ -115,8 +115,8 @@ class daedalus_ode {
     mat2d.setZero();
     TensorMat sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
               iaToR = mat2d, isToH = mat2d, isToHd = mat2d, isToHr = mat2d,
-              hrToR = mat2d, hdToD = mat2d, rToS = mat2d,
-              t_comm_inf = mat2d, t_foi = mat2d;
+              hrToR = mat2d, hdToD = mat2d, rToS = mat2d, t_comm_inf = mat2d,
+              t_foi = mat2d;
 
     // infection related
     TensorMat mat2d_econ(shared.n_econ_groups, N_VAX_STRATA);
@@ -210,9 +210,9 @@ class daedalus_ode {
     const real_type gamma_Ia = dust2::r::read_real(pars, "gamma_Ia", 0.0);
     const real_type gamma_Is = dust2::r::read_real(pars, "gamma_Is", 0.0);
     const real_type gamma_H_recovery =
-      dust2::r::read_real(pars, "gamma_H_recovery", 0.0);
+        dust2::r::read_real(pars, "gamma_H_recovery", 0.0);
     const real_type gamma_H_death =
-      dust2::r::read_real(pars, "gamma_H_death", 0.0);
+        dust2::r::read_real(pars, "gamma_H_death", 0.0);
 
     // EPI PARAMETERS: AGE VARYING
     TensorMat eta_temp(n_strata, 1);
@@ -222,7 +222,6 @@ class daedalus_ode {
     dust2::r::read_real_vector(pars, n_strata, hfr_temp.data(), "hfr", true);
     TensorMat eta = eta_temp.broadcast(bcast);
     TensorMat hfr = hfr_temp.broadcast(bcast);
-
 
     // CONTACT PARAMETERS (MATRICES)
     // contact matrix
@@ -305,8 +304,8 @@ class daedalus_ode {
     const int root_type_decreasing = -1;
 
     // RESPONSE AND VACCINATION CLASSES
-    std::vector<size_t> idx_hosp =
-        daedalus::helpers::get_state_idx({iHd + 1, iHr + 1}, n_strata, N_VAX_STRATA);
+    std::vector<size_t> idx_hosp = daedalus::helpers::get_state_idx(
+        {iHd + 1, iHr + 1}, n_strata, N_VAX_STRATA);
 
     // NOTE: NPI response end time passed as parameter; vax end time remains 0.0
     daedalus::events::response npi(
@@ -417,17 +416,17 @@ class daedalus_ode {
     // calculate total hospitalisations to check if hosp capacity is exceeded;
     // scale mortality rate by 1.6 if so
     Eigen::Tensor<double, 0> total_hosp =
-      t_x.chip(iHr, i_COMPS).sum() + t_x.chip(iHd, i_COMPS).sum();
+        t_x.chip(iHr, i_COMPS).sum() + t_x.chip(iHd, i_COMPS).sum();
 
     const double hfr_modifier =
-      daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
-                                       state[shared.i_hosp_overflow_flag]);
+        daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
+                                         state[shared.i_hosp_overflow_flag]);
 
     // calculate total deaths and scale beta by concern, but only if an
     // NPI is active
     // TODO(pratik): change in future so public-concern is independent of NPIs
     internal.hdToD =
-      shared.gamma_H_death * t_x.chip(iHd, i_COMPS);  // new deaths
+        shared.gamma_H_death * t_x.chip(iHd, i_COMPS);  // new deaths
     Eigen::Tensor<double, 0> total_deaths = internal.hdToD.sum();
 
     const double beta_tmp =
@@ -500,7 +499,7 @@ class daedalus_ode {
     internal.iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
 
     internal.isToHd =
-      shared.eta * t_x.chip(iIs, i_COMPS) * shared.hfr * hfr_modifier;
+        shared.eta * t_x.chip(iIs, i_COMPS) * shared.hfr * hfr_modifier;
     internal.isToHr = shared.eta * t_x.chip(iIs, i_COMPS) - internal.isToHd;
     internal.hrToR = shared.gamma_H_recovery * t_x.chip(iHr, i_COMPS);
 
@@ -510,7 +509,7 @@ class daedalus_ode {
     t_dx.chip(iS, i_COMPS) = -internal.sToE + internal.rToS;
     t_dx.chip(iE, i_COMPS) = internal.sToE - internal.eToIs - internal.eToIa;
     t_dx.chip(iIs, i_COMPS) =
-      internal.eToIs - internal.isToR - internal.isToHr - internal.isToHd;
+        internal.eToIs - internal.isToR - internal.isToHr - internal.isToHd;
     t_dx.chip(iIa, i_COMPS) = internal.eToIa - internal.iaToR;
     t_dx.chip(iHr, i_COMPS) = internal.isToHr - internal.hrToR;
     t_dx.chip(iHd, i_COMPS) = internal.isToHd - internal.hdToD;
