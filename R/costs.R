@@ -1,11 +1,17 @@
 #' Get epidemic costs from a DAEDALUS model run
 #'
 #' @param x A `<daedalus_output>` object from a call to [daedalus()].
+#'
 #' @param summarise_as A string from among "none", "total", or "domain", for how
 #' the costs should be returned. Select "none", the default, for the raw costs
 #' along with overall and domain-specific totals; "total" for the overall cost,
 #' and "domain" for the total costs per domain; the domains are 'economic',
 #' 'education', and 'life years'.
+#'
+#' @param productivity_loss_infection A single number in the range 0 -- 1 giving
+#' the loss in productivity associated with symptomatic infection. Currently
+#' defaults to 1.0 for compatibility with earlier function versions.
+#'
 #' @return A list of different cost values, including the total cost. See
 #' **Details** for more information.
 #'
@@ -47,8 +53,13 @@
 #' output <- daedalus("Canada", "influenza_1918")
 #'
 #' get_costs(output)
+#'
 #' @export
-get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
+get_costs <- function(
+  x,
+  summarise_as = c("none", "total", "domain"),
+  productivity_loss_infection = 1.0
+) {
   checkmate::assert_class(x, "daedalus_output")
 
   gva <- x$country_parameters$gva
@@ -70,9 +81,18 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   model_data <- get_data(x)
   worker_absences <- model_data[
     model_data$compartment %in%
-      c("infect_symp", "infect_asymp", "hospitalised", "dead") &
+      c("infect_symp", "hospitalised", "dead") &
       model_data$econ_sector != "sector_00",
   ]
+
+  # scale infectious symptomatic by productivity loss
+  worker_absences[
+    worker_absences$compartment == "infect_symp",
+  ]$value <- worker_absences[
+    worker_absences$compartment == "infect_symp",
+  ]$value *
+    productivity_loss_infection
+
   worker_absences <- tapply(
     worker_absences$value,
     list(worker_absences$time, worker_absences$econ_sector),
@@ -256,7 +276,7 @@ get_value_school_year <- function(gni) {
 #' a pandemic. Includes costs of economic support, vaccinations given, and NPIs
 #' administered or implemented.
 #'
-#' @param x A `<daedalus_output>` object.
+#' @inheritParams get_costs
 #'
 #' @param support_level The proportion of pandemic-related economic losses that
 #' a government compensates, as a proportion.
@@ -365,7 +385,8 @@ get_fiscal_costs <- function(
   interest_rate = 4.0,
   tax_rate = 35.0,
   spending_rate = 45.0,
-  starting_debt = 0.0
+  starting_debt = 0.0,
+  productivity_loss_infection = 1.0
 ) {
   # Needs better error messages
   checkmate::assert_class(x, "daedalus_output")
@@ -415,9 +436,18 @@ get_fiscal_costs <- function(
   model_data <- get_data(x)
   worker_absences <- model_data[
     model_data$compartment %in%
-      c("infect_symp", "infect_asymp", "hospitalised", "dead") &
+      c("infect_symp", "hospitalised", "dead") &
       model_data$econ_sector != "sector_00",
   ]
+
+  # scale infectious symptomatic by productivity loss
+  worker_absences[
+    worker_absences$compartment == "infect_symp",
+  ]$value <- worker_absences[
+    worker_absences$compartment == "infect_symp",
+  ]$value *
+    productivity_loss_infection
+
   worker_absences <- tapply(
     worker_absences$value,
     list(worker_absences$time, worker_absences$econ_sector),
@@ -426,7 +456,7 @@ get_fiscal_costs <- function(
   workforce <- x$country_parameters$workers
 
   # calculate labour available after absences and closures
-  # during closures, available labour is the lesser of healthy workers and
+  # during closures, available labour is the product of healthy workers and
   # mandated capacity
   avail_labour <- 1.0 - worker_absences %*% diag(1.0 / workforce)
 
@@ -448,7 +478,7 @@ get_fiscal_costs <- function(
     avail_labour[closure_periods, ] <- t(apply(
       avail_labour[closure_periods, ],
       1L,
-      pmin,
+      `*`,
       openness
     ))
   }
