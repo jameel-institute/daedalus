@@ -1,3 +1,19 @@
+# daedalus (development version)
+
+This patch modifies the costs and fiscal costs calculation by changing how absences due to illness are calculated in `get_costs()` and `get_fiscal_costs()`.
+
+- Only $H$ and $D$ are counted as fully absent;
+
+- $I_a$ were previously counted but are no longer counted;
+
+- $I_s$ are counted as fully absent with full productivity loss using the argument `productivity_loss_infection` in costs functions; this can be changed during costs calculations.
+
+Snapshot tests are updated to reflect that all costs are reduced due to no longer counting $I_a$.
+
+## Notes
+
+- `get_fiscal_costs()` is updated to have its labour availability match the multiplicative implementation in `get_costs()`.
+
 # daedalus 0.2.33
 
 This patch version allows multiple, sequential, time-limited NPIs with varying effects (PR #117).
