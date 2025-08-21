@@ -13,11 +13,12 @@ get_fiscal_costs(
   interest_rate = 4,
   tax_rate = 35,
   spending_rate = 45,
-  starting_debt = 0
+  starting_debt = 0,
+  productivity_loss_infection = 1
 )
 }
 \arguments{
-\item{x}{A \verb{<daedalus_output>} object.}
+\item{x}{A \verb{<daedalus_output>} object from a call to \code{\link[=daedalus]{daedalus()}}.}
 
 \item{support_level}{The proportion of pandemic-related economic losses that
 a government compensates, as a proportion.}
@@ -42,6 +43,10 @@ of GDP.}
 
 \item{starting_debt}{The value of national starting debt. Currently assumed
 to be zero while country-specific data are collected.}
+
+\item{productivity_loss_infection}{A single number in the range 0 -- 1 giving
+the loss in productivity associated with symptomatic infection. Currently
+defaults to 1.0 for compatibility with earlier function versions.}
 }
 \value{
 A two-element list giving:
