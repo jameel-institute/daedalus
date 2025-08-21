@@ -62,6 +62,14 @@ get_costs <- function(
 ) {
   checkmate::assert_class(x, "daedalus_output")
 
+  summarise_as <- rlang::arg_match(summarise_as)
+
+  checkmate::assert_number(
+    productivity_loss_infection,
+    lower = 0,
+    upper = 1
+  )
+
   gva <- x$country_parameters$gva
   openness <- x$response_data$openness
   openness <- openness[-1L] # remove null openness
@@ -219,9 +227,6 @@ get_costs <- function(
     education_cost_closures +
     education_cost_absences +
     sum(life_value_lost)
-
-  # return summary if requested, defaults to no summary
-  summarise_as <- rlang::arg_match(summarise_as)
 
   costs <- switch(
     summarise_as,
@@ -428,6 +433,11 @@ get_fiscal_costs <- function(
   checkmate::assert_number(
     starting_debt,
     finite = TRUE
+  )
+  checkmate::assert_number(
+    productivity_loss_infection,
+    lower = 0,
+    upper = 1
   )
 
   gva <- x$country_parameters$gva
