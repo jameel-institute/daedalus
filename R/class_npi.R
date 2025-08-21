@@ -144,7 +144,10 @@ daedalus_npi <- function(
     id_flag = get_flag_index("npi_flag", country),
     time_on = start_time,
     duration = duration,
-    id_state_on = get_state_indices("hospitalised", country),
+    id_state_on = c(
+      get_state_indices("hospitalised_recov", country),
+      get_state_indices("hospitalised_death", country)
+    ),
     id_state_off = get_state_indices("ipr", country),
     value_state_on = get_data(country, "hospital_capacity"),
     value_state_off = get_data(infection, "gamma_Is"),
