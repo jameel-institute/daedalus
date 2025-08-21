@@ -39,14 +39,14 @@ Imports:
     Rcpp,
     rlang
 Suggests:
+    bookdown,
     countrycode,
     dplyr,
     ggdist,
     ggplot2,
     knitr,
-    rmarkdown,
-    bookdown,
     latex2exp,
+    rmarkdown,
     scales,
     spelling,
     testthat (>= 3.0.0),
