@@ -1,4 +1,4 @@
-# daedalus 0.2.26
+# daedalus (development version)
 
 This development version splits H into two compartments and uses HFR as the probability of death conditional on hospitalisation.
 
@@ -9,6 +9,32 @@ This development version splits H into two compartments and uses HFR as the prob
 - On the C++ code, people in Is enter Hd given
 
 - This change will affect the downstream packages `daedalus.api` and `daedalus.compare`, but has no effect on `daedalus.data`. So the `daedalus` user experience remains unchanged.
+
+# daedalus 0.2.28
+
+This patch makes a small fix to the internal function `prepare_data()` to make it robust to user-created country demography vectors when the vector names are stripped. Timesteps are now taken from the parent function `daedalus()` and `daedalus_multi_infection()`.
+
+# daedalus 0.2.27
+
+IPR is calculated using the transmission rate $\beta$ in the absence of modifiers from an NPI or spontaneous behavioural changes.
+
+# daedalus 0.2.26
+
+This patch adds the `<daedalus_npi>` class which is used to store NPI response parameters. `daedalus()` now accepts these objects as inputs to `response_strategy`.
+
+- Changes to the `<daedalus_response>` super-class to add an optional string identifier to identify pre-defined scenarios.
+
+- Helper functions added for the new NPI class;
+
+- Minor edits to the `<daedalus_response>` super-class to accommodate the NPI class;
+
+- Minor edits to `<daedalus_vaccination>`;
+
+- C++ `daedalus::inputs::read_response` now reads `<daedalus_response>` class member `name`.
+
+## Notes
+
+From this version onwards, _daedalus_ requires _daedalus.data_ >= v0.0.3 to provide the data `closure_strategy_names` and `closure_strategy_data`.
 
 # daedalus 0.2.25
 

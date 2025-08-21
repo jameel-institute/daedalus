@@ -4,13 +4,15 @@
 \alias{prepare_output}
 \title{Prepare DAEDALUS data}
 \usage{
-prepare_output(output, country)
+prepare_output(output, country, timesteps)
 }
 \arguments{
 \item{output}{Output from \code{\link[=daedalus_internal]{daedalus_internal()}}, expected to be a list.}
 
 \item{country}{A \verb{<daedalus_country>} object from which to get data on the
 number of demographic, economic, and vaccine groups.}
+
+\item{timesteps}{A numeric vector of model timesteps.}
 }
 \value{
 A \verb{<data.frame>} in long or 'tidy' format with the columns
