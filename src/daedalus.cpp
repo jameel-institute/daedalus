@@ -97,7 +97,7 @@ class daedalus_ode {
     const size_t i_ipr, i_npi_flag, i_vax_flag, i_sd_flag, i_hosp_overflow_flag;
 
     // event objects
-    daedalus::events::response npi, vaccination, public_concern,
+    const daedalus::events::response npi, vaccination, public_concern,
         hosp_cap_exceeded;
   };
 
@@ -330,10 +330,13 @@ class daedalus_ode {
       sd_start_state = hosp_cap_response;
       sd_end_state = gamma_Ia;  // not working anyway; see PR #83
     }
+
+    cpp11::list dummy_list;
     daedalus::events::response public_concern(
-        std::string("public_concern"), {sd_start_time}, {sd_duration}, NA_REAL,
-        sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr},
-        root_type_increasing, root_type_decreasing, i_real_sd_start);
+        std::string("public_concern"), dummy_list, {sd_start_time},
+        {sd_duration}, NA_REAL, sd_start_state, sd_end_state, i_sd_flag,
+        {idx_hosp}, {i_ipr}, root_type_increasing, root_type_decreasing,
+        i_real_sd_start);
 
     daedalus::events::response hosp_cap_exceeded =
         daedalus::inputs::read_response(pars, "hosp_overflow");
