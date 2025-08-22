@@ -52,7 +52,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   checkmate::assert_class(x, "daedalus_output")
 
   gva <- x$country_parameters$gva
-  openness <- x$response_data$openness
+  openness <- last(x$response_data$openness)
 
   # NOTE: might be good to split these into separate functions for different
   # cost domains, but might end up replicating a good bit of code
@@ -380,7 +380,7 @@ get_fiscal_costs <- function(
   )
 
   gva <- x$country_parameters$gva
-  openness <- x$response_data$openness
+  openness <- last(x$response_data$openness)
 
   model_data <- get_data(x)
   worker_absences <- model_data[
