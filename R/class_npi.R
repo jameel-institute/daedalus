@@ -149,7 +149,14 @@ daedalus_npi <- function(
   )
   checkmate::assert_count(max_duration)
 
-  params <- list(openness = openness)
+  no_closures <- rep(1.0, N_ECON_SECTORS)
+
+  params <- list(
+    openness = list(
+      no_closures,
+      openness
+    )
+  )
 
   # NOTE: npis start on hospital capacity, but this can be extended
   x <- new_daedalus_npi(
@@ -200,17 +207,35 @@ validate_daedalus_npi <- function(x) {
   }
 
   # check openness
-  is_good_openness <- checkmate::test_numeric(
+  is_good_openness <- checkmate::test_list(
     x$parameters$openness,
-    lower = 0.0,
-    upper = 1.0,
-    any.missing = FALSE,
-    len = N_ECON_SECTORS
+    "numeric",
+    min.len = 2L
   )
   if (!is_good_openness) {
     cli::cli_abort(
-      "<daedalus_npi> parameter {.str openness} must be a numeric of length
-    {N_ECON_SECTORS}, with values between 0.0 and 1.0."
+      "<daedalus_npi> parameter {.str openness} must be a list of numeric \
+      vectors, with at least two elements, but it is not."
+    )
+  }
+
+  all_good_openness <- all(vapply(
+    x$parameters$openness,
+    function(x) {
+      checkmate::test_numeric(
+        x,
+        lower = 0.0,
+        upper = 1.0,
+        any.missing = FALSE,
+        len = N_ECON_SECTORS
+      )
+    },
+    logical(1L)
+  ))
+  if (!all_good_openness) {
+    cli::cli_abort(
+      "<daedalus_npi> parameter {.str openness} vectors must have length \
+    {N_ECON_SECTORS} with values between 0.0 and 1.0, but some vectors do not."
     )
   }
 
@@ -269,7 +294,6 @@ format.daedalus_npi <- function(x, ...) {
     c(
       "*" = "Start time (days): {.val {x$time_on}}",
       "*" = "End time (days): {.val {x$time_off}}",
-      "*" = "Openness (mean prop.): {.val {mean(x$parameters$openness)}}",
       "*" = "Maximum duration (days): {.val {x$max_duration}} "
     )
   )
@@ -306,7 +330,10 @@ get_data.daedalus_npi <- function(x, to_get, ...) {
 dummy_npi <- function(country) {
   # a dummy npi with openness set to 1 and times set to NA
   params <- list(
-    openness = rep(1.0, N_ECON_SECTORS)
+    openness = list(
+      rep(1.0, N_ECON_SECTORS),
+      rep(1.0, N_ECON_SECTORS)
+    )
   )
   x <- new_daedalus_npi(
     params,
