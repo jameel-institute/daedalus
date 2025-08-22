@@ -34,6 +34,8 @@ inline daedalus::events::response read_response(cpp11::list args,
   cpp11::strings sxp_ev_name(this_list["name"]);
   const std::string ev_name = sxp_ev_name[0];
 
+  cpp11::list sxp_params(this_list["parameters"]);
+
   // only allow single values on all `value_*`
   // no checks as these are handled on the R side
   cpp11::doubles sxp_time_on(this_list["time_on"]);
@@ -76,9 +78,9 @@ inline daedalus::events::response read_response(cpp11::list args,
   const size_t id_flag = static_cast<size_t>(sxp_id_flag[0]);
 
   daedalus::events::response this_response(
-      ev_name, time_on, time_off, max_duration, value_state_on, value_state_off,
-      id_flag, id_state_on, id_state_off, root_state_on, root_state_off,
-      id_time_log);
+      ev_name, sxp_params, time_on, time_off, max_duration, value_state_on,
+      value_state_off, id_flag, id_state_on, id_state_off, root_state_on,
+      root_state_off, id_time_log);
 
   return this_response;
 }

@@ -23,6 +23,7 @@ the state variable, and absolute indexing must be used.
 #include <string>
 #include <vector>
 
+#include <cpp11.hpp>
 #include <dust2/common.hpp>
 // clang-format on
 
@@ -57,6 +58,7 @@ class response {
 
  public:
   const std::string name;
+  const cpp11::list parameters;
   const std::vector<double> time_on, time_off;
   const double max_duration;
   const double state_on, state_off;
@@ -86,13 +88,15 @@ class response {
   /// events.
   /// @param min_dur The minimum event time_off (7 days). Used to prevent
   /// unexpected event termination if two state roots are found in one step.
-  response(const std::string &name, const std::vector<double> &time_on,
+  response(const std::string &name, const cpp11::list parameters,
+           const std::vector<double> &time_on,
            const std::vector<double> &time_off, const double max_duration,
            const double &state_on, const double &state_off,
            const size_t &i_flag, const std::vector<size_t> &i_state_on,
            const std::vector<size_t> &i_state_off, const int &root_state_on,
            const int &root_state_off, const size_t &i_time_start)
       : name(name),
+        parameters(parameters),
         time_on(time_on),
         time_off(time_off),
         max_duration(max_duration),
