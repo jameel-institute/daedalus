@@ -120,7 +120,7 @@ daedalus_multi_infection <- function(
       list(
         beta = get_beta(x, country),
         susc = susc,
-        openness = get_data(first(npi), "openness"),
+        openness = last(get_data(first(npi), "openness")),
         response_time = response_time,
         response_duration = duration,
         auto_social_distancing = auto_social_distancing,
