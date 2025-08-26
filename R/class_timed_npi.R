@@ -3,24 +3,26 @@
 #' @name class_npi
 #'
 #' @description
-#' Helper function to create a `<daedalus_npi>` that is only trigged by time,
-#' and is not responsive to state variables. Primarily intended for use in real
-#' time modelling.
-#'
-#' @inheritParams daedalus
-#'
-#' @inheritParams daedalus_npi
-#'
-#' @param openness A list of numeric vectors giving the openness coefficients in
-#' each interval specified by corresponding elements of `start_time` and
-#' `end_time`. List elements must be vectors where all values are in the range
-#' \eqn{[0, 1]}, giving the openness of each economic sector in the model.
-#' Expected to have a length of `N_ECON_SECTORS` (currently 45).
-#'
-#' @return A `<daedalus_npi>` class object which specifies time-limited
-#' interventions only.
+#' `daedalus_timed_npi()` is a helper function to create a `<daedalus_npi>` that
+#' is only trigged by time, and is not responsive to state variables.
+#' Primarily intended for use in real time modelling.
 #'
 #' @export
+#'
+#' @examples
+#'
+#' # time-limited NPI with multiple phases
+#' daedalus_timed_npi(
+#'   start_time = c(10, 20, 30),
+#'   end_time = c(15, 25, 40),
+#'   openness = list(
+#'     rep(1, 45),
+#'     rep(0.5, 45),
+#'     rep(0.2, 45)
+#'   ),
+#'   country = "GBR"
+#' )
+#'
 daedalus_timed_npi <- function(
   start_time,
   end_time,
@@ -36,11 +38,31 @@ daedalus_timed_npi <- function(
     finite = TRUE,
     len = length(start_time)
   )
+  Map(
+    start_time,
+    end_time,
+    seq_along(start_time),
+    f = function(x, y, i) {
+      if (y < x) {
+        cli::cli_abort(
+          "<daedalus_timed_npi>: `end_time` at index {i} is less than \
+          `start_time`; must be greater!"
+        )
+      }
+    }
+  )
   checkmate::assert_list(
     openness,
     "numeric",
     FALSE,
     len = length(start_time)
+  )
+
+  # add default or initial regime to openness list
+  initial_openness <- rep(1.0, N_ECON_SECTORS)
+  openness <- c(
+    list(initial_openness),
+    openness
   )
 
   new_daedalus_npi(
