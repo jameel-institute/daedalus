@@ -352,7 +352,6 @@ daedalus <- function(
       beta = get_beta(infection, country),
       susc = susc,
       # all three below needed for npi-linked behaviour response
-      openness = last(get_data(npi, "openness")),
       # temporary as these can be vecs, see future PRs
       auto_social_distancing = auto_social_distancing,
       vaccination = vaccination,
