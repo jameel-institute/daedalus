@@ -52,7 +52,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   checkmate::assert_class(x, "daedalus_output")
 
   gva <- x$country_parameters$gva
-  openness <- last(x$response_data$openness)
+  openness <- x$response_data$openness
 
   # NOTE: might be good to split these into separate functions for different
   # cost domains, but might end up replicating a good bit of code
@@ -107,27 +107,40 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
     education_cost_closures <- 0
     sector_cost_closures <- rep(0, length(x$country_parameters$workers))
   } else {
-    closure_periods <- x$response_data$closure_info$closure_periods
-
     # cost of closures, per sector and total
-    sector_cost_closures <- gva * (1 - openness) * closure_duration
+    sector_closures <- Map(
+      x$response_data$closure_info$closure_durations,
+      openness[-1],
+      f = function(duration, openness_coef) {
+        (1 - openness_coef) * duration
+      }
+    )
+    sector_closures <- Reduce(`+`, sector_closures)
+
+    sector_cost_closures <- gva * sector_closures
     economic_cost_closures <- sum(sector_cost_closures)
 
-    education_cost_closures <- sum(
-      vsd *
-        n_students *
-        (1 - openness[i_EDUCATION_SECTOR]) *
-        (1 - edu_effectiveness_remote) *
-        closure_duration
-    )
+    education_cost_closures <- vsd *
+      n_students *
+      sector_closures[i_EDUCATION_SECTOR] *
+      (1 - edu_effectiveness_remote)
 
-    # multiply loss due to closures by loss due to absences
+    # multiply loss due to closures by loss due to absences at appropriate times
     # to get true loss due to absences
-    sector_cost_absences[closure_periods, ] <-
-      sector_cost_absences[
-        closure_periods,
-      ] %*%
-      diag(openness)
+    closure_periods <- x$response_data$closure_info$closure_periods
+
+    sector_cost_absences[closure_periods, ] <- Reduce(
+      rbind,
+      Map(
+        x$response_data$closure_info$closure_times_start,
+        x$response_data$closure_info$closure_times_end,
+        openness[-1],
+        f = function(start, end, opcoef) {
+          sector_cost_absences[start:end, ] <-
+            sector_cost_absences[start:end, ] %*% diag(opcoef)
+        }
+      )
+    )
   }
 
   # NOTE: sum costs of illness related absence after accounting for
