@@ -1,5 +1,4 @@
 # Tests for the <daedalus_npi> class
-
 test_that("class <daedalus_npi>: basic expectations", {
   expect_no_condition(
     daedalus_npi("elimination", "GBR", "sars_cov_1")
@@ -60,32 +59,21 @@ test_that("class <daedalus_npi>: class validation", {
 test_that("class <daedalus_npi>: sequential time-limited NPIs", {
   cty <- "GBR"
   infection <- "influenza_1918"
-  npi <- daedalus_npi(
-    "school_closures",
-    cty,
-    infection,
+  openness <- daedalus.data::closure_strategy_data[["school_closures"]]
+  npi <- daedalus_timed_npi(
     start_time = c(30, 90),
-    end_time = c(50, 50)
+    end_time = c(50, 120),
+    openness = list(
+      openness,
+      openness
+    ),
+    cty
   )
 
   expect_snapshot(npi)
 
   expect_no_condition(
-    daedalus(cty, infection, npi)
-  )
-
-  npi <- daedalus_npi(
-    NA,
-    cty,
-    infection,
-    rep(0.5, 45),
-    start_time = c(30, 90),
-    end_time = c(50, 120)
-  )
-  cty <- daedalus_country("GBR")
-
-  expect_no_condition(
-    daedalus(cty, infection, npi)
+    daedalus(cty, infection, npi, time_end = 150)
   )
 })
 
@@ -167,6 +155,7 @@ test_that("class <daedalus_npi>: state-launched response duration is correct", {
     "GBR",
     "sars_cov_2_delta",
     start_time = start_time, # prevent time-based trigger
+    end_time = start_time,
     max_duration = max_response_duration
   )
   output <- daedalus(
@@ -220,10 +209,10 @@ test_that("class <daedalus_npi>: throws expected errors", {
   )
 
   x <- daedalus_npi(NA, "THA", "sars_cov_1", rep(0.1, 45))
-  x$parameters$openness <- rep(2, 34)
+  x$parameters$openness <- list(rep(1, 45), rep(2, 45))
   expect_error(
     validate_daedalus_npi(x),
-    "must be a numeric of length 45, with values between 0.0 and 1.0"
+    "vectors must have length 45 with values between 0.0 and 1.0"
   )
 
   x <- list(parameters = list(openness = rep(1, 45), dummy = NA))
