@@ -19,6 +19,7 @@ the state variable, and absolute indexing must be used.
 #include "daedalus_types.h"
 
 #include <R_ext/Arith.h>
+#include <algorithm>
 #include <functional>
 #include <string>
 #include <vector>
@@ -301,7 +302,7 @@ class response {
     // generate events for each pair of time_on and time_off
     for (size_t i = 0; i < n_timed_events; i++) {
       if (!ISNA(time_on[i])) {
-        // TODO: reconsider this? experimental flag index setter for npis
+        // NOTE: reconsider this? experimental flag index setter for npis
         // only really works with NPIs which can have multiple times on
         const double flag_index = static_cast<double>(i + 1);  // start from 1
         const std::string name_ev_time_on =
@@ -415,7 +416,7 @@ inline const std::vector<TensorMat> response::get_openness_coefs() {
 
   std::vector<TensorMat> openness_coefs(openness.size());
 
-  // TODO: crude - clean up
+  // NOTE: crude - clean up?
   for (size_t i = 0; i < n_regimes; i++) {
     cpp11::doubles tmp_param = openness[i];
     TensorMat tmp_openness(daedalus::constants::DDL_N_ECON_GROUPS, 1);
