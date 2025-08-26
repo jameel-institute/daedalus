@@ -31,6 +31,8 @@ namespace daedalus {
 
 namespace events {
 
+using TensorMat = daedalus::types::TensorMat<double>;
+
 /// @brief A temporary(?) special value to indicate that events should log time
 /// in state.
 const double value_log_time = -999.0;
@@ -67,6 +69,8 @@ class response {
   const int root_state_on, root_state_off;
   const size_t i_time_start;
   const double min_dur;
+
+  const std::vector<TensorMat> get_openness_coefs();
 
   /// @brief Constructor for a response.
   /// @param name A string for the name, used to generate event names.
@@ -297,12 +301,15 @@ class response {
     // generate events for each pair of time_on and time_off
     for (size_t i = 0; i < n_timed_events; i++) {
       if (!ISNA(time_on[i])) {
+        // TODO: reconsider this? experimental flag index setter for npis
+        // only really works with NPIs which can have multiple times on
+        const double flag_index = static_cast<double>(i + 1);  // start from 1
         const std::string name_ev_time_on =
             name + "_time_on_" + std::to_string(i + 1);
 
         events.push_back(make_event(
             name_ev_time_on, {i_flag}, make_time_test(time_on[i], 0.0),
-            make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
+            make_flag_setter({i_flag, i_time_start}, {flag_index, value_log_time}),
             dust2::ode::root_type::increase));
       }
 
@@ -394,6 +401,30 @@ inline dust2::ode::events_type<double> get_combined_events(
   }
 
   return combined_events;
+}
+
+/// @brief Get openness coefficient regimes as a vector of Eigen
+/// tensors suitable for use in the ODE RHS. Only really works with
+/// `daedalus::events::response` objects that represent NPIs, and not with
+/// objects representing vaccinations or other events for now.
+/// @return A vector of coefficient Tensors with the index representing the
+/// openness regime.
+inline const std::vector<TensorMat> response::get_openness_coefs() {
+  const cpp11::list openness(parameters["openness"]);
+  const size_t n_regimes = openness.size();
+
+  std::vector<TensorMat> openness_coefs(openness.size());
+
+  // TODO: crude - clean up
+  for (size_t i = 0; i < n_regimes; i++) {
+    cpp11::doubles tmp_param = openness[i];
+    TensorMat tmp_openness(daedalus::constants::DDL_N_ECON_GROUPS, 1);
+    std::copy(tmp_param.begin(), tmp_param.end(), tmp_openness.data());
+
+    openness_coefs[i] = tmp_openness;
+  }
+
+  return openness_coefs;
 }
 
 }  // namespace events
