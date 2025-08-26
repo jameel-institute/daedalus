@@ -38,9 +38,10 @@ new_daedalus_npi <- function(parameters, ...) {
 #' easy parameter access and editing, as well as processing raw NPI
 #' characteristics for the DAEDALUS model.
 #'
-#' All NPIs must be initialised with an associated `country` and `infection`;
-#' these are used to determine the state-values (hospital capacity) and
-#' incidence-prevalence ratio (IPR) at which the NPI starts and ends reactively.
+#' Most NPIs must be initialised with an associated `country` and `infection`;
+#' these are used to determine flag positions as well as the state-values
+#' (hospital capacity) and incidence-prevalence ratio (IPR) at which the NPI
+#' starts and ends reactively.
 #'
 #' @inheritParams daedalus
 #'
@@ -48,29 +49,42 @@ new_daedalus_npi <- function(parameters, ...) {
 #' [daedalus.data::closure_strategy_names], or `NA`.
 #' Passing a pre-defined strategy name automatically pulls in openness
 #' parameters for the associated response strategy; these are stored as
-#' packaged data in `daedalus.data::closure_strategy_data`.
+#' packaged data in [daedalus.data::closure_strategy_data].
+#'
 #' Pass `NA` to define a custom response strategy by passing a vector to
 #' `openness`.
 #'
-#' @param openness An optional numeric vector where all values are in the range
-#' \eqn{[0, 1]}, giving the openness of each economic sector in the model.
-#' Expected to have a length of `N_ECON_SECTORS` (currently 45).
+#' @param openness
+#' For `daedalus_npi()`, an optional numeric vector giving the openness of each
+#' economic sector in the model when the NPI is in effect.
 #'
-#' @param start_time The number of days after the start of the epidemic that
-#' the NPI response begins. May be a vector. Defaults to 30. Passed to
-#' the `time_on` argument in [new_daedalus_response()] via the class constructor
-#' `new_daedalus_npi()`.
+#' For `daedalus_timed_npi()`, a list of numeric vectors giving the openness
+#' coefficients for each interval specified by corresponding elements of
+#' `start_time` and `end_time`.
 #'
-#' @param end_time The number of days after the start of the epidemic that
-#' the NPI response ends. May be a vector, with times taken with reference to
-#' `start_time`. Defaults to `NA_real_`, with no defined end time. Passed to
-#' the `time_off` argument in [new_daedalus_response()] via
-#' `new_daedalus_npi()`.
+#' Expected to have a length of `N_ECON_SECTORS` (currently 45), with all values
+#' are in the range \eqn{[0, 1]},
+#'
+#' @param start_time
+#' For `daedalus_npi()`, a single number giving the number of days after the
+#' start of the model that the NPI response begins. Defaults to 30.
+#'
+#' For `daedalus_timed_npi()`: may be a vector of NPI start times, with no
+#' default values.
+#'
+#' @param end_time
+#' For `daedalus_npi()`, a single number giving the number of days after the
+#' start of the model that the NPI response ends. Defaults to `NULL`,
+#' indicating that the response ends (if no other condition is met), at the
+#' maximum duration.
+#'
+#' For `daedalus_timed_npi()`: may be a vector of NPI end times, with no
+#' default values. Timed NPIs have no default duration.
 #'
 #' @param max_duration The maximum number of days that an NPI response is active
 #' whether started by passing the `start_time` or when a state threshold is
-#' crossed. Defaults to 365 days. `max_duration` overrides `end_time` in ending
-#' NPIs, if the maximum duration is reached before `end_time`.
+#' crossed. Defaults to 365 days. NPIs created using `daedalus_timed_npi()` have
+#' no default maximum duration and are encoded by pairs of start and end times.
 #'
 #' @param x An object to be tested or printed as a `<daedalus_npi>`.
 #'
@@ -79,8 +93,16 @@ new_daedalus_npi <- function(parameters, ...) {
 #' For the `print` method, other parameters passed to [print()].
 #'
 #' @details
-#' Note that NPIs are reactive to the model state (i.e., the epidemic state),
-#' and can trigger when state conditions are met.
+#' Note that NPIs created using `daedalus_npi()` are reactive to the model state
+#' (i.e., the epidemic state), and can trigger multiple times when state
+#' conditions are met.
+#'
+#' @return
+#' `daedalus_npi()`: A `<daedalus_npi>` class object that specifies an NPI that
+#' may be responsive to both model state and time.
+#'
+#' `daedalus_timed_npi()`: A `<daedalus_npi>` class object which specifies
+#' time-limited interventions only.
 #'
 #' @export
 #'
@@ -100,7 +122,7 @@ daedalus_npi <- function(
   infection,
   openness = NULL,
   start_time = 30,
-  end_time = NA_real_,
+  end_time = NULL,
   max_duration = 365
 ) {
   # input checking
@@ -140,15 +162,20 @@ daedalus_npi <- function(
   country <- validate_country_input(country)
   infection <- validate_infection_input(infection)
 
-  checkmate::assert_integerish(start_time, lower = 0, null.ok = TRUE)
+  # do not allow NPIs to begin at time = 0
+  checkmate::assert_count(start_time, positive = TRUE)
   checkmate::assert_integerish(
     end_time,
-    lower = 0,
+    lower = start_time,
     null.ok = TRUE,
-    len = length(start_time)
+    len = 1L
   )
+  if (is.null(end_time)) {
+    end_time <- NA_real_
+  }
   checkmate::assert_count(max_duration)
 
+  # prepare closure regimes
   no_closures <- rep(1.0, N_ECON_SECTORS)
 
   params <- list(
@@ -221,15 +248,11 @@ validate_daedalus_npi <- function(x) {
 
   all_good_openness <- all(vapply(
     x$parameters$openness,
-    function(x) {
-      checkmate::test_numeric(
-        x,
-        lower = 0.0,
-        upper = 1.0,
-        any.missing = FALSE,
-        len = N_ECON_SECTORS
-      )
-    },
+    checkmate::test_numeric,
+    lower = 0.0,
+    upper = 1.0,
+    any.missing = FALSE,
+    len = N_ECON_SECTORS,
     logical(1L)
   ))
   if (!all_good_openness) {
@@ -238,17 +261,6 @@ validate_daedalus_npi <- function(x) {
     {N_ECON_SECTORS} with values between 0.0 and 1.0, but some vectors do not."
     )
   }
-
-  lapply(daedalus.data::vaccination_parameter_names, function(n) {
-    lgl <- checkmate::test_number(
-      x$parameters[[n]],
-      lower = 0.0,
-      finite = TRUE,
-      na.ok = TRUE
-    )
-    if (!lgl) {
-    }
-  })
 
   invisible(x)
 }
@@ -288,12 +300,16 @@ format.daedalus_npi <- function(x, ...) {
 
   cli::cli_text("{.cls {class(x)}}")
   cli::cli_text("NPI strategy: {cli::style_bold(x$identifier)}")
+
+  openness_coef <- vapply(x$parameters$openness[-1L], mean, numeric(1)) # nolint
+
   divid <- cli::cli_div(theme = list(.val = list(digits = 3)))
   cli::cli_bullets(
     class = divid,
     c(
       "*" = "Start time (days): {.val {x$time_on}}",
       "*" = "End time (days): {.val {x$time_off}}",
+      "*" = "Openness (mean prop.): {.val {openness_coef}}",
       "*" = "Maximum duration (days): {.val {x$max_duration}} "
     )
   )
@@ -318,7 +334,12 @@ get_data.daedalus_npi <- function(x, to_get, ...) {
     ))
   }
 
-  x$parameters[[to_get]]
+  # do not return null or default openness, only used internally
+  if (to_get == "openness") {
+    x$parameters[[to_get]][-1L]
+  } else {
+    x$parameters[[to_get]]
+  }
 }
 
 #' Dummy NPI
