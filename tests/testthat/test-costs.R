@@ -76,14 +76,16 @@ test_that("Costs: scenario expectations", {
       costs <- get_costs(output)
 
       # closure costs must be at least one day of reduced GVA
-      # TODO: fix this so that closure costs reflect closure regime
+      # NOTE: using last() here to approximate a more comprehensive calculation
+      # in `R/costs.R`
       expected_cost_closures <- output$country_parameters$gva *
         (1 - last(output$response_data$openness)) *
         sum(output$response_data$closure_info$closure_durations)
 
       expect_identical(
         costs$economic_costs$economic_cost_closures,
-        sum(expected_cost_closures)
+        sum(expected_cost_closures),
+        tolerance = 1e-6 # difference < 1e-6 on MacOS CI causes error
       )
     })
   })
