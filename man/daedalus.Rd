@@ -66,9 +66,15 @@ spontaneous social distancing in the model, which reduces infection
 transmission as a function of daily deaths. See \strong{Details} for more.}
 
 \item{initial_state_manual}{An optional \strong{named} list with the names
-\code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and
-symptomatic individuals in each age group and economic sector.
-Defaults to \code{1e-6} and \code{0.0} respectively.}
+\code{p_infectious}, \code{p_asymptomatic}, and \code{p_immune}.
+\code{p_infectious} and \code{p_asymptomatic} give the proportion of
+infectious and symptomatic individuals in each age group and economic sector.
+Defaults to \code{1e-6} and \code{0.0} respectively.
+\code{p_immune} may be a single number in the range \verb{0.0 <= p_immune <= 1.0} or a
+4-element vector in that range (the number of age groups in the model), for
+the proportion of individuals in the population or in each age group that
+have some pre-existing immunity to infection (reduced susceptibility). See
+\strong{Details} for more.}
 
 \item{time_end}{An integer-like value for the number of timesteps
 at which to return data. This is treated as the number of days with data
@@ -98,6 +104,15 @@ million as infectious.
 \item \code{p_asymptomatic}: A single numeric value in the range \eqn{[0.0, 1.0]} for
 the proportion of initially infectious individuals who are considered to be
 asymptomatic. Defaults to 0.0.
+\item \code{p_immune}: Either a single number or a vector of 4 elements (the number
+of age groups) in the range \eqn{[0.0, 1.0]} for the proportion of the
+population (or each age group) that is considered to have pre-existing
+immunity. This is a stop-gap implementation that assumes one of two cases:
+(1) if no vaccination is intended in the model and \code{vaccine_investment} is
+\code{NULL}, the susceptibility of individuals pre-existing immunity is 50\%; or
+(2) if a vaccination strategy is specified, the pre-existing immunity is
+assumed to be from a prior rollout, and the susceptibility is determined by
+the chosen vaccination strategy (as \code{1 - efficacy}).
 }
 }
 
