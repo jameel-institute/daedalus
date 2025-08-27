@@ -257,7 +257,7 @@ validate_daedalus_npi <- function(x) {
   ))
   if (!all_good_openness) {
     cli::cli_abort(
-      "<daedalus_npi> parameter {.str openness} vectors must have length \
+      "<daedalus_npi> parameter {.arg openness} vectors must have length \
     {N_ECON_SECTORS} with values between 0.0 and 1.0, but some vectors do not."
     )
   }
