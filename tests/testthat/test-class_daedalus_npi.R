@@ -232,4 +232,80 @@ test_that("class <daedalus_npi>: throws expected errors", {
     ),
     "Got an unexpected value of class"
   )
+
+  # errors on timed-npi construction
+  openness_good <- rep(0.2, N_ECON_SECTORS)
+  openness_bad <- openness_good * -1
+  expect_error(
+    daedalus_timed_npi(
+      10,
+      c(11, 12),
+      list(
+        openness_good
+      ),
+      "GBR"
+    ),
+    "'end_time' failed"
+  )
+
+  expect_error(
+    daedalus_timed_npi(
+      c(11, 10),
+      c(11, 12),
+      list(
+        openness_good
+      ),
+      "GBR"
+    ),
+    "`start_time` should be a vector of ascending values"
+  )
+
+  expect_error(
+    daedalus_timed_npi(
+      c(10, 20),
+      c(11, 12),
+      list(
+        openness_good
+      ),
+      "GBR"
+    ),
+    "(`end_time`)*(must be greater)"
+  )
+
+  expect_error(
+    daedalus_timed_npi(
+      c(5, 10),
+      c(30, 12),
+      list(
+        openness_good
+      ),
+      "GBR"
+    ),
+    "`end_time` should be a vector of ascending values"
+  )
+
+  expect_error(
+    daedalus_timed_npi(
+      c(5, 10),
+      c(15, 20),
+      list(
+        openness_good
+      ),
+      "GBR"
+    ),
+    "intervals specified by `start_time` and `end_time` must be non-overlapping"
+  )
+
+  expect_error(
+    daedalus_timed_npi(
+      c(5, 10),
+      c(9, 12),
+      list(
+        openness_good,
+        openness_bad
+      ),
+      "GBR"
+    ),
+    "`openness` vectors must have length 45 with values between 0.0 and 1.0"
+  )
 })

@@ -87,7 +87,7 @@ daedalus(
 
 ## Bespoke time-limited response
 
-Creating a time-limited NPI using `daedalus_npi()` requires:
+Creating a time-limited NPI with a single active duration using `daedalus_npi()` requires:
 
 - Passing `NA` as the `name` rather than one of the pre-canned NPI strategies found in [daedalus.data::closure_strategy_data], and
 
@@ -98,6 +98,8 @@ A country and infection are still required as before.
 All other rules and requirements are the same as for a pre-canned response; the pre-canned element is the openness coefficients.
 
 Passing a bespoke NPI to [daedalus()] leads to the resulting `<daedalus_output>` object identifying the `response_strategy` as `"custom"`.
+
+**See the next section** for how to specify time-limited NPIs that are active over multiple intervals.
 
 ```{r timed-npi-bespoke}
 openness <- rep(0.3, 45)
@@ -138,7 +140,9 @@ The $i-th$ element of each vector gives the start and end time of a each closure
 
 3. These objects do not specify a maximum closure duration, but do require all closure periods to be time-limited;
 
-4. Sequential time-limited responses cannot be created by tweaking pre-canned responses, but the openness coefficients may be used by accessing them manually from [daedalus.data::closure_strategy_data].
+4. All closure periods must be non-overlapping, so only one closure regime can be active at any time;
+
+5. Sequential time-limited responses cannot be created by tweaking pre-canned responses, but the openness coefficients may be used by accessing them manually from [daedalus.data::closure_strategy_data].
 
 The example below show ramping responses up and down by switching from school closures to an elimination strategy and back again.
 
