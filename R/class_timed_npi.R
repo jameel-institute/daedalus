@@ -51,6 +51,46 @@ daedalus_timed_npi <- function(
       }
     }
   )
+
+  are_times_increasing <- all(diff(start_time) >= 0)
+  if (!are_times_increasing) {
+    cli::cli_abort(
+      "daedalus_timed_npi: `start_time` should be a vector of ascending values \
+      but it is not."
+    )
+  }
+  are_times_increasing <- all(diff(end_time) >= 0)
+  if (!are_times_increasing) {
+    cli::cli_abort(
+      "daedalus_timed_npi: `end_time` should be a vector of ascending values \
+      but it is not."
+    )
+  }
+
+  # non-overlapping intervals
+  are_exclusive_intervals <-
+    all(
+      diff(
+        findInterval(
+          unlist(
+            Map(
+              seq,
+              start_time,
+              end_time
+            )
+          ),
+          end_time
+        )
+      ) >=
+        0
+    )
+  if (!are_exclusive_intervals) {
+    cli::cli_abort(
+      "daedalus_timed_npi: intervals specified by `start_time` and `end_time`\
+      must be non-overlapping, but overlaps were found."
+    )
+  }
+
   checkmate::assert_list(
     openness,
     "numeric",
@@ -65,7 +105,7 @@ daedalus_timed_npi <- function(
     openness
   )
 
-  new_daedalus_npi(
+  x <- new_daedalus_npi(
     list(openness = openness),
     identifier = "custom_timed",
     id_flag = get_flag_index("npi_flag", country),
@@ -73,4 +113,8 @@ daedalus_timed_npi <- function(
     time_off = end_time,
     id_time_log = get_flag_index("npi_start_time", country)
   )
+
+  validate_daedalus_npi(x)
+
+  x
 }
