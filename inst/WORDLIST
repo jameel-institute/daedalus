@@ -37,6 +37,8 @@ SARS
 SEIR
 Sumali
 TSL
+Timesteps
+UKHSA
 VLY
 VPE
 VSD
@@ -67,7 +69,6 @@ fn
 frac
 ij
 int
-iso
 lintr
 monty
 npi
@@ -79,6 +80,7 @@ parameterise
 pathogendata
 recovered’
 rightarrow
+rollout
 rootfinding
 socioeconomic
 specifc

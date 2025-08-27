@@ -1,3 +1,7 @@
+# daedalus (development version)
+
+This patch version implements a request from UKHSA to allow modelling pre-existing immunity by placing some proportion of the model population in the vaccinated stratum during model initialisation, by specifying `p_immune` in `initial_state_manual` in `daedalus()` and `daedalus_multi_infection()`. See function documentation details for more.
+
 # daedalus 0.2.28
 
 This patch makes a small fix to the internal function `prepare_data()` to make it robust to user-created country demography vectors when the vector names are stripped. Timesteps are now taken from the parent function `daedalus()` and `daedalus_multi_infection()`.
