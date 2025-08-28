@@ -160,7 +160,7 @@ test_that("class <daedalus_npi>: state-dependent event launch correctly", {
 test_that("class <daedalus_npi>: state-launched response duration is correct", {
   # duration is based on state-driven start time
   # NOTE: model only 100 days to avoid secondary peaks
-  start_time <- 100
+  start_time <- 200
   max_response_duration <- 30
   npi <- daedalus_npi(
     "elimination",
