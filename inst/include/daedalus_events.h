@@ -1,6 +1,18 @@
 // Copyright 2025 Imperial College of Science, Technology and Medicine.
 // See repository licence in LICENSE.md.
 
+/* NOTE: daedalus response objects are intended to return dust2 events.
+dust2 events require a condition and an action function.
+
+The condition function operates on a pointer to an array that is a SUBSET of the
+state variable; this subset is given by the dust2::event member `index` which
+may be a vector. Access y[0] to access the first value of the subset of state
+variable. Unclear how non-contiguous indices are handled.
+
+The action function operates on a pointer to the whole (or first element) of
+the state variable, and absolute indexing must be used.
+*/
+
 #pragma once
 
 // clang-format off
@@ -88,7 +100,8 @@ class response {
         i_time_start(i_time_start),
         min_dur(7.0) {}
 
-  /// @brief Root-find on time.
+  /// @brief Root-find on time. NOTE that this function is expected to receive
+  /// `*y` that is not indexed, allowing use of `i_flag` directly. (?)
   /// @param value The time value to check current time against.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_time_test(const double value) const {
@@ -131,15 +144,20 @@ class response {
   inline test_type make_state_test(const std::vector<size_t> &idx_state,
                                    const double value,
                                    const double expected_value) const {
+    // prepare flag and start_time indices
+    const size_t size_n = idx_state.size();
+    const size_t flag_pos = size_n - 1;
+    const size_t time_pos = size_n - 2;
+
     if (expected_value < 1.0) {
       // flag expected off
-      auto fn_test = [idx_state, value, &i_flag = i_flag](const double t,
-                                                          const double *y) {
-        if (y[i_flag] > 0.0) {
+      auto fn_test = [value, size_n, flag_pos, time_pos](const double t,
+                                                         const double *y) {
+        const double current_flag = y[flag_pos];
+        if (current_flag > 0.0) {
           return 1.0;  // handle case where flag is already on, return false
         } else {
-          const int size_n = idx_state.size() - 1;
-          const double sum_state = std::accumulate(y, y + size_n, 0);
+          const double sum_state = std::accumulate(y, y + time_pos, 0);
           return sum_state - value;
         }
       };
@@ -147,21 +165,21 @@ class response {
       return fn_test;
     } else if (expected_value > 0.0) {
       // flag expected on
-      auto fn_test = [idx_state, value, &i_flag = i_flag, &min_dur = min_dur,
-                      &i_time_start = i_time_start](const double t,
-                                                    const double *y) {
-        if (y[i_flag] < 1.0) {
+      auto fn_test = [value, size_n, flag_pos, time_pos, &min_dur = min_dur](
+                         const double t, const double *y) {
+        const double current_flag = y[flag_pos];
+        if (current_flag < 1.0) {
           return 1.0;  // handle case where flag is already off, return false
         } else {
           // check duration that event has been on and return FALSE if min
           // duration hasn't been met
-          const int size_n = idx_state.size() - 1;
-          const double current_dur = t - (min_dur + y[size_n]);
+          const double real_time_start = y[time_pos];
+          const double current_dur = t - (min_dur + real_time_start);
 
           if (current_dur < min_dur) {
             return 1.0;
           } else {
-            const double sum_state = std::accumulate(y, y + size_n, 0);
+            const double sum_state = std::accumulate(y, y + time_pos, 0);
             return sum_state - value;
           }
         }
@@ -264,8 +282,14 @@ class response {
           root_state_on > 0 ? dust2::ode::root_type::increase
                             : dust2::ode::root_type::decrease;
 
+      // collect state indices to subset and add start_time index to check
+      // for minimum duration requirements.
       std::vector<size_t> tmp_i_state_on = i_state_on;
       tmp_i_state_on.push_back(i_time_start);
+
+      // add flag index location when subsetting state variable to allow
+      // checking current state of flag
+      tmp_i_state_on.push_back(i_flag);
 
       dust2::ode::event<double> ev_state_on = make_event(
           name_ev_state_on, tmp_i_state_on,
@@ -283,8 +307,10 @@ class response {
           root_state_on > 0 ? dust2::ode::root_type::increase
                             : dust2::ode::root_type::decrease;
 
+      // same as above
       std::vector<size_t> tmp_i_state_off = i_state_off;
       tmp_i_state_off.push_back(i_time_start);
+      tmp_i_state_off.push_back(i_flag);
 
       dust2::ode::event<double> ev_state_off = make_event(
           name_ev_state_off, tmp_i_state_off,
