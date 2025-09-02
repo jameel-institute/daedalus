@@ -37,8 +37,7 @@ Imports:
     data.table,
     dust2,
     Rcpp,
-    rlang,
-    utils
+    rlang
 Suggests:
     countrycode,
     dplyr,
