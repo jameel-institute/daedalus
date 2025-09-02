@@ -31,93 +31,92 @@ initial_flags <- function() {
 #' Get model response times from dust2 output
 #'
 #' @param output dust2 output `daedalus_internal()`.
-#' @param time_end The model end time, passed from [daedalus()].
 #'
 #' @return A list of event start and end times, closure periods, and the
 #' duration of each closure event, suitable for a `<daedalus_output>` object.
 #'
 #' @keywords internal
-get_daedalus_response_times <- function(output, time_end) {
+get_daedalus_response_times <- function(output) {
   # internal function with no input checking
-  event_data <- output$event_data[[1]]
-  resp_times_on <- event_data[grepl("npi_\\w*_on", event_data$name), "time"]
-  resp_time_on_realised <- if (length(resp_times_on) == 0) {
-    NA_real_
-  } else {
-    floor(resp_times_on)
-  }
 
-  resp_times_off <- event_data[
-    grepl(
-      "npi_\\w*_off|npi_max_duration",
-      event_data$name
-    ),
-    "time"
-  ]
-  resp_time_off_realised <- if (all(is.na(resp_time_on_realised))) {
-    NA_real_
-  } else if (length(resp_times_off) == 0) {
-    time_end
-  } else {
-    floor(resp_times_off)
-  }
+  # NOTE: npi activated on the last day of a model run is counted
+  # as active for 1 day. This throws off some tests checking for npi durations
 
-  # handle unterminated npi
-  if (length(resp_time_off_realised) == (length(resp_time_on_realised) - 1)) {
-    resp_time_off_realised <- c(resp_time_off_realised, time_end)
-  } else if (length(resp_time_on_realised) < length(resp_time_off_realised)) {
-    cli::cli_abort(
-      "Model NPIs: More end events than start events! Check model dynamics."
-    )
-  }
+  event_data <- output$data[FLAG_NAMES]
+  npi_data <- event_data[grepl("npi", names(event_data), fixed = TRUE)]
 
-  durations <- resp_time_off_realised - resp_time_on_realised
+  npi_time_on <- unique(npi_data[["npi_start_time"]])
+  npi_time_on <- npi_time_on[npi_time_on > 0]
 
-  if (all(is.na(durations))) {
+  npi_duration <- rle(npi_data[["npi_flag"]])
+  npi_duration <- npi_duration[["lengths"]][as.logical(npi_duration$values)]
+
+  if (length(npi_duration) == 0L) {
+    # handle no NPIs case
+    npi_time_on <- NA_real_
+    npi_time_off <- NA_real_
+    npi_duration <- NA_real_
     closure_periods <- NA_integer_
   } else {
+    # NOTE: reduce by 1 as logging means time is rounded up (I think)
+    npi_duration <- npi_duration
+    npi_time_off <- npi_time_on + npi_duration
     closure_periods <- unlist(
-      Map(seq, resp_time_on_realised, resp_time_off_realised)
+      Map(seq, npi_time_on, npi_time_off)
     )
   }
 
   # return list for consistency with daedalus
   list(
-    closure_times_start = resp_time_on_realised,
-    closure_times_end = resp_time_off_realised,
-    closure_durations = durations,
+    closure_times_start = npi_time_on,
+    closure_times_end = npi_time_off,
+    closure_durations = npi_duration,
     closure_periods = closure_periods
   )
+}
+
+
+
+get_daedalus_multi_response_times = function(output, n_groups) {
+  event_data = output$data[FLAG_NAMES]
+  npi_data <- event_data[grepl("npi", names(event_data), fixed = TRUE)]
+
+  # number of NPIs corresponds to number of rows
+  stop("ERROR IF DIFFERENT NUMBER OF NPIS IN EACH SIMULATION")
+  npi_time_on <- apply(npi_data[["npi_start_time"]], 1, unique)
+  npi_time_on <- npi_time_on[npi_time_on > 0]
 }
 
 #' Internal function for daedalus
 #'
 #' @return A list of state values as returned by `dust2::dust_unpack_state()`.
+#'
 #' @keywords internal
 daedalus_internal <- function(
   time_end,
-  params,
-  state,
+  parameters,
+  initial_state,
   flags,
   ode_control,
   n_groups
 ) {
   sys <- dust2::dust_system_create(
     daedalus_ode,
-    params,
+    parameters,
     n_groups = n_groups,
-    ode_control = ode_control
+    ode_control = ode_control,
+    dt = 1.0
   )
 
   # add initial flags
-  state <- c(state, flags)
-  dust2::dust_system_set_state(sys, state)
+  initial_state <- c(initial_state, flags)
+  dust2::dust_system_set_state(sys, initial_state)
 
   state <- dust2::dust_system_simulate(sys, seq(0, time_end))
 
   list(
-    data = dust2::dust_unpack_state(sys, state),
-    event_data = dust2::dust_system_internals(sys)[["events"]]
+    data = dust2::dust_unpack_state(sys, state)
+    # event_data = dust2::dust_system_internals(sys)[["events"]]
   )
 }
 
@@ -344,9 +343,9 @@ daedalus <- function(
   susc <- make_susc_matrix(vaccination, country)
 
   parameters <- c(
-    prepare_parameters(country),
-    prepare_parameters(infection),
-    prepare_parameters(vaccination),
+    prepare_parameters.daedalus_country(country),
+    prepare_parameters.daedalus_infection(infection),
+    prepare_parameters.daedalus_vaccination(vaccination),
     # NOTE: there is no prepare_parameters.npi method but there might/should be
     list(
       beta = get_beta(infection, country),
@@ -385,10 +384,7 @@ daedalus <- function(
     response_data = list(
       response_strategy = response_identifier,
       openness = get_data(npi, "openness"),
-      closure_info = get_daedalus_response_times(
-        output,
-        time_end
-      )
+      closure_info = get_daedalus_response_times(output)
     ),
     event_data = output$event_data[[1]]
   )
