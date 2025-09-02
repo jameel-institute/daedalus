@@ -47,7 +47,7 @@ using TensorMat = daedalus::types::TensorMat<double>;
 using TensorAry = daedalus::types::TensorAry<double>;
 
 // [[dust2::class(daedalus_ode)]]
-// [[dust2::time_type(continuous)]]
+// [[dust2::time_type(mixed)]]
 // [[dust2::parameter(beta, constant = TRUE)]]
 // [[dust2::parameter(sigma, constant = TRUE)]]
 // [[dust2::parameter(p_sigma, constant = TRUE)]]
@@ -526,5 +526,12 @@ class daedalus_ode {
   static auto zero_every(const shared_state &shared) {
     return dust2::zero_every_type<real_type>{
         {1, {shared.i_ipr}}};  // zero IPR value
+  }
+
+  // TODO: declare const args which are not modified
+  static void update(real_type time, real_type dt, const real_type *state,
+                     const shared_state &shared, internal_state &internal,
+                     rng_state_type &rng_state, real_type *state_next) {
+    const double ipr_now = state_next[shared.i_ipr];
   }
 };
