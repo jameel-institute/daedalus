@@ -74,7 +74,8 @@ npi
 
 # run a scenario with the npi
 daedalus(
-  "GBR", "sars_cov_1", npi, time_end = 100
+  "GBR", "sars_cov_1", npi,
+  time_end = 100
 )
 ```
 
@@ -106,7 +107,8 @@ npi
 
 # run a scenario with the npi
 daedalus(
-  "GBR", "sars_cov_1", npi, time_end = 100
+  "GBR", "sars_cov_1", npi,
+  time_end = 100
 )
 ```
 
@@ -138,7 +140,8 @@ npi
 
 # run a scenario with the npi
 output <- daedalus(
-  "GBR", "sars_cov_1", npi, time_end = 100
+  "GBR", "sars_cov_1", npi,
+  time_end = 100
 )
 
 # examine event times

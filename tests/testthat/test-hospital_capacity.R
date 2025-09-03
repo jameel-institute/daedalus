@@ -27,13 +27,15 @@ test_that("Closures: hospital capacity and closure time", {
     cty_x,
     "sars_cov_1",
     response_strategy = "elimination",
-    response_time = 298
+    response_time = 101, # prevent auto-response
+    time_end = 100
   )
   y <- daedalus(
     cty_y,
     "sars_cov_1",
     response_strategy = "elimination",
-    response_time = 298
+    response_time = 101, # prevent auto-response
+    time_end = 100
   )
 
   expect_lt(
@@ -47,7 +49,8 @@ test_that("Closures: hospital capacity and closure time", {
     cty_x,
     "sars_cov_1",
     response_strategy = "elimination",
-    response_time = 298
+    response_time = 101, # no auto response
+    time_end = 100
   )
 
   expect_gt(
