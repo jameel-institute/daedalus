@@ -1,6 +1,6 @@
-# daedalus (development version)
+# daedalus 0.2.29
 
-This patch version implements a request from UKHSA to allow modelling pre-existing immunity by placing some proportion of the model population in the vaccinated stratum during model initialisation, by specifying `p_immune` in `initial_state_manual` in `daedalus()` and `daedalus_multi_infection()`. See function documentation details for more.
+This patch version implements a request from UKHSA to allow modelling pre-existing immunity by placing some proportion of the model population in the vaccinated stratum during model initialisation, by specifying `p_immune` in `initial_state_manual` in `daedalus()` and `daedalus_multi_infection()`. See function documentation details for more (PR #118 reviewed by @OliverPolhillUKHSA).
 
 # daedalus 0.2.28
 
