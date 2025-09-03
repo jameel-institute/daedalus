@@ -1,3 +1,15 @@
+# daedalus (development version)
+
+This development version splits H into two compartments and uses HFR as the probability of death conditional on hospitalisation.
+
+## Notes
+
+- Hospital compartments are now named Hr and Hd, for those hospitalised leading to recovery and death, respectively.
+
+- On the C++ code, people in Is enter Hd given
+
+- This change will affect the downstream packages `daedalus.api` and `daedalus.compare`, but has no effect on `daedalus.data`. So the `daedalus` user experience remains unchanged.
+
 # daedalus 0.2.28
 
 This patch makes a small fix to the internal function `prepare_data()` to make it robust to user-created country demography vectors when the vector names are stripped. Timesteps are now taken from the parent function `daedalus()` and `daedalus_multi_infection()`.

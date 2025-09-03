@@ -38,7 +38,7 @@ test_that("Closures: hospital capacity and closure time", {
 
   expect_lt(
     x$response_data$closure_info$closure_times_start,
-    y$response_data$closure_info$closure_times_start
+    first(y$response_data$closure_info$closure_times_start)
   )
 
   # hospital capacity override from `daedalus()`
@@ -51,8 +51,8 @@ test_that("Closures: hospital capacity and closure time", {
   )
 
   expect_gt(
-    x$response_data$closure_info$closure_times_start,
-    y$response_data$closure_info$closure_times_start
+    first(x$response_data$closure_info$closure_times_start),
+    first(y$response_data$closure_info$closure_times_start)
   )
 })
 
