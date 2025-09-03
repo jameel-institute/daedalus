@@ -224,13 +224,6 @@ class daedalus_ode {
     TensorMat eta = eta_temp.broadcast(bcast);
     TensorMat hfr = hfr_temp.broadcast(bcast);
 
-    // CALCULATE AGE VARYING OMEGA AND Gamma_h
-    const TensorMat omega =
-        daedalus::helpers::get_omega(hfr, gamma_H_recovery, gamma_H_death);
-
-    const TensorMat gamma_H =
-        daedalus::helpers::get_gamma_H(hfr, gamma_H_recovery, gamma_H_death);
-
     // CONTACT PARAMETERS (MATRICES)
     // contact matrix
     const std::vector<size_t> vec_cm_dims(2, n_strata);  // for square matrix
@@ -510,8 +503,10 @@ class daedalus_ode {
     internal.iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
 
     internal.isToHd =
-        shared.eta * t_x.chip(iIs, i_COMPS) * shared.hfr * hfr_modifier;
-    internal.isToHr = shared.eta * t_x.chip(iIs, i_COMPS) - internal.isToHd;
+        shared.eta * shared.hfr * hfr_modifier * t_x.chip(iIs, i_COMPS);
+    internal.isToHr =
+        shared.eta * (1.0 - shared.hfr) * hfr_modifier * t_x.chip(iIs, i_COMPS);
+
     internal.hrToR = shared.gamma_H_recovery * t_x.chip(iHr, i_COMPS);
 
     internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);

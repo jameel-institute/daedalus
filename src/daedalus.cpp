@@ -107,8 +107,8 @@ class daedalus_ode {
   struct internal_state {
     TensorMat t_infectious, t_comm_inf_contacts, t_foi_comm, alt_new_infections,
         t_comm_inf_age, t_work_inf_contacts, t_foi_work, t_cw_inf_contacts,
-        t_foi_cw, susc_workers, sToE, eToIs, eToIa,
-        isToR, iaToR, isToHr, isToHd, hrToR, hdToD, rToS;
+        t_foi_cw, susc_workers, sToE, eToIs, eToIa, isToR, iaToR, isToHr,
+        isToHd, hrToR, hdToD, rToS;
   };
 
   static internal_state build_internal(const shared_state &shared) {
@@ -116,10 +116,10 @@ class daedalus_ode {
     TensorMat mat2d(shared.n_strata, N_VAX_STRATA);
     mat2d.setZero();
     TensorMat sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
-              iaToR = mat2d,
-              isToHd = mat2d, isToHr = mat2d, hrToR = mat2d, hdToD = mat2d,
-              rToS = mat2d, t_infectious = mat2d, t_comm_inf_contacts = mat2d,
-              t_foi_comm = mat2d, alt_new_infections = mat2d;
+              iaToR = mat2d, isToHd = mat2d, isToHr = mat2d, hrToR = mat2d,
+              hdToD = mat2d, rToS = mat2d, t_infectious = mat2d,
+              t_comm_inf_contacts = mat2d, t_foi_comm = mat2d,
+              alt_new_infections = mat2d;
 
     // infection related
     TensorMat mat2d_econ(shared.n_econ_groups, N_VAX_STRATA);
@@ -225,13 +225,6 @@ class daedalus_ode {
     dust2::r::read_real_vector(pars, n_strata, hfr_temp.data(), "hfr", true);
     TensorMat eta = eta_temp.broadcast(bcast);
     TensorMat hfr = hfr_temp.broadcast(bcast);
-
-    // CALCULATE AGE VARYING OMEGA AND Gamma_h
-    const TensorMat omega =
-        daedalus::helpers::get_omega(hfr, gamma_H_recovery, gamma_H_death);
-
-    const TensorMat gamma_H =
-        daedalus::helpers::get_gamma_H(hfr, gamma_H_recovery, gamma_H_death);
 
     // CONTACT PARAMETERS (MATRICES)
     // contact matrix
@@ -512,8 +505,10 @@ class daedalus_ode {
     internal.iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
 
     internal.isToHd =
-        shared.eta * t_x.chip(iIs, i_COMPS) * shared.hfr * hfr_modifier;
-    internal.isToHr = shared.eta * t_x.chip(iIs, i_COMPS) - internal.isToHd;
+        shared.eta * shared.hfr * hfr_modifier * t_x.chip(iIs, i_COMPS);
+    internal.isToHr = shared.eta * (1.0 - shared.hfr) * hfr_modifier *
+        t_x.chip(iIs, i_COMPS);
+
     internal.hrToR = shared.gamma_H_recovery * t_x.chip(iHr, i_COMPS);
 
     internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
