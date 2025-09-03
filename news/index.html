@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.29</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.30</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,6 +54,13 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.30" id="daedalus-0230">daedalus 0.2.30<a class="anchor" aria-label="anchor" href="#daedalus-0230"></a></h2>
+<p>This patch version:</p>
+<ul><li><p>Introduces the <code>&lt;daedalus_hosp_overflow&gt;</code> class for internal use;</p></li>
+<li><p>Fixes issues related to vaccination ‘pulling along’ other state-dependent events by correcting the R and C++ functions <code><a href="../reference/get_state_indices.html">get_state_indices()</a></code> and <code>daedalus::helpers::get_state_idx</code>;</p></li>
+<li><p>Fixes flag checking in the <code>daedalus::response</code> class event factories (previous indexing used the absolute indices of flags in <code>state</code> which worked for the wrong reason).</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.29" id="daedalus-0229">daedalus 0.2.29<a class="anchor" aria-label="anchor" href="#daedalus-0229"></a></h2>
 <p>This patch version implements a request from UKHSA to allow modelling pre-existing immunity by placing some proportion of the model population in the vaccinated stratum during model initialisation, by specifying <code>p_immune</code> in <code>initial_state_manual</code> in <code><a href="../reference/daedalus.html">daedalus()</a></code> and <code><a href="../reference/daedalus_multi_infection.html">daedalus_multi_infection()</a></code>. See function documentation details for more (PR <a href="https://github.com/jameel-institute/daedalus/issues/118" class="external-link">#118</a> reviewed by <a href="https://github.com/OliverPolhillUKHSA" class="external-link">@OliverPolhillUKHSA</a>).</p>
