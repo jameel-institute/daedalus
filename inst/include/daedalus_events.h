@@ -105,8 +105,9 @@ class response {
   /// @param value The time value to check current time against.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_time_test(const double value) const {
-    auto fn_test = [value, &i_flag = i_flag](const double t, const double *y) {
-      if (y[i_flag] > 0.0) {
+    auto fn_test = [value](const double t, const double *y) {
+      // NOTE: y[0] is flag as time is not passed
+      if (y[0] > 0.0) {
         return 1.0;  // return FALSE if flag already on
       } else {
         return t - value;  // time - start_time
@@ -123,9 +124,10 @@ class response {
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_duration_test(const size_t &id_state,
                                       const double value) const {
-    auto fn_test = [id_state, value](const double t, const double *y) {
-      if (y[id_state] > 0.0) {
-        return t - (value + y[id_state]);  // return val only if flag already on
+    auto fn_test = [value](const double t, const double *y) {
+      // NOTE: y[0] is start_time, y[1] is flag
+      if (y[1] > 0.0) {
+        return t - (value + y[0]);  // return val only if flag already on
       } else {
         return 1.0;  // prevent (t - value) when event has not launched yet
       }
@@ -257,7 +259,7 @@ class response {
     if (!ISNA(time_on)) {
       const std::string name_ev_time_on = name + "_time_on";
       dust2::ode::event<double> ev_time_on = make_event(
-          name_ev_time_on, {}, make_time_test(time_on),
+          name_ev_time_on, {i_flag}, make_time_test(time_on),
           make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
           dust2::ode::root_type::increase);
 
@@ -267,10 +269,11 @@ class response {
     // event ended on duration
     if (!ISNA(duration)) {
       const std::string name_ev_time_off = name + "_time_off";
-      dust2::ode::event<double> ev_time_off = make_event(
-          name_ev_time_off, {}, make_duration_test(i_time_start, duration),
-          make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
-          dust2::ode::root_type::increase);
+      dust2::ode::event<double> ev_time_off =
+          make_event(name_ev_time_off, {i_time_start, i_flag},
+                     make_duration_test(i_time_start, duration),
+                     make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
+                     dust2::ode::root_type::increase);
 
       events.push_back(ev_time_off);
     }
