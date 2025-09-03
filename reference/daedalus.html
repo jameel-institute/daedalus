@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.29</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -142,9 +142,15 @@ transmission as a function of daily deaths. See <strong>Details</strong> for mor
 
 <dt id="arg-initial-state-manual">initial_state_manual<a class="anchor" aria-label="anchor" href="#arg-initial-state-manual"></a></dt>
 <dd><p>An optional <strong>named</strong> list with the names
-<code>p_infectious</code> and <code>p_asymptomatic</code> for the proportion of infectious and
-symptomatic individuals in each age group and economic sector.
-Defaults to <code>1e-6</code> and <code>0.0</code> respectively.</p></dd>
+<code>p_infectious</code>, <code>p_asymptomatic</code>, and <code>p_immune</code>.
+<code>p_infectious</code> and <code>p_asymptomatic</code> give the proportion of
+infectious and symptomatic individuals in each age group and economic sector.
+Defaults to <code>1e-6</code> and <code>0.0</code> respectively.
+<code>p_immune</code> may be a single number in the range <code>0.0 &lt;= p_immune &lt;= 1.0</code> or a
+4-element vector in that range (the number of age groups in the model), for
+the proportion of individuals in the population or in each age group that
+have some pre-existing immunity to infection (reduced susceptibility). See
+<strong>Details</strong> for more.</p></dd>
 
 
 <dt id="arg-time-end">time_end<a class="anchor" aria-label="anchor" href="#arg-time-end"></a></dt>
@@ -179,6 +185,15 @@ million as infectious.</p></li>
 <li><p><code>p_asymptomatic</code>: A single numeric value in the range \([0.0, 1.0]\) for
 the proportion of initially infectious individuals who are considered to be
 asymptomatic. Defaults to 0.0.</p></li>
+<li><p><code>p_immune</code>: Either a single number or a vector of 4 elements (the number
+of age groups) in the range \([0.0, 1.0]\) for the proportion of the
+population (or each age group) that is considered to have pre-existing
+immunity. This is a stop-gap implementation that assumes one of two cases:
+(1) if no vaccination is intended in the model and <code>vaccine_investment</code> is
+<code>NULL</code>, the susceptibility of individuals pre-existing immunity is 50%; or
+(2) if a vaccination strategy is specified, the pre-existing immunity is
+assumed to be from a prior rollout, and the susceptibility is determined by
+the chosen vaccination strategy (as <code>1 - efficacy</code>).</p></li>
 </ul></div>
 
 <div class="section">
