@@ -1,4 +1,4 @@
-# daedalus (development version)
+# daedalus 0.2.30
 
 This patch version:
 
