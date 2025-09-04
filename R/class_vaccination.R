@@ -333,7 +333,7 @@ prepare_parameters.daedalus_vaccination <- function(x, ...) {
 #' vaccination rate and efficacy are set to zero.
 #'
 #' @keywords internal
-dummy_vaccination <- function() {
+dummy_vaccination <- function(country) {
   # a dummy vaccination with rates and start set to zero
   params <- list(
     rate = 0,
@@ -345,10 +345,10 @@ dummy_vaccination <- function() {
   x <- new_daedalus_vaccination(
     params,
     identifier = "no vaccination",
-    id_flag = NA_integer_,
+    id_flag = get_flag_index("vax_flag", country),
     root_state_on = 1L,
     root_state_off = 1L,
-    id_time_log = 1L # NOTE: this is never used as vax is never switched on
+    id_time_log = get_flag_index("vax_start_time", country)
   )
   validate_daedalus_vaccination(x)
   x
@@ -391,7 +391,7 @@ validate_vaccination_input <- function(x, country) {
 
     x
   } else {
-    dummy_vaccination()
+    dummy_vaccination(country)
   }
 }
 
