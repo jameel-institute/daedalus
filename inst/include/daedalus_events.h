@@ -310,7 +310,8 @@ class response {
 
         events.push_back(make_event(
             name_ev_time_on, {i_flag}, make_time_test(time_on[i], 0.0),
-            make_flag_setter({i_flag, i_time_start}, {flag_index, value_log_time}),
+            make_flag_setter({i_flag, i_time_start},
+                             {flag_index, value_log_time}),
             dust2::ode::root_type::increase));
       }
 
