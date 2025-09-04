@@ -1,0 +1,174 @@
+---
+title: "Modelling time-limited economic closures"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Modelling time-limited economic closures}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(daedalus)
+```
+
+This vignette shows how to model time-limited economic closures, including sequential closures, using the `<daedalus_npi>` class.
+`<daedalus_npi>` objects are created using `daedalus_npi()`, and the class documentation explains more about the allowed parameters.
+
+## Creating an NPI class object
+
+An economic closure or NPI class object is created by passing arguments to `daedalus_npi()`.
+The _daedalus_ model currently only supports economic closures as part of NPIs, so these terms are used interchangeably.
+
+The minimum number of arguments required are `name`, `country`, and `infection`.
+The openness coefficient vector, start and end time, and maximum duration are optional.
+
+The different use cases for each argument are explained below.
+
+```r
+# not run
+daedalus_npi(
+  name, country, infection,
+  openness,
+  start_time, end_time,
+  max_duration
+)
+```
+
+## Common rules for NPI triggers
+
+**Note that** the following rules apply to all NPIs:
+
+1. NPIs are broadly independent of each other, and trigger when their condition is met.
+
+    - Internally, all events in NPIs (in `daedalus::events::response`) check for whether they would be redundant, i.e., whether they would actually make a change to the NPI flag. So events that would switch the flag to `on` do not occur if they flag is already `on` (the same applies to `off`). This allows accurate calculation of the duration for which an NPI has been active.
+
+2. The `country` argument controls the hospital capacity, the breaching of which triggers the NPI. This trigger overrides the start time trigger, so a NPI may trigger earlier than expected.
+
+3. The `infection` argument allows the NPI to end when the epidemic stops growing. This trigger overrides the end time trigger, so an NPI may end sooner than expected.
+
+4. All NPIs end after a maximum default duration of 365 days. This can be changed using the `max_duration` argument. This argument overrides the `end_time` argument: if the NPI `end_time` is specified as more than `max_duration` days after the `start_time`, **the response will end at `start_time + max_duration`, not at `end_time`**.
+
+    - It is possible for responses started by any trigger to end on `max_duration`, and then to end on `end_time` if it has been relaunched at a time-point in between. We advise users to await further developments in which state-dependent and time-dependent NPIs are separated.
+
+5. Public-concern social distancing, when set to be NPI-linked, follows the rules for NPI launching and ending laid out above.
+
+6. When a response is activated upon hitting its start time, the same response will not be logged as activating due to the hospital capacity trigger, even if that condition is met, as long as the response is active (that is, model time $<$ end time, or epidemic is still growing).
+
+7. When a response ends due to time conditions being met, it may launch again if the hospital capacity condition is met. Future versions of _daedalus_ may allow this to be prevented.
+
+## Time-limiting a pre-canned response
+
+A time-limited economic closure or NPI is created by passing values to the `start_time` and `end_time` arguments of `daedalus_npi()`.
+
+For instance, to specify school closures for the U.K. that are active between days 30 and 90 after a pandemic use this code.
+
+```{r timed-npi-basic}
+npi <- daedalus_npi(
+  "school_closures", "GBR", "sars_cov_1",
+  start_time = 30, end_time = 90
+)
+
+# see NPI information
+npi
+
+# run a scenario with the npi
+daedalus(
+  "GBR", "sars_cov_1", npi,
+  time_end = 100
+)
+```
+
+## Bespoke time-limited response
+
+Creating a time-limited NPI with a single active duration using `daedalus_npi()` requires:
+
+- Passing `NA` as the `name` rather than one of the pre-canned NPI strategies found in [daedalus.data::closure_strategy_data], and
+
+- Passing a vector of the same length as the number of economic sectors (currently 45) to the `openness` argument.
+
+A country and infection are still required as before.
+
+All other rules and requirements are the same as for a pre-canned response; the pre-canned element is the openness coefficients.
+
+Passing a bespoke NPI to [daedalus()] leads to the resulting `<daedalus_output>` object identifying the `response_strategy` as `"custom"`.
+
+**See the next section** for how to specify time-limited NPIs that are active over multiple intervals.
+
+```{r timed-npi-bespoke}
+openness <- rep(0.3, 45)
+
+npi <- daedalus_npi(
+  NA, "GBR", "sars_cov_1",
+  openness,
+  30, 90
+)
+
+# see NPI information
+npi
+
+# run a scenario with the npi
+daedalus(
+  "GBR", "sars_cov_1", npi,
+  time_end = 100
+)
+```
+
+## Repeated time-limited response
+
+A time-limited response can be set to trigger and end at multiple time points.
+This is of most use in real-time pandemic response use-cases where users are seeking to model policy-makers' options or decisions about imposing and lifting restrictions.
+
+_daedalus_ offers the [daedalus_timed_npi()] function to specify time-limited NPIs that are not responsive to model state, and which allow multiple closure periods.
+
+[daedalus_timed_npi()] also allows specifying a different openness coefficient vector (i.e., stringency of economic closures) for each closure period, which allows responses to be ramped up and down --- an expected use-case in real-time modelling.
+
+Repeated time-limited NPIs are created by passing vectors to `start_time` and `end_time` in `daedalus_timed_npi()`.
+The $i-th$ element of each vector gives the start and end time of a each closure period.
+
+**Note that:**
+
+1. [daedalus_timed_npi()] creates a `<daedalus_npi>` object, just with different event triggers;
+
+2. These objects do not trigger or end on model state;
+
+3. These objects do not specify a maximum closure duration, but do require all closure periods to be time-limited;
+
+4. All closure periods must be non-overlapping, so only one closure regime can be active at any time;
+
+5. Sequential time-limited responses cannot be created by tweaking pre-canned responses, but the openness coefficients may be used by accessing them manually from [daedalus.data::closure_strategy_data].
+
+The example below show ramping responses up and down by switching from school closures to an elimination strategy and back again.
+
+```{r timed-sequential-npi}
+school_closures <- daedalus.data::closure_strategy_data[["school_closures"]]
+elimination <- daedalus.data::closure_strategy_data[["elimination"]]
+
+# start at day 30, 60, 90, 30 days each
+npi <- daedalus_timed_npi(
+  start_time = c(30, 60, 90),
+  end_time = c(59, 89, 120),
+  openness = list(
+    school_closures, elimination, school_closures
+  ),
+  "GBR"
+)
+
+# see NPI information
+npi
+
+# run a scenario with the npi
+output <- daedalus(
+  "GBR", "sars_cov_1", npi,
+  time_end = 150
+)
+
+# examine event times
+output$event_data
+```

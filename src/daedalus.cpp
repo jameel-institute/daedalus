@@ -71,7 +71,6 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(cm_work, constant = TRUE)]]
 // [[dust2::parameter(cm_cons_work, constant = TRUE)]]
 // [[dust2::parameter(hospital_capacity, constant = TRUE)]]
-// [[dust2::parameter(openness, constant = TRUE)]]
 // [[dust2::parameter(response_time, constant = TRUE)]]
 // [[dust2::parameter(response_duration, constant = TRUE)]]
 // [[dust2::parameter(auto_social_distancing, constant = TRUE)]]
@@ -91,13 +90,14 @@ class daedalus_ode {
 
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
     const TensorMat cm, cm_cons_work, cm_work;
-    const TensorMat susc, openness;
+    const TensorMat susc;
+    const std::vector<TensorMat> openness;
 
     // flag positions
     const size_t i_ipr, i_npi_flag, i_vax_flag, i_sd_flag, i_hosp_overflow_flag;
 
     // event objects
-    daedalus::events::response npi, vaccination, public_concern,
+    const daedalus::events::response npi, vaccination, public_concern,
         hosp_cap_exceeded;
   };
 
@@ -275,11 +275,6 @@ class daedalus_ode {
     const real_type hosp_cap_response =
         std::isnan(response_time) ? NA_REAL : hospital_capacity;
 
-    // handling openness vector
-    TensorMat openness(n_econ_groups, 1);
-    dust2::r::read_real_vector(pars, n_econ_groups, openness.data(), "openness",
-                               true);
-
     // RELATIVE LOCATIONS OF RESPONSE-RELATED FLAGS
     // add n_strata to the end for new vaccinations data
     const size_t total_compartments =
@@ -311,6 +306,9 @@ class daedalus_ode {
     daedalus::events::response npi =
         daedalus::inputs::read_response(pars, "npi");
 
+    /// ** Get openness regimes from NPIs ** ///
+    std::vector<TensorMat> openness = npi.get_openness_coefs();
+
     daedalus::events::response vaccination =
         daedalus::inputs::read_response(pars, "vaccination");
 
@@ -330,10 +328,13 @@ class daedalus_ode {
       sd_start_state = hosp_cap_response;
       sd_end_state = gamma_Ia;  // not working anyway; see PR #83
     }
+
+    cpp11::list dummy_list;
     daedalus::events::response public_concern(
-        std::string("public_concern"), sd_start_time, sd_duration,
-        sd_start_state, sd_end_state, i_sd_flag, {idx_hosp}, {i_ipr},
-        root_type_increasing, root_type_decreasing, i_real_sd_start);
+        std::string("public_concern"), dummy_list, {sd_start_time},
+        {sd_duration}, NA_REAL, sd_start_state, sd_end_state, i_sd_flag,
+        {idx_hosp}, {i_ipr}, root_type_increasing, root_type_decreasing,
+        i_real_sd_start);
 
     daedalus::events::response hosp_cap_exceeded =
         daedalus::inputs::read_response(pars, "hosp_overflow");
@@ -453,10 +454,10 @@ class daedalus_ode {
             Eigen::array<Eigen::Index, 2>{n_strata - n_econ_groups, 0},
             Eigen::array<Eigen::Index, 2>{n_econ_groups, 1});
 
-    internal.t_foi_work =
-        beta_tmp * internal.t_work_inf_contacts *
-        daedalus::events::switch_by_flag(shared.openness,
-                                         state[shared.i_npi_flag]);  // scale β
+    const size_t id_npi_regime = state[shared.i_npi_flag];
+
+    internal.t_foi_work = beta_tmp * internal.t_work_inf_contacts *
+                          shared.openness[id_npi_regime];
 
     internal.t_comm_inf_age = internal.t_infectious.slice(
         Eigen::array<Eigen::Index, 2>{0, 0},
@@ -466,10 +467,7 @@ class daedalus_ode {
         shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
 
     internal.t_foi_cw =
-        beta_tmp *
-        daedalus::events::switch_by_flag(shared.openness,
-                                         state[shared.i_npi_flag]) *  // scale β
-        internal.t_cw_inf_contacts;
+        beta_tmp * shared.openness[id_npi_regime] * internal.t_cw_inf_contacts;
 
     // initial calculation of new infections in the community
     internal.sToE =
