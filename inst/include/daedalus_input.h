@@ -37,10 +37,15 @@ inline daedalus::events::response read_response(cpp11::list args,
   // only allow single values on all `value_*`
   // no checks as these are handled on the R side
   cpp11::doubles sxp_time_on(this_list["time_on"]);
-  const double time_on = sxp_time_on[0];
+  std::vector<double> time_on(sxp_time_on.size());
+  std::copy(sxp_time_on.begin(), sxp_time_on.end(), time_on.begin());
 
-  cpp11::doubles sxp_duration(this_list["duration"]);
-  const double duration = sxp_duration[0];
+  cpp11::doubles sxp_time_off(this_list["time_off"]);
+  std::vector<double> time_off(sxp_time_off.size());
+  std::copy(sxp_time_off.begin(), sxp_time_off.end(), time_off.begin());
+
+  cpp11::doubles sxp_max_duration(this_list["max_duration"]);
+  const double max_duration = sxp_max_duration[0];
 
   cpp11::integers sxp_id_state_on(this_list["id_state_on"]);
   std::vector<size_t> id_state_on(sxp_id_state_on.size());
@@ -71,8 +76,9 @@ inline daedalus::events::response read_response(cpp11::list args,
   const size_t id_flag = static_cast<size_t>(sxp_id_flag[0]);
 
   daedalus::events::response this_response(
-      ev_name, time_on, duration, value_state_on, value_state_off, id_flag,
-      id_state_on, id_state_off, root_state_on, root_state_off, id_time_log);
+      ev_name, time_on, time_off, max_duration, value_state_on, value_state_off,
+      id_flag, id_state_on, id_state_off, root_state_on, root_state_off,
+      id_time_log);
 
   return this_response;
 }

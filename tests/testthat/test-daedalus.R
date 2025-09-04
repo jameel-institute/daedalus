@@ -190,15 +190,6 @@ test_that("daedalus: Runs with custom openness values", {
     ),
     "`response_strategy` must be a single string, not a character `NA`"
   )
-  expect_error(
-    daedalus(
-      "GBR",
-      "sars_cov_1",
-      "elimination",
-      response_duration = c(1, 1)
-    ),
-    "(duration)*(must be)*(integer-ish)*(same length as `time_on`)"
-  )
 })
 
 # test that passing model parameters works
