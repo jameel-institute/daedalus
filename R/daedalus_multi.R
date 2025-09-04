@@ -65,7 +65,7 @@ daedalus_multi_infection <- function(
   })
 
   # get only first NPI identifier
-  response_identifier <- first(npi)$parameters$identifier
+  response_identifier <- first(npi)$identifier
 
   # checks on vaccination input; make copy to allow for true vax start at 0.0
   # if users want that

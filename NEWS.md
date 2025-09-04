@@ -1,8 +1,6 @@
 # daedalus (development version)
 
-## PR 111
-
-This patch version adds functionality to allow multiple, sequential, time-limited NPIs.
+This patch version adds functionality to allow multiple, sequential, time-limited NPIs (PR #111 reviewed by @pabloperguz).
 
 - `<daedalus_response>` and sub-classes have separate `time_off` and `max_duration` members; `time_off` may be a vector while `max_duration` is a single number defaulting to `365` for `<daedalus_npi>` only. `<daedalus_vaccination>` has no default value allowing events to continue indefinitely.
 
