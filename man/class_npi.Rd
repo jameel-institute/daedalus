@@ -13,7 +13,7 @@ daedalus_npi(
   infection,
   openness = NULL,
   start_time = 30,
-  end_time = 60,
+  end_time = NA_real_,
   max_duration = 365
 )
 
@@ -61,13 +61,14 @@ the \code{time_on} argument in \code{\link[=new_daedalus_response]{new_daedalus_
 
 \item{end_time}{The number of days after the start of the epidemic that
 the NPI response ends. May be a vector, with times taken with reference to
-\code{start_time}. Defaults to 60. Passed to
-the \code{time_on} argument in \code{\link[=new_daedalus_response]{new_daedalus_response()}} via the class constructor
+\code{start_time}. Defaults to \code{NA_real_}, with no defined end time. Passed to
+the \code{time_off} argument in \code{\link[=new_daedalus_response]{new_daedalus_response()}} via
 \code{new_daedalus_npi()}.}
 
 \item{max_duration}{The maximum number of days that an NPI response is active
 whether started by passing the \code{start_time} or when a state threshold is
-crossed. Defaults to 60 days.}
+crossed. Defaults to 365 days. \code{max_duration} overrides \code{end_time} in ending
+NPIs, if the maximum duration is reached before \code{end_time}.}
 
 \item{x}{An object to be tested or printed as a \verb{<daedalus_npi>}.}
 

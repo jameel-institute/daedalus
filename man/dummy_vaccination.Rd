@@ -4,7 +4,7 @@
 \alias{dummy_vaccination}
 \title{Dummy vaccination}
 \usage{
-dummy_vaccination()
+dummy_vaccination(country)
 }
 \value{
 A \code{daedalus_vaccination} object intended to have no effect;

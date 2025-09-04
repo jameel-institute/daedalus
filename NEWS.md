@@ -22,7 +22,7 @@ This patch version adds functionality to allow multiple, sequential, time-limite
 
 ### Notes
 
-- The 'auto social-distancing' option `npi_linked` is not fully compatible with the new changes to `<daedalus_npi>`, and auto social-distancing will only launch during the first interval that an NPI is active; this will be fixed in a future PR.
+- The 'auto social-distancing' option `npi_linked` is not fully compatible with the new changes to `<daedalus_npi>`, and auto social-distancing will only launch during the first interval that an NPI is active; this will be fixed in PR #113.
 
 # daedalus 0.2.30
 
