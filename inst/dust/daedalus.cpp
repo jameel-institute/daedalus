@@ -259,11 +259,6 @@ class daedalus_ode {
     const int auto_social_distancing =
         dust2::r::read_size(pars, "auto_social_distancing", 0);
 
-    // hospital capacity data; make a copy conditional on response time to
-    // prevent hospital-capacity triggered responses
-    const real_type hospital_capacity =
-        dust2::r::read_real(pars, "hospital_capacity", NA_REAL);
-
     // handling openness vector
     TensorMat openness(n_econ_groups, 1);
     dust2::r::read_real_vector(pars, n_econ_groups, openness.data(), "openness",
@@ -282,20 +277,7 @@ class daedalus_ode {
     const size_t i_hosp_overflow_flag =
         total_compartments + daedalus::constants::i_rel_hosp_overflow_FLAG;
 
-    // start times for events
-    const size_t i_real_hosp_overflow_start =
-        total_compartments +
-        daedalus::constants::i_rel_hosp_overflow_START_TIME;
-
-    // INTEGERS FOR ROOT TYPES FOR STATE-DEPENDENT EVENTS
-    // NOTE: these are handled internally in most classes and not exposed in R
-    const int root_type_increasing = 1;
-    const int root_type_decreasing = -1;
-
     // RESPONSE AND VACCINATION CLASSES
-    std::vector<size_t> idx_hosp =
-        daedalus::helpers::get_state_idx({iH + 1}, n_strata, N_VAX_STRATA);
-
     // NOTE: NPI response end time passed as parameter; vax end time remains 0.0
     daedalus::events::response npi =
         daedalus::inputs::read_response(pars, "npi");
