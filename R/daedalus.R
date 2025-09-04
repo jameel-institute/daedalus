@@ -40,14 +40,20 @@ initial_flags <- function() {
 get_daedalus_response_times <- function(output, time_end) {
   # internal function with no input checking
   event_data <- output$event_data[[1]]
-  resp_times_on <- event_data[grepl("npi_\\w*_on$", event_data$name), "time"]
+  resp_times_on <- event_data[grepl("npi_\\w*_on", event_data$name), "time"]
   resp_time_on_realised <- if (length(resp_times_on) == 0) {
     NA_real_
   } else {
     floor(resp_times_on)
   }
 
-  resp_times_off <- event_data[grepl("npi_\\w*_off$", event_data$name), "time"]
+  resp_times_off <- event_data[
+    grepl(
+      "npi_\\w*_off|npi_max_duration",
+      event_data$name
+    ),
+    "time"
+  ]
   resp_time_off_realised <- if (all(is.na(resp_time_on_realised))) {
     NA_real_
   } else if (length(resp_times_off) == 0) {
@@ -157,10 +163,9 @@ daedalus_internal <- function(
 #' @param response_time A single numeric value for the time in days
 #' at which the selected response is activated. This is ignored if the response
 #' has already been activated by the hospitalisation threshold being reached.
-#' Defaults to 30 days.
-#'
-#' @param response_duration A single integer-ish number that gives the number of
-#' days after activation that an NPI should end.
+#' Defaults to 30 days. Responses have a default maximum duration of 365 days.
+#' This can be changed by passing a `<daedalus_npi>` object to
+#' `response_strategy`.
 #'
 #' @param auto_social_distancing A string giving the option for the form of
 #' spontaneous social distancing in the model, which reduces infection
@@ -267,7 +272,6 @@ daedalus <- function(
   response_strategy = NULL,
   vaccine_investment = NULL,
   response_time = 30,
-  response_duration = 365,
   auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
@@ -294,8 +298,8 @@ daedalus <- function(
     response_strategy,
     country,
     infection,
-    response_time,
-    response_duration
+    response_time
+    # set response duration to default internal value if pre-canned npi passed
   )
 
   response_identifier <- npi$identifier
@@ -318,18 +322,14 @@ daedalus <- function(
     ))
   }
 
-  # prevent passing NAs as these are not correctly handled on C++ side
-  if (identical(response_strategy, "none") || is.null(response_strategy)) {
-    # set response time to NULL when response is NULL
-    response_time <- NULL
-    duration <- NULL
-  } else {
-    response_time <- npi$time_on
-    duration <- npi$duration
-  }
-
   #### spontaneous social distancing ####
   auto_social_distancing <- rlang::arg_match(auto_social_distancing)
+
+  if (auto_social_distancing == "independent") {
+    flags["sd_flag"] <- 1.0
+    flags["sd_start_time"] <- 1.0
+  }
+
   auto_social_distancing <- switch(
     auto_social_distancing,
     off = 0,
@@ -353,8 +353,7 @@ daedalus <- function(
       susc = susc,
       # all three below needed for npi-linked behaviour response
       openness = get_data(npi, "openness"),
-      response_time = response_time,
-      response_duration = duration,
+      # temporary as these can be vecs, see future PRs
       auto_social_distancing = auto_social_distancing,
       vaccination = vaccination,
       npi = npi,
