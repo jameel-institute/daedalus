@@ -1,4 +1,4 @@
-# daedalus (development version)
+# daedalus 0.2.31
 
 This patch version adds functionality to allow multiple, sequential, time-limited NPIs (PR #111 reviewed by @pabloperguz).
 
