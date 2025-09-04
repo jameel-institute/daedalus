@@ -4,7 +4,7 @@
 \alias{dummy_npi}
 \title{Dummy NPI}
 \usage{
-dummy_npi()
+dummy_npi(country)
 }
 \value{
 A \verb{<daedalus_npi>} object intended to have no effect; openness is

@@ -45,17 +45,23 @@ daedalus_npi(
 
 **Note that** the following rules apply to all NPIs:
 
-1. The `country` argument controls the hospital capacity, the breaching of which triggers the NPI. This trigger overrides the start time trigger, so a NPI may trigger earlier than expected.
+1. NPIs are broadly independent of each other, and trigger when their condition is met.
 
-2. The `infection` argument allows the NPI to end when the epidemic stops growing. This trigger overrides the end time trigger, so an NPI may end sooner than expected.
+    - Internally, all events in NPIs (in `daedalus::events::response`) check for whether they would be redundant, i.e., whether they would actually make a change to the NPI flag. So events that would switch the flag to `on` do not occur if they flag is already `on` (the same applies to `off`). This allows accurate calculation of the duration for which an NPI has been active.
 
-3. All NPIs end after a maximum default duration of 365 days. This can be changed using the `max_duration` argument. If this is not changed and the NPI `end_time` is specified as more than 365 days after the `start_time`, the response will end sooner than expected.
+2. The `country` argument controls the hospital capacity, the breaching of which triggers the NPI. This trigger overrides the start time trigger, so a NPI may trigger earlier than expected.
 
-4. Public-concern social distancing, when set to be NPI-linked, follows the rules for NPI launching and ending laid out above.
+3. The `infection` argument allows the NPI to end when the epidemic stops growing. This trigger overrides the end time trigger, so an NPI may end sooner than expected.
 
-5. When a response is activated upon hitting its start time, the same response will not be logged as activating due to the hospital capacity trigger, even if that condition is met, as long as the response is active (that is, model time $<$ end time, or epidemic is still growing).
+4. All NPIs end after a maximum default duration of 365 days. This can be changed using the `max_duration` argument. This argument overrides the `end_time` argument: if the NPI `end_time` is specified as more than `max_duration` days after the `start_time`, **the response will end at `start_time + max_duration`, not at `end_time`**.
 
-6. When a response ends due to time conditions being met, it may launch again if the hospital capacity condition is met. Future versions of _daedalus_ may allow this to be prevented.
+    - It is possible for responses started by any trigger to end on `max_duration`, and then to end on `end_time` if it has been relaunched at a time-point in between. We advise users to await further developments in which state-dependent and time-dependent NPIs are separated.
+
+5. Public-concern social distancing, when set to be NPI-linked, follows the rules for NPI launching and ending laid out above.
+
+6. When a response is activated upon hitting its start time, the same response will not be logged as activating due to the hospital capacity trigger, even if that condition is met, as long as the response is active (that is, model time $<$ end time, or epidemic is still growing).
+
+7. When a response ends due to time conditions being met, it may launch again if the hospital capacity condition is met. Future versions of _daedalus_ may allow this to be prevented.
 
 ## Time-limiting a pre-canned response
 
