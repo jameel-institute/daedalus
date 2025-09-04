@@ -63,13 +63,14 @@ new_daedalus_npi <- function(parameters, ...) {
 #'
 #' @param end_time The number of days after the start of the epidemic that
 #' the NPI response ends. May be a vector, with times taken with reference to
-#' `start_time`. Defaults to 60. Passed to
-#' the `time_on` argument in [new_daedalus_response()] via the class constructor
+#' `start_time`. Defaults to `NA_real_`, with no defined end time. Passed to
+#' the `time_off` argument in [new_daedalus_response()] via
 #' `new_daedalus_npi()`.
 #'
 #' @param max_duration The maximum number of days that an NPI response is active
 #' whether started by passing the `start_time` or when a state threshold is
-#' crossed. Defaults to 60 days.
+#' crossed. Defaults to 365 days. `max_duration` overrides `end_time` in ending
+#' NPIs, if the maximum duration is reached before `end_time`.
 #'
 #' @param x An object to be tested or printed as a `<daedalus_npi>`.
 #'
@@ -99,7 +100,7 @@ daedalus_npi <- function(
   infection,
   openness = NULL,
   start_time = 30,
-  end_time = 60,
+  end_time = NA_real_,
   max_duration = 365
 ) {
   # input checking
@@ -302,18 +303,18 @@ get_data.daedalus_npi <- function(x, to_get, ...) {
 #' set to 1.0, and start time and duration are set to `NULL`.
 #'
 #' @keywords internal
-dummy_npi <- function() {
-  # a dummy npi with rates and start set to zero
+dummy_npi <- function(country) {
+  # a dummy npi with openness set to 1 and times set to NA
   params <- list(
     openness = rep(1.0, N_ECON_SECTORS)
   )
   x <- new_daedalus_npi(
     params,
     identifier = "none",
-    id_flag = NA_integer_,
+    id_flag = get_flag_index("npi_flag", country),
     root_state_on = 1L,
     root_state_off = 1L,
-    id_time_log = 1L # NOTE: this is never used as NPI is never switched on
+    id_time_log = get_flag_index("npi_start_time", country) # never used
   )
   validate_daedalus_npi(x)
   x
@@ -352,7 +353,7 @@ validate_npi_input <- function(
   if (is_daedalus_npi(x)) {
     invisible(x)
   } else if (is.null(x) || identical(x, "none")) {
-    dummy_npi()
+    dummy_npi(country)
   } else if (is.character(x)) {
     x <- rlang::arg_match(
       x,
