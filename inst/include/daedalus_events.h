@@ -153,8 +153,7 @@ class response {
   /// @param value The time_off to check against, which is added to the
   /// logged/realised start-time to get the value.
   /// @return A lambda function suitable for creating a dust2::event test.
-  inline test_type make_duration_test(const size_t &id_state,
-                                      const double value) const {
+  inline test_type make_duration_test(const double value) const {
     auto fn_test = [value](const double t, const double *y) {
       // NOTE: y[0] is start_time, y[1] is flag
       if (y[1] > 0.0) {
@@ -359,10 +358,11 @@ class response {
     // test for maximum duration
     const std::string name_ev_max_dur = name + "_max_duration";
 
-    dust2::ode::event<double> ev_max_dur = make_event(
-        name_ev_max_dur, {}, make_duration_test(i_time_start, max_duration),
-        make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
-        dust2::ode::root_type::increase);
+    dust2::ode::event<double> ev_max_dur =
+        make_event(name_ev_max_dur, {i_time_start, i_flag},
+                   make_duration_test(max_duration),
+                   make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
+                   dust2::ode::root_type::increase);
 
     events.push_back(ev_max_dur);
 
