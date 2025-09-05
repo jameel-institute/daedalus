@@ -10,7 +10,7 @@ daedalus_ode <- structure(
     type = c("real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "int", "int", "int", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type"),
     constant = c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE)),
   properties = list(
-    time_type = "continuous",
+    time_type = "mixed",
     has_compare = FALSE,
     has_adjoint = FALSE),
   default_dt = NULL)
