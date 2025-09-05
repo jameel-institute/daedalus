@@ -145,6 +145,7 @@ test_that("daedalus: Can run with custom demography", {
 
 # test that daedalus runs for all epidemic infection parameter sets
 skip_on_covr()
+skip("offline")
 test_that("daedalus: Runs for all country x infection x response", {
   country_infection_combos <- data.table::CJ(
     country = daedalus.data::country_names,

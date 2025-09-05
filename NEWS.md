@@ -4,9 +4,9 @@ This patch modifies the costs and fiscal costs calculation by changing how absen
 
 - Only $H$ and $D$ are counted as fully absent;
 
-- $I_a$ were previously counted but are no longer counted;
+- $I_a$ were previously counted but are no longer counted as absent;
 
-- $I_s$ are counted as fully absent with full productivity loss using the argument `productivity_loss_infection` in costs functions; this can be changed during costs calculations.
+- $I_s$ are counted as present at work when calculating new workplace infections, but also as having complete productivity loss. The level of productivity loss can be changed in `get_costs()` and `get_fiscal_costs()` using the argument `productivity_loss_infection`.
 
 Snapshot tests are updated to reflect that all costs are reduced due to no longer counting $I_a$.
 
