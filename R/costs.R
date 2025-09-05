@@ -87,23 +87,24 @@ get_costs <- function(
 
   # absences due to infection, hospitalisation, death
   model_data <- get_data(x)
-  worker_absences <- model_data[
+  worker_prod_loss <- model_data[
     model_data$compartment %in%
       c("infect_symp", "hospitalised", "dead") &
       model_data$econ_sector != "sector_00",
   ]
 
-  # scale infectious symptomatic by productivity loss
-  worker_absences[
-    worker_absences$compartment == "infect_symp",
-  ]$value <- worker_absences[
-    worker_absences$compartment == "infect_symp",
+  # scale the productivity loss of infectious symptomatic; defaults to 1.0
+  # NOTE: hospitalised and dead workers have productivity loss of 1.0
+  worker_prod_loss[
+    worker_prod_loss$compartment == "infect_symp",
+  ]$value <- worker_prod_loss[
+    worker_prod_loss$compartment == "infect_symp",
   ]$value *
     productivity_loss_infection
 
-  worker_absences <- tapply(
-    worker_absences$value,
-    list(worker_absences$time, worker_absences$econ_sector),
+  worker_prod_loss <- tapply(
+    worker_prod_loss$value,
+    list(worker_prod_loss$time, worker_prod_loss$econ_sector),
     sum
   )
   workforce <- x$country_parameters$workers
@@ -111,7 +112,7 @@ get_costs <- function(
   # calculate daily GVA loss due to illness-related absencees;
   # scale GVA loss by openness when closures are active
   # assuming no working from home
-  sector_cost_absences <- worker_absences %*% diag(gva / workforce)
+  sector_cost_absences <- worker_prod_loss %*% diag(gva / workforce)
 
   # calculate total deaths and multiply by VSL
   total_deaths <- model_data[
@@ -444,31 +445,32 @@ get_fiscal_costs <- function(
   openness <- last(x$response_data$openness)
 
   model_data <- get_data(x)
-  worker_absences <- model_data[
+  worker_prod_loss <- model_data[
     model_data$compartment %in%
       c("infect_symp", "hospitalised", "dead") &
       model_data$econ_sector != "sector_00",
   ]
 
-  # scale infectious symptomatic by productivity loss
-  worker_absences[
-    worker_absences$compartment == "infect_symp",
-  ]$value <- worker_absences[
-    worker_absences$compartment == "infect_symp",
+  # scale the productivity loss of infectious symptomatic; defaults to 1.0
+  # NOTE: hospitalised and dead workers have productivity loss of 1.0
+  worker_prod_loss[
+    worker_prod_loss$compartment == "infect_symp",
+  ]$value <- worker_prod_loss[
+    worker_prod_loss$compartment == "infect_symp",
   ]$value *
     productivity_loss_infection
 
-  worker_absences <- tapply(
-    worker_absences$value,
-    list(worker_absences$time, worker_absences$econ_sector),
+  worker_prod_loss <- tapply(
+    worker_prod_loss$value,
+    list(worker_prod_loss$time, worker_prod_loss$econ_sector),
     sum
   )
   workforce <- x$country_parameters$workers
 
   # calculate labour available after absences and closures
-  # during closures, available labour is the product of healthy workers and
-  # mandated capacity
-  avail_labour <- 1.0 - worker_absences %*% diag(1.0 / workforce)
+  # during closures, the effective number of workers is the product of
+  # workers' effectiveness and mandated capacity
+  effective_workers <- 1.0 - worker_prod_loss %*% diag(1.0 / workforce)
 
   # calculate closure duration if any
   closure_duration <- sum(x$response_data$closure_info$closure_durations)
@@ -485,8 +487,8 @@ get_fiscal_costs <- function(
     npi_support[-closure_periods] <- 0.0
     npi_support <- npi_support / 1e6
 
-    avail_labour[closure_periods, ] <- t(apply(
-      avail_labour[closure_periods, ],
+    effective_workers[closure_periods, ] <- t(apply(
+      effective_workers[closure_periods, ],
       1L,
       `*`,
       openness
@@ -494,8 +496,8 @@ get_fiscal_costs <- function(
   }
 
   # cost of support for GVA loss per sector per day
-  gva_achieved <- weighted_rowsums(avail_labour, gva)
-  gva_support <- weighted_rowsums(1.0 - avail_labour, support_level * gva)
+  gva_achieved <- weighted_rowsums(effective_workers, gva)
+  gva_support <- weighted_rowsums(1.0 - effective_workers, support_level * gva)
 
   # cost of vaccination assumed to be instantaneous
   # NOTE: this is only over the model horizon!
