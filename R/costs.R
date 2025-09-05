@@ -1,11 +1,17 @@
 #' Get epidemic costs from a DAEDALUS model run
 #'
 #' @param x A `<daedalus_output>` object from a call to [daedalus()].
+#'
 #' @param summarise_as A string from among "none", "total", or "domain", for how
 #' the costs should be returned. Select "none", the default, for the raw costs
 #' along with overall and domain-specific totals; "total" for the overall cost,
 #' and "domain" for the total costs per domain; the domains are 'economic',
 #' 'education', and 'life years'.
+#'
+#' @param productivity_loss_infection A single number in the range 0 -- 1 giving
+#' the loss in productivity associated with symptomatic infection. Currently
+#' defaults to 1.0 for compatibility with earlier function versions.
+#'
 #' @return A list of different cost values, including the total cost. See
 #' **Details** for more information.
 #'
@@ -47,9 +53,22 @@
 #' output <- daedalus("Canada", "influenza_1918")
 #'
 #' get_costs(output)
+#'
 #' @export
-get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
+get_costs <- function(
+  x,
+  summarise_as = c("none", "total", "domain"),
+  productivity_loss_infection = 1.0
+) {
   checkmate::assert_class(x, "daedalus_output")
+
+  summarise_as <- rlang::arg_match(summarise_as)
+
+  checkmate::assert_number(
+    productivity_loss_infection,
+    lower = 0,
+    upper = 1
+  )
 
   gva <- x$country_parameters$gva
   openness <- x$response_data$openness
@@ -66,14 +85,24 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
 
   # absences due to infection, hospitalisation, death
   model_data <- get_data(x)
-  worker_absences <- model_data[
+  worker_prod_loss <- model_data[
     model_data$compartment %in%
-      c("infect_symp", "infect_asymp", "hospitalised", "dead") &
+      c("infect_symp", "hospitalised", "dead") &
       model_data$econ_sector != "sector_00",
   ]
-  worker_absences <- tapply(
-    worker_absences$value,
-    list(worker_absences$time, worker_absences$econ_sector),
+
+  # scale the productivity loss of infectious symptomatic; defaults to 1.0
+  # NOTE: hospitalised and dead workers have productivity loss of 1.0
+  worker_prod_loss[
+    worker_prod_loss$compartment == "infect_symp",
+  ]$value <- worker_prod_loss[
+    worker_prod_loss$compartment == "infect_symp",
+  ]$value *
+    productivity_loss_infection
+
+  worker_prod_loss <- tapply(
+    worker_prod_loss$value,
+    list(worker_prod_loss$time, worker_prod_loss$econ_sector),
     sum
   )
   workforce <- x$country_parameters$workers
@@ -81,7 +110,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   # calculate daily GVA loss due to illness-related absencees;
   # scale GVA loss by openness when closures are active
   # assuming no working from home
-  sector_cost_absences <- worker_absences %*% diag(gva / workforce)
+  sector_cost_absences <- worker_prod_loss %*% diag(gva / workforce)
 
   # calculate total deaths and multiply by VSL
   total_deaths <- model_data[
@@ -170,9 +199,6 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
     education_cost_absences +
     sum(life_value_lost)
 
-  # return summary if requested, defaults to no summary
-  summarise_as <- rlang::arg_match(summarise_as)
-
   costs <- switch(
     summarise_as,
     none = cost_list,
@@ -226,7 +252,7 @@ get_value_school_year <- function(gni) {
 #' a pandemic. Includes costs of economic support, vaccinations given, and NPIs
 #' administered or implemented.
 #'
-#' @param x A `<daedalus_output>` object.
+#' @inheritParams get_costs
 #'
 #' @param support_level The proportion of pandemic-related economic losses that
 #' a government compensates, as a proportion.
@@ -335,7 +361,8 @@ get_fiscal_costs <- function(
   interest_rate = 4.0,
   tax_rate = 35.0,
   spending_rate = 45.0,
-  starting_debt = 0.0
+  starting_debt = 0.0,
+  productivity_loss_infection = 1.0
 ) {
   # Needs better error messages
   checkmate::assert_class(x, "daedalus_output")
@@ -378,27 +405,42 @@ get_fiscal_costs <- function(
     starting_debt,
     finite = TRUE
   )
+  checkmate::assert_number(
+    productivity_loss_infection,
+    lower = 0,
+    upper = 1
+  )
 
   gva <- x$country_parameters$gva
   openness <- x$response_data$openness
 
   model_data <- get_data(x)
-  worker_absences <- model_data[
+  worker_prod_loss <- model_data[
     model_data$compartment %in%
-      c("infect_symp", "infect_asymp", "hospitalised", "dead") &
+      c("infect_symp", "hospitalised", "dead") &
       model_data$econ_sector != "sector_00",
   ]
-  worker_absences <- tapply(
-    worker_absences$value,
-    list(worker_absences$time, worker_absences$econ_sector),
+
+  # scale the productivity loss of infectious symptomatic; defaults to 1.0
+  # NOTE: hospitalised and dead workers have productivity loss of 1.0
+  worker_prod_loss[
+    worker_prod_loss$compartment == "infect_symp",
+  ]$value <- worker_prod_loss[
+    worker_prod_loss$compartment == "infect_symp",
+  ]$value *
+    productivity_loss_infection
+
+  worker_prod_loss <- tapply(
+    worker_prod_loss$value,
+    list(worker_prod_loss$time, worker_prod_loss$econ_sector),
     sum
   )
   workforce <- x$country_parameters$workers
 
   # calculate labour available after absences and closures
-  # during closures, available labour is the lesser of healthy workers and
-  # mandated capacity
-  avail_labour <- 1.0 - worker_absences %*% diag(1.0 / workforce)
+  # during closures, the effective number of workers is the product of
+  # workers' effectiveness and mandated capacity
+  effective_workers <- 1.0 - worker_prod_loss %*% diag(1.0 / workforce)
 
   # calculate closure duration if any
   closure_duration <- sum(x$response_data$closure_info$closure_durations)
@@ -415,17 +457,17 @@ get_fiscal_costs <- function(
     npi_support[-closure_periods] <- 0.0
     npi_support <- npi_support / 1e6
 
-    avail_labour[closure_periods, ] <- t(apply(
-      avail_labour[closure_periods, ],
+    effective_workers[closure_periods, ] <- t(apply(
+      effective_workers[closure_periods, ],
       1L,
-      pmin,
+      `*`,
       openness
     ))
   }
 
   # cost of support for GVA loss per sector per day
-  gva_achieved <- weighted_rowsums(avail_labour, gva)
-  gva_support <- weighted_rowsums(1.0 - avail_labour, support_level * gva)
+  gva_achieved <- weighted_rowsums(effective_workers, gva)
+  gva_support <- weighted_rowsums(1.0 - effective_workers, support_level * gva)
 
   # cost of vaccination assumed to be instantaneous
   # NOTE: this is only over the model horizon!
