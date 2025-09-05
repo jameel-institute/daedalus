@@ -1,4 +1,4 @@
-# daedalus (development version)
+# daedalus 0.2.34
 
 This patch modifies the costs and fiscal costs calculation by changing how absences due to illness are calculated in `get_costs()` and `get_fiscal_costs()`.
 
