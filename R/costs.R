@@ -421,16 +421,22 @@ get_fiscal_costs <- function(
     lower = 0,
     upper = 100
   )
+  interest_rate <- interest_rate / 100.0
+
   checkmate::assert_number(
     tax_rate,
     lower = 0,
     upper = 100
   )
+  tax_rate <- tax_rate / 100.0
+
   checkmate::assert_number(
     spending_rate,
     lower = 0,
     upper = 100
   )
+  spending_rate <- spending_rate / 100.0
+
   checkmate::assert_number(
     starting_debt,
     finite = TRUE
@@ -441,6 +447,7 @@ get_fiscal_costs <- function(
     upper = 1
   )
 
+  # daily gva
   gva <- x$country_parameters$gva
   openness <- last(x$response_data$openness)
 
@@ -485,7 +492,7 @@ get_fiscal_costs <- function(
     npi_support <- sum(x$country_parameters$demography) -
       get_incidence(x, "deaths")$value * uptake_npi * price_npi
     npi_support[-closure_periods] <- 0.0
-    npi_support <- npi_support / 1e6
+    npi_support <- npi_support / 1e6 # convert to millions USD PPP
 
     effective_workers[closure_periods, ] <- t(apply(
       effective_workers[closure_periods, ],
@@ -507,8 +514,8 @@ get_fiscal_costs <- function(
   names(total_support) <- NULL
   names(gva_support) <- NULL
 
-  # get total fiscal cost with interest rate
-  interest_rate <- interest_rate / 365.0
+  # get total fiscal cost with interest rate; this is is millions USD PPP
+  # same units as GVA and total support
   fiscal_cost <- numeric(x$total_time + 1L)
   for (i in seq_len(x$total_time)) {
     fiscal_cost[i + 1] <- interest_accumulation(
@@ -519,13 +526,13 @@ get_fiscal_costs <- function(
   }
 
   # get total public debt, net of spending and revenue
-  daily_spending <- sum(gva) * spending_rate / 365.0 # mean daily spend
-  tax_rate <- tax_rate / 365.0
+  # mean daily spend assumed to be a proportion of daily GVA: millions USD PPP
+  daily_spending <- sum(gva) * spending_rate
 
   public_debt <- numeric(x$total_time + 1L)
   public_debt[1L] <- starting_debt
 
-  # iterate over 1:150, but public_debt has length 151 as t=0 included
+  # iterate over 1:n, but public_debt has length n+1 as t=0 included
   for (i in seq_len(x$total_time)) {
     public_debt[i + 1] <- daily_spending +
       interest_accumulation(public_debt[i], total_support[i], interest_rate) -
