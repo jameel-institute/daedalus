@@ -1,6 +1,6 @@
 # daedalus 0.2.34
 
-This patch modifies the costs and fiscal costs calculation by changing how absences due to illness are calculated in `get_costs()` and `get_fiscal_costs()`.
+This patch modifies the costs and fiscal costs calculation by changing how absences due to illness are calculated in `get_costs()` and `get_fiscal_costs()` (PR #115 reviewed by @robj411).
 
 - Only $H$ and $D$ are counted as fully absent;
 
@@ -12,7 +12,13 @@ Snapshot tests are updated to reflect that all costs are reduced due to no longe
 
 ## Notes
 
-- `get_fiscal_costs()` is updated to have its labour availability match the multiplicative implementation in `get_costs()`.
+`get_fiscal_costs()` is updated:
+
+- Labour availability match the multiplicative implementation in `get_costs()`;
+
+- Interest rate, spending rate, and tax rate have been corrected to be rates rather than percentages, and the interest rate is converted from an annual to a daily rate;
+
+- GVA gap now accounts for government support.
 
 # daedalus 0.2.33
 
