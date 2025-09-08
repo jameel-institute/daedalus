@@ -7,6 +7,7 @@
 \alias{last}
 \alias{weighted_rowsums}
 \alias{interest_accumulation}
+\alias{annual_rate_daily}
 \title{Helper functions}
 \usage{
 drop_null(x)
@@ -18,12 +19,21 @@ last(x)
 weighted_rowsums(x, weights)
 
 interest_accumulation(principal, contribution, rate)
+
+annual_rate_daily(x)
 }
 \description{
-Helper functions
-}
-\details{
 \code{weighted_rowsums()} is used to get the row-wise sums of a matrix after
 column-wise multiplication by a vector of weights.
+
+\code{interest_accumulation()} is used to calculate the new principal after
+assuming an interest \code{rate} and with some external \code{contribution}. Used in
+\code{get_fiscal_costs()} when the borrowed principal to fund pandemic response
+both compounds over time, and increases due to fresh borrowing in each
+timestep.
+
+\code{annual_rate_daily()} is used to convert an annual rate of interest to a
+daily rate, for use in \code{interest_accumulation()} and eventually in
+\code{get_fiscal_costs()}.
 }
 \keyword{internal}
