@@ -1,3 +1,25 @@
+# daedalus (development version)
+
+This patch modifies the costs and fiscal costs calculation by changing how absences due to illness are calculated in `get_costs()` and `get_fiscal_costs()` (PR #115 reviewed by @robj411).
+
+- Only $H$ and $D$ are counted as fully absent;
+
+- $I_a$ were previously counted but are no longer counted as absent;
+
+- $I_s$ are counted as present at work when calculating new workplace infections, but also as having complete productivity loss. The level of productivity loss can be changed in `get_costs()` and `get_fiscal_costs()` using the argument `productivity_loss_infection`.
+
+Snapshot tests are updated to reflect that all costs are reduced due to no longer counting $I_a$.
+
+## Notes
+
+`get_fiscal_costs()` is updated:
+
+- Labour availability match the multiplicative implementation in `get_costs()`;
+
+- Interest rate, spending rate, and tax rate have been corrected to be rates rather than percentages, and the interest rate is converted from an annual to a daily rate;
+
+- GVA gap now accounts for government support.
+
 # daedalus 0.2.30
 
 This patch version:

@@ -37,6 +37,22 @@ test_that("Costs: basic expectations", {
   )
 })
 
+test_that("Costs: productivity parameter for infections", {
+  costs_1 <- get_costs(
+    daedalus("GBR", "sars_cov_1", time_end = 100)
+  )
+
+  costs_2 <- get_costs(
+    daedalus("GBR", "sars_cov_1", time_end = 100),
+    productivity_loss_infection = 0.5
+  )
+
+  expect_lt(
+    costs_2$economic_costs$economic_cost_absences,
+    costs_1$economic_costs$economic_cost_absences
+  )
+})
+
 test_that("Costs: scenario expectations", {
   ## when response = "none"
   output <- daedalus("Canada", "influenza_2009", time_end = 400)
