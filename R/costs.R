@@ -422,6 +422,7 @@ get_fiscal_costs <- function(
     upper = 100
   )
   interest_rate <- interest_rate / 100.0
+  interest_rate <- annual_rate_daily(interest_rate)
 
   checkmate::assert_number(
     tax_rate,
@@ -505,6 +506,9 @@ get_fiscal_costs <- function(
   # cost of support for GVA loss per sector per day
   gva_achieved <- weighted_rowsums(effective_workers, gva)
   gva_support <- weighted_rowsums(1.0 - effective_workers, support_level * gva)
+
+  # add gva_support to gva_achived - this is govt spending to make up the gap
+  gva_achieved <- gva_achieved + gva_support
 
   # cost of vaccination assumed to be instantaneous
   # NOTE: this is only over the model horizon!
