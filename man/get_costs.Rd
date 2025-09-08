@@ -19,9 +19,10 @@ along with overall and domain-specific totals; "total" for the overall cost,
 and "domain" for the total costs per domain; the domains are 'economic',
 'education', and 'life years'.}
 
-\item{productivity_loss_infection}{A single number in the range 0 -- 1 giving
-the loss in productivity associated with symptomatic infection. Currently
-defaults to 1.0 for compatibility with earlier function versions.}
+\item{productivity_loss_infection}{A single number in the range
+\eqn{[0, 1]} giving the loss in productivity associated with symptomatic
+infection. Currently defaults to 1.0 for compatibility with earlier function
+versions.}
 }
 \value{
 A list of different cost values, including the total cost. See
