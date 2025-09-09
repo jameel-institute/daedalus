@@ -1,6 +1,4 @@
-# daedalus (development version)
-
-## PR 113
+# daedalus 0.2.32
 
 This patch version demotes `auto_social_distancing` from a full `daedalus::events::response` while retaining the mechanism of behavioural effects.
 The mechanism options are mostly handled on the R side (options `"off"` and `"independent"`, by setting initial flag values), with only `"npi_linked"` handled on the C++ side (by setting the reference flag index to the same as `i_npi_flag`).
