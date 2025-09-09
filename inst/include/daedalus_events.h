@@ -38,11 +38,14 @@ const double value_log_time = -999.0;
 /// @tparam T
 /// @param value A value, typically of the openness coefficient. For an 80%
 /// closure of a sector, the openness coefficient would be 0.2.
-/// @param flag Either 0.0 or 1.0.
+/// @param flag Initially expected to be either 0.0 or 1.0. May be > 1.0 for
+/// NPI-linked responses, when values > 1.0 are set to 1.0 internally.
 /// @return Either `value` when `flag` = 1.0, or 1.0 when `flag` = 0.0.
 template <typename T>
 inline T switch_by_flag(T value, const double flag) {
-  return (1.0 - (1.0 - value) * flag);
+  // account for flag as index as used in PR 117 for time-varying NPI coeffs
+  double flag_bool = flag > 1.0 ? 1.0 : flag;
+  return (1.0 - (1.0 - value) * flag_bool);
 }
 
 /// @brief Class holding NPI related information. Intended to live inside
