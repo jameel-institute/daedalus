@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.30</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.31</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,6 +25,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Package vignettes and user guides</h6></li>
     <li><a class="dropdown-item" href="../articles/thresholded_response.html">Modelling threshold-dependent economic closures</a></li>
+    <li><a class="dropdown-item" href="../articles/timed_response.html">Modelling time-limited economic closures</a></li>
     <li><a class="dropdown-item" href="../articles/pandemic_costs.html">Evaluating the costs of pandemic scenarios</a></li>
     <li><a class="dropdown-item" href="../articles/infection_parameter_uncertainty.html">Modelling outcomes under uncertainty in infection parameters</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -51,9 +52,27 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/v0.2.30/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.31" id="daedalus-0231">daedalus 0.2.31<a class="anchor" aria-label="anchor" href="#daedalus-0231"></a></h2>
+<p>This patch version adds functionality to allow multiple, sequential, time-limited NPIs (PR <a href="https://github.com/jameel-institute/daedalus/issues/111" class="external-link">#111</a> reviewed by <a href="https://github.com/pabloperguz" class="external-link">@pabloperguz</a>).</p>
+<ul><li><p><code>&lt;daedalus_response&gt;</code> and sub-classes have separate <code>time_off</code> and <code>max_duration</code> members; <code>time_off</code> may be a vector while <code>max_duration</code> is a single number defaulting to <code>365</code> for <code>&lt;daedalus_npi&gt;</code> only. <code>&lt;daedalus_vaccination&gt;</code> has no default value allowing events to continue indefinitely.</p></li>
+<li><p>Events returned from <code><a href="../reference/daedalus.html">daedalus()</a></code> now differentiate between time-limitation and maximum-duration events; the internal function <code><a href="../reference/get_daedalus_response_times.html">get_daedalus_response_times()</a></code> handles these different names.</p></li>
+<li><p>C++ class <code>daedalus::events::response</code> now expects members <code>time_on</code> and <code>time_off</code> to be vectors; this is handled for <code>&lt;daedalus_npi&gt;</code> and <code>&lt;daedalus_vaccination&gt;</code> via <code>daedalus::inputs::read_response</code> but is manually set for other events.</p></li>
+<li><p>C++ class <code>daedalus::events::response</code> member function <code>make_time_test</code> now checks for start and end time with an <code>expected_value</code> argument for the expected value of the flag. Function <code>make_duration_test</code> only handles the condition that the maximum duration is reached.</p></li>
+<li><p>A new vignette <code>timed_response.Rmd</code> shows how to use the time-limitation functionality in <code>&lt;daedalus_npi&gt;</code>.</p></li>
+<li><p>General tests for events in <code>test-daedalus_events.R</code> have been moved to either NPI or vaccination test files.</p></li>
+</ul><div class="section level4">
+<h4 id="breaking-changes-0-2-31">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-31"></a></h4>
+<ul><li>Older versions of <em>daedalus</em> that pass the <code>duration</code> argument to a response object to implement time-limits will fail.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="notes-0-2-31">Notes<a class="anchor" aria-label="anchor" href="#notes-0-2-31"></a></h4>
+<ul><li>The ‘auto social-distancing’ option <code>npi_linked</code> is not fully compatible with the new changes to <code>&lt;daedalus_npi&gt;</code>, and auto social-distancing will only launch during the first interval that an NPI is active; this will be fixed in PR <a href="https://github.com/jameel-institute/daedalus/issues/113" class="external-link">#113</a>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.30" id="daedalus-0230">daedalus 0.2.30<a class="anchor" aria-label="anchor" href="#daedalus-0230"></a></h2>
 <p>This patch version:</p>

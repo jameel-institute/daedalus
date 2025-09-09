@@ -9,7 +9,8 @@ articles:
   info_model_description: info_model_description.html
   pandemic_costs: pandemic_costs.html
   thresholded_response: thresholded_response.html
-last_built: 2025-09-03T13:04Z
+  timed_response: timed_response.html
+last_built: 2025-09-09T08:55Z
 urls:
   reference: https://jameel-institute.github.io/daedalus/reference
   article: https://jameel-institute.github.io/daedalus/articles

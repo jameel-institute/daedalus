@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.30</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.31</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,6 +25,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Package vignettes and user guides</h6></li>
     <li><a class="dropdown-item" href="../articles/thresholded_response.html">Modelling threshold-dependent economic closures</a></li>
+    <li><a class="dropdown-item" href="../articles/timed_response.html">Modelling time-limited economic closures</a></li>
     <li><a class="dropdown-item" href="../articles/pandemic_costs.html">Evaluating the costs of pandemic scenarios</a></li>
     <li><a class="dropdown-item" href="../articles/infection_parameter_uncertainty.html">Modelling outcomes under uncertainty in infection parameters</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -51,7 +52,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Constructor for the &lt;daedalus_response&gt; super-class and sub-classes</h1>
-      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/v0.2.30/R/class_response.R" class="external-link"><code>R/class_response.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/R/class_response.R" class="external-link"><code>R/class_response.R</code></a></small>
       <div class="d-none name"><code>class_response.Rd</code></div>
     </div>
 
@@ -68,7 +69,8 @@
 <span>  identifier <span class="op">=</span> <span class="cn">NA_character_</span>,</span>
 <span>  id_flag <span class="op">=</span> <span class="cn">NA_integer_</span>,</span>
 <span>  time_on <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
-<span>  duration <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
+<span>  time_off <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
+<span>  max_duration <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
 <span>  id_state_on <span class="op">=</span> <span class="cn">NA_integer_</span>,</span>
 <span>  value_state_on <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
 <span>  id_state_off <span class="op">=</span> <span class="cn">NA_integer_</span>,</span>
@@ -130,8 +132,12 @@ helper functions; see e.g. <code><a href="class_vaccination.html">daedalus_vacci
 <dd><p>Intended to be a numeric vector of start times.</p></dd>
 
 
-<dt id="arg-duration">duration<a class="anchor" aria-label="anchor" href="#arg-duration"></a></dt>
-<dd><p>Intended to be a numeric vector of durations.</p></dd>
+<dt id="arg-time-off">time_off<a class="anchor" aria-label="anchor" href="#arg-time-off"></a></dt>
+<dd><p>Intended to be a numeric vector of end times.</p></dd>
+
+
+<dt id="arg-max-duration">max_duration<a class="anchor" aria-label="anchor" href="#arg-max-duration"></a></dt>
+<dd><p>Intended to be a number for the maximum duration.</p></dd>
 
 
 <dt id="arg-id-state-on">id_state_on<a class="anchor" aria-label="anchor" href="#arg-id-state-on"></a></dt>
