@@ -172,7 +172,6 @@ test_that("class <daedalus_npi>: state-dependent event launch correctly", {
     time_end = 600
   )
 
-  print(output$response_data$closure_info$closure_times_start)
   expect_lt(
     output$response_data$closure_info$closure_times_start,
     response_time
