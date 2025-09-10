@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.31</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.32</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,6 +55,11 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.32" id="daedalus-0232">daedalus 0.2.32<a class="anchor" aria-label="anchor" href="#daedalus-0232"></a></h2>
+<p>This patch version demotes <code>auto_social_distancing</code> from a full <code>daedalus::events::response</code> while retaining the mechanism of behavioural effects (PR <a href="https://github.com/jameel-institute/daedalus/issues/113" class="external-link">#113</a>). The mechanism options are mostly handled on the R side (options <code>"off"</code> and <code>"independent"</code>, by setting initial flag values), with only <code>"npi_linked"</code> handled on the C++ side (by setting the reference flag index to the same as <code>i_npi_flag</code>). This allows the mechanism to remain NPI-linked when necessary without needing to specify time- and state-dependence rules separately.</p>
+<p>The internal function <code>daedalus::events::switch_by_flag</code> converts flag values &gt; 1.0 to 1.0 internally to account for changes to the NPI flag to an implicit index in PR <a href="https://github.com/jameel-institute/daedalus/issues/117" class="external-link">#117</a>.</p>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.31" id="daedalus-0231">daedalus 0.2.31<a class="anchor" aria-label="anchor" href="#daedalus-0231"></a></h2>
 <p>This patch version adds functionality to allow multiple, sequential, time-limited NPIs (PR <a href="https://github.com/jameel-institute/daedalus/issues/111" class="external-link">#111</a> reviewed by <a href="https://github.com/pabloperguz" class="external-link">@pabloperguz</a>).</p>
