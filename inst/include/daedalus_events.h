@@ -300,30 +300,28 @@ class response {
     const size_t n_timed_events = time_on.size();
 
     // generate events for each pair of time_on and time_off
+    /*
+    For daedalus_npi(), time_off optional; for daedalus_timed_npi(), time_off
+    is enforced on the R side
+    */
     for (size_t i = 0; i < n_timed_events; i++) {
-      if (!ISNA(time_on[i])) {
-        // NOTE: reconsider this? experimental flag index setter for npis
-        // only really works with NPIs which can have multiple times on
-        const double flag_index = static_cast<double>(i + 1);  // start from 1
-        const std::string name_ev_time_on =
-            name + "_time_on_" + std::to_string(i + 1);
+      const double flag_index = static_cast<double>(i + 1);  // start from 1
+      const std::string name_ev_time_on =
+          name + "_time_on_" + std::to_string(i + 1);
 
-        events.push_back(make_event(
-            name_ev_time_on, {i_flag}, make_time_test(time_on[i], 0.0),
-            make_flag_setter({i_flag, i_time_start},
-                             {flag_index, value_log_time}),
-            dust2::ode::root_type::increase));
-      }
+      events.push_back(
+          make_event(name_ev_time_on, {i_flag}, make_time_test(time_on[i], 0.0),
+                     make_flag_setter({i_flag, i_time_start},
+                                      {flag_index, value_log_time}),
+                     dust2::ode::root_type::increase));
 
-      if (!ISNA(time_off[i])) {
-        const std::string name_ev_time_off =
-            name + "_time_off_" + std::to_string(i + 1);
+      const std::string name_ev_time_off =
+          name + "_time_off_" + std::to_string(i + 1);
 
-        events.push_back(make_event(
-            name_ev_time_off, {i_flag}, make_time_test(time_off[i], 1.0),
-            make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
-            dust2::ode::root_type::increase));
-      }
+      events.push_back(make_event(
+          name_ev_time_off, {i_flag}, make_time_test(time_off[i], 1.0),
+          make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
+          dust2::ode::root_type::increase));
     }
 
     // event launched by state
