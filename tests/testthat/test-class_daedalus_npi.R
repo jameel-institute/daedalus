@@ -97,6 +97,8 @@ test_that("daedalus: time-launched response duration is correct", {
     npi
   )
 
+  print(output$event_data)
+
   expect_identical(
     output$response_data$closure_info$closure_times_end,
     end_time
@@ -137,6 +139,8 @@ test_that("class <daedalus_npi>: state-dependent event launch correctly", {
     response_time = response_time,
     time_end = 600
   )
+
+  print(output$response_data$closure_info$closure_times_start)
   expect_lt(
     output$response_data$closure_info$closure_times_start,
     response_time
