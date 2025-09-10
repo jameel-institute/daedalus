@@ -75,6 +75,11 @@ test_that("class <daedalus_npi>: sequential time-limited NPIs", {
   expect_no_condition(
     daedalus(cty, infection, npi, time_end = 150)
   )
+
+  o <- daedalus(cty, infection, npi, time_end = 150)
+  expect_snapshot(
+    o$event_data
+  )
 })
 
 test_that("daedalus: time-launched response duration is correct", {
@@ -97,8 +102,6 @@ test_that("daedalus: time-launched response duration is correct", {
     npi
   )
 
-  print(output$event_data)
-
   expect_identical(
     output$response_data$closure_info$closure_times_end,
     end_time
@@ -106,6 +109,35 @@ test_that("daedalus: time-launched response duration is correct", {
   expect_identical(
     output$response_data$closure_info$closure_durations,
     end_time - response_time
+  )
+
+  # for responses created using daedalus_timed_npi
+  start_time <- 10
+  end_time <- 40
+  npi <- daedalus_timed_npi(
+    start_time = start_time,
+    end_time = end_time,
+    openness = list(
+      rep(0.5, 45)
+    ),
+    "GBR"
+  )
+  expect_no_condition(
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      npi,
+      time_end = 100
+    )
+  )
+  o <- daedalus(
+    "GBR",
+    "sars_cov_1",
+    npi,
+    time_end = 100
+  )
+  expect_snapshot(
+    o$event_data
   )
 })
 
