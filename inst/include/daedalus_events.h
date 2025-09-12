@@ -19,16 +19,20 @@ the state variable, and absolute indexing must be used.
 #include "daedalus_types.h"
 
 #include <R_ext/Arith.h>
+#include <algorithm>
 #include <functional>
 #include <string>
 #include <vector>
 
+#include <cpp11.hpp>
 #include <dust2/common.hpp>
 // clang-format on
 
 namespace daedalus {
 
 namespace events {
+
+using TensorMat = daedalus::types::TensorMat<double>;
 
 /// @brief A temporary(?) special value to indicate that events should log time
 /// in state.
@@ -57,6 +61,7 @@ class response {
 
  public:
   const std::string name;
+  const cpp11::list parameters;
   const std::vector<double> time_on, time_off;
   const double max_duration;
   const double state_on, state_off;
@@ -65,6 +70,8 @@ class response {
   const int root_state_on, root_state_off;
   const size_t i_time_start;
   const double min_dur;
+
+  const std::vector<TensorMat> get_openness_coefs();
 
   /// @brief Constructor for a response.
   /// @param name A string for the name, used to generate event names.
@@ -86,13 +93,15 @@ class response {
   /// events.
   /// @param min_dur The minimum event time_off (7 days). Used to prevent
   /// unexpected event termination if two state roots are found in one step.
-  response(const std::string &name, const std::vector<double> &time_on,
+  response(const std::string &name, const cpp11::list parameters,
+           const std::vector<double> &time_on,
            const std::vector<double> &time_off, const double max_duration,
            const double &state_on, const double &state_off,
            const size_t &i_flag, const std::vector<size_t> &i_state_on,
            const std::vector<size_t> &i_state_off, const int &root_state_on,
            const int &root_state_off, const size_t &i_time_start)
       : name(name),
+        parameters(parameters),
         time_on(time_on),
         time_off(time_off),
         max_duration(max_duration),
@@ -291,26 +300,28 @@ class response {
     const size_t n_timed_events = time_on.size();
 
     // generate events for each pair of time_on and time_off
+    /*
+    For daedalus_npi(), time_off optional; for daedalus_timed_npi(), time_off
+    is enforced on the R side
+    */
     for (size_t i = 0; i < n_timed_events; i++) {
-      if (!ISNA(time_on[i])) {
-        const std::string name_ev_time_on =
-            name + "_time_on_" + std::to_string(i + 1);
+      const double flag_index = static_cast<double>(i + 1);  // start from 1
+      const std::string name_ev_time_on =
+          name + "_time_on_" + std::to_string(i + 1);
 
-        events.push_back(make_event(
-            name_ev_time_on, {i_flag}, make_time_test(time_on[i], 0.0),
-            make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
-            dust2::ode::root_type::increase));
-      }
+      events.push_back(
+          make_event(name_ev_time_on, {i_flag}, make_time_test(time_on[i], 0.0),
+                     make_flag_setter({i_flag, i_time_start},
+                                      {flag_index, value_log_time}),
+                     dust2::ode::root_type::increase));
 
-      if (!ISNA(time_off[i])) {
-        const std::string name_ev_time_off =
-            name + "_time_off_" + std::to_string(i + 1);
+      const std::string name_ev_time_off =
+          name + "_time_off_" + std::to_string(i + 1);
 
-        events.push_back(make_event(
-            name_ev_time_off, {i_flag}, make_time_test(time_off[i], 1.0),
-            make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
-            dust2::ode::root_type::increase));
-      }
+      events.push_back(make_event(
+          name_ev_time_off, {i_flag}, make_time_test(time_off[i], 1.0),
+          make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
+          dust2::ode::root_type::increase));
     }
 
     // event launched by state
@@ -390,6 +401,30 @@ inline dust2::ode::events_type<double> get_combined_events(
   }
 
   return combined_events;
+}
+
+/// @brief Get openness coefficient regimes as a vector of Eigen
+/// tensors suitable for use in the ODE RHS. Only really works with
+/// `daedalus::events::response` objects that represent NPIs, and not with
+/// objects representing vaccinations or other events for now.
+/// @return A vector of coefficient Tensors with the index representing the
+/// openness regime.
+inline const std::vector<TensorMat> response::get_openness_coefs() {
+  const cpp11::list openness(parameters["openness"]);
+  const size_t n_regimes = openness.size();
+
+  std::vector<TensorMat> openness_coefs(openness.size());
+
+  // NOTE: crude - clean up?
+  for (size_t i = 0; i < n_regimes; i++) {
+    cpp11::doubles tmp_param = openness[i];
+    TensorMat tmp_openness(daedalus::constants::DDL_N_ECON_GROUPS, 1);
+    std::copy(tmp_param.begin(), tmp_param.end(), tmp_openness.data());
+
+    openness_coefs[i] = tmp_openness;
+  }
+
+  return openness_coefs;
 }
 
 }  // namespace events

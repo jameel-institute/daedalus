@@ -1,3 +1,17 @@
+# daedalus 0.2.33
+
+This patch version allows multiple, sequential, time-limited NPIs with varying effects (PR #117).
+
+- Added the function `daedalus_timed_npi()` to create time-limited NPIs which are not responsive to model state, and which accept multiple start and end times (with non-overlapping intervals), with corresponding openness coefficients.
+
+- Changes to `<daedalus_npi>` to accommodate timed NPIs.
+
+- Changes to C++ `daedalus::events::response` class to log the index of any timed events: this allows indexing NPI coefficients, and retains boolean flag for other responses.
+
+- Function `daedalus_npi()` no longer specifies a default end time, and does not allow multiple start and end times (this is moved to `daedalus_timed_npi()`).
+
+- Updated vignette on timed NPIs to show multiple timed-NPI functionality with different openness coefficients.
+
 # daedalus 0.2.32
 
 This patch version demotes `auto_social_distancing` from a full `daedalus::events::response` while retaining the mechanism of behavioural effects (PR #113).

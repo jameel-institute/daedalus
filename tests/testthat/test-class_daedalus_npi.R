@@ -1,5 +1,4 @@
 # Tests for the <daedalus_npi> class
-
 test_that("class <daedalus_npi>: basic expectations", {
   expect_no_condition(
     daedalus_npi("elimination", "GBR", "sars_cov_1")
@@ -60,32 +59,26 @@ test_that("class <daedalus_npi>: class validation", {
 test_that("class <daedalus_npi>: sequential time-limited NPIs", {
   cty <- "GBR"
   infection <- "influenza_1918"
-  npi <- daedalus_npi(
-    "school_closures",
-    cty,
-    infection,
+  openness <- daedalus.data::closure_strategy_data[["school_closures"]]
+  npi <- daedalus_timed_npi(
     start_time = c(30, 90),
-    end_time = c(50, 50)
+    end_time = c(50, 120),
+    openness = list(
+      openness,
+      openness
+    ),
+    cty
   )
 
   expect_snapshot(npi)
 
   expect_no_condition(
-    daedalus(cty, infection, npi)
+    daedalus(cty, infection, npi, time_end = 150)
   )
 
-  npi <- daedalus_npi(
-    NA,
-    cty,
-    infection,
-    rep(0.5, 45),
-    start_time = c(30, 90),
-    end_time = c(50, 120)
-  )
-  cty <- daedalus_country("GBR")
-
-  expect_no_condition(
-    daedalus(cty, infection, npi)
+  o <- daedalus(cty, infection, npi, time_end = 150)
+  expect_snapshot(
+    o$event_data
   )
 })
 
@@ -116,6 +109,35 @@ test_that("daedalus: time-launched response duration is correct", {
   expect_identical(
     output$response_data$closure_info$closure_durations,
     end_time - response_time
+  )
+
+  # for responses created using daedalus_timed_npi
+  start_time <- 10
+  end_time <- 40
+  npi <- daedalus_timed_npi(
+    start_time = start_time,
+    end_time = end_time,
+    openness = list(
+      rep(0.5, 45)
+    ),
+    "GBR"
+  )
+  expect_no_condition(
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      npi,
+      time_end = 100
+    )
+  )
+  o <- daedalus(
+    "GBR",
+    "sars_cov_1",
+    npi,
+    time_end = 100
+  )
+  expect_snapshot(
+    o$event_data
   )
 })
 
@@ -149,6 +171,7 @@ test_that("class <daedalus_npi>: state-dependent event launch correctly", {
     response_time = response_time,
     time_end = 600
   )
+
   expect_lt(
     output$response_data$closure_info$closure_times_start,
     response_time
@@ -167,6 +190,7 @@ test_that("class <daedalus_npi>: state-launched response duration is correct", {
     "GBR",
     "sars_cov_2_delta",
     start_time = start_time, # prevent time-based trigger
+    end_time = start_time,
     max_duration = max_response_duration
   )
   output <- daedalus(
@@ -220,10 +244,10 @@ test_that("class <daedalus_npi>: throws expected errors", {
   )
 
   x <- daedalus_npi(NA, "THA", "sars_cov_1", rep(0.1, 45))
-  x$parameters$openness <- rep(2, 34)
+  x$parameters$openness <- list(rep(1, 45), rep(2, 45))
   expect_error(
     validate_daedalus_npi(x),
-    "must be a numeric of length 45, with values between 0.0 and 1.0"
+    "vectors must have length 45 with values between 0.0 and 1.0"
   )
 
   x <- list(parameters = list(openness = rep(1, 45), dummy = NA))
@@ -242,5 +266,81 @@ test_that("class <daedalus_npi>: throws expected errors", {
       60
     ),
     "Got an unexpected value of class"
+  )
+
+  # errors on timed-npi construction
+  openness_good <- rep(0.2, N_ECON_SECTORS)
+  openness_bad <- openness_good * -1
+  expect_error(
+    daedalus_timed_npi(
+      10,
+      c(11, 12),
+      list(
+        openness_good
+      ),
+      "GBR"
+    ),
+    "'end_time' failed"
+  )
+
+  expect_error(
+    daedalus_timed_npi(
+      c(11, 10),
+      c(11, 12),
+      list(
+        openness_good
+      ),
+      "GBR"
+    ),
+    "`start_time` should be a vector of ascending values"
+  )
+
+  expect_error(
+    daedalus_timed_npi(
+      c(10, 20),
+      c(11, 12),
+      list(
+        openness_good
+      ),
+      "GBR"
+    ),
+    "(`end_time`)*(must be greater)"
+  )
+
+  expect_error(
+    daedalus_timed_npi(
+      c(5, 10),
+      c(30, 12),
+      list(
+        openness_good
+      ),
+      "GBR"
+    ),
+    "`end_time` should be a vector of ascending values"
+  )
+
+  expect_error(
+    daedalus_timed_npi(
+      c(5, 10),
+      c(15, 20),
+      list(
+        openness_good
+      ),
+      "GBR"
+    ),
+    "intervals specified by `start_time` and `end_time` must be non-overlapping"
+  )
+
+  expect_error(
+    daedalus_timed_npi(
+      c(5, 10),
+      c(9, 12),
+      list(
+        openness_good,
+        openness_bad
+      ),
+      "GBR"
+    ),
+    "`openness` vectors must have length 45 with values between 0.0 and 1.0"
   )
 })
