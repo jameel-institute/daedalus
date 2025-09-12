@@ -53,6 +53,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
 
   gva <- x$country_parameters$gva
   openness <- x$response_data$openness
+  openness <- openness[-1L] # remove null openness
 
   # NOTE: might be good to split these into separate functions for different
   # cost domains, but might end up replicating a good bit of code
@@ -63,6 +64,7 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
   vsd <- vsy / 365
   vsd <- vsd / 1e6 # for uniformity with daily GVA
   n_students <- x$country_parameters$demography[i_SCHOOL_AGE]
+  names(n_students) <- NULL # prevent name propagating downstream
 
   # absences due to infection, hospitalisation, death
   model_data <- get_data(x)
@@ -107,10 +109,24 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
     education_cost_closures <- 0
     sector_cost_closures <- rep(0, length(x$country_parameters$workers))
   } else {
+    # NOTE: in state-dep NPIs, multiple closure intervals map to same
+    # openness config. in time-dep NPIs, the mapping is x-to-x. We do not expect
+    # x-to-y for x, y > 1
+    closure_duration <- x$response_data$closure_info$closure_durations
+    n_closures <- length(closure_duration)
+    n_regimes <- length(openness)
+
+    if (n_closures > n_regimes && n_regimes == 1) {
+      openness <- lapply(
+        seq_along(closure_duration),
+        function(x) first(openness)
+      )
+    }
+
     # cost of closures, per sector and total
     sector_closures <- Map(
-      x$response_data$closure_info$closure_durations,
-      openness[-1],
+      closure_duration,
+      openness,
       f = function(duration, openness_coef) {
         (1 - openness_coef) * duration
       }
@@ -129,12 +145,13 @@ get_costs <- function(x, summarise_as = c("none", "total", "domain")) {
     # to get true loss due to absences
     closure_periods <- x$response_data$closure_info$closure_periods
 
+    # NOTE: openness list accounts for potential many-to-one mapping
     sector_cost_absences[closure_periods, ] <- Reduce(
       rbind,
       Map(
         x$response_data$closure_info$closure_times_start,
         x$response_data$closure_info$closure_times_end,
-        openness[-1],
+        openness,
         f = function(start, end, opcoef) {
           sector_cost_absences[start:end, ] <-
             sector_cost_absences[start:end, ] %*% diag(opcoef)
