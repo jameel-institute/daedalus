@@ -22,7 +22,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.32</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.33</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -206,8 +206,8 @@ between days 30 and 90 after a pandemic use this code.</p>
 <div class="section level2">
 <h2 id="bespoke-time-limited-response">Bespoke time-limited response<a class="anchor" aria-label="anchor" href="#bespoke-time-limited-response"></a>
 </h2>
-<p>Creating a time-limited NPI using <code><a href="../reference/class_npi.html">daedalus_npi()</a></code>
-requires:</p>
+<p>Creating a time-limited NPI with a single active duration using
+<code><a href="../reference/class_npi.html">daedalus_npi()</a></code> requires:</p>
 <ul>
 <li><p>Passing <code>NA</code> as the <code>name</code> rather than one
 of the pre-canned NPI strategies found in
@@ -221,6 +221,8 @@ response; the pre-canned element is the openness coefficients.</p>
 <p>Passing a bespoke NPI to [daedalus()] leads to the resulting
 <code>&lt;daedalus_output&gt;</code> object identifying the
 <code>response_strategy</code> as <code>"custom"</code>.</p>
+<p><strong>See the next section</strong> for how to specify time-limited
+NPIs that are active over multiple intervals.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">openness</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">45</span><span class="op">)</span></span>
 <span></span>
@@ -254,64 +256,77 @@ response; the pre-canned element is the openness coefficients.</p>
 </h2>
 <p>A time-limited response can be set to trigger and end at multiple
 time points. This is of most use in real-time pandemic response
-exercises where participants must make decisions about imposing and
-lifting restrictions.</p>
+use-cases where users are seeking to model policy-makers’ options or
+decisions about imposing and lifting restrictions.</p>
+<p><em>daedalus</em> offers the [daedalus_timed_npi()] function to
+specify time-limited NPIs that are not responsive to model state, and
+which allow multiple closure periods.</p>
+<p>[daedalus_timed_npi()] also allows specifying a different openness
+coefficient vector (i.e., stringency of economic closures) for each
+closure period, which allows responses to be ramped up and down — an
+expected use-case in real-time modelling.</p>
 <p>Repeated time-limited NPIs are created by passing vectors to
 <code>start_time</code> and <code>end_time</code> in
-<code><a href="../reference/class_npi.html">daedalus_npi()</a></code>. The
+<code><a href="../reference/class_npi.html">daedalus_timed_npi()</a></code>. The
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>−</mo><mi>t</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">i-th</annotation></semantics></math>
-element of each vector gives the start and end time of a response.</p>
-<p><strong>Note that</strong> the launching and ending of a response
-follows the same rules laid out above.</p>
-<p>This example shows a bespoke-coefficient response, but creating
-repeated time-limited responses using pre-canned coefficients works
-similarly.</p>
+element of each vector gives the start and end time of a each closure
+period.</p>
+<p><strong>Note that:</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>[daedalus_timed_npi()] creates a
+<code>&lt;daedalus_npi&gt;</code> object, just with different event
+triggers;</p></li>
+<li><p>These objects do not trigger or end on model state;</p></li>
+<li><p>These objects do not specify a maximum closure duration, but do
+require all closure periods to be time-limited;</p></li>
+<li><p>All closure periods must be non-overlapping, so only one closure
+regime can be active at any time;</p></li>
+<li><p>Sequential time-limited responses cannot be created by tweaking
+pre-canned responses, but the openness coefficients may be used by
+accessing them manually from
+[daedalus.data::closure_strategy_data].</p></li>
+</ol>
+<p>The example below show ramping responses up and down by switching
+from school closures to an elimination strategy and back again.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">openness</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">45</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">school_closures</span> <span class="op">&lt;-</span> <span class="fu">daedalus.data</span><span class="fu">::</span><span class="va"><a href="https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html">closure_strategy_data</a></span><span class="op">[[</span><span class="st">"school_closures"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">elimination</span> <span class="op">&lt;-</span> <span class="fu">daedalus.data</span><span class="fu">::</span><span class="va"><a href="https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html">closure_strategy_data</a></span><span class="op">[[</span><span class="st">"elimination"</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co"># start at day 30 and 60, three weeks each</span></span>
-<span><span class="va">npi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/class_npi.html">daedalus_npi</a></span><span class="op">(</span></span>
-<span>  <span class="cn">NA</span>, <span class="st">"GBR"</span>, <span class="st">"sars_cov_1"</span>,</span>
-<span>  <span class="va">openness</span>,</span>
-<span>  start_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">60</span><span class="op">)</span>,</span>
-<span>  end_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">51</span>, <span class="fl">81</span><span class="op">)</span></span>
+<span><span class="co"># start at day 30, 60, 90, 30 days each</span></span>
+<span><span class="va">npi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/class_npi.html">daedalus_timed_npi</a></span><span class="op">(</span></span>
+<span>  start_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">60</span>, <span class="fl">90</span><span class="op">)</span>,</span>
+<span>  end_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">59</span>, <span class="fl">89</span>, <span class="fl">120</span><span class="op">)</span>,</span>
+<span>  openness <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="va">school_closures</span>, <span class="va">elimination</span>, <span class="va">school_closures</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="st">"GBR"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># see NPI information</span></span>
 <span><span class="va">npi</span></span>
 <span><span class="co">#&gt; <span style="color: #0000BB;">&lt;daedalus_npi/daedalus_response&gt;</span></span></span>
-<span><span class="co">#&gt; NPI strategy: <span style="font-weight: bold;">custom</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Start time (days): <span style="color: #0000BB;">30</span> and <span style="color: #0000BB;">60</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> End time (days): <span style="color: #0000BB;">51</span> and <span style="color: #0000BB;">81</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Openness (mean prop.): <span style="color: #0000BB;">0.3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Maximum duration (days): <span style="color: #0000BB;">365</span></span></span>
+<span><span class="co">#&gt; NPI strategy: <span style="font-weight: bold;">custom_timed</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Start time (days): <span style="color: #0000BB;">30</span>, <span style="color: #0000BB;">60</span>, and <span style="color: #0000BB;">90</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> End time (days): <span style="color: #0000BB;">59</span>, <span style="color: #0000BB;">89</span>, and <span style="color: #0000BB;">120</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Openness (mean prop.): <span style="color: #0000BB;">0.93</span>, <span style="color: #0000BB;">0.713</span>, and <span style="color: #0000BB;">0.93</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Maximum duration (days): <span style="color: #0000BB;">NA</span></span></span>
 <span></span>
 <span><span class="co"># run a scenario with the npi</span></span>
 <span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span></span>
 <span>  <span class="st">"GBR"</span>, <span class="st">"sars_cov_1"</span>, <span class="va">npi</span>,</span>
-<span>  time_end <span class="op">=</span> <span class="fl">100</span></span>
+<span>  time_end <span class="op">=</span> <span class="fl">150</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># examine event times</span></span>
 <span><span class="va">output</span><span class="op">$</span><span class="va">event_data</span></span>
 <span><span class="co">#&gt;                         name     time index sign</span></span>
-<span><span class="co">#&gt; 1              npi_time_on_1 30.00000     2    1</span></span>
-<span><span class="co">#&gt; 2             npi_time_off_1 51.00000     3    1</span></span>
-<span><span class="co">#&gt; 3              npi_time_on_2 60.00000     4    1</span></span>
-<span><span class="co">#&gt; 4             npi_time_off_2 81.00000     5    1</span></span>
-<span><span class="co">#&gt; 5               npi_state_on 81.41332     6    1</span></span>
-<span><span class="co">#&gt; 6 hosp_cap_exceeded_state_on 81.41332     9    1</span></span></code></pre></div>
-<p>In this example, the response slows the pandemic down such that
-hospital demand does not exceed capacity until day 81, when the response
-ends (‘flattening the curve’). When hospital capacity is exceeded, the
-response re-launches following its state dependency rules.</p>
-</div>
-<div class="section level2">
-<h2 id="future-developments">Future developments<a class="anchor" aria-label="anchor" href="#future-developments"></a>
-</h2>
-<p>All responses are currently both state <em>and</em> time triggered.
-Future developments will allow responses to be one or the other or both
-as required for the use case.</p>
+<span><span class="co">#&gt; 1              npi_time_on_1  30.0000     4    1</span></span>
+<span><span class="co">#&gt; 2             npi_time_off_1  59.0000     5    1</span></span>
+<span><span class="co">#&gt; 3              npi_time_on_2  60.0000     6    1</span></span>
+<span><span class="co">#&gt; 4 hosp_cap_exceeded_state_on  70.8941    13    1</span></span>
+<span><span class="co">#&gt; 5             npi_time_off_2  89.0000     7    1</span></span>
+<span><span class="co">#&gt; 6              npi_time_on_3  90.0000     8    1</span></span>
+<span><span class="co">#&gt; 7             npi_time_off_3 120.0000     9    1</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

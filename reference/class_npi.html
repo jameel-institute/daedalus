@@ -4,16 +4,24 @@
 These objects store NPI parameters for reuse and have methods for
 easy parameter access and editing, as well as processing raw NPI
 characteristics for the DAEDALUS model.
-All NPIs must be initialised with an associated country and infection;
-these are used to determine the state-values (hospital capacity) and
-incidence-prevalence ratio (IPR) at which the NPI starts and ends reactively."><meta property="og:description" content="Helper functions to create and work with S3 class
+Most NPIs must be initialised with an associated country and infection;
+these are used to determine flag positions as well as the state-values
+(hospital capacity) and incidence-prevalence ratio (IPR) at which the NPI
+starts and ends reactively.
+daedalus_timed_npi() is a helper function to create a &amp;lt;daedalus_npi&amp;gt; that
+is only trigged by time, and is not responsive to state variables.
+Primarily intended for use in real time modelling."><meta property="og:description" content="Helper functions to create and work with S3 class
 &amp;lt;daedalus_npi&amp;gt; objects for use with daedalus().
 These objects store NPI parameters for reuse and have methods for
 easy parameter access and editing, as well as processing raw NPI
 characteristics for the DAEDALUS model.
-All NPIs must be initialised with an associated country and infection;
-these are used to determine the state-values (hospital capacity) and
-incidence-prevalence ratio (IPR) at which the NPI starts and ends reactively."></head><body>
+Most NPIs must be initialised with an associated country and infection;
+these are used to determine flag positions as well as the state-values
+(hospital capacity) and incidence-prevalence ratio (IPR) at which the NPI
+starts and ends reactively.
+daedalus_timed_npi() is a helper function to create a &amp;lt;daedalus_npi&amp;gt; that
+is only trigged by time, and is not responsive to state variables.
+Primarily intended for use in real time modelling."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -21,7 +29,7 @@ incidence-prevalence ratio (IPR) at which the NPI starts and ends reactively."><
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.32</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.33</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +74,7 @@ incidence-prevalence ratio (IPR) at which the NPI starts and ends reactively."><
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Represent non-pharmaceutical intervention strategies for DAEDALUS</h1>
-      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/R/class_npi.R" class="external-link"><code>R/class_npi.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/R/class_npi.R" class="external-link"><code>R/class_npi.R</code></a>, <a href="https://github.com/jameel-institute/daedalus/blob/main/R/class_timed_npi.R" class="external-link"><code>R/class_timed_npi.R</code></a></small>
       <div class="d-none name"><code>class_npi.Rd</code></div>
     </div>
 
@@ -76,9 +84,13 @@ incidence-prevalence ratio (IPR) at which the NPI starts and ends reactively."><
 These objects store NPI parameters for reuse and have methods for
 easy parameter access and editing, as well as processing raw NPI
 characteristics for the DAEDALUS model.</p>
-<p>All NPIs must be initialised with an associated <code>country</code> and <code>infection</code>;
-these are used to determine the state-values (hospital capacity) and
-incidence-prevalence ratio (IPR) at which the NPI starts and ends reactively.</p>
+<p>Most NPIs must be initialised with an associated <code>country</code> and <code>infection</code>;
+these are used to determine flag positions as well as the state-values
+(hospital capacity) and incidence-prevalence ratio (IPR) at which the NPI
+starts and ends reactively.</p>
+<p><code>daedalus_timed_npi()</code> is a helper function to create a <code>&lt;daedalus_npi&gt;</code> that
+is only trigged by time, and is not responsive to state variables.
+Primarily intended for use in real time modelling.</p>
     </div>
 
     <div class="section level2">
@@ -89,14 +101,16 @@ incidence-prevalence ratio (IPR) at which the NPI starts and ends reactively.</p
 <span>  <span class="va">infection</span>,</span>
 <span>  openness <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  start_time <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  end_time <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
+<span>  end_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_duration <span class="op">=</span> <span class="fl">365</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">is_daedalus_npi</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'daedalus_npi'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">daedalus_timed_npi</span><span class="op">(</span><span class="va">start_time</span>, <span class="va">end_time</span>, <span class="va">openness</span>, <span class="va">country</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -108,8 +122,8 @@ incidence-prevalence ratio (IPR) at which the NPI starts and ends reactively.</p
 <a href="https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html">daedalus.data::closure_strategy_names</a>, or <code>NA</code>.
 Passing a pre-defined strategy name automatically pulls in openness
 parameters for the associated response strategy; these are stored as
-packaged data in <code><a href="https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html">daedalus.data::closure_strategy_data</a></code>.
-Pass <code>NA</code> to define a custom response strategy by passing a vector to
+packaged data in <a href="https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html">daedalus.data::closure_strategy_data</a>.</p>
+<p>Pass <code>NA</code> to define a custom response strategy by passing a vector to
 <code>openness</code>.</p></dd>
 
 
@@ -138,31 +152,36 @@ parameters using <code><a href="class_infection.html">daedalus_infection()</a></
 
 
 <dt id="arg-openness">openness<a class="anchor" aria-label="anchor" href="#arg-openness"></a></dt>
-<dd><p>An optional numeric vector where all values are in the range
-\([0, 1]\), giving the openness of each economic sector in the model.
-Expected to have a length of <code>N_ECON_SECTORS</code> (currently 45).</p></dd>
+<dd><p>For <code>daedalus_npi()</code>, an optional numeric vector giving the openness of each
+economic sector in the model when the NPI is in effect.</p>
+<p>For <code>daedalus_timed_npi()</code>, a list of numeric vectors giving the openness
+coefficients for each interval specified by corresponding elements of
+<code>start_time</code> and <code>end_time</code>.</p>
+<p>Expected to have a length of <code>N_ECON_SECTORS</code> (currently 45), with all values
+are in the range \([0, 1]\),</p></dd>
 
 
 <dt id="arg-start-time">start_time<a class="anchor" aria-label="anchor" href="#arg-start-time"></a></dt>
-<dd><p>The number of days after the start of the epidemic that
-the NPI response begins. May be a vector. Defaults to 30. Passed to
-the <code>time_on</code> argument in <code><a href="class_response.html">new_daedalus_response()</a></code> via the class constructor
-<code>new_daedalus_npi()</code>.</p></dd>
+<dd><p>For <code>daedalus_npi()</code>, a single number giving the number of days after the
+start of the model that the NPI response begins. Defaults to 30.</p>
+<p>For <code>daedalus_timed_npi()</code>: may be a vector of NPI start times, with no
+default values.</p></dd>
 
 
 <dt id="arg-end-time">end_time<a class="anchor" aria-label="anchor" href="#arg-end-time"></a></dt>
-<dd><p>The number of days after the start of the epidemic that
-the NPI response ends. May be a vector, with times taken with reference to
-<code>start_time</code>. Defaults to <code>NA_real_</code>, with no defined end time. Passed to
-the <code>time_off</code> argument in <code><a href="class_response.html">new_daedalus_response()</a></code> via
-<code>new_daedalus_npi()</code>.</p></dd>
+<dd><p>For <code>daedalus_npi()</code>, a single number giving the number of days after the
+start of the model that the NPI response ends. Defaults to <code>NULL</code>,
+indicating that the response ends (if no other condition is met), at the
+maximum duration.</p>
+<p>For <code>daedalus_timed_npi()</code>: may be a vector of NPI end times, with no
+default values. Timed NPIs have no default duration.</p></dd>
 
 
 <dt id="arg-max-duration">max_duration<a class="anchor" aria-label="anchor" href="#arg-max-duration"></a></dt>
 <dd><p>The maximum number of days that an NPI response is active
 whether started by passing the <code>start_time</code> or when a state threshold is
-crossed. Defaults to 365 days. <code>max_duration</code> overrides <code>end_time</code> in ending
-NPIs, if the maximum duration is reached before <code>end_time</code>.</p></dd>
+crossed. Defaults to 365 days. NPIs created using <code>daedalus_timed_npi()</code> have
+no default maximum duration and are encoded by pairs of start and end times.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
@@ -176,9 +195,17 @@ For the <code>print</code> method, other parameters passed to <code><a href="htt
 
 </dl></div>
     <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p><code>daedalus_npi()</code>: A <code>&lt;daedalus_npi&gt;</code> class object that specifies an NPI that
+may be responsive to both model state and time.</p>
+<p><code>daedalus_timed_npi()</code>: A <code>&lt;daedalus_npi&gt;</code> class object which specifies
+time-limited interventions only.</p>
+    </div>
+    <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Note that NPIs are reactive to the model state (i.e., the epidemic state),
-and can trigger when state conditions are met.</p>
+    <p>Note that NPIs created using <code>daedalus_npi()</code> are reactive to the model state
+(i.e., the epidemic state), and can trigger multiple times when state
+conditions are met.</p>
     </div>
 
     <div class="section level2">
@@ -204,6 +231,25 @@ and can trigger when state conditions are met.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> End time (days): <span style="color: #0000BB;">NA</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Openness (mean prop.): <span style="color: #0000BB;">0.1</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Maximum duration (days): <span style="color: #0000BB;">365</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># time-limited NPI with multiple phases</span></span></span>
+<span class="r-in"><span><span class="fu">daedalus_timed_npi</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  start_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  end_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">25</span>, <span class="fl">40</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  openness <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">45</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">45</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">45</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  country <span class="op">=</span> <span class="st">"GBR"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;daedalus_npi/daedalus_response&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> NPI strategy: <span style="font-weight: bold;">custom_timed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Start time (days): <span style="color: #0000BB;">10</span>, <span style="color: #0000BB;">20</span>, and <span style="color: #0000BB;">30</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> End time (days): <span style="color: #0000BB;">15</span>, <span style="color: #0000BB;">25</span>, and <span style="color: #0000BB;">40</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Openness (mean prop.): <span style="color: #0000BB;">1</span>, <span style="color: #0000BB;">0.5</span>, and <span style="color: #0000BB;">0.2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Maximum duration (days): <span style="color: #0000BB;">NA</span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
