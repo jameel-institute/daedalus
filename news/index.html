@@ -7,7 +7,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.33</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.34</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,9 +52,24 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/v0.2.33/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.34" id="daedalus-0234">daedalus 0.2.34<a class="anchor" aria-label="anchor" href="#daedalus-0234"></a></h2>
+<p>This patch modifies the costs and fiscal costs calculation by changing how absences due to illness are calculated in <code><a href="../reference/get_costs.html">get_costs()</a></code> and <code><a href="../reference/get_fiscal_costs.html">get_fiscal_costs()</a></code> (PR <a href="https://github.com/jameel-institute/daedalus/issues/115" class="external-link">#115</a> reviewed by <a href="https://github.com/robj411" class="external-link">@robj411</a>).</p>
+<ul><li><p>Only <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>H</mi><annotation encoding="application/x-tex">H</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math> are counted as fully absent;</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>I</mi><mi>a</mi></msub><annotation encoding="application/x-tex">I_a</annotation></semantics></math> were previously counted but are no longer counted as absent;</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>I</mi><mi>s</mi></msub><annotation encoding="application/x-tex">I_s</annotation></semantics></math> are counted as present at work when calculating new workplace infections, but also as having complete productivity loss. The level of productivity loss can be changed in <code><a href="../reference/get_costs.html">get_costs()</a></code> and <code><a href="../reference/get_fiscal_costs.html">get_fiscal_costs()</a></code> using the argument <code>productivity_loss_infection</code>.</p></li>
+</ul><p>Snapshot tests are updated to reflect that all costs are reduced due to no longer counting <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>I</mi><mi>a</mi></msub><annotation encoding="application/x-tex">I_a</annotation></semantics></math>.</p>
+<div class="section level3">
+<h3 id="notes-0-2-34">Notes<a class="anchor" aria-label="anchor" href="#notes-0-2-34"></a></h3>
+<p><code><a href="../reference/get_fiscal_costs.html">get_fiscal_costs()</a></code> is updated:</p>
+<ul><li><p>Labour availability match the multiplicative implementation in <code><a href="../reference/get_costs.html">get_costs()</a></code>;</p></li>
+<li><p>Interest rate, spending rate, and tax rate have been corrected to be rates rather than percentages, and the interest rate is converted from an annual to a daily rate;</p></li>
+<li><p>GVA gap now accounts for government support.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.33" id="daedalus-0233">daedalus 0.2.33<a class="anchor" aria-label="anchor" href="#daedalus-0233"></a></h2>
 <p>This patch version allows multiple, sequential, time-limited NPIs with varying effects (PR <a href="https://github.com/jameel-institute/daedalus/issues/117" class="external-link">#117</a>).</p>

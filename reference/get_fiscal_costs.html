@@ -13,7 +13,7 @@ administered or implemented."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.33</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.34</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,7 +58,7 @@ administered or implemented."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Get pandemic fiscal costs from a model run</h1>
-      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/v0.2.33/R/costs.R" class="external-link"><code>R/costs.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/R/costs.R" class="external-link"><code>R/costs.R</code></a></small>
       <div class="d-none name"><code>get_fiscal_costs.Rd</code></div>
     </div>
 
@@ -80,7 +80,8 @@ administered or implemented.</p>
 <span>  interest_rate <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  tax_rate <span class="op">=</span> <span class="fl">35</span>,</span>
 <span>  spending_rate <span class="op">=</span> <span class="fl">45</span>,</span>
-<span>  starting_debt <span class="op">=</span> <span class="fl">0</span></span>
+<span>  starting_debt <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  productivity_loss_infection <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -89,7 +90,7 @@ administered or implemented.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>A <code>&lt;daedalus_output&gt;</code> object.</p></dd>
+<dd><p>A <code>&lt;daedalus_output&gt;</code> object from a call to <code><a href="daedalus.html">daedalus()</a></code>.</p></dd>
 
 
 <dt id="arg-support-level">support_level<a class="anchor" aria-label="anchor" href="#arg-support-level"></a></dt>
@@ -131,11 +132,18 @@ of GDP.</p></dd>
 <dd><p>The value of national starting debt. Currently assumed
 to be zero while country-specific data are collected.</p></dd>
 
+
+<dt id="arg-productivity-loss-infection">productivity_loss_infection<a class="anchor" aria-label="anchor" href="#arg-productivity-loss-infection"></a></dt>
+<dd><p>A single number in the range
+\([0, 1]\) giving the loss in productivity associated with symptomatic
+infection. Currently defaults to 1.0 for compatibility with earlier function
+versions.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A two-element list giving:</p><ul><li><p>A list of <code>fiscal_costs</code> with elements giving the fiscal costs
-\(\text{TCG_t}\) and a breakdown of these costs, as well as interest;</p></li>
+\(\text{TCG}_t\) and a breakdown of these costs, as well as interest;</p></li>
 <li><p>A list of <code>public_debt</code> of the public debt \(b_t\), which is
 the net of baseline public spending, pandemic response costs, and
 pandemic-impacted revenue.</p></li>
@@ -147,13 +155,13 @@ function is intended to be called after <code><a href="daedalus.html">daedalus()
 required to compute fiscal costs may need to be bundled along with model
 outputs.
 Note that all rates (interest rate, spending rate, and tax rate) are given as
-annual percentages, and are simply divided by 365 to give the daily
-rate.</p><div class="section">
+annual percentages. Only the interest rate is converted to an daily value
+from an annual one for use in compounding.</p><div class="section">
 <h3 id="public-spending">Public spending<a class="anchor" aria-label="anchor" href="#public-spending"></a></h3>
 
 
-<p>Spending is calculated as:
-\(G_t = \sigma(\text{GVA}^* - \text{GVA}_t) + Cv_t + Cp_t\)</p>
+<p>Spending is calculated as:</p>
+<p>$$G_t = \sigma(\text{GVA}^* - \text{GVA}_t) + Cv_t + Cp_t$$</p>
 <p>where \(Cv_t\) is the time-specific cost of vaccination, and is calculated
 as the cost of new vaccinations in each timestep: \(P_v \times \delta V_t\)
 .</p>
@@ -162,25 +170,44 @@ and is calculated as \(\psi (\bar N - D_t) P_p\), where
 \(\bar N - D_t\) is the remaining number of individuals in the population,
 and \(\psi\) is the proportion taking up any protection offered by the
 response.</p>
-<p>The total cost to the public of the pandemic over each day of the pandemic
-is assumed to be made up of borrowing, and is then
-\(\text{TCG}_t = G_t + (1 + R_t^T) \text{TCG}_{t - 1}\), where
-\(R_t^T\) is the daily rate of interest to be paid on the borrowed amount.
-This rate is currently modelled as being constant over time.</p>
+</div>
+
+<div class="section">
+<h3 id="interest-on-spending-and-fiscal-cost">Interest on spending and fiscal cost<a class="anchor" aria-label="anchor" href="#interest-on-spending-and-fiscal-cost"></a></h3>
+
+
+<p>We assume that the government borrows to spend on pandemic mitigation
+measures outlined above such that the total cost to the public is then</p>
+<p>$$\text{TCG}_t = G_t + (1 + R_t^T) \text{TCG}_{t - 1}$$</p>
+<p>where \(R_t^T\) is the daily rate of interest to be paid on the borrowed
+amount.</p>
+<p>The interest rate is modelled as being constant over time. Users pass the
+annual rate of interest as a percentage, and this is converted to a daily
+rate using the internal function <code><a href="tools.html">annual_rate_daily()</a></code> as
+\((1 + R_t^T)^{1 / 365} - 1\).</p>
+</div>
+
+<div class="section">
+<h3 id="total-public-debt">Total public debt<a class="anchor" aria-label="anchor" href="#total-public-debt"></a></h3>
+
+
 <p>The total public debt at the end of the pandemic \(b_t\) is then the sum of
-total public spending on the pandemic \(\text{TCG}_t\),
-existing day-to-day public spending \(\bar G\) which is assumed to be a
-fraction of daily GDP \(\nu \text{GDP}\), existing debt owed due to past
-daily spending, interest to be paid on the debt, less the revenues collected
-\(\mu \text{GVA}_{t-1}\). The daily GVA is the pre-pandemic GVA scaled by
-the available labour supply during the pandemic, taking into account labour
-restrictions due to illness-related absences and deaths, and response-related
+:</p><ul><li><p>total public spending on the pandemic \(\text{TCG}_t\),</p></li>
+<li><p>existing day-to-day public spending \(\bar G\) which is assumed to be a
+fraction of daily GDP \(\nu \text{GDP}\),</p></li>
+<li><p>existing debt owed due to past daily spending (including on pandemic
+mitigation), and interest to be paid on the debt,</p></li>
+<li><p>less the revenues collected from taxation, \(\mu \text{GVA}_{t-1}\),
+where \(\mu\) is the mean rate of taxation.</p></li>
+</ul><p>The daily GVA is the pre-pandemic GVA scaled by the available labour supply
+during the pandemic, taking into account labour restrictions due to
+illness-related absences and deaths, and response-related
 restrictions.</p>
 <p>GDP is calculated as the sum of sector-specific daily GVA, and existing debt
 is currently assumed to be zero and is not included in the equation.</p>
-<p>\(b_t = \bar G + \text{TCG}_{t-1} + (1 + R_{t-1}^T) b_{t-1} -
+<p>$$b_t = \bar G + \text{TCG}_{t-1} + (1 + R_{t-1}^T) b_{t-1} -
   \mu \text{GVA}_{t-1}
-\)</p>
+$$</p>
 </div>
 
     </div>
@@ -201,25 +228,28 @@ is currently assumed to be zero and is not included in the equation.</p>
 <span class="r-in"><span>  <span class="st">"CAN"</span>, <span class="st">"influenza_2009"</span>,</span></span>
 <span class="r-in"><span>  time_end <span class="op">=</span> <span class="fl">30</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Compare public debt added estimates with other estimates from Covid-19:</span></span></span>
+<span class="r-in"><span><span class="co"># https://www.ctf.ca/EN/EN/Newsletters/Perspectives/2020/3/200302.aspx</span></span></span>
 <span class="r-in"><span><span class="fu">get_fiscal_costs</span><span class="op">(</span><span class="va">o</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fiscal_costs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fiscal_costs$fiscal_cost</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.000000e+00 8.774001e-05 1.732363e-04 2.886612e-04 4.542043e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] 6.939264e-04 1.041577e-03 1.545872e-03 2.277542e-03 3.339404e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11] 4.880950e-03 7.119506e-03 1.037097e-02 1.509446e-02 2.195724e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16] 3.192901e-02 4.641897e-02 6.747487e-02 9.807233e-02 1.425350e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [21] 2.071446e-01 3.010267e-01 4.374359e-01 6.356191e-01 9.235136e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26] 1.341650e+00 1.948782e+00 2.829981e+00 4.108224e+00 5.960848e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [31] 8.642689e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.000000e+00 8.774001e-05 1.637731e-04 2.527975e-04 3.702200e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] 5.331939e-04 7.647128e-04 1.097227e-03 1.577351e-03 2.272517e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] 3.280548e-03 4.743503e-03 6.867779e-03 9.953286e-03 1.443585e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] 2.094880e-02 3.041249e-02 4.416432e-02 6.414765e-02 9.318621e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21] 1.353825e-01 1.966964e-01 2.857841e-01 4.152152e-01 6.032345e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] 8.763103e-01 1.272810e+00 1.848284e+00 2.683027e+00 3.892817e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] 5.643996e+00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fiscal_costs$gva_support</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 8.774001e-05 8.453478e-05 1.135264e-04 1.623796e-04 2.347445e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] 3.400459e-04 4.928809e-04 7.147282e-04 1.036903e-03 1.504950e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11] 2.185066e-03 3.173438e-03 4.609837e-03 6.697363e-03 9.731148e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16] 1.414004e-02 2.054720e-02 2.985802e-02 4.338789e-02 6.304756e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [21] 9.161205e-02 1.331103e-01 1.933893e-01 2.809288e-01 4.080157e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26] 5.924288e-01 8.598430e-01 1.247229e+00 1.807603e+00 2.616516e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [31] 3.780682e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 8.774001e-05 7.602367e-05 8.900678e-05 1.173954e-04 1.629341e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] 2.314616e-04 3.324317e-04 4.800060e-04 6.949972e-04 1.007787e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] 1.462603e-03 2.123766e-03 3.084769e-03 4.481493e-03 6.511402e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] 9.461440e-03 1.374856e-02 1.997859e-02 2.903166e-02 4.218631e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21] 6.129933e-02 8.906659e-02 1.294004e-01 1.879747e-01 2.730109e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] 3.964052e-01 5.753371e-01 8.345448e-01 1.209501e+00 1.750762e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] 2.529729e+00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fiscal_costs$vax_support</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</span>
@@ -228,19 +258,20 @@ is currently assumed to be zero and is not included in the equation.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fiscal_costs$interest_value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 15.57916</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 9.980435</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $public_debt</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $public_debt$public_debt</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]    0.0000  120.1919  241.7010  364.5417  488.7287  614.2768  741.2009</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8]  869.5162  999.2380 1130.3818 1262.9636 1396.9993 1532.5054 1669.4986</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [15] 1807.9961 1948.0160 2089.5768 2232.6985 2377.4024 2523.7121 2671.6542</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [22] 2821.2600 2972.5666 3125.6206 3280.4814 3437.2273 3595.9638 3756.8355</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [29] 3920.0433 4085.8687 4254.7082</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]     0.0000   438.7002   877.4476  1316.2421  1755.0839  2193.9729</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7]  2632.9092  3071.8930  3510.9243  3950.0033  4389.1302  4828.3054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13]  5267.5293  5706.8028  6146.1269  6585.5030  7024.9334  7464.4213</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19]  7903.9714  8343.5905  8783.2883  9223.0793  9662.9842 10103.0332</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] 10543.2700 10983.7583 11424.5900 11865.8985 12307.8765 12750.8020</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] 13195.0740</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $public_debt$added_public_debt</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4254.708</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 13195.07</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
