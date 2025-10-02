@@ -42,15 +42,15 @@
                               name     time index sign
       1              npi_time_on_1 10.00000     4    1
       2             npi_time_off_1 40.00000     5    1
-      3 hosp_cap_exceeded_state_on 76.94376     9    1
+      3 hosp_cap_exceeded_state_on 78.72535     9    1
 
 # Test for epidemic size
 
     Code
       get_epidemic_summary(daedalus("GB", "sars_cov_1", "elimination", time_end = 100))
     Output
-            value                measure
-      1   68943.9           total_deaths
-      2 8496680.6          epidemic_size
-      3  634447.8 total_hospitalisations
+             value                measure
+      1   51945.86           total_deaths
+      2 6202062.30          epidemic_size
+      3  471037.51 total_hospitalisations
 
