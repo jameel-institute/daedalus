@@ -412,6 +412,7 @@ class daedalus_ode {
     const size_t id_npi_regime = state[shared.i_npi_flag];
 
     internal.t_foi_work = beta_tmp * internal.t_work_inf_contacts *
+                          shared.openness[id_npi_regime] *
                           shared.openness[id_npi_regime];
 
     internal.t_comm_inf_age = internal.t_infectious.slice(

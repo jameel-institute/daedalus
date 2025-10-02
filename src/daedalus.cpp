@@ -262,7 +262,6 @@ class daedalus_ode {
     const int auto_social_distancing =
         dust2::r::read_size(pars, "auto_social_distancing", 0);
 
-
     // RELATIVE LOCATIONS OF RESPONSE-RELATED FLAGS
     // add n_strata to the end for new vaccinations data
     const size_t total_compartments =
@@ -415,6 +414,7 @@ class daedalus_ode {
     const size_t id_npi_regime = state[shared.i_npi_flag];
 
     internal.t_foi_work = beta_tmp * internal.t_work_inf_contacts *
+                          shared.openness[id_npi_regime] *
                           shared.openness[id_npi_regime];
 
     internal.t_comm_inf_age = internal.t_infectious.slice(
