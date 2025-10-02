@@ -344,3 +344,11 @@ test_that("class <daedalus_npi>: throws expected errors", {
     "`openness` vectors must have length 45 with values between 0.0 and 1.0"
   )
 })
+
+test_that("Test for epidemic size", {
+  expect_snapshot(
+    get_epidemic_summary(
+      daedalus("GB", "sars_cov_1", "elimination", time_end = 100)
+    )
+  )
+})
