@@ -1,3 +1,13 @@
+# daedalus 0.2.35
+
+This patch version:
+
+- Converts the `daedalus_ode` class to a `mixed`-time ODE system and uses the `update` functionality to access `dy` and end NPIs based on the instantaneous value of an $R_t$ proxy, the infection-prevalence ratio (IPR);
+
+- Updates how event times are inferred as `event_data` is no longer returned as part of `<daedalus_output>`; the manual NPI ending using `update` is not picked up as an event;
+
+- Updates the costs functions and tests for renamed output elements.
+
 # daedalus 0.2.34
 
 This patch modifies the costs and fiscal costs calculation by changing how absences due to illness are calculated in `get_costs()` and `get_fiscal_costs()` (PR #115 reviewed by @robj411).
