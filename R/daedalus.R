@@ -32,11 +32,11 @@ de
 #'
 #' @keywords internal
 process_event_times <- function(event_data_list, event) {
-  resp_start_time <- glue::glue("{event}_start_time")
+  resp_start_time <- sprintf("%s_start_time", event)
   resp_time_on <- unique(event_data_list[[resp_start_time]])
   resp_time_on <- resp_time_on[resp_time_on > 0]
 
-  resp_flag <- glue::glue("{event}_flag")
+  resp_flag <- sprintf("%s_flag", event)
 
   # as.numeric to handle possible array-type input
   resp_duration <- rle(as.numeric(event_data_list[[resp_flag]]))
@@ -68,8 +68,10 @@ process_event_times <- function(event_data_list, event) {
     npi_periods
   )
   base_names <- c("times_start", "times_end", "durations", "periods")
-  names(resp_time_list) <- glue::glue(
-    "{event}_{base_names}"
+  names(resp_time_list) <- sprintf(
+    "%s_%s",
+    event,
+    base_names
   )
 
   resp_time_list
@@ -79,16 +81,12 @@ process_event_times <- function(event_data_list, event) {
 #'
 #' @param output dust2 output `daedalus_internal()`.
 #'
-#' @param event The event or response flag prefix; either `"npi"` or `"vax"`.
-#' Default argument is a vector, but this function is intended to be used with
-#' only one event class at a time.
-#'
 #' @return A list of event start and end times, closure periods, and the
 #' duration of each closure event, suitable for a `<daedalus_output>` object.
 #'
 #' @keywords internal
 get_daedalus_response_times <- function(output) {
-  # internal function with no input checkingdevt
+  # internal function with no input checking
 
   # NOTE: npi activated on the last day of a model run is counted
   # as active for 1 day. This throws off some tests checking for npi durations
@@ -130,7 +128,7 @@ get_daedalus_multi_response_times <- function(
     resp_data <- data.table::transpose(resp_data)
 
     # data.table::transpose strips names, reassign here
-    names <- glue::glue("{event}_{c('flag', 'start_time')}")
+    names <- sprintf("%s_%s", event, c("flag", "start_time"))
     resp_data <- lapply(resp_data, function(l) {
       names(l) <- names
       l

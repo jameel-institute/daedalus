@@ -8,10 +8,6 @@ get_daedalus_response_times(output)
 }
 \arguments{
 \item{output}{dust2 output \code{daedalus_internal()}.}
-
-\item{event}{The event or response flag prefix; either \code{"npi"} or \code{"vax"}.
-Default argument is a vector, but this function is intended to be used with
-only one event class at a time.}
 }
 \value{
 A list of event start and end times, closure periods, and the
