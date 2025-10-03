@@ -71,7 +71,10 @@ daedalus_multi_infection <- function(
   # if users want that
   vaccination <- validate_vaccination_input(vaccine_investment, country)
 
-  if (get_data(vaccination, "start_time") == 0.0) {
+  if (
+    get_data(vaccination, "start_time") == 0.0 &&
+      (!is.null(vaccine_investment))
+  ) {
     # check vaccination start time and set vaccination flag
     flags["vax_flag"] <- 1.0
   }
@@ -149,22 +152,18 @@ daedalus_multi_infection <- function(
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
   stopifnot(
-    "Length of outputs and infections is not the same" = length(infection) ==
+    "Length of outputs and infections is not the same" = n_param_sets ==
       length(output_data)
   )
 
-  closure_info <- lapply(
-    output$event_data,
-    get_daedalus_response_times,
-    time_end
-  )
+  event_info <- get_daedalus_multi_response_times(output, n_param_sets)
 
   # return list of daedalus_output
   Map(
     output_data,
     infection,
-    closure_info,
-    output$event_data,
+    event_info[["npi_data"]],
+    event_info[["vaccination_data"]],
     f = function(x, y, z, zz) {
       o <- list(
         total_time = time_end,
@@ -174,9 +173,9 @@ daedalus_multi_infection <- function(
         response_data = list(
           response_strategy = response_identifier,
           openness = get_data(npi[[1]], "openness"), # from first NPI
-          closure_info = z
-        ),
-        event_data = zz
+          npi_info = z,
+          vaccination_info = zz
+        )
       )
 
       as_daedalus_output(o)
