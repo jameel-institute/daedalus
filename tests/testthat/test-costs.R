@@ -96,7 +96,7 @@ test_that("Costs: scenario expectations", {
       # in `R/costs.R`
       expected_cost_closures <- output$country_parameters$gva *
         (1 - last(output$response_data$openness)) *
-        sum(output$response_data$closure_info$closure_durations)
+        sum(output$response_data$npi_info$npi_durations)
 
       expect_identical(
         costs$economic_costs$economic_cost_closures,
