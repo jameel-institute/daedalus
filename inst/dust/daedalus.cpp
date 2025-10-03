@@ -528,10 +528,11 @@ class daedalus_ode {
         {1, {shared.i_ipr}}};  // zero IPR value
   }
 
-  // TODO: declare const args which are not modified
+  // NOLINTBEGIN
   static void update(real_type time, real_type dt, const real_type *state,
                      const shared_state &shared, internal_state &internal,
                      rng_state_type &rng_state, real_type *state_next) {
+    // NOLINTEND
     // NOTE: adhoc implementation that should become a function returning
     // a single bool
     const double ipr_now = state_next[shared.i_ipr];
