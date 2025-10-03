@@ -1,3 +1,13 @@
+# daedalus (development version)
+
+This patch version:
+
+- Converts the `daedalus_ode` class to a `mixed`-time ODE system and uses the `update` functionality to access `dy` and end NPIs based on the instantaneous value of an $R_t$ proxy, the infection-prevalence ratio (IPR);
+
+- Updates how event times are inferred as `event_data` is no longer returned as part of `<daedalus_output>`; the manual NPI ending using `update` is not picked up as an event;
+
+- Updates the costs functions and tests for renamed output elements.
+
 # daedalus 0.2.35
 
 This patch version fixes how closures scale within-sector worker-worker contact rates to be quadratic rather than linear, which increases the impact of applying a response strategy in a model run (PR #126 by @patcatgit).
