@@ -4,12 +4,14 @@
 \alias{get_daedalus_response_times}
 \title{Get model response times from dust2 output}
 \usage{
-get_daedalus_response_times(output, time_end)
+get_daedalus_response_times(output)
 }
 \arguments{
 \item{output}{dust2 output \code{daedalus_internal()}.}
 
-\item{time_end}{The model end time, passed from \code{\link[=daedalus]{daedalus()}}.}
+\item{event}{The event or response flag prefix; either \code{"npi"} or \code{"vax"}.
+Default argument is a vector, but this function is intended to be used with
+only one event class at a time.}
 }
 \value{
 A list of event start and end times, closure periods, and the
