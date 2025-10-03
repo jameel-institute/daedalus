@@ -27,64 +27,121 @@ initial_flags <- function() {
     hosp_overflow_start_time = hosp_overflow_start_time
   )
 }
+de
+#' Process event data
+#'
+#' @keywords internal
+process_event_times <- function(event_data_list, event) {
+  resp_start_time <- glue::glue("{event}_start_time")
+  resp_time_on <- unique(event_data_list[[resp_start_time]])
+  resp_time_on <- resp_time_on[resp_time_on > 0]
+
+  resp_flag <- glue::glue("{event}_flag")
+
+  # as.numeric to handle possible array-type input
+  resp_duration <- rle(as.numeric(event_data_list[[resp_flag]]))
+  resp_duration <- resp_duration[["lengths"]][as.logical(
+    resp_duration$values
+  )]
+
+  if (length(resp_duration) == 0L) {
+    # handle no resps case
+    resp_time_on <- NA_real_
+    resp_time_off <- NA_real_
+    resp_duration <- NA_real_
+    npi_periods <- NA_integer_
+  } else {
+    # NOTE: reduce by 1 as logging means time is rounded up (I think)
+    resp_time_on <- round(resp_time_on)
+    resp_duration <- round(resp_duration)
+    resp_time_off <- round(resp_time_on + resp_duration)
+    npi_periods <- unlist(
+      Map(seq, resp_time_on, resp_time_off)
+    )
+  }
+
+  # return list for consistency with daedalus
+  resp_time_list <- list(
+    resp_time_on,
+    resp_time_off,
+    resp_duration,
+    npi_periods
+  )
+  base_names <- c("times_start", "times_end", "durations", "periods")
+  names(resp_time_list) <- glue::glue(
+    "{event}_{base_names}"
+  )
+
+  resp_time_list
+}
 
 #' Get model response times from dust2 output
 #'
 #' @param output dust2 output `daedalus_internal()`.
+#'
+#' @param event The event or response flag prefix; either `"npi"` or `"vax"`.
+#' Default argument is a vector, but this function is intended to be used with
+#' only one event class at a time.
 #'
 #' @return A list of event start and end times, closure periods, and the
 #' duration of each closure event, suitable for a `<daedalus_output>` object.
 #'
 #' @keywords internal
 get_daedalus_response_times <- function(output) {
-  # internal function with no input checking
+  # internal function with no input checkingdevt
 
   # NOTE: npi activated on the last day of a model run is counted
   # as active for 1 day. This throws off some tests checking for npi durations
 
   event_data <- output$data[FLAG_NAMES]
-  npi_data <- event_data[grepl("npi", names(event_data), fixed = TRUE)]
+  event_names <- c("npi", "vax")
 
-  npi_time_on <- unique(npi_data[["npi_start_time"]])
-  npi_time_on <- npi_time_on[npi_time_on > 0]
+  event_info <- lapply(event_names, function(event) {
+    resp_data <- event_data[grepl(event, names(event_data), fixed = TRUE)]
+    process_event_times(resp_data, event)
+  })
 
-  npi_duration <- rle(npi_data[["npi_flag"]])
-  npi_duration <- npi_duration[["lengths"]][as.logical(npi_duration$values)]
+  output_names <- c("npi_data", "vaccination_data")
+  names(event_info) <- output_names
 
-  if (length(npi_duration) == 0L) {
-    # handle no NPIs case
-    npi_time_on <- NA_real_
-    npi_time_off <- NA_real_
-    npi_duration <- NA_real_
-    closure_periods <- NA_integer_
-  } else {
-    # NOTE: reduce by 1 as logging means time is rounded up (I think)
-    npi_duration <- npi_duration
-    npi_time_off <- npi_time_on + npi_duration
-    closure_periods <- unlist(
-      Map(seq, npi_time_on, npi_time_off)
-    )
-  }
-
-  # return list for consistency with daedalus
-  list(
-    closure_times_start = npi_time_on,
-    closure_times_end = npi_time_off,
-    closure_durations = npi_duration,
-    closure_periods = closure_periods
-  )
+  event_info
 }
 
+#' Get response times from a dust2 system with multiple groups
+#'
+#' @inheritParams get_daedalus_response_times
+#'
+#' @keywords internal
+get_daedalus_multi_response_times <- function(
+  output,
+  n_groups
+) {
+  event_data <- output$data[FLAG_NAMES]
+  event_names <- c("npi", "vax")
 
+  output_names <- c("npi_data", "vaccination_data")
 
-get_daedalus_multi_response_times = function(output, n_groups) {
-  event_data = output$data[FLAG_NAMES]
-  npi_data <- event_data[grepl("npi", names(event_data), fixed = TRUE)]
+  event_info <- lapply(event_names, function(event) {
+    resp_data <- event_data[grepl(event, names(event_data), fixed = TRUE)]
 
-  # number of NPIs corresponds to number of rows
-  stop("ERROR IF DIFFERENT NUMBER OF NPIS IN EACH SIMULATION")
-  npi_time_on <- apply(npi_data[["npi_start_time"]], 1, unique)
-  npi_time_on <- npi_time_on[npi_time_on > 0]
+    # some processing to get into a list format similar to single-infection case
+    # similar handling to `prepare_output()` in R/prepare_output.R
+    resp_data <- lapply(resp_data, asplit, 1)
+    resp_data <- data.table::transpose(resp_data)
+
+    # data.table::transpose strips names, reassign here
+    names <- glue::glue("{event}_{c('flag', 'start_time')}")
+    resp_data <- lapply(resp_data, function(l) {
+      names(l) <- names
+      l
+    })
+
+    lapply(resp_data, process_event_times, event)
+  })
+
+  names(event_info) <- output_names
+
+  event_info
 }
 
 #' Internal function for daedalus
@@ -116,7 +173,6 @@ daedalus_internal <- function(
 
   list(
     data = dust2::dust_unpack_state(sys, state)
-    # event_data = dust2::dust_system_internals(sys)[["events"]]
   )
 }
 
@@ -307,7 +363,7 @@ daedalus <- function(
 
   if (
     get_data(vaccination, "start_time") == 0.0 &&
-      !is.null(vaccine_investment)
+      (!is.null(vaccine_investment))
   ) {
     # check vaccination start time and set vaccination flag
     flags["vax_flag"] <- 1.0
@@ -373,6 +429,7 @@ daedalus <- function(
 
   timesteps <- seq(0, time_end)
   output_data <- prepare_output(output$data, country, timesteps)
+  event_info <- get_daedalus_response_times(output)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
@@ -384,9 +441,9 @@ daedalus <- function(
     response_data = list(
       response_strategy = response_identifier,
       openness = get_data(npi, "openness"),
-      closure_info = get_daedalus_response_times(output)
-    ),
-    event_data = output$event_data[[1]]
+      npi_info = event_info[["npi_data"]],
+      vaccination_info = event_info[["vaccination_data"]]
+    )
   )
   as_daedalus_output(output)
 }
