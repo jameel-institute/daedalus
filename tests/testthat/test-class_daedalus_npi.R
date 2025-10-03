@@ -78,7 +78,7 @@ test_that("class <daedalus_npi>: sequential time-limited NPIs", {
 
   o <- daedalus(cty, infection, npi, time_end = 150)
   expect_snapshot(
-    o$event_data
+    o$response_data$npi_info
   )
 })
 
@@ -103,11 +103,11 @@ test_that("daedalus: time-launched response duration is correct", {
   )
 
   expect_identical(
-    output$response_data$closure_info$closure_times_end,
+    output$response_data$npi_info$npi_times_end,
     end_time
   )
   expect_identical(
-    output$response_data$closure_info$closure_durations,
+    output$response_data$npi_info$npi_durations,
     end_time - response_time
   )
 
@@ -137,7 +137,7 @@ test_that("daedalus: time-launched response duration is correct", {
     time_end = 100
   )
   expect_snapshot(
-    o$event_data
+    o$response_data$npi_info
   )
 })
 
@@ -155,7 +155,7 @@ test_that("class <daedalus_npi>: state-dependent event launch correctly", {
   )
 
   expect_identical(
-    output$response_data$closure_info$closure_times_start,
+    output$response_data$npi_info$npi_times_start,
     response_time
   )
 
@@ -173,18 +173,19 @@ test_that("class <daedalus_npi>: state-dependent event launch correctly", {
   )
 
   expect_lt(
-    output$response_data$closure_info$closure_times_start,
+    output$response_data$npi_info$npi_times_start,
     response_time
   )
 })
 
 # NOTE: this test only passes under a specific set of conditions
 # because state-launched NPIs can be triggered multiple times
+# and NPIs can end at unpredictable times on state
 test_that("class <daedalus_npi>: state-launched response duration is correct", {
   # duration is based on state-driven start time
   # NOTE: model only 100 days to avoid secondary peaks
   start_time <- 200
-  max_response_duration <- 30
+  max_response_duration <- 5 # NPI ending on IPR usually ends very quickly
   npi <- daedalus_npi(
     "elimination",
     "GBR",
@@ -201,7 +202,7 @@ test_that("class <daedalus_npi>: state-launched response duration is correct", {
   )
 
   expect_identical(
-    sum(output$response_data$closure_info$closure_durations),
+    sum(output$response_data$npi_info$npi_durations),
     max_response_duration,
     tolerance = 1e-6
   )
