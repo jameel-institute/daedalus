@@ -25,19 +25,27 @@
 ---
 
     Code
-      o$event_data
+      o$response_data$npi_info
     Output
-                              name      time index sign
-      1 hosp_cap_exceeded_state_on  20.01819    11    1
-      2              npi_time_on_1  30.00000     4    1
-      3             npi_time_off_1  50.00000     5    1
-      4              npi_time_on_2  90.00000     6    1
-      5             npi_time_off_2 120.00000     7    1
+      $npi_times_start
+      [1] 30 90
+      
+      $npi_times_end
+      [1]  50 120
+      
+      $npi_durations
+      [1] 20 30
+      
+      $npi_periods
+       [1]  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44  45  46  47  48
+      [20]  49  50  90  91  92  93  94  95  96  97  98  99 100 101 102 103 104 105 106
+      [39] 107 108 109 110 111 112 113 114 115 116 117 118 119 120
+      
 
 # daedalus: time-launched response duration is correct
 
     Code
-      o$event_data
+      o$response_data$npi_info
     Output
                               name     time index sign
       1              npi_time_on_1 10.00000     4    1
