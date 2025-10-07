@@ -47,10 +47,19 @@
     Code
       o$response_data$npi_info
     Output
-                              name     time index sign
-      1              npi_time_on_1 10.00000     4    1
-      2             npi_time_off_1 40.00000     5    1
-      3 hosp_cap_exceeded_state_on 78.72535     9    1
+      $npi_times_start
+      [1] 10
+      
+      $npi_times_end
+      [1] 40
+      
+      $npi_durations
+      [1] 30
+      
+      $npi_periods
+       [1] 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34
+      [26] 35 36 37 38 39 40
+      
 
 # Test for epidemic size
 
