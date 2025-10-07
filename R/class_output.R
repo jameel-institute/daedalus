@@ -30,8 +30,7 @@ validate_daedalus_output <- function(x) {
     # NOTE: reserving 'parameters' for values fixed before model run
     "country_parameters",
     "infection_parameters",
-    "response_data", # includes response strategy
-    "event_data"
+    "response_data" # includes response strategy
   )
 
   stopifnot(

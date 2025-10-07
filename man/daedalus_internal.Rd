@@ -4,7 +4,14 @@
 \alias{daedalus_internal}
 \title{Internal function for daedalus}
 \usage{
-daedalus_internal(time_end, params, state, flags, ode_control, n_groups)
+daedalus_internal(
+  time_end,
+  parameters,
+  initial_state,
+  flags,
+  ode_control,
+  n_groups
+)
 }
 \value{
 A list of state values as returned by \code{dust2::dust_unpack_state()}.

@@ -118,14 +118,8 @@ test_that("Vaccination events launch and end as expected", {
     vaccine_investment = v
   )
 
-  expect_true(
-    any(grepl("vaccination_time_on*", output$event_data$name))
-  )
   expect_identical(
-    output$event_data[
-      grepl("vaccination_time_on", output$event_data$name, fixed = TRUE),
-      "time"
-    ],
+    output$response_data$vaccination_info$vax_times_start,
     vax_time
   )
 
