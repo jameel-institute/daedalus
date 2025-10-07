@@ -1,3 +1,7 @@
+# daedalus 0.2.35
+
+This patch version fixes how closures scale within-sector worker-worker contact rates to be quadratic rather than linear, which increases the impact of applying a response strategy in a model run (PR #126 by @patcatgit).
+
 # daedalus 0.2.34
 
 This patch modifies the costs and fiscal costs calculation by changing how absences due to illness are calculated in `get_costs()` and `get_fiscal_costs()` (PR #115 reviewed by @robj411).
