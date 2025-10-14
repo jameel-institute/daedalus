@@ -8,7 +8,7 @@ initial_flags <- function() {
   vax_flag <- 0.0
   npi_flag <- 0.0
   ipr <- 0.0 # incidence-prevalence ratio
-  sd_flag <- 0.0 # spontaneous social distancing flag
+  behav_flag <- 0.0 # behvioural module flag
   hosp_flag <- 0.0 # flag for hosp capacity being exceeded
   npi_start_time <- 0.0 # true NPI start time
   vax_start_time <- 0.0 # true vaccination start time
@@ -19,7 +19,7 @@ initial_flags <- function() {
     ipr = ipr,
     npi_flag = npi_flag,
     vax_flag = vax_flag,
-    sd_flag = sd_flag,
+    behav_flag = behav_flag,
     hosp_flag = hosp_flag,
     npi_start_time = npi_start_time,
     vax_start_time = vax_start_time,
@@ -235,9 +235,7 @@ daedalus_internal <- function(
 #' This can be changed by passing a `<daedalus_npi>` object to
 #' `response_strategy`.
 #'
-#' @param auto_social_distancing A string giving the option for the form of
-#' spontaneous social distancing in the model, which reduces infection
-#' transmission as a function of daily deaths. See **Details** for more.
+#' @param behaviour
 #'
 #' @param initial_state_manual An optional **named** list with the names
 #' `p_infectious`, `p_asymptomatic`, and `p_immune`.
@@ -282,26 +280,6 @@ daedalus_internal <- function(
 #' assumed to be from a prior rollout, and the susceptibility is determined by
 #' the chosen vaccination strategy (as `1 - efficacy`).
 #'
-#' ## Details: Spontaneous social distancing
-#'
-#' There are three possible options for this behavioural module, given below.
-#' **Note that** a major issue with including this in a model run (any value
-#' other than `"off"`) is that it leads to substantially lower response costs,
-#' and generally better health outcomes (lives lost), **without accounting for
-#' any attendant economic or social costs**. As such, please treat this option
-#' as **highly experimental**.
-#'
-#' - `"off"`: There is no effect of daily deaths on infection transmissibility.
-#' This is the **default choice**.
-#'
-#' - `"independent"`: Public-concern over deaths reduces transmissibility, and
-#' is independent of any mandated responses. It begins at the start of the
-#' simulation, and continues until the simulation ends.
-#'
-#' - `"npi_linked`": Public-concern over deaths reduces transmissibility, but
-#' only when a  mandated response is active. Note that there is currently no way
-#' to end a response triggered by a state, i.e., an NPI launched due to hospital
-#' capacity being breached.
 #'
 #' @return A `<daedalus_output>` object if `infection` is a string or a single
 #' `<daedalus_infection>` object. Otherwise, a list of `<daedalus_output>`s
@@ -339,8 +317,8 @@ daedalus <- function(
   infection,
   response_strategy = NULL,
   vaccine_investment = NULL,
+  behaviour = NULL,
   response_time = 30,
-  auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
   ...
@@ -391,20 +369,12 @@ daedalus <- function(
     ))
   }
 
-  #### spontaneous social distancing ####
-  auto_social_distancing <- rlang::arg_match(auto_social_distancing)
-
-  if (auto_social_distancing == "independent") {
-    flags["sd_flag"] <- 1.0
-    flags["sd_start_time"] <- 1.0
+  #### BEHAVIOURAL MODULE ####
+  # validate input and set flag to on if not null
+  behaviour <- validate_behaviour_input(behaviour)
+  if (behaviour$identifier != "no_behaviour") {
+    flags["behav_flag"] <- 1.0
   }
-
-  auto_social_distancing <- switch(
-    auto_social_distancing,
-    off = 0,
-    independent = 1,
-    npi_linked = 2
-  )
 
   #### Prepare initial state and parameters ####
   initial_state <- make_initial_state(country, initial_state_manual)
@@ -413,9 +383,10 @@ daedalus <- function(
   susc <- make_susc_matrix(vaccination, country)
 
   parameters <- c(
-    prepare_parameters.daedalus_country(country),
-    prepare_parameters.daedalus_infection(infection),
-    prepare_parameters.daedalus_vaccination(vaccination),
+    prepare_parameters(country),
+    prepare_parameters(infection),
+    prepare_parameters(vaccination),
+    prepare_parameters(behaviour),
     # NOTE: there is no prepare_parameters.npi method but there might/should be
     list(
       beta = get_beta(infection, country),
@@ -423,7 +394,6 @@ daedalus <- function(
       ngm = get_ngm(country, infection),
       # all three below needed for npi-linked behaviour response
       # temporary as these can be vecs, see future PRs
-      auto_social_distancing = auto_social_distancing,
       vaccination = vaccination,
       npi = npi,
       hosp_overflow = new_daedalus_hosp_overflow(country)
