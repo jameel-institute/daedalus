@@ -85,5 +85,23 @@ inline daedalus::events::response read_response(cpp11::list args,
   return this_response;
 }
 
+/// @brief Read behavioural module parameters.
+/// Essentially a copy of dust2::r::read_real_vector.
+/// @param args The main argument list passed to dust2.
+/// @param name The name of the behaviour parameters element, expected to be a
+/// double vector.
+/// @param behav_enum Enum for which behaviour module to use.
+/// @return A vector of parameters. Size varies based on which behaviour module
+/// is chosen.
+inline std::vector<double> read_behav_params(cpp11::list args) {
+  // all input checking on the R side
+  cpp11::doubles sxp_behav_params(args["behav_params"]);
+  std::vector<double> behav_params(sxp_behav_params.size());
+  std::copy(sxp_behav_params.begin(), sxp_behav_params.end(),
+            behav_params.begin());
+
+  return behav_params;
+}
+
 }  // namespace inputs
 }  // namespace daedalus
