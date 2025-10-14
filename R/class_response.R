@@ -128,11 +128,6 @@ response_class_names <- c(
 )
 
 #' @name class_response
-new_daedalus_behaviour <- function() {
-  new_daedalus_response("behaviour", "daedalus_behaviour")
-}
-
-#' @name class_response
 is_daedalus_response <- function(x) {
   inherits(x, "daedalus_response")
 }
