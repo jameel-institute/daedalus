@@ -12,5 +12,6 @@
 #include "daedalus_helpers.h"
 #include "daedalus_events.h"
 #include "daedalus_input.h"
+#include "daedalus_behaviour.h"
 
 // clang-format on
