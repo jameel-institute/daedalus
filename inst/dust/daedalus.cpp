@@ -316,13 +316,15 @@ class daedalus_ode {
     daedalus::events::response vaccination =
         daedalus::inputs::read_response(pars, "vaccination");
 
-    // public concern social distancing may be off, on, or linked to NPIs;
-    // switching the reference flag index makes it NPI linked; if always on,
-    // set the initial flag value to 1.0 in R
-    // NOTE: this has been demoted from a full event, but may be promoted again
-    if (auto_social_distancing == 2) {
-      i_sd_flag = i_npi_flag;  // refer to NPI state
-    }
+    // TODO: this is being removed as NPI-linked behavioural changes are not
+    // super useful.
+    // // public concern social distancing may be off, on, or linked to NPIs;
+    // // switching the reference flag index makes it NPI linked; if always on,
+    // // set the initial flag value to 1.0 in R
+    // // NOTE: this has been demoted from a full event, but may be promoted
+    // again if (auto_social_distancing == 2) {
+    //   i_behav_flag = i_npi_flag;  // refer to NPI state
+    // }
 
     daedalus::events::response hosp_cap_exceeded =
         daedalus::inputs::read_response(pars, "hosp_overflow");
@@ -334,9 +336,11 @@ class daedalus_ode {
         omega,        gamma_H,        nu,           psi,
         n_strata,     n_age_groups,   n_econ_groups,
         popsize,      cm,             cm_cw,
-        cm_work,      ngm,            demography,   susc,           openness,
+        cm_work,      ngm,            demography,
+        susc,         openness,
+        behav_enum,   behav_fn,
         i_ipr,  // state index holding incidence/prevalence ratio
-        i_npi_flag,   i_vax_flag, i_sd_flag,    i_hosp_overflow_flag,
+        i_npi_flag,   i_vax_flag, i_behav_flag,    i_hosp_overflow_flag,
         npi,          vaccination,
         hosp_cap_exceeded};
     // clang-format on
@@ -400,24 +404,29 @@ class daedalus_ode {
     // calculate total hospitalisations to check if hosp capacity is exceeded;
     // scale mortality rate by 1.6 if so
     Eigen::Tensor<double, 0> total_hosp = t_x.chip(iH, i_COMPS).sum();
+    const double d_total_hosp = total_hosp(0) + 1.0;
 
     const double omega_modifier =
         daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
                                          state[shared.i_hosp_overflow_flag]);
 
-    // calculate total deaths and scale beta by concern, but only if an
-    // NPI is active
-    // TODO(pratik): change in future so public-concern is independent of NPIs
+    // calculate new deaths and new hospitalisations
     internal.hToD =
         omega_modifier * shared.omega * t_x.chip(iH, i_COMPS);  // new deaths
-    Eigen::Tensor<double, 0> total_deaths = internal.hToD.sum();
+
+    /// BEHAVIOUR SCALING OF TRANSMISSION
+    Eigen::Tensor<double, 0> new_deaths = internal.hToD.sum();
+    const double d_new_deaths = new_deaths(0);
+
+    double behav_modifier = 1.0;
+    double zzzz = daedalus::behaviour::get_behav_scaling(
+        shared.behav_enum, shared.behav_fn, d_new_deaths, d_total_hosp);
 
     const double beta_tmp =
-        shared.beta *
-        daedalus::events::switch_by_flag(
-            daedalus::helpers::get_concern_coefficient(total_deaths(0)),
-            state[shared.i_sd_flag]);
+        shared.beta * daedalus::events::switch_by_flag(
+                          behav_modifier, state[shared.i_behav_flag]);
 
+    /// INFECTION ODES continue
     // all chip ops on dim N have dim N-1
     // compartmental transitions
     // Susceptible (unvaccinated) to exposed
