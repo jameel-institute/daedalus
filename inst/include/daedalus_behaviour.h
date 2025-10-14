@@ -34,15 +34,15 @@ inline double scale_beta_old(const double &new_deaths,
 /// on assumed optimism and responsiveness.
 /// @param total_hosp The number of daily new hospitalisations.
 /// @param hosp_cap The country hospital capacity.
-/// @param optimism Baseline optimism about the epidemic.
 /// @param delta Effectiveness of protective behaviour.
+/// @param optimism Baseline optimism about the epidemic.
 /// @param k0 A scaling factor used to get a nice sigmoidal curve for the
 /// delta-optimism relationship.
 /// @param k1 Scaling factor for optimism.
 /// @param k2 Responsiveness to the epidemic signal (new hospitalisations).
 /// @return The scaling factor to reduce transmission rate.
 inline double scale_beta_new(const double &total_hosp, const double &hosp_cap,
-                             const double &optimism, const double &delta,
+                             const double &delta, const double &optimism,
                              const double &k0, const double &k1,
                              const double &k2) {
   // proportion taking protective behaviour;

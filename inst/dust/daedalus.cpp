@@ -419,12 +419,12 @@ class daedalus_ode {
     const double d_new_deaths = new_deaths(0);
 
     double behav_modifier = 1.0;
-    double zzzz = daedalus::behaviour::get_behav_scaling(
-        shared.behav_enum, shared.behav_fn, d_new_deaths, d_total_hosp);
+    if (static_cast<bool>(state[shared.i_behav_flag])) {
+      behav_modifier = daedalus::behaviour::get_behav_scaling(
+          shared.behav_enum, shared.behav_fn, d_new_deaths, d_total_hosp);
+    }
 
-    const double beta_tmp =
-        shared.beta * daedalus::events::switch_by_flag(
-                          behav_modifier, state[shared.i_behav_flag]);
+    const double beta_tmp = shared.beta * behav_modifier;
 
     /// INFECTION ODES continue
     // all chip ops on dim N have dim N-1
