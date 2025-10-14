@@ -70,9 +70,9 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(cm_work, constant = TRUE)]]
 // [[dust2::parameter(cm_cons_work, constant = TRUE)]]
 // [[dust2::parameter(demography, constant = TRUE)]]
-// [[dust2::parameter(hospital_capacity, constant = TRUE)]]
 // [[dust2::parameter(openness, constant = TRUE)]]
-// [[dust2::parameter(auto_social_distancing, constant = TRUE)]]
+// [[dust2::parameter(behav_enum, constant = TRUE)]]
+// [[dust2::parameter(behav_params, constant = TRUE)]]
 class daedalus_ode {
  public:
   daedalus_ode() = delete;
@@ -94,8 +94,13 @@ class daedalus_ode {
     const TensorMat susc;
     const std::vector<TensorMat> openness;
 
+    // behavioural module active
+    const int behav_enum;
+    const std::function<double(double)> behav_fn;
+
     // flag positions
-    const size_t i_ipr, i_npi_flag, i_vax_flag, i_sd_flag, i_hosp_overflow_flag;
+    const size_t i_ipr, i_npi_flag, i_vax_flag, i_behav_flag,
+        i_hosp_overflow_flag;
 
     // event objects
     daedalus::events::response npi, vaccination, hosp_cap_exceeded;
@@ -180,11 +185,11 @@ class daedalus_ode {
                           {"ipr", dim_flag},
                           {"npi_flag", dim_flag},
                           {"vax_flag", dim_flag},
-                          {"sd_flag", dim_flag},
+                          {"behav_flag", dim_flag},
                           {"hosp_overflow_flag", dim_flag},
                           {"npi_start_time", dim_flag},
                           {"vax_start_time", dim_flag},
-                          {"sd_start_time", dim_flag},
+                          {"behav_start_time", dim_flag},
                           {"hosp_overflow_start_time", dim_flag}};
   }
 
@@ -276,12 +281,15 @@ class daedalus_ode {
     TensorMat susc(n_strata, N_VAX_STRATA);
     dust2::r::read_real_array(pars, susc_dims, susc.data(), "susc", true);
 
-    // EVENT/RESPONSE PARAMETERS
-    // response time is only 0.0 when response is NULL or 'none'
-    // this is used to set hosp capacity to NA_REAL so the response is not
-    // triggered
-    const int auto_social_distancing =
-        dust2::r::read_size(pars, "auto_social_distancing", 0);
+    // BEHAVIOURAL MODULE
+    // behavioural module index specifies either "off" (0), original
+    // deaths-linked (1), or new confidence-responsiveness-linked (2)
+    const int behav_enum = dust2::r::read_size(pars, "behav_enum", 0);
+    std::vector<double> behav_params =
+        daedalus::inputs::read_behav_params(pars);
+
+    const std::function<double(double)> behav_fn =
+        daedalus::behaviour::get_behav_fn(behav_enum, behav_params);
 
     // RELATIVE LOCATIONS OF RESPONSE-RELATED FLAGS
     // add n_strata to the end for new vaccinations data
@@ -292,7 +300,8 @@ class daedalus_ode {
         total_compartments + daedalus::constants::i_rel_NPI_FLAG;
     const size_t i_vax_flag =
         total_compartments + daedalus::constants::i_rel_VAX_FLAG;
-    size_t i_sd_flag = total_compartments + daedalus::constants::i_rel_SD_FLAG;
+    size_t i_behav_flag =
+        total_compartments + daedalus::constants::i_rel_SD_FLAG;
     const size_t i_hosp_overflow_flag =
         total_compartments + daedalus::constants::i_rel_hosp_overflow_FLAG;
 
