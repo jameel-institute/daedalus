@@ -9,8 +9,8 @@ daedalus_multi_infection(
   infection,
   response_strategy = NULL,
   vaccine_investment = NULL,
+  behaviour = NULL,
   response_time = 30,
-  auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
   ...
@@ -29,7 +29,8 @@ is passed as a string.
 To override package defaults for country characteristics, pass a
 \verb{<daedalus_country>} object instead. See \code{\link[=daedalus_country]{daedalus_country()}} for more.}
 
-\item{infection}{A list of \verb{<daedalus_infection>} objects.}
+\item{infection}{A list of \verb{<daedalus_infection>} objects. Must have a
+minimum length of 2.}
 
 \item{response_strategy}{A string for the name of response strategy followed,
 a numeric of length 45 (number of economic sectors), or a \verb{<daedalus_npi>}
@@ -46,16 +47,19 @@ the model will include vaccination beginning after 1 year, at a low rate
 across all age groups. Other accepted values are \code{"low"}, \code{"medium"} and
 \code{"high"}. See \code{\link[=daedalus_vaccination]{daedalus_vaccination()}} for more information.}
 
+\item{behaviour}{An optional object of class \verb{<daedalus_behaviour>} which
+determines how population-level perception of epidemic signals affects
+infection transmission. May be \code{NULL} for no behavioural modification of
+infection transmission. See
+the \verb{<daedalus_behaviour>} \link[=class_behaviour]{class documentation} for more
+details on the available behavioural mechanisms}
+
 \item{response_time}{A single numeric value for the time in days
 at which the selected response is activated. This is ignored if the response
 has already been activated by the hospitalisation threshold being reached.
 Defaults to 30 days. Responses have a default maximum duration of 365 days.
 This can be changed by passing a \verb{<daedalus_npi>} object to
 \code{response_strategy}.}
-
-\item{auto_social_distancing}{A string giving the option for the form of
-spontaneous social distancing in the model, which reduces infection
-transmission as a function of daily deaths. See \strong{Details} for more.}
 
 \item{initial_state_manual}{An optional \strong{named} list with the names
 \code{p_infectious}, \code{p_asymptomatic}, and \code{p_immune}.
@@ -75,13 +79,10 @@ returned for each day. Defaults to 300 days.}
 \item{...}{Optional arguments that are passed to \code{\link[dust2:dust_ode_control]{dust2::dust_ode_control()}}.}
 }
 \value{
-A list of \verb{<daedalus_output>} objects.
+A list of \verb{<daedalus_output>} objects of the same length as
+\code{infection}.
 }
 \description{
 Run \code{\link[=daedalus]{daedalus()}} for multiple parameter sets, with the intended use case of
 running the model under uncertainty in infection parameters.
-}
-\details{
-See details of how \code{auto_social_distancing} affects the model in
-documentation for \code{\link[=daedalus]{daedalus()}}.
 }

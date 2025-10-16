@@ -5,7 +5,6 @@
 \alias{class_response}
 \alias{new_daedalus_response}
 \alias{response_class_names}
-\alias{new_daedalus_behaviour}
 \alias{is_daedalus_response}
 \alias{validate_daedalus_response}
 \title{Constructor for the <daedalus_response> super-class and sub-classes}
@@ -32,8 +31,6 @@ new_daedalus_response(
 )
 
 response_class_names
-
-new_daedalus_behaviour()
 
 is_daedalus_response(x)
 

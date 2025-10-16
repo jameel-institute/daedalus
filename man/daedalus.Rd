@@ -9,8 +9,8 @@ daedalus(
   infection,
   response_strategy = NULL,
   vaccine_investment = NULL,
+  behaviour = NULL,
   response_time = 30,
-  auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
   ...
@@ -52,16 +52,19 @@ the model will include vaccination beginning after 1 year, at a low rate
 across all age groups. Other accepted values are \code{"low"}, \code{"medium"} and
 \code{"high"}. See \code{\link[=daedalus_vaccination]{daedalus_vaccination()}} for more information.}
 
+\item{behaviour}{An optional object of class \verb{<daedalus_behaviour>} which
+determines how population-level perception of epidemic signals affects
+infection transmission. May be \code{NULL} for no behavioural modification of
+infection transmission. See
+the \verb{<daedalus_behaviour>} \link[=class_behaviour]{class documentation} for more
+details on the available behavioural mechanisms}
+
 \item{response_time}{A single numeric value for the time in days
 at which the selected response is activated. This is ignored if the response
 has already been activated by the hospitalisation threshold being reached.
 Defaults to 30 days. Responses have a default maximum duration of 365 days.
 This can be changed by passing a \verb{<daedalus_npi>} object to
 \code{response_strategy}.}
-
-\item{auto_social_distancing}{A string giving the option for the form of
-spontaneous social distancing in the model, which reduces infection
-transmission as a function of daily deaths. See \strong{Details} for more.}
 
 \item{initial_state_manual}{An optional \strong{named} list with the names
 \code{p_infectious}, \code{p_asymptomatic}, and \code{p_immune}.
@@ -82,9 +85,7 @@ returned for each day. Defaults to 300 days.}
 }
 \value{
 A \verb{<daedalus_output>} object if \code{infection} is a string or a single
-\verb{<daedalus_infection>} object. Otherwise, a list of \verb{<daedalus_output>}s
-of the same length of \code{infection} if a list of \verb{<daedalus_infection>}s is
-passed to \code{infection}.
+\verb{<daedalus_infection>} object.
 }
 \description{
 Run the DAEDALUS model from R. This is a work in progress.
@@ -113,33 +114,15 @@ assumed to be from a prior rollout, and the susceptibility is determined by
 the chosen vaccination strategy (as \code{1 - efficacy}).
 }
 }
-
-\subsection{Details: Spontaneous social distancing}{
-
-There are three possible options for this behavioural module, given below.
-\strong{Note that} a major issue with including this in a model run (any value
-other than \code{"off"}) is that it leads to substantially lower response costs,
-and generally better health outcomes (lives lost), \strong{without accounting for
-any attendant economic or social costs}. As such, please treat this option
-as \strong{highly experimental}.
-\itemize{
-\item \code{"off"}: There is no effect of daily deaths on infection transmissibility.
-This is the \strong{default choice}.
-\item \code{"independent"}: Public-concern over deaths reduces transmissibility, and
-is independent of any mandated responses. It begins at the start of the
-simulation, and continues until the simulation ends.
-\item \verb{"npi_linked}": Public-concern over deaths reduces transmissibility, but
-only when a  mandated response is active. Note that there is currently no way
-to end a response triggered by a state, i.e., an NPI launched due to hospital
-capacity being breached.
-}
-}
 }
 \examples{
 # country and infection specified by strings using default characteristics
 output <- daedalus(
   "Canada", "influenza_1918"
 )
+
+# print output
+output
 
 # country passed as <daedalus_country> with some characteristics modified
 country_x <- daedalus_country(
@@ -158,6 +141,13 @@ output <- daedalus(
 output <- daedalus(
   "United Kingdom", "influenza_1918",
   initial_state_manual = list(p_infectious = 1e-3)
+)
+
+# including behavioural modification
+output <- daedalus(
+  "Canada", "influenza_1918",
+  behaviour = daedalus_old_behaviour(),
+  time_end = 100
 )
 
 }
