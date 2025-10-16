@@ -1,2 +1,2 @@
 [format]
-exclude = ["dust.R"]
+exclude = ["dust.R", "cpp11.R"]
