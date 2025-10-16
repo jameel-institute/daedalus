@@ -122,7 +122,7 @@ preparedness](https://github.com/robj411/p2_drivers).
   epidemic scenarios.
 
 - [*daedalus.api*](https://github.com/jameel-institute/daedalus.data) is
-  an R’ package that connects *daedalus* with the [DAEDALUS
+  an R package that connects *daedalus* with the [DAEDALUS
   Explore](https://daedalus.jameel-institute.org/) dashboard.
 
 ## References
