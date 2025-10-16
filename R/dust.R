@@ -6,7 +6,7 @@ daedalus_ode <- structure(
   package = "daedalus",
   path = NULL,
   parameters = data.frame(
-    name = c("beta", "sigma", "p_sigma", "epsilon", "rho", "eta", "hfr", "gamma_Ia", "gamma_Is", "gamma_H_recovery", "gamma_H_death", "nu", "susc", "psi", "n_age_groups", "n_econ_groups", "popsize", "cm", "cm_work", "cm_cons_work", "demography", "hospital_capacity", "openness", "auto_social_distancing"),
+    name = c("beta", "sigma", "p_sigma", "epsilon", "rho", "eta", "hfr", "gamma_Ia", "gamma_Is", "gamma_H_recovery", "gamma_H_death", "nu", "susc", "psi", "n_age_groups", "n_econ_groups", "popsize", "cm", "cm_work", "cm_cons_work", "demography", "openness", "behav_enum", "behav_params"),
     type = c("real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "int", "int", "int", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type", "real_type"),
     constant = c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE)),
   properties = list(

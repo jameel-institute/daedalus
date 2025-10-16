@@ -287,6 +287,10 @@ validate_daedalus_behaviour <- function(x) {
 #'
 #' @name class_behaviour
 #'
+#' @param x A `<daedalus_behaviour>` object.
+#'
+#' @param ... Other arguments passed to [format()].
+#'
 #' @export
 print.daedalus_behaviour <- function(x, ...) {
   validate_daedalus_behaviour(x)

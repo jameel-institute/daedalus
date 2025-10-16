@@ -35,6 +35,7 @@ Pianella
 Rcpp
 RcppEigen
 Readmes
+R’
 SARS
 SEIR
 Soc
@@ -49,6 +50,7 @@ VSL
 VSLY
 VSY
 YLL
+api
 arg
 asumes
 asymp
@@ -86,6 +88,7 @@ rightarrow
 rollout
 rootfinding
 rsif
+sigmoidal
 socioeconomic
 specifc
 started’

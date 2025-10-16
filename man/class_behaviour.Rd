@@ -54,7 +54,12 @@ See \eqn{k_0} in Details. Defaults to 4.59.}
 
 \item{k1}{A single, optional double value which is another scaling parameter
 for the sigmoidal relationship between \eqn{p_t} and \code{behav_effectiveness}.
-See \eqn{k_1} in Details. Defaults to -9.19.}
+See \eqn{k_1} in Details. Defaults to -9.19.
+Expected to be a negative number.}
+
+\item{x}{A \verb{<daedalus_behaviour>} object.}
+
+\item{...}{Other arguments passed to \code{\link[=format]{format()}}.}
 }
 \value{
 An object of class \verb{<daedalus_behaviour>} which inherits from
