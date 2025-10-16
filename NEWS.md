@@ -1,3 +1,19 @@
+# daedalus 0.2.37
+
+This patch version:
+
+- Implements a new mechanism to modify the infection transmission rate $\beta$ due to population-level behaviour (via @kunph7);
+
+- Adds the header `daedalus_behaviour.h` with new behavioural scaling functions, and adds helper functions to capture behavioural parameters from R for use in the ODE RHS using lambdas;
+
+- Implements constructors for the `<daedalus_behaviour>` class which inherits from `<daedalus_response>`: this is currently a simple parameter list, but can be extended to full-fledged `daedalus::events::response` if needed.
+
+- Implements constructors for the 'old' and 'new' behavioural mechanisms as `daedalus_old_behaviour()` and `daedalus_new_behaviour()` --- both create the same class of object but with different parameters;
+
+## Breaking changes
+
+- Removes the `auto_social_distancing` argument from `daedalus()` and `daedalus_multi_infection()` and replaces it with a `behaviour` argument.
+
 # daedalus 0.2.36
 
 This patch version allows NPIs to end in reaction to an epidemic signal (PR #122).

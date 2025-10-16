@@ -44,6 +44,10 @@ reference:
     desc: Represent and access non-pharmaceutical intervention scenarios
     contents:
     - class_npi
+  - title: Class `<daedalus_behaviour>`
+    desc: Represent and access parameters for behavioural models
+    contents:
+    - class_behaviour
   - title: Class `<daedalus_output>`
     desc: Class to store model output for further processing
     contents:

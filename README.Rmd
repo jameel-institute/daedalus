@@ -89,6 +89,10 @@ Users can also model the implementation of pandemic response measures: for more 
 
 _daedalus_ is an R implementation of the scenario model from a [project on the economics of pandemic preparedness](https://github.com/robj411/p2_drivers).
 
-[_daedalus.data_](https://github.com/jameel-institute/daedalus.data) is a stand-alone helper R package to handle input data for the _daedalus_ model. Its purpose is to allow users to flexibly manipulate or change epidemiological and economic data, without needing to modify the model itself.
+- [_daedalus.data_](https://github.com/jameel-institute/daedalus.data) is a stand-alone helper R package to handle input data for the _daedalus_ model. Its purpose is to allow users to flexibly manipulate or change epidemiological and economic data, without needing to modify the model itself.
+
+- [_daedalus.compare_](https://github.com/jameel-institute/daedalus.compare) is an R package that sits both downstream of _daedalus_ and also wraps some _daedalus_ functions to help users conveniently run multiple epidemic scenarios.
+
+- [_daedalus.api_](https://github.com/jameel-institute/daedalus.data) is an R' package that connects _daedalus_ with the [DAEDALUS Explore](https://daedalus.jameel-institute.org/) dashboard.
 
 ## References
