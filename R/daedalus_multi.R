@@ -89,16 +89,6 @@ daedalus_multi_infection <- function(
     ))
   }
 
-  # prevent passing NAs as these are not correctly handled on C++ side
-  if (identical(response_strategy, "none") || is.null(response_strategy)) {
-    # set response time to NULL when response is NULL
-    response_time <- NULL
-    duration <- NULL
-  } else {
-    response_time <- npi$time_on
-    duration <- npi$duration
-  }
-
   #### BEHAVIOURAL MODULE ####
   # validate input and set flag to on if not null
   behaviour <- validate_behaviour_input(behaviour)
@@ -125,9 +115,6 @@ daedalus_multi_infection <- function(
         beta = get_beta(x, country),
         susc = susc,
         ngm = get_ngm(country, x),
-        openness = last(get_data(first(npi), "openness")),
-        response_time = response_time,
-        response_duration = duration,
         vaccination = vaccination,
         npi = y,
         hosp_overflow = hosp_overflow
