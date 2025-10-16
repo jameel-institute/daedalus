@@ -6,14 +6,11 @@
 #'
 #' @inheritParams daedalus
 #'
-#' @param infection A list of `<daedalus_infection>` objects.
+#' @param infection A list of `<daedalus_infection>` objects. Must have a
+#' minimum length of 2.
 #'
-#' @return A list of `<daedalus_output>` objects.
-#'
-#' @details
-#'
-#' See details of how `auto_social_distancing` affects the model in
-#' documentation for [daedalus()].
+#' @return A list of `<daedalus_output>` objects of the same length as
+#' `infection`.
 #'
 #' @export
 daedalus_multi_infection <- function(
@@ -177,6 +174,8 @@ daedalus_multi_infection <- function(
         rt_data = rt,
         country_parameters = unclass(country),
         infection_parameters = unclass(y),
+        vaccination_parameters = unclass(vaccination),
+        behaviour_parameters = unclass(behaviour),
         response_data = list(
           response_strategy = response_identifier,
           openness = get_data(npi[[1]], "openness"), # from first NPI

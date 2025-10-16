@@ -235,7 +235,12 @@ daedalus_internal <- function(
 #' This can be changed by passing a `<daedalus_npi>` object to
 #' `response_strategy`.
 #'
-#' @param behaviour
+#' @param behaviour An optional object of class `<daedalus_behaviour>` which
+#' determines how population-level perception of epidemic signals affects
+#' infection transmission. May be `NULL` for no behavioural modification of
+#' infection transmission. See
+#' the `<daedalus_behaviour>` [class documentation][class_behaviour] for more
+#' details on the available behavioural mechanisms
 #'
 #' @param initial_state_manual An optional **named** list with the names
 #' `p_infectious`, `p_asymptomatic`, and `p_immune`.
@@ -282,15 +287,16 @@ daedalus_internal <- function(
 #'
 #'
 #' @return A `<daedalus_output>` object if `infection` is a string or a single
-#' `<daedalus_infection>` object. Otherwise, a list of `<daedalus_output>`s
-#' of the same length of `infection` if a list of `<daedalus_infection>`s is
-#' passed to `infection`.
+#' `<daedalus_infection>` object.
 #'
 #' @examples
 #' # country and infection specified by strings using default characteristics
 #' output <- daedalus(
 #'   "Canada", "influenza_1918"
 #' )
+#'
+#' # print output
+#' output
 #'
 #' # country passed as <daedalus_country> with some characteristics modified
 #' country_x <- daedalus_country(
@@ -309,6 +315,13 @@ daedalus_internal <- function(
 #' output <- daedalus(
 #'   "United Kingdom", "influenza_1918",
 #'   initial_state_manual = list(p_infectious = 1e-3)
+#' )
+#'
+#' # including behavioural modification
+#' output <- daedalus(
+#'   "Canada", "influenza_1918",
+#'   behaviour = daedalus_old_behaviour(),
+#'   time_end = 100
 #' )
 #'
 #' @export
@@ -372,7 +385,7 @@ daedalus <- function(
   #### BEHAVIOURAL MODULE ####
   # validate input and set flag to on if not null
   behaviour <- validate_behaviour_input(behaviour)
-  if (behaviour$identifier != "no_behaviour") {
+  if (behaviour$identifier != "no behaviour") {
     flags["behav_flag"] <- 1.0
   }
 
@@ -425,6 +438,8 @@ daedalus <- function(
     rt_data = rt_data,
     country_parameters = unclass(country),
     infection_parameters = unclass(infection), # infection is list
+    vaccination_parameters = unclass(vaccination),
+    behaviour_parameters = unclass(behaviour),
     response_data = list(
       response_strategy = response_identifier,
       openness = get_data(npi, "openness"),
