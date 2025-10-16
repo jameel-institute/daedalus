@@ -31,6 +31,8 @@ validate_daedalus_output <- function(x) {
     # NOTE: reserving 'parameters' for values fixed before model run
     "country_parameters",
     "infection_parameters",
+    "vaccination_parameters",
+    "behaviour_parameters",
     "response_data" # includes response strategy
   )
 
@@ -77,7 +79,11 @@ format.daedalus_output <- function(x, ...) {
     c(
       "*" = "Country: {cli::style_bold(x$country_parameters$name)}",
       "*" = "Epidemic: {cli::style_bold(x$infection_parameters$name)}",
-      "*" = "Response: {cli::col_red(x$response_data$response_strategy)}"
+      "*" = "NPI response:
+        {cli::col_magenta(x$response_data$response_strategy)}",
+      "*" = "Vaccination:
+        {cli::col_magenta(x$vaccination_parameters$identifier)}",
+      "*" = "Behaviour: {cli::col_magenta(x$behaviour_parameters$identifier)}"
     )
   )
   cli::cli_end(divid)

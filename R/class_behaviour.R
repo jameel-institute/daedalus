@@ -83,10 +83,12 @@
 #'
 #' \eqn{\bar B} is a constant user-supplied parameter that captures the baseline
 #' population optimism about the outbreak.
+#'
+#' @export
 daedalus_old_behaviour <- function(rate = 0.001, lower_limit = 0.2) {
   new_daedalus_response(
     name = "behaviour",
-    identifier = "old_behaviour",
+    identifier = "old behaviour",
     # no flag index provided as none needed
     parameters = list(
       rate = rate,
@@ -152,7 +154,7 @@ daedalus_new_behaviour <- function(
 
   new_daedalus_response(
     name = "behaviour",
-    identifier = "new_behaviour",
+    identifier = "new behaviour",
     # no flag index provided as none needed
     parameters = parameters,
     class = "daedalus_behaviour"
@@ -183,7 +185,7 @@ validate_daedalus_behaviour <- function(x) {
     )
   }
 
-  expected_identifiers <- c("no_behaviour", "old_behaviour", "new_behaviour")
+  expected_identifiers <- c("no behaviour", "old behaviour", "new behaviour")
   has_good_identifier <- checkmate::test_scalar(x$identifier) &&
     checkmate::test_subset(x$identifier, expected_identifiers)
 
@@ -262,7 +264,7 @@ format.daedalus_behaviour <- function(x, ...) {
 dummy_behaviour <- function() {
   new_daedalus_response(
     name = "behaviour",
-    identifier = "no_behaviour",
+    identifier = "no behaviour",
     parameters = list(lower_limit = 1.0), # a dummy value, never used
     class = "daedalus_behaviour"
   )
