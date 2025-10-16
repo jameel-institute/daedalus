@@ -86,6 +86,20 @@
 #'
 #' @export
 daedalus_old_behaviour <- function(rate = 0.001, lower_limit = 0.2) {
+  checkmate::assert_number(
+    rate,
+    lower = 0,
+    upper = 1,
+    .var.name = "rate"
+  )
+
+  checkmate::assert_number(
+    lower_limit,
+    lower = 0,
+    upper = 1,
+    .var.name = "lower_limit"
+  )
+
   new_daedalus_response(
     name = "behaviour",
     identifier = "old behaviour",
@@ -125,6 +139,7 @@ daedalus_old_behaviour <- function(rate = 0.001, lower_limit = 0.2) {
 #' @param k1 A single, optional double value which is another scaling parameter
 #' for the sigmoidal relationship between \eqn{p_t} and `behav_effectiveness`.
 #' See \eqn{k_1} in Details. Defaults to -9.19.
+#' Expected to be a negative number.
 #'
 #' @export
 daedalus_new_behaviour <- function(
@@ -135,11 +150,53 @@ daedalus_new_behaviour <- function(
   k0 = 4.59,
   k1 = -9.19
 ) {
-  # TODO: input checking
+  checkmate::assert_multi_class(
+    hospital_capacity,
+    c("numeric", "daedalus_country")
+  )
 
   if (is_daedalus_country(hospital_capacity)) {
     hospital_capacity <- get_data(hospital_capacity, "hospital_capacity")
+  } else {
+    checkmate::assert_number(
+      hospital_capacity,
+      lower = 1,
+      finite = TRUE,
+      .var.name = "hospital_capacity"
+    )
   }
+
+  checkmate::assert_number(
+    behav_effectiveness,
+    lower = 0,
+    upper = 1,
+    .var.name = "behav_effectiveness"
+  )
+  checkmate::assert_number(
+    baseline_optimism,
+    lower = 0,
+    upper = 1,
+    .var.name = "baseline_optimism"
+  )
+
+  # NOTE: no upper limit fow now
+  checkmate::assert_number(
+    responsiveness,
+    lower = 0,
+    finite = TRUE,
+    .var.name = "responsiveness"
+  )
+  checkmate::assert_number(
+    k0,
+    lower = 0,
+    .var.name = "k0"
+  )
+  checkmate::assert_number(
+    k1,
+    upper = 0,
+    finite = TRUE,
+    .var.name = "k1"
+  )
 
   # note that this order is important and differs from the argument order
   # due to R argument convention (default valued args after others)
@@ -280,9 +337,9 @@ prepare_parameters.daedalus_behaviour <- function(x) {
 
   behav_enum <- switch(
     x$identifier,
-    no_behaviour = 0L,
-    old_behaviour = 1L,
-    new_behaviour = 2L
+    "no behaviour" = 0L,
+    "old behaviour" = 1L,
+    "new behaviour" = 2L
   )
   behav_params <- unlist(x$parameters)
   list(
@@ -308,7 +365,6 @@ validate_behaviour_input <- function(x) {
   }
 
   if (is_daedalus_behaviour(x)) {
-    validate_daedalus_behaviour(x)
     x
   } else {
     dummy_behaviour()
