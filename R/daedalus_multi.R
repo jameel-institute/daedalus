@@ -21,8 +21,8 @@ daedalus_multi_infection <- function(
   infection,
   response_strategy = NULL,
   vaccine_investment = NULL,
+  behaviour = NULL,
   response_time = 30,
-  auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
   ...
@@ -102,14 +102,12 @@ daedalus_multi_infection <- function(
     duration <- npi$duration
   }
 
-  #### spontaneous social distancing ####
-  auto_social_distancing <- rlang::arg_match(auto_social_distancing)
-  auto_social_distancing <- switch(
-    auto_social_distancing,
-    off = 0,
-    independent = 1,
-    npi_linked = 2
-  )
+  #### BEHAVIOURAL MODULE ####
+  # validate input and set flag to on if not null
+  behaviour <- validate_behaviour_input(behaviour)
+  if (behaviour$identifier != "no_behaviour") {
+    flags["behav_flag"] <- 1.0
+  }
 
   #### Prepare initial state and parameters ####
   initial_state <- make_initial_state(country, initial_state_manual)
@@ -125,6 +123,7 @@ daedalus_multi_infection <- function(
       prepare_parameters(country),
       prepare_parameters(x),
       prepare_parameters(vaccination),
+      prepare_parameters(behaviour),
       list(
         beta = get_beta(x, country),
         susc = susc,
@@ -132,7 +131,6 @@ daedalus_multi_infection <- function(
         openness = last(get_data(first(npi), "openness")),
         response_time = response_time,
         response_duration = duration,
-        auto_social_distancing = auto_social_distancing,
         vaccination = vaccination,
         npi = y,
         hosp_overflow = hosp_overflow
