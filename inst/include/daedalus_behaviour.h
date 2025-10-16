@@ -34,10 +34,11 @@ inline double scale_beta_old(const double &new_deaths,
 /// on assumed optimism and responsiveness.
 /// @param total_hosp The number of daily new hospitalisations.
 /// @param hosp_cap The country hospital capacity.
-/// @param delta Effectiveness of protective behaviour.
+/// @param delta Effectiveness of protective behaviour. Note that values are
+/// expected to be [0, 1], with 0 = no effect, 1 = fully effective.
 /// @param optimism Baseline optimism about the epidemic.
 /// @param k0 A scaling factor used to get a nice sigmoidal curve for the
-/// delta-optimism relationship.
+/// p_behav ~ optimism relationship.
 /// @param k1 Scaling factor for optimism.
 /// @param k2 Responsiveness to the epidemic signal (new hospitalisations).
 /// @return The scaling factor to reduce transmission rate.
@@ -55,15 +56,16 @@ inline double scale_beta_new(const double &total_hosp, const double &hosp_cap,
   // scaling factor B =
   // p_t*delta*(p_t*delta + (1 - p_t)) + (1 - p_t)*(p_t*delta + (1 - p_t))
   // which simplifies to (p_t*delta + (1 - p_t))^2
-  return std::pow((p_behav * delta) + (1.0 - p_behav), 2.0);
+  return std::pow((p_behav * (1.0 - delta)) + (1.0 - p_behav), 2.0);
 }
 
-/// @brief
+/// @brief Get the correct scaling function.
 /// @param behav_enum An int for the behavioural module. 0 for none, 1 for old,
 /// 2 for new.
 /// @param behav_params A vector of parameters. Currently relies on position to
 /// access the correct parameters.
-/// @return
+/// @return A function that captures behavioural parameters for the specified
+/// behavioural model and operates on an epidemic signal.
 inline const std::function<double(double)> get_behav_fn(
     const int behav_enum, const std::vector<double> &behav_params) {
   std::function<double(double)> behav_fn;
@@ -99,12 +101,14 @@ inline const std::function<double(double)> get_behav_fn(
   return behav_fn;
 }
 
-/// @brief
-/// @param behav_enum
-/// @param behav_fn
-/// @param new_deaths
-/// @param total_hosp
-/// @return
+/// @brief A wrapper function around a switch that applies the behavioural
+/// scaling function to the correct epidemic signal.
+/// @param behav_enum Which behavioural model is chosen.
+/// @param behav_fn The behavioural scaling function (ideally corresponding to
+/// the correct behav_enum).
+/// @param new_deaths Epidemic signal for the old behavioural model.
+/// @param total_hosp Epidemic signal for the new behavioural model.
+/// @return The scaling applied to the transmission rate, in the range [0, 1].
 inline const double get_behav_scaling(
     const int &behav_enum, const std::function<double(double)> &behav_fn,
     const double &new_deaths, const double &total_hosp) {
