@@ -316,16 +316,6 @@ class daedalus_ode {
     daedalus::events::response vaccination =
         daedalus::inputs::read_response(pars, "vaccination");
 
-    // TODO: this is being removed as NPI-linked behavioural changes are not
-    // super useful.
-    // // public concern social distancing may be off, on, or linked to NPIs;
-    // // switching the reference flag index makes it NPI linked; if always on,
-    // // set the initial flag value to 1.0 in R
-    // // NOTE: this has been demoted from a full event, but may be promoted
-    // again if (auto_social_distancing == 2) {
-    //   i_behav_flag = i_npi_flag;  // refer to NPI state
-    // }
-
     daedalus::events::response hosp_cap_exceeded =
         daedalus::inputs::read_response(pars, "hosp_overflow");
 
