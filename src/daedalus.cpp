@@ -535,19 +535,23 @@ class daedalus_ode {
                      const shared_state &shared, internal_state &internal,
                      rng_state_type &rng_state, real_type *state_next) {
     // NOLINTEND
-    // NOTE: adhoc implementation that should become a function returning
-    // a single bool
-    const double ipr_now = state_next[shared.i_ipr];
 
-    bool is_npi_on = state[shared.i_npi_flag] > 0.0;
-    bool is_epidemic_growing = ipr_now < shared.gamma_Ia;
-    bool is_reactive_npi = !ISNA(shared.npi.state_off);
-    bool is_min_dur_met =
-        time > state[shared.npi.i_time_start] + shared.npi.min_dur;
+    // // NOTE: adhoc implementation that should become a function returning
+    // // a single bool
+    
+    const bool is_npi_on = state[shared.i_npi_flag] > 0.0;
+    // timed NPIs cannot end on IPR, and have no i_state_on
+    const bool is_reactive_npi = !ISNA(shared.npi.i_state_on[0]);
 
-    if (is_reactive_npi && is_epidemic_growing && is_npi_on && is_min_dur_met) {
-      state_next[shared.i_npi_flag] = 0.0;
-      state_next[shared.npi.i_time_start] = 0.0;
+    if (is_npi_on && is_reactive_npi) {
+        const double ipr_now = state_next[shared.i_ipr];
+        const bool is_epidemic_growing = ipr_now > shared.gamma_Ia;
+        
+        // check that this is NOT a timed-NPI and that the epidemic is NOT growing
+        if (!is_epidemic_growing) {
+            state_next[shared.i_npi_flag] = 0.0;
+            state_next[shared.npi.i_time_start] = 0.0;
+        }
     }
   }
 };
