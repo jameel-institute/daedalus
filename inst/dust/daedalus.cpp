@@ -520,35 +520,33 @@ class daedalus_ode {
     state_deriv[shared.i_ipr] = incidence(0) / prevalence(0);
   }
 
-  /// @brief Set every value to zero - unclear.
-  /// @param shared Shared state -- unused.
-  /// @return Probably an array of zeros.
-  static auto zero_every(const shared_state &shared) {
-    return dust2::zero_every_type<real_type>{
-        {1, {shared.i_ipr}}};  // zero IPR value
-  }
+//   /// @brief Set every value to zero - unclear.
+//   /// @param shared Shared state -- unused.
+//   /// @return Probably an array of zeros.
+//   static auto zero_every(const shared_state &shared) {
+//     return dust2::zero_every_type<real_type>{
+//         {1, {shared.i_ipr}}};  // zero IPR value
+//   }
 
   // NOLINTBEGIN
   static void update(real_type time, real_type dt, const real_type *state,
                      const shared_state &shared, internal_state &internal,
                      rng_state_type &rng_state, real_type *state_next) {
     // NOLINTEND
-    // NOTE: adhoc implementation that should become a function returning
-    // a single bool
+    // NOTE: this functionality does not play well with events; adding multiple
+    // assignments within this function appears to interfere with time-limited events for
+    // an unknown reason
 
-    const bool is_npi_on = state[shared.i_npi_flag] > 0.0;
     // timed NPIs cannot end on IPR, and have no i_state_on
-    const bool is_reactive_npi = shared.npi.name == std::string("reactive_npi");
+    bool is_reactive_npi = shared.npi.name == std::string("reactive_npi");
+    bool is_epidemic_growing = state_next[shared.i_ipr] > shared.gamma_Ia;
 
-    if (is_npi_on && is_reactive_npi) {
-      const double ipr_now = state_next[shared.i_ipr];
-      const bool is_epidemic_growing = ipr_now > shared.gamma_Ia;
+    state_next[shared.i_npi_flag] -= static_cast<double>(is_reactive_npi) *
+        1.0 - static_cast<double>(is_epidemic_growing);
 
-      // check that this is NOT a timed-NPI and that the epidemic is NOT growing
-      if (!is_epidemic_growing) {
-        state_next[shared.i_npi_flag] = 0.0;
-        state_next[shared.npi.i_time_start] = 0.0;
-      }
-    }
+    // if (is_reactive_npi && (!is_epidemic_growing)) {
+    //   state_next[shared.i_npi_flag] = 0.0;
+    //   state_next[shared.npi.i_time_start] = 0.0;
+    // }
   }
 };
