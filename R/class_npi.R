@@ -4,6 +4,8 @@
 #' `<daedalus_npi>`. See [daedalus_npi()] for the user-facing
 #' helper function which calls this function internally.
 #'
+#' @param name A string which is either `"reactive_npi"` or `"timed_npi"`.
+#' 
 #' @param parameters A named list of parameters for the NPI strategy.
 #' These must be `start_time` (single numeric), `rate` (single numeric),
 #' `uptake_limit` (single numeric), `country`
@@ -18,9 +20,9 @@
 #' @keywords internal
 #'
 #' @noRd
-new_daedalus_npi <- function(parameters, ...) {
+new_daedalus_npi <- function(name, parameters, ...) {
   new_daedalus_response(
-    name = "npi",
+    name = name,
     parameters,
     class = "daedalus_npi",
     ...
@@ -187,6 +189,7 @@ daedalus_npi <- function(
 
   # NOTE: npis start on hospital capacity, but this can be extended
   x <- new_daedalus_npi(
+    "reactive_npi",
     params,
     identifier = identifier,
     id_flag = get_flag_index("npi_flag", country),
@@ -357,6 +360,7 @@ dummy_npi <- function(country) {
     )
   )
   x <- new_daedalus_npi(
+    "dummy_npi",
     params,
     identifier = "none",
     id_flag = get_flag_index("npi_flag", country),
@@ -416,8 +420,7 @@ validate_npi_input <- function(
       x,
       country,
       infection,
-      start_time = response_time,
-      end_time = NA_real_
+      start_time = response_time
     )
   } else {
     # numeric case

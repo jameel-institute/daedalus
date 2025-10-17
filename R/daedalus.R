@@ -170,7 +170,8 @@ daedalus_internal <- function(
   state <- dust2::dust_system_simulate(sys, seq(0, time_end))
 
   list(
-    data = dust2::dust_unpack_state(sys, state)
+    data = dust2::dust_unpack_state(sys, state),
+    events = dust2::dust_system_internals(sys)[["events"]]
   )
 }
 
