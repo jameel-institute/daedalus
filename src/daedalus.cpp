@@ -535,23 +535,22 @@ class daedalus_ode {
                      const shared_state &shared, internal_state &internal,
                      rng_state_type &rng_state, real_type *state_next) {
     // NOLINTEND
+    // NOTE: adhoc implementation that should become a function returning
+    // a single bool
 
-    // // NOTE: adhoc implementation that should become a function returning
-    // // a single bool
-    
     const bool is_npi_on = state[shared.i_npi_flag] > 0.0;
     // timed NPIs cannot end on IPR, and have no i_state_on
-    const bool is_reactive_npi = ISNA(shared.npi.time_off[0]);
+    const bool is_reactive_npi = shared.npi.name == std::string("reactive_npi");
 
     if (is_npi_on && is_reactive_npi) {
-        const double ipr_now = state_next[shared.i_ipr];
-        const bool is_epidemic_growing = ipr_now > shared.gamma_Ia;
-        
-        // check that this is NOT a timed-NPI and that the epidemic is NOT growing
-        if (!is_epidemic_growing) {
-            state_next[shared.i_npi_flag] = 0.0;
-            state_next[shared.npi.i_time_start] = 0.0;
-        }
+      const double ipr_now = state_next[shared.i_ipr];
+      const bool is_epidemic_growing = ipr_now > shared.gamma_Ia;
+
+      // check that this is NOT a timed-NPI and that the epidemic is NOT growing
+      if (!is_epidemic_growing) {
+        state_next[shared.i_npi_flag] = 0.0;
+        state_next[shared.npi.i_time_start] = 0.0;
+      }
     }
   }
 };
