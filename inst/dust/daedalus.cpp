@@ -539,7 +539,7 @@ class daedalus_ode {
     
     const bool is_npi_on = state[shared.i_npi_flag] > 0.0;
     // timed NPIs cannot end on IPR, and have no i_state_on
-    const bool is_reactive_npi = !ISNA(shared.npi.i_state_on[0]);
+    const bool is_reactive_npi = ISNA(shared.npi.time_off[0]);
 
     if (is_npi_on && is_reactive_npi) {
         const double ipr_now = state_next[shared.i_ipr];
