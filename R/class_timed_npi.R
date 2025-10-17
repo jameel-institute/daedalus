@@ -106,6 +106,7 @@ daedalus_timed_npi <- function(
   )
 
   x <- new_daedalus_npi(
+    "timed_npi",
     list(openness = openness),
     identifier = "custom_timed",
     id_flag = get_flag_index("npi_flag", country),
