@@ -299,27 +299,27 @@ class response {
     dust2::ode::events_type<double> events;
     const size_t n_timed_events = time_on.size();
 
-    // check if the first time on and time off are not NULL
+    // check if the first time on is not NULL
     // we don't expect a case where time_on is NULL, but time_off is non-NULL
+    // events ending on maximum duration are handled differently
     const bool is_valid_time_on = !ISNA(time_on[0]);
-    const bool is_valid_time_off = !ISNA(time_off[0]);
 
     // generate events for each pair of time_on and time_off
     /*
     For daedalus_npi(), time_off optional; for daedalus_timed_npi(), time_off
     is enforced on the R side
     */
-    if (is_valid_time_on && is_valid_time_off) {
+    if (is_valid_time_on) {
       for (size_t i = 0; i < n_timed_events; i++) {
         const double flag_index = static_cast<double>(i + 1);  // start from 1
         const std::string name_ev_time_on =
             name + "_time_on_" + std::to_string(i + 1);
 
-        events.push_back(
-            make_event(name_ev_time_on, {i_flag}, make_time_test(time_on[i], 0.0),
-                      make_flag_setter({i_flag, i_time_start},
-                                        {flag_index, value_log_time}),
-                      dust2::ode::root_type::increase));
+        events.push_back(make_event(
+            name_ev_time_on, {i_flag}, make_time_test(time_on[i], 0.0),
+            make_flag_setter({i_flag, i_time_start},
+                             {flag_index, value_log_time}),
+            dust2::ode::root_type::increase));
 
         const std::string name_ev_time_off =
             name + "_time_off_" + std::to_string(i + 1);
@@ -382,9 +382,9 @@ class response {
 
       dust2::ode::event<double> ev_max_dur =
           make_event(name_ev_max_dur, {i_time_start, i_flag},
-                    make_duration_test(max_duration),
-                    make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
-                    dust2::ode::root_type::increase);
+                     make_duration_test(max_duration),
+                     make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
+                     dust2::ode::root_type::increase);
 
       events.push_back(ev_max_dur);
     }
