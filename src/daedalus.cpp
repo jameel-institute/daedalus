@@ -531,21 +531,24 @@ class daedalus_ode {
   }
 
   // NOLINTBEGIN
+  // cppcheck-suppress-begin constParameterReference
   static void update(real_type time, real_type dt, const real_type *state,
                      const shared_state &shared, internal_state &internal,
                      rng_state_type &rng_state, real_type *state_next) {
+    // cppcheck-suppress-end constParameterReference
     // NOLINTEND
     // NOTE: adhoc implementation that should become a function returning
     // a single bool
     const double ipr_now = state_next[shared.i_ipr];
 
     bool is_npi_on = state[shared.i_npi_flag] > 0.0;
-    bool is_epidemic_growing = ipr_now < shared.gamma_Ia;
-    bool is_reactive_npi = !ISNA(shared.npi.state_off);
+    bool is_epidemic_growing = ipr_now > shared.gamma_Ia;
+    bool is_reactive_npi = !ISNA(shared.npi.state_off);  // ISNA works on vector
     bool is_min_dur_met =
         time > state[shared.npi.i_time_start] + shared.npi.min_dur;
 
-    if (is_reactive_npi && is_epidemic_growing && is_npi_on && is_min_dur_met) {
+    if (is_reactive_npi && !is_epidemic_growing && is_npi_on &&
+        is_min_dur_met) {
       state_next[shared.i_npi_flag] = 0.0;
       state_next[shared.npi.i_time_start] = 0.0;
     }
