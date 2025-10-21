@@ -47,7 +47,7 @@ using TensorMat = daedalus::types::TensorMat<double>;
 using TensorAry = daedalus::types::TensorAry<double>;
 
 // [[dust2::class(daedalus_ode)]]
-// [[dust2::time_type(continuous)]]
+// [[dust2::time_type(mixed)]]
 // [[dust2::parameter(beta, constant = TRUE)]]
 // [[dust2::parameter(sigma, constant = TRUE)]]
 // [[dust2::parameter(p_sigma, constant = TRUE)]]
@@ -68,7 +68,6 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(cm, constant = TRUE)]]
 // [[dust2::parameter(cm_work, constant = TRUE)]]
 // [[dust2::parameter(cm_cons_work, constant = TRUE)]]
-// [[dust2::parameter(hospital_capacity, constant = TRUE)]]
 // [[dust2::parameter(openness, constant = TRUE)]]
 // [[dust2::parameter(auto_social_distancing, constant = TRUE)]]
 class daedalus_ode {
@@ -526,5 +525,30 @@ class daedalus_ode {
   static auto zero_every(const shared_state &shared) {
     return dust2::zero_every_type<real_type>{
         {1, {shared.i_ipr}}};  // zero IPR value
+  }
+
+  // NOLINTBEGIN
+  // cppcheck-suppress-begin constParameterReference
+  static void update(real_type time, real_type dt, const real_type *state,
+                     const shared_state &shared, internal_state &internal,
+                     rng_state_type &rng_state, real_type *state_next) {
+    // cppcheck-suppress-end constParameterReference
+    // NOLINTEND
+
+    // NOTE: adhoc implementation that should become a function returning
+    // a single bool
+    const double ipr_now = state_next[shared.i_ipr];
+
+    bool is_npi_on = state[shared.i_npi_flag] > 0.0;
+    bool is_epidemic_growing = ipr_now > shared.gamma_Ia;
+    bool is_reactive_npi = !ISNA(shared.npi.state_off);
+    bool is_min_dur_met =
+        time > state[shared.npi.i_time_start] + shared.npi.min_dur;
+
+    if (is_reactive_npi && (!is_epidemic_growing) && is_npi_on
+        && is_min_dur_met) {
+      state_next[shared.i_npi_flag] = 0.0;
+      state_next[shared.npi.i_time_start] = 0.0;
+    }
   }
 };

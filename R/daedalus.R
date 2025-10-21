@@ -28,66 +28,119 @@ initial_flags <- function() {
   )
 }
 
+#' Process event data
+#'
+#' @keywords internal
+process_event_times <- function(event_data_list, event) {
+  resp_start_time <- sprintf("%s_start_time", event)
+  resp_time_on <- unique(event_data_list[[resp_start_time]])
+  resp_time_on <- resp_time_on[resp_time_on > 0]
+
+  resp_flag <- sprintf("%s_flag", event)
+
+  # as.numeric to handle possible array-type input
+  resp_duration <- rle(as.numeric(event_data_list[[resp_flag]]))
+  resp_duration <- resp_duration[["lengths"]][as.logical(
+    resp_duration$values
+  )]
+
+  if (length(resp_duration) == 0L) {
+    # handle no resps case
+    resp_time_on <- NA_real_
+    resp_time_off <- NA_real_
+    resp_duration <- NA_real_
+    npi_periods <- NA_integer_
+  } else {
+    # NOTE: reduce by 1 as logging means time is rounded up (I think)
+    resp_time_on <- round(resp_time_on)
+    resp_duration <- round(resp_duration)
+    resp_time_off <- round(resp_time_on + resp_duration)
+    npi_periods <- unlist(
+      Map(seq, resp_time_on, resp_time_off)
+    )
+  }
+
+  # return list for consistency with daedalus
+  resp_time_list <- list(
+    resp_time_on,
+    resp_time_off,
+    resp_duration,
+    npi_periods
+  )
+  base_names <- c("times_start", "times_end", "durations", "periods")
+  names(resp_time_list) <- sprintf(
+    "%s_%s",
+    event,
+    base_names
+  )
+
+  resp_time_list
+}
+
+
 #' Get model response times from dust2 output
 #'
 #' @param output dust2 output `daedalus_internal()`.
-#' @param time_end The model end time, passed from [daedalus()].
 #'
 #' @return A list of event start and end times, closure periods, and the
 #' duration of each closure event, suitable for a `<daedalus_output>` object.
 #'
 #' @keywords internal
-get_daedalus_response_times <- function(output, time_end) {
+get_daedalus_response_times <- function(output) {
   # internal function with no input checking
-  event_data <- output$event_data[[1]]
-  resp_times_on <- event_data[grepl("npi_\\w*_on", event_data$name), "time"]
-  resp_time_on_realised <- if (length(resp_times_on) == 0) {
-    NA_real_
-  } else {
-    floor(resp_times_on)
-  }
 
-  resp_times_off <- event_data[
-    grepl(
-      "npi_\\w*_off|npi_max_duration",
-      event_data$name
-    ),
-    "time"
-  ]
-  resp_time_off_realised <- if (all(is.na(resp_time_on_realised))) {
-    NA_real_
-  } else if (length(resp_times_off) == 0) {
-    time_end
-  } else {
-    floor(resp_times_off)
-  }
+  # NOTE: npi activated on the last day of a model run is counted
+  # as active for 1 day. This throws off some tests checking for npi durations
 
-  # handle unterminated npi
-  if (length(resp_time_off_realised) == (length(resp_time_on_realised) - 1)) {
-    resp_time_off_realised <- c(resp_time_off_realised, time_end)
-  } else if (length(resp_time_on_realised) < length(resp_time_off_realised)) {
-    cli::cli_abort(
-      "Model NPIs: More end events than start events! Check model dynamics."
-    )
-  }
+  event_data <- output$data[FLAG_NAMES]
+  event_names <- c("npi", "vax")
 
-  durations <- resp_time_off_realised - resp_time_on_realised
+  event_info <- lapply(event_names, function(event) {
+    resp_data <- event_data[grepl(event, names(event_data), fixed = TRUE)]
+    process_event_times(resp_data, event)
+  })
 
-  if (all(is.na(durations))) {
-    closure_periods <- NA_integer_
-  } else {
-    closure_periods <- unlist(
-      Map(seq, resp_time_on_realised, resp_time_off_realised)
-    )
-  }
+  output_names <- c("npi_data", "vaccination_data")
+  names(event_info) <- output_names
 
-  # return list for consistency with daedalus
-  list(
-    closure_times_start = resp_time_on_realised,
-    closure_times_end = resp_time_off_realised,
-    closure_durations = durations,
-    closure_periods = closure_periods
-  )
+  event_info
+}
+
+#' Get response times from a dust2 system with multiple groups
+#'
+#' @inheritParams get_daedalus_response_times
+#'
+#' @keywords internal
+get_daedalus_multi_response_times <- function(
+  output,
+  n_groups
+) {
+  event_data <- output$data[FLAG_NAMES]
+  event_names <- c("npi", "vax")
+
+  output_names <- c("npi_data", "vaccination_data")
+
+  event_info <- lapply(event_names, function(event) {
+    resp_data <- event_data[grepl(event, names(event_data), fixed = TRUE)]
+
+    # some processing to get into a list format similar to single-infection case
+    # similar handling to `prepare_output()` in R/prepare_output.R
+    resp_data <- lapply(resp_data, asplit, 1)
+    resp_data <- data.table::transpose(resp_data)
+
+    # data.table::transpose strips names, reassign here
+    names <- sprintf("%s_%s", event, c("flag", "start_time"))
+    resp_data <- lapply(resp_data, function(l) {
+      names(l) <- names
+      l
+    })
+
+    lapply(resp_data, process_event_times, event)
+  })
+
+  names(event_info) <- output_names
+
+  event_info
 }
 
 #' Internal function for daedalus
@@ -96,22 +149,23 @@ get_daedalus_response_times <- function(output, time_end) {
 #' @keywords internal
 daedalus_internal <- function(
   time_end,
-  params,
-  state,
+  parameters,
+  initial_state,
   flags,
   ode_control,
   n_groups
 ) {
   sys <- dust2::dust_system_create(
     daedalus_ode,
-    params,
+    parameters,
     n_groups = n_groups,
-    ode_control = ode_control
+    ode_control = ode_control,
+    dt = 1.0
   )
 
   # add initial flags
-  state <- c(state, flags)
-  dust2::dust_system_set_state(sys, state)
+  initial_state <- c(initial_state, flags)
+  dust2::dust_system_set_state(sys, initial_state)
 
   state <- dust2::dust_system_simulate(sys, seq(0, time_end))
 
@@ -374,6 +428,7 @@ daedalus <- function(
 
   timesteps <- seq(0, time_end)
   output_data <- prepare_output(output$data, country, timesteps)
+  event_info <- get_daedalus_response_times(output)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
@@ -382,15 +437,13 @@ daedalus <- function(
     model_data = output_data,
     country_parameters = unclass(country),
     infection_parameters = unclass(infection), # infection is list
+    vaccination_parameters = unclass(vaccination),
     response_data = list(
       response_strategy = response_identifier,
       openness = get_data(npi, "openness"),
-      closure_info = get_daedalus_response_times(
-        output,
-        time_end
-      )
-    ),
-    event_data = output$event_data[[1]]
+      npi_info = event_info[["npi_data"]],
+      vaccination_info = event_info[["vaccination_data"]]
+    )
   )
   as_daedalus_output(output)
 }

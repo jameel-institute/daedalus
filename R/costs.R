@@ -131,10 +131,10 @@ get_costs <- function(
   # NOTE: in million $s
   life_value_lost <- x$country_parameters$vsl * total_deaths / 1e6
 
-  closure_duration <- sum(x$response_data$closure_info$closure_durations)
+  npi_duration <- sum(x$response_data$npi_info$npi_durations)
 
   # handle daedalus
-  if (all(is.na(closure_duration))) {
+  if (all(is.na(npi_duration))) {
     economic_cost_closures <- 0
     education_cost_closures <- 0
     sector_cost_closures <- rep(0, length(x$country_parameters$workers))
@@ -142,20 +142,20 @@ get_costs <- function(
     # NOTE: in state-dep NPIs, multiple closure intervals map to same
     # openness config. in time-dep NPIs, the mapping is x-to-x. We do not expect
     # x-to-y for x, y > 1
-    closure_duration <- x$response_data$closure_info$closure_durations
-    n_closures <- length(closure_duration)
+    npi_duration <- x$response_data$npi_info$npi_durations
+    n_closures <- length(npi_duration)
     n_regimes <- length(openness)
 
     if (n_closures > n_regimes && n_regimes == 1) {
       openness <- lapply(
-        seq_along(closure_duration),
+        seq_along(npi_duration),
         function(x) first(openness)
       )
     }
 
     # cost of closures, per sector and total
     sector_closures <- Map(
-      closure_duration,
+      npi_duration,
       openness,
       f = function(duration, openness_coef) {
         (1 - openness_coef) * duration
@@ -173,14 +173,14 @@ get_costs <- function(
 
     # multiply loss due to closures by loss due to absences at appropriate times
     # to get true loss due to absences
-    closure_periods <- x$response_data$closure_info$closure_periods
+    npi_periods <- x$response_data$npi_info$npi_periods
 
     # NOTE: openness list accounts for potential many-to-one mapping
-    sector_cost_absences[closure_periods, ] <- Reduce(
+    sector_cost_absences[npi_periods, ] <- Reduce(
       rbind,
       Map(
-        x$response_data$closure_info$closure_times_start,
-        x$response_data$closure_info$closure_times_end,
+        x$response_data$npi_info$npi_times_start,
+        x$response_data$npi_info$npi_times_end,
         openness,
         f = function(start, end, opcoef) {
           sector_cost_absences[start:end, ] <-
@@ -506,22 +506,22 @@ get_fiscal_costs <- function(
   effective_workers <- 1.0 - worker_prod_loss %*% diag(1.0 / workforce)
 
   # calculate closure duration if any
-  closure_duration <- sum(x$response_data$closure_info$closure_durations)
+  npi_duration <- sum(x$response_data$npi_info$npi_durations)
 
-  if (is.na(closure_duration) || closure_duration == 0) {
+  if (is.na(npi_duration) || npi_duration == 0) {
     npi_support <- 0.0
   } else {
-    closure_periods <- x$response_data$closure_info$closure_periods
+    npi_periods <- x$response_data$npi_info$npi_periods
 
     # cost of getting NPIs to work: price_npi * number of alive individuals *
     # some uptake param
     npi_support <- sum(x$country_parameters$demography) -
       get_incidence(x, "deaths")$value * uptake_npi * price_npi
-    npi_support[-closure_periods] <- 0.0
+    npi_support[-npi_periods] <- 0.0
     npi_support <- npi_support / 1e6 # convert to millions USD PPP
 
-    effective_workers[closure_periods, ] <- t(apply(
-      effective_workers[closure_periods, ],
+    effective_workers[npi_periods, ] <- t(apply(
+      effective_workers[npi_periods, ],
       1L,
       `*`,
       openness

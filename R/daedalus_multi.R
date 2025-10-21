@@ -6,9 +6,11 @@
 #'
 #' @inheritParams daedalus
 #'
-#' @param infection A list of `<daedalus_infection>` objects.
+#' @param infection A list of `<daedalus_infection>` objects. Must have a
+#' minimum length of 2.
 #'
-#' @return A list of `<daedalus_output>` objects.
+#' @return A list of `<daedalus_output>` objects of the same length as
+#' `infection`.
 #'
 #' @details
 #'
@@ -71,7 +73,10 @@ daedalus_multi_infection <- function(
   # if users want that
   vaccination <- validate_vaccination_input(vaccine_investment, country)
 
-  if (get_data(vaccination, "start_time") == 0.0) {
+  if (
+    get_data(vaccination, "start_time") == 0.0 &&
+      (!is.null(vaccine_investment))
+  ) {
     # check vaccination start time and set vaccination flag
     flags["vax_flag"] <- 1.0
   }
@@ -150,7 +155,7 @@ daedalus_multi_infection <- function(
   # or equivalent from `{daedalus.compare}`
   stopifnot(
     "Length of outputs and infections is not the same" = length(infection) ==
-      length(output_data)
+      length(n_param_sets)
   )
 
   closure_info <- lapply(
@@ -163,20 +168,22 @@ daedalus_multi_infection <- function(
   Map(
     output_data,
     infection,
-    closure_info,
-    output$event_data,
+    event_info[["npi_data"]],
+    event_info[["vaccination_data"]],
     f = function(x, y, z, zz) {
       o <- list(
         total_time = time_end,
         model_data = x,
         country_parameters = unclass(country),
         infection_parameters = unclass(y),
+        vaccination_parameters = unclass(vaccination),
+        behaviour_parameters = unclass(behaviour),
         response_data = list(
           response_strategy = response_identifier,
           openness = get_data(npi[[1]], "openness"), # from first NPI
-          closure_info = z
-        ),
-        event_data = zz
+          npi_info = z,
+          vaccination_info = zz
+        )
       )
 
       as_daedalus_output(o)

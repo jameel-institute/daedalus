@@ -29,7 +29,8 @@ is passed as a string.
 To override package defaults for country characteristics, pass a
 \verb{<daedalus_country>} object instead. See \code{\link[=daedalus_country]{daedalus_country()}} for more.}
 
-\item{infection}{A list of \verb{<daedalus_infection>} objects.}
+\item{infection}{A list of \verb{<daedalus_infection>} objects. Must have a
+minimum length of 2.}
 
 \item{response_strategy}{A string for the name of response strategy followed,
 a numeric of length 45 (number of economic sectors), or a \verb{<daedalus_npi>}
@@ -75,7 +76,8 @@ returned for each day. Defaults to 300 days.}
 \item{...}{Optional arguments that are passed to \code{\link[dust2:dust_ode_control]{dust2::dust_ode_control()}}.}
 }
 \value{
-A list of \verb{<daedalus_output>} objects.
+A list of \verb{<daedalus_output>} objects of the same length as
+\code{infection}.
 }
 \description{
 Run \code{\link[=daedalus]{daedalus()}} for multiple parameter sets, with the intended use case of
