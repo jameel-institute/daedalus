@@ -6,5 +6,7 @@
       <daedalus_output>
       * Country: Canada
       * Epidemic: influenza_1918
-      * Response: none
+      * NPI response: none
+      * Vaccination: no vaccination
+      * Behaviour:
 
