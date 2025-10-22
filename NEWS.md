@@ -1,12 +1,14 @@
 # daedalus 0.2.36
 
-This patch version:
+This patch version allows NPIs to end in reaction to an epidemic signal (PR #122).
 
 - Converts the `daedalus_ode` class to a `mixed`-time ODE system and uses the `update` functionality to access `dy` and end NPIs based on the instantaneous value of an $R_t$ proxy, the infection-prevalence ratio (IPR);
 
 - Updates how event times are inferred as `event_data` is no longer returned as part of `<daedalus_output>`; the manual NPI ending using `update` is not picked up as an event;
 
 - Updates the costs functions and tests for renamed output elements.
+
+- Updates `daedalus::events` to make event generation logic for a `daedalus::events::response` clearer.
 
 # daedalus 0.2.35
 

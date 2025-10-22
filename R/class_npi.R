@@ -5,7 +5,7 @@
 #' helper function which calls this function internally.
 #'
 #' @param name A string which is either `"reactive_npi"` or `"timed_npi"`.
-#' 
+#'
 #' @param parameters A named list of parameters for the NPI strategy.
 #' These must be `start_time` (single numeric), `rate` (single numeric),
 #' `uptake_limit` (single numeric), `country`
