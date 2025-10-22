@@ -38,6 +38,24 @@ using TensorMat = daedalus::types::TensorMat<double>;
 /// in state.
 const double value_log_time = -999.0;
 
+const bool is_flag_on(const double &value) {
+  // as flags can be any whole number as a double: 0.0, 1.0, 2.0 (for NPIs only)
+  return value > 0.0;
+}
+
+const bool is_flag_off(const double &value) { return value < 1e-9; }
+
+const bool is_flag_changing(const double &new_value, const double &old_value) {
+  // since flag changes from 0 <--> 1 or greater, a diff of 0.5 is reasonable
+  return std::abs(new_value - old_value) > 0.5;
+}
+
+const bool is_special_value(const double &value) {
+  return std::abs(value - value_log_time) < 1e-6;
+}
+
+enum FLAG_VALUE { OFF = 0, ON = 1 };
+
 /// @brief Get values depending on a flag variable
 /// @tparam T
 /// @param value A value, typically of the openness coefficient. For an 80%
@@ -120,13 +138,12 @@ class response {
   /// @param value The time value to check current time against.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_time_test(const double value,
-                                  const double &expected_value) const {
+                                  const FLAG_VALUE &expected_value) const {
     // flag expected off
-    if (expected_value < 1.0) {
-      auto fn_test = [value, &expected_value = expected_value](
-                         const double t, const double *y) {
+    if (expected_value == OFF) {
+      auto fn_test = [value](const double t, const double *y) {
         // NOTE: y[0] is flag as time is not passed
-        if (y[0] > expected_value) {
+        if (is_flag_on(y[0])) {
           return 1.0;  // return FALSE if flag already on
         } else {
           return t - value;  // time -  start_time
@@ -137,11 +154,10 @@ class response {
     }
 
     // flag expected on
-    if (expected_value > 0.0) {
-      auto fn_test = [value, &expected_value = expected_value](
-                         const double t, const double *y) {
+    if (expected_value == ON) {
+      auto fn_test = [value](const double t, const double *y) {
         // NOTE: y[0] is flag as time is not passed
-        if (y[0] < expected_value) {
+        if (is_flag_off(y[0])) {
           return 1.0;
         } else {
           return t - value;
@@ -168,7 +184,7 @@ class response {
   inline test_type make_duration_test(const double value) const {
     auto fn_test = [value](const double t, const double *y) {
       // NOTE: y[0] is start_time, y[1] is flag
-      if (y[1] > 0.0) {
+      if (is_flag_on(y[1])) {
         return t - (value + y[0]);  // return val only if flag already on
       } else {
         return 1.0;  // prevent (t - value) when event has not launched yet
@@ -186,19 +202,19 @@ class response {
   /// off or on, respectively.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_state_test(const std::vector<size_t> &idx_state,
-                                   const double value,
-                                   const double expected_value) const {
+                                   const double &value,
+                                   const FLAG_VALUE &expected_value) const {
     // prepare flag and start_time indices
     const size_t size_n = idx_state.size();
     const size_t flag_pos = size_n - 1;
     const size_t time_pos = size_n - 2;
 
-    if (expected_value < 1.0) {
+    if (expected_value == OFF) {
       // flag expected off
       auto fn_test = [value, size_n, flag_pos, time_pos](const double t,
                                                          const double *y) {
         const double current_flag = y[flag_pos];
-        if (current_flag > 0.0) {
+        if (is_flag_on(current_flag)) {
           return 1.0;  // handle case where flag is already on, return false
         } else {
           const double sum_state = std::accumulate(y, y + time_pos, 0);
@@ -207,12 +223,12 @@ class response {
       };
 
       return fn_test;
-    } else if (expected_value > 0.0) {
+    } else if (expected_value == ON) {
       // flag expected on
       auto fn_test = [value, size_n, flag_pos, time_pos, &min_dur = min_dur](
                          const double t, const double *y) {
         const double current_flag = y[flag_pos];
-        if (current_flag < 1.0) {
+        if (is_flag_off(current_flag)) {
           return 1.0;  // handle case where flag is already off, return false
         } else {
           // check duration that event has been on and return FALSE if min
@@ -252,16 +268,11 @@ class response {
         const double new_value = values[i];
         const double flag_value = y[yi];
 
-        const bool is_flag_on = flag_value > 0.0;
-        const bool is_special_value =
-            std::abs(new_value - value_log_time) < 1e-6;
-        const bool is_flag_changing = std::abs(new_value - flag_value) > 0.0;
-
-        if (is_special_value) {
-          if (!is_flag_on) {
+        if (is_special_value(new_value)) {
+          if (is_flag_off(flag_value)) {
             y[yi] = t;
           }
-        } else if (is_flag_changing) {
+        } else if (is_flag_changing(new_value, flag_value)) {
           y[yi] = new_value;
         }
       }
@@ -316,7 +327,7 @@ class response {
             name + "_time_on_" + std::to_string(i + 1);
 
         events.push_back(make_event(
-            name_ev_time_on, {i_flag}, make_time_test(time_on[i], 0.0),
+            name_ev_time_on, {i_flag}, make_time_test(time_on[i], OFF),
             make_flag_setter({i_flag, i_time_start},
                              {flag_index, value_log_time}),
             dust2::ode::root_type::increase));
@@ -325,7 +336,7 @@ class response {
             name + "_time_off_" + std::to_string(i + 1);
 
         events.push_back(make_event(
-            name_ev_time_off, {i_flag}, make_time_test(time_off[i], 1.0),
+            name_ev_time_off, {i_flag}, make_time_test(time_off[i], ON),
             make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
             dust2::ode::root_type::increase));
       }
@@ -349,7 +360,7 @@ class response {
 
       dust2::ode::event<double> ev_state_on = make_event(
           name_ev_state_on, tmp_i_state_on,
-          make_state_test(tmp_i_state_on, state_on, 0.0),
+          make_state_test(tmp_i_state_on, state_on, OFF),
           make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
           root_type_on);
 
@@ -370,7 +381,7 @@ class response {
 
       dust2::ode::event<double> ev_state_off = make_event(
           name_ev_state_off, tmp_i_state_off,
-          make_state_test(tmp_i_state_off, state_off, 1.0),
+          make_state_test(tmp_i_state_off, state_off, ON),
           make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}), root_type_off);
 
       events.push_back(ev_state_off);
