@@ -154,15 +154,11 @@ daedalus_multi_infection <- function(
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
   stopifnot(
-    "Length of outputs and infections is not the same" = length(infection) ==
-      length(n_param_sets)
+    "Length of outputs and infections is not the same" = n_param_sets ==
+      length(output_data)
   )
 
-  closure_info <- lapply(
-    output$event_data,
-    get_daedalus_response_times,
-    time_end
-  )
+  event_info <- get_daedalus_multi_response_times(output, n_param_sets)
 
   # return list of daedalus_output
   Map(
@@ -177,7 +173,6 @@ daedalus_multi_infection <- function(
         country_parameters = unclass(country),
         infection_parameters = unclass(y),
         vaccination_parameters = unclass(vaccination),
-        behaviour_parameters = unclass(behaviour),
         response_data = list(
           response_strategy = response_identifier,
           openness = get_data(npi[[1]], "openness"), # from first NPI

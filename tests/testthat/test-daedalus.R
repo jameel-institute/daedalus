@@ -145,7 +145,7 @@ test_that("daedalus: Can run with custom demography", {
 
 # test that daedalus runs for all epidemic infection parameter sets
 skip_on_covr()
-skip("offline")
+skip("Skipped for length")
 test_that("daedalus: Runs for all country x infection x response", {
   country_infection_combos <- data.table::CJ(
     country = daedalus.data::country_names,
@@ -371,8 +371,6 @@ test_that("daedalus: responses triggered by hospital capacity event", {
   )
 })
 
-# NOTE: see PR #83 for a reprex
-skip("Root jumping causes test to fail")
 test_that("daedalus: responses ended by epidemic growth", {
   # start response early
   time_end <- 100
@@ -381,29 +379,26 @@ test_that("daedalus: responses ended by epidemic growth", {
 
   d <- daedalus_infection("influenza_2009")
 
+  # specify npi with timed end which should not be met
+  end_time <- 60
+  npi <- daedalus_npi(
+    "elimination",
+    x,
+    "influenza_2009",
+    start_time = 30,
+    end_time = end_time
+  )
+
   output <- daedalus(
     x,
     "influenza_2009",
-    "elimination",
-    time_end = time_end,
-    response_time = 98
+    npi,
+    time_end = time_end
   )
 
-  event_data <- output$event_data
-  output <- output$data
-  # check that epidemic stops growing by IPR method; IPR < gamma
-  ipr <- colSums(output$new_inf) / colSums(output$Is + output$Ia)
+  # check that response is switched off before fixed time-end due to IPR test
   expect_lt(
-    min(ipr - d$gamma_Is),
-    0.0
-  )
-
-  # find end idx
-  end_time <- which.min(abs(ipr - d$gamma_Ia)) + 1
-
-  # check that response is switched off at expected time
-  expect_identical(
-    event_data[event_data$name == "npi_state_off", "time"],
+    output$response_data$npi_info$npi_times_end,
     end_time
   )
 })
@@ -415,15 +410,15 @@ test_that("daedalus: Errors and messages", {
       "sars_cov_1",
       as.character(1:49)
     ),
-    "Got an unexpected value for `response_strategy`."
+    "`response_strategy` must be one of"
   )
   expect_error(
     daedalus(
       "GBR",
       "sars_cov_1",
-      1:50
+      as.numeric(1:50)
     ),
-    "Assertion on 'response_strategy' failed: Must have length"
+    "must be a numeric of length 45"
   )
   expect_error(
     daedalus(
