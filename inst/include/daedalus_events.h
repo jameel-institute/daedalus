@@ -38,22 +38,39 @@ using TensorMat = daedalus::types::TensorMat<double>;
 /// in state.
 const double value_log_time = -999.0;
 
+/// @brief Check if a flag has a value that is not 'off'. The NPI flag can be
+/// any whole value represented as a double as it represents an index rather
+/// than a boolean.
+/// @param value The value to be tested.
+/// @return A bool for whether the flag is on, or a non-zero index.
 const bool is_flag_on(const double &value) {
   // as flags can be any whole number as a double: 0.0, 1.0, 2.0 (for NPIs only)
   return value > 0.0;
 }
 
+/// @brief Check if a flag has an 'off' value.
+/// @param value The value to be tested.
+/// @return A bool for whether the flag is off.
 const bool is_flag_off(const double &value) { return value < 1e-9; }
 
+/// @brief Check if the value to be assigned to a flag would change the current
+/// value.
+/// @param new_value The value to be assigned.
+/// @param old_value The current or old value.
+/// @return A bool for whether the new value and old value are different.
 const bool is_flag_changing(const double &new_value, const double &old_value) {
   // since flag changes from 0 <--> 1 or greater, a diff of 0.5 is reasonable
   return std::abs(new_value - old_value) > 0.5;
 }
 
+/// @brief Check if a value is a special magic number value.
+/// @param value The value to check.
+/// @return A bool for whether the special value is passed.
 const bool is_special_value(const double &value) {
   return std::abs(value - value_log_time) < 1e-6;
 }
 
+/// @brief A small enum to hold expected flag values.
 enum FLAG_VALUE { OFF = 0, ON = 1 };
 
 /// @brief Get values depending on a flag variable
@@ -136,6 +153,8 @@ class response {
   /// @brief Root-find on time. NOTE that this function is expected to receive
   /// `*y` that is not indexed, allowing use of `i_flag` directly. (?)
   /// @param value The time value to check current time against.
+  /// @param expected_value The expected flag value. Used to switch between
+  /// testing for time-on vs time-off. May be ON or OFF.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_time_test(const double value,
                                   const FLAG_VALUE &expected_value) const {
@@ -200,6 +219,8 @@ class response {
   /// @param value The value against which to compare the summed state.
   /// @expected_value Either 0.0 or 1.0 for whether the existing flag state is
   /// off or on, respectively.
+  /// @param expected_value The expected flag value. Used to switch between
+  /// testing for time-on vs time-off. May be ON or OFF.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_state_test(const std::vector<size_t> &idx_state,
                                    const double &value,
@@ -210,7 +231,6 @@ class response {
     const size_t time_pos = size_n - 2;
 
     if (expected_value == OFF) {
-      // flag expected off
       auto fn_test = [value, size_n, flag_pos, time_pos](const double t,
                                                          const double *y) {
         const double current_flag = y[flag_pos];
@@ -224,7 +244,6 @@ class response {
 
       return fn_test;
     } else if (expected_value == ON) {
-      // flag expected on
       auto fn_test = [value, size_n, flag_pos, time_pos, &min_dur = min_dur](
                          const double t, const double *y) {
         const double current_flag = y[flag_pos];
@@ -257,8 +276,11 @@ class response {
     }
   }
 
-  /// @brief Make event action lambda.
-  /// @return A lambda suitable as an action in a dust2::event.
+  /// @brief Make event action function.
+  /// @param flags The flag (really, the state) indices to set.
+  /// @param values The values to set the i-th element of `flags` to.
+  /// @return A function suitable to be passed to a `dust2::event` as an event
+  /// function.
   inline action_type make_flag_setter(const std::vector<size_t> &flags,
                                       const std::vector<double> &values) const {
     auto fn_action = [flags, values](const double t, const double sign,
