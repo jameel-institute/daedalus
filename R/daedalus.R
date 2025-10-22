@@ -27,7 +27,7 @@ initial_flags <- function() {
     hosp_overflow_start_time = hosp_overflow_start_time
   )
 }
-de
+
 #' Process event data
 #'
 #' @keywords internal
