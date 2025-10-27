@@ -8,6 +8,7 @@
 
 #include <R_ext/Arith.h>
 #include <RcppEigen.h>
+#include <Eigen/Eigenvalues>
 #include <unsupported/Eigen/CXX11/Tensor>
 
 #include <cmath>
@@ -68,6 +69,7 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(cm, constant = TRUE)]]
 // [[dust2::parameter(cm_work, constant = TRUE)]]
 // [[dust2::parameter(cm_cons_work, constant = TRUE)]]
+// [[dust2::parameter(demography, constant = TRUE)]]
 // [[dust2::parameter(hospital_capacity, constant = TRUE)]]
 // [[dust2::parameter(openness, constant = TRUE)]]
 // [[dust2::parameter(auto_social_distancing, constant = TRUE)]]
@@ -87,6 +89,8 @@ class daedalus_ode {
 
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
     const TensorMat cm, cm_cons_work, cm_work;
+    Eigen::MatrixXd ngm;
+    Eigen::ArrayXd demography;
     const TensorMat susc;
     const std::vector<TensorMat> openness;
 
@@ -103,6 +107,8 @@ class daedalus_ode {
         t_comm_inf_age, t_work_inf_contacts, t_foi_work, t_cw_inf_contacts,
         t_foi_cw, susc_workers, sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR,
         hToD, rToS;
+    // for Rt calculations
+    Eigen::ArrayXd n_susc;
   };
 
   static internal_state build_internal(const shared_state &shared) {
@@ -124,13 +130,17 @@ class daedalus_ode {
     TensorMat t_comm_inf_age(shared.n_age_groups, N_VAX_STRATA);
     t_comm_inf_age.setZero();
 
+    Eigen::ArrayXd n_susc(shared.n_age_groups);
+    n_susc.setConstant(1.0);
+
     // clang-format off
     return internal_state{
       t_infectious, t_comm_inf_contacts, t_foi_comm, alt_new_infections,
       t_comm_inf_age,
       t_work_inf_contacts, t_foi_work, t_cw_inf_contacts, t_foi_cw,
       susc_workers,
-      sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS
+      sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS,
+      n_susc
     };
     // clang-format on
   }
@@ -243,6 +253,19 @@ class daedalus_ode {
     dust2::r::read_real_vector(pars, n_econ_groups, cm_work.data(), "cm_work",
                                true);
 
+    // NEXT-GENERATION-MATRIX
+    // pass the initial NGM
+    const std::vector<size_t> vec_ngm_dims(2, n_age_groups);
+    const dust2::array::dimensions<2> ngm_dims(vec_ngm_dims.begin());
+    Eigen::MatrixXd ngm(n_age_groups, n_age_groups);
+    dust2::r::read_real_array(pars, ngm_dims, ngm.data(), "ngm", true);
+
+    // DEMOGRAPHY
+    Eigen::ArrayXd demography(n_age_groups);
+    demography.setConstant(1.0);
+    dust2::r::read_real_vector(pars, n_age_groups, demography.data(),
+                               "demography", true);
+
     // VACCINATION PARAMETERS
     const real_type nu = dust2::r::read_real(pars, "nu", 0.0);
     const real_type psi = dust2::r::read_real(pars, "psi", 0.0);
@@ -302,7 +325,7 @@ class daedalus_ode {
         omega,        gamma_H,        nu,           psi,
         n_strata,     n_age_groups,   n_econ_groups,
         popsize,      cm,             cm_cw,
-        cm_work,      susc,           openness,
+        cm_work,      ngm,            demography,   susc,           openness,
         i_ipr,  // state index holding incidence/prevalence ratio
         i_npi_flag,   i_vax_flag, i_sd_flag,    i_hosp_overflow_flag,
         npi,          vaccination,
@@ -434,6 +457,8 @@ class daedalus_ode {
             .slice(Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
                    Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA});
 
+    internal.n_susc = daedalus::helpers::get_n_susc(t_x);
+
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
     // NOTE: broadcasting for element-wise tensor mult
@@ -499,25 +524,7 @@ class daedalus_ode {
     t_new_vax = nu_eff * t_x.chip(iS, i_COMPS).chip(0, 1) +
                 nu_eff * t_x.chip(iR, i_COMPS).chip(0, 1);
 
-    // get IPR (incidence prevalence ratio) as growth flag
-    /* calculate new infections without NPIs or behaviour */
-    internal.alt_new_infections =
-        t_x.chip(iS, i_COMPS) * internal.t_comm_inf_contacts;
-
-    internal.alt_new_infections.slice(
-        Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
-        Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA}) +=
-        (internal.susc_workers *
-         (internal.t_work_inf_contacts.broadcast(bcast) +
-          internal.t_cw_inf_contacts.broadcast(bcast)));
-
-    internal.alt_new_infections = internal.alt_new_infections * shared.beta;
-
-    const Eigen::Tensor<double, 0> incidence =
-        internal.alt_new_infections.sum();
-    const Eigen::Tensor<double, 0> prevalence = internal.t_infectious.sum();
-
-    state_deriv[shared.i_ipr] = incidence(0) / prevalence(0);
+    // Rt logging moved to `update`
   }
 
   /// @brief Set every value to zero - unclear.
@@ -535,13 +542,18 @@ class daedalus_ode {
                      rng_state_type &rng_state, real_type *state_next) {
     // cppcheck-suppress-end constParameterReference
     // NOLINTEND
-    // NOTE: this functionality does not play well with events; adding multiple
-    // assignments within this function appears to interfere with time-limited
-    // events for an unknown reason
+
+    // calculate and log Rt
+    const Eigen::ArrayXd p_susc = internal.n_susc / shared.demography;
+    const Eigen::MatrixXd ngm_p_susc = shared.ngm.array().colwise() * p_susc;
+
+    double rt = daedalus::helpers::get_leading_eigenvalue(ngm_p_susc);
+    state_next[shared.i_ipr] = rt;
+
+    const bool is_epidemic_growing = rt > 1.0;
 
     // timed NPIs cannot end on IPR, and have no i_state_on
     const bool is_reactive_npi = shared.npi.name == std::string("reactive_npi");
-    const bool is_epidemic_growing = state_next[shared.i_ipr] > shared.gamma_Ia;
 
     if (is_reactive_npi && (!is_epidemic_growing)) {
       state_next[shared.i_npi_flag] = 0.0;
