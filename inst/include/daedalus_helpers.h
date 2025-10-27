@@ -138,6 +138,50 @@ inline double get_concern_coefficient(const double &new_deaths,
                                       const double &lower_limit = 0.2) {
   return std::pow(1.0 - rate, new_deaths) * (1.0 - lower_limit) + lower_limit;
 }
+
+/// @brief Get the largest real eigenvalue of a matrix.
+/// @param m A matrix.
+/// @return The leading eigenvalue.
+inline const double get_leading_eigenvalue(const Eigen::MatrixXd &m) {
+  Eigen::VectorXcd eigvals = m.eigenvalues();
+
+  double max_eigval = 0.0;  // could be lower
+  for (size_t i = 0; i < eigvals.size(); i++) {
+    if (eigvals[i].imag() == 0 && eigvals[i].real() > max_eigval) {
+      max_eigval = eigvals[i].real();
+    }
+  }
+
+  return max_eigval;
+}
+
+/// @brief Count susceptibles.
+/// @param state An Eigen Tensor of the state.
+/// @return An array of susceptibles per age group.
+inline const Eigen::ArrayXd get_n_susc(
+    const daedalus::types::TensorAry<double> &state) {
+  daedalus::types::TensorVec<double> t_x_susc =
+      state.chip(daedalus::constants::iS, daedalus::constants::i_COMPS)
+          .sum(Eigen::array<Eigen::Index, 1>{1});
+
+  Eigen::ArrayXd susc(t_x_susc.dimension(0));
+  Eigen::ArrayXd susc_age(daedalus::constants::DDL_N_AGE_GROUPS);
+
+  for (size_t i = 0; i < t_x_susc.size(); i++) {
+    susc(i) = t_x_susc(i);
+  }
+  const double tail_sum =
+      susc.tail(daedalus::constants::DDL_N_ECON_GROUPS).sum();
+
+  susc_age(0) = susc(0);
+  susc_age(1) = susc(1);
+  susc_age(2) = susc(2) + tail_sum;
+  susc_age(3) = susc(3);
+
+  return susc_age;
+
+  // MORE TO COME
+}
 }  // namespace helpers
 
 }  // namespace daedalus
