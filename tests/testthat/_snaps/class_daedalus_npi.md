@@ -64,10 +64,10 @@
 # Test for epidemic size
 
     Code
-      get_epidemic_summary(daedalus("GB", "sars_cov_1", "elimination", time_end = 100))
+      get_epidemic_summary(daedalus("GB", "sars_cov_1", "elimination", time_end = 600))
     Output
-             value                measure
-      1   51945.86           total_deaths
-      2 6202062.30          epidemic_size
-      3  471037.51 total_hospitalisations
+           value                measure
+      1  2342764           total_deaths
+      2 47668032          epidemic_size
+      3  6958928 total_hospitalisations
 

@@ -8,6 +8,7 @@ Cov
 Covid
 Cpp
 CtoW
+Diekmann
 EPPI
 FOI
 Forchini
@@ -16,6 +17,7 @@ GNI
 GVA
 Guzman
 HFR
+Hesterbeek
 Hosptial
 IDM
 IFR
@@ -35,6 +37,7 @@ RcppEigen
 Readmes
 SARS
 SEIR
+Soc
 Sumali
 TSL
 Timesteps
@@ -82,10 +85,12 @@ recovered’
 rightarrow
 rollout
 rootfinding
+rsif
 socioeconomic
 specifc
 started’
 struct
+susceptibles
 symp
 sympt
 th

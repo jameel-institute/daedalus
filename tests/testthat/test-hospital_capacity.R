@@ -25,14 +25,14 @@ test_that("Closures: hospital capacity and closure time", {
 
   x <- daedalus(
     cty_x,
-    "sars_cov_1",
+    "sars_cov_2_omicron",
     response_strategy = "elimination",
     response_time = 101, # prevent auto-response
     time_end = 100
   )
   y <- daedalus(
     cty_y,
-    "sars_cov_1",
+    "sars_cov_2_omicron",
     response_strategy = "elimination",
     response_time = 101, # prevent auto-response
     time_end = 100
@@ -47,7 +47,7 @@ test_that("Closures: hospital capacity and closure time", {
   cty_x$hospital_capacity <- cty_y$hospital_capacity * 2 # 4x higher
   x <- daedalus(
     cty_x,
-    "sars_cov_1",
+    "sars_cov_2_omicron",
     response_strategy = "elimination",
     response_time = 101, # no auto response
     time_end = 100

@@ -161,7 +161,7 @@ test_that("class <daedalus_npi>: state-dependent event launch correctly", {
 
   # check that NPI triggers when hospital capacity is crossed when
   # response time is high
-  response_time <- 50
+  response_time <- 100
   x <- daedalus_country("THA")
   x$hospital_capacity <- 1e2 # artificially low; resp launches around t = 40
   output <- daedalus(
@@ -349,7 +349,7 @@ test_that("class <daedalus_npi>: throws expected errors", {
 test_that("Test for epidemic size", {
   expect_snapshot(
     get_epidemic_summary(
-      daedalus("GB", "sars_cov_1", "elimination", time_end = 100)
+      daedalus("GB", "sars_cov_1", "elimination", time_end = 600)
     )
   )
 })
