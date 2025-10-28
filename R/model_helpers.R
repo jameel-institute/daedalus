@@ -55,6 +55,19 @@ make_consumer_contacts <- function(country) {
   country$contacts_consumer_worker %*% diag(1 / country$demography)
 }
 
+#' @name prepare_contacts
+make_full_contacts <- function(country) {
+  # add workforce weighted workplace contacts to the age-based contact matrix
+  cm <- country$contact_matrix
+  cm[i_WORKING_AGE, i_WORKING_AGE] <- cm[i_WORKING_AGE, i_WORKING_AGE] +
+    weighted.mean(country$contacts_workplace, country$workers)
+  cm[i_WORKING_AGE, ] <- cm[i_WORKING_AGE, ] +
+    country$contacts_consumer_worker |>
+      apply(2, weighted.mean, country$workers)
+
+  cm
+}
+
 #' @title Generate a default initial state for DAEDALUS
 #' @description Function to prepare the model initial state. Assumes that
 #' 1 in every million individuals is initially infected, and that 60% are
