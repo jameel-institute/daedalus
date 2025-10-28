@@ -108,7 +108,7 @@ class daedalus_ode {
         t_foi_cw, susc_workers, sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR,
         hToD, rToS;
     // for Rt calculations
-    Eigen::ArrayXd n_susc;
+    Eigen::ArrayXd p_susc;
   };
 
   static internal_state build_internal(const shared_state &shared) {
@@ -130,8 +130,8 @@ class daedalus_ode {
     TensorMat t_comm_inf_age(shared.n_age_groups, N_VAX_STRATA);
     t_comm_inf_age.setZero();
 
-    Eigen::ArrayXd n_susc(shared.n_age_groups);
-    n_susc.setConstant(1.0);
+    Eigen::ArrayXd p_susc(shared.n_age_groups);
+    p_susc.setConstant(1.0);
 
     // clang-format off
     return internal_state{
@@ -140,7 +140,7 @@ class daedalus_ode {
       t_work_inf_contacts, t_foi_work, t_cw_inf_contacts, t_foi_cw,
       susc_workers,
       sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS,
-      n_susc
+      p_susc
     };
     // clang-format on
   }
@@ -457,7 +457,10 @@ class daedalus_ode {
             .slice(Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
                    Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA});
 
-    internal.n_susc = daedalus::helpers::get_n_susc(t_x);
+    internal.p_susc =
+        daedalus::helpers::get_comp_age(t_x, daedalus::constants::iS) /
+        (shared.demography -
+         daedalus::helpers::get_comp_age(t_x, daedalus::constants::iD));
 
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
@@ -544,8 +547,8 @@ class daedalus_ode {
     // NOLINTEND
 
     // calculate and log Rt
-    const Eigen::ArrayXd p_susc = internal.n_susc / shared.demography;
-    const Eigen::MatrixXd ngm_p_susc = shared.ngm.array().colwise() * p_susc;
+    const Eigen::MatrixXd ngm_p_susc =
+        shared.ngm.array().colwise() * internal.p_susc;
 
     double rt = daedalus::helpers::get_leading_eigenvalue(ngm_p_susc);
     state_next[shared.i_ipr] = rt;
@@ -554,8 +557,10 @@ class daedalus_ode {
 
     // timed NPIs cannot end on IPR, and have no i_state_on
     const bool is_reactive_npi = shared.npi.name == std::string("reactive_npi");
+    const bool is_npi_on =
+        daedalus::events::is_flag_on(state[shared.i_npi_flag]);
 
-    if (is_reactive_npi && (!is_epidemic_growing)) {
+    if (is_npi_on && is_reactive_npi && (!is_epidemic_growing)) {
       state_next[shared.i_npi_flag] = 0.0;
       state_next[shared.npi.i_time_start] = 0.0;
     }

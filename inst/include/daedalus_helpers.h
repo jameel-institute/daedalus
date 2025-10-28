@@ -155,32 +155,32 @@ inline const double get_leading_eigenvalue(const Eigen::MatrixXd &m) {
   return max_eigval;
 }
 
-/// @brief Count susceptibles.
+/// @brief Count the number of individuals in a compartment by age.
 /// @param state An Eigen Tensor of the state.
+/// @param idx_compartment An integer for the compartment.
 /// @return An array of susceptibles per age group.
-inline const Eigen::ArrayXd get_n_susc(
-    const daedalus::types::TensorAry<double> &state) {
-  daedalus::types::TensorVec<double> t_x_susc =
-      state.chip(daedalus::constants::iS, daedalus::constants::i_COMPS)
+inline const Eigen::ArrayXd get_comp_age(
+    const daedalus::types::TensorAry<double> &state,
+    const size_t &idx_compartment) {
+  daedalus::types::TensorVec<double> t_x_comp =
+      state.chip(idx_compartment, daedalus::constants::i_COMPS)
           .sum(Eigen::array<Eigen::Index, 1>{1});
 
-  Eigen::ArrayXd susc(t_x_susc.dimension(0));
-  Eigen::ArrayXd susc_age(daedalus::constants::DDL_N_AGE_GROUPS);
+  Eigen::ArrayXd comp(t_x_comp.dimension(0));
+  Eigen::ArrayXd comp_age(daedalus::constants::DDL_N_AGE_GROUPS);
 
-  for (size_t i = 0; i < t_x_susc.size(); i++) {
-    susc(i) = t_x_susc(i);
+  for (size_t i = 0; i < t_x_comp.size(); i++) {
+    comp(i) = t_x_comp(i);
   }
   const double tail_sum =
-      susc.tail(daedalus::constants::DDL_N_ECON_GROUPS).sum();
+      comp.tail(daedalus::constants::DDL_N_ECON_GROUPS).sum();
 
-  susc_age(0) = susc(0);
-  susc_age(1) = susc(1);
-  susc_age(2) = susc(2) + tail_sum;
-  susc_age(3) = susc(3);
+  comp_age(0) = comp(0);
+  comp_age(1) = comp(1);
+  comp_age(2) = comp(2) + tail_sum;
+  comp_age(3) = comp(3);
 
-  return susc_age;
-
-  // MORE TO COME
+  return comp_age;
 }
 }  // namespace helpers
 
