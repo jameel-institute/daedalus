@@ -27,6 +27,7 @@ as_daedalus_output <- function(x) {
 validate_daedalus_output <- function(x) {
   expected_fields <- c(
     "model_data",
+    "rt_data",
     # NOTE: reserving 'parameters' for values fixed before model run
     "country_parameters",
     "infection_parameters",
