@@ -167,7 +167,10 @@ daedalus_internal <- function(
   if (is.list(flags)) {
     # case for when flags is a list passed from daedalus_multi_infection()
     initial_state <- matrix(
-      initial_state, n_groups, length(initial_state), byrow = TRUE
+      initial_state,
+      n_groups,
+      length(initial_state),
+      byrow = TRUE
     )
     flags <- matrix(unlist(flags), n_groups, N_FLAGS, byrow = TRUE)
     initial_state <- cbind(initial_state, flags)
@@ -175,7 +178,7 @@ daedalus_internal <- function(
     # default single infection case
     initial_state <- c(initial_state, flags)
   }
-  
+
   dust2::dust_system_set_state(sys, initial_state)
 
   state <- dust2::dust_system_simulate(sys, seq(0, time_end))
