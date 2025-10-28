@@ -372,14 +372,14 @@ test_that("daedalus: responses triggered by hospital capacity event", {
 
 test_that("daedalus: responses ended by epidemic growth", {
   # start response early
-  time_end <- 100
+  time_end <- 200
   x <- daedalus_country("GBR")
   x$hospital_capacity <- 1e3
 
   d <- daedalus_infection("influenza_2009")
 
   # specify npi with timed end which should not be met
-  end_time <- 60
+  end_time <- 120
   npi <- daedalus_npi(
     "elimination",
     x,
@@ -397,7 +397,7 @@ test_that("daedalus: responses ended by epidemic growth", {
 
   # check that response is switched off before fixed time-end due to IPR test
   expect_lt(
-    output$response_data$npi_info$npi_times_end,
+    first(output$response_data$npi_info$npi_times_end),
     end_time
   )
 })

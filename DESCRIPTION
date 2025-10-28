@@ -37,7 +37,8 @@ Imports:
     data.table,
     dust2,
     Rcpp,
-    rlang
+    rlang,
+    stats
 Suggests:
     bookdown,
     countrycode,
