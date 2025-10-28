@@ -38,6 +38,11 @@ daedalus_multi_infection <- function(
   infection <- validate_infection_list_input(infection)
   n_param_sets <- length(infection)
 
+  flags_list <- lapply(infection, function(l) {
+    flags["ipr"] <- l$r0
+    flags
+  })
+
   # collect optional ODE control params and create ode_control obj
   ode_control <- rlang::list2(...)
   if (length(ode_control) > 0) {
@@ -123,6 +128,7 @@ daedalus_multi_infection <- function(
       list(
         beta = get_beta(x, country),
         susc = susc,
+        ngm = get_ngm(country, x),
         openness = last(get_data(first(npi), "openness")),
         response_time = response_time,
         response_duration = duration,
@@ -148,6 +154,7 @@ daedalus_multi_infection <- function(
 
   timesteps <- seq(0, time_end)
   output_data <- prepare_output(output$data, country, timesteps)
+  rt_data_list <- asplit(output[["data"]][["ipr"]], 1L) # MARGIN = 1 for rows
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
@@ -164,10 +171,12 @@ daedalus_multi_infection <- function(
     infection,
     event_info[["npi_data"]],
     event_info[["vaccination_data"]],
-    f = function(x, y, z, zz) {
+    rt_data_list,
+    f = function(x, y, z, zz, rt) {
       o <- list(
         total_time = time_end,
         model_data = x,
+        rt_data = rt,
         country_parameters = unclass(country),
         infection_parameters = unclass(y),
         response_data = list(

@@ -163,8 +163,19 @@ daedalus_internal <- function(
     dt = 1.0
   )
 
-  # add initial flags
-  initial_state <- c(initial_state, flags)
+  # add initial flags; handle multi-infection case
+  if (is.list(flags)) {
+    # case for when flags is a list passed from daedalus_multi_infection()
+    initial_state <- matrix(
+      initial_state, n_groups, length(initial_state), byrow = TRUE
+    )
+    flags <- matrix(unlist(flags), n_groups, N_FLAGS, byrow = TRUE)
+    initial_state <- cbind(initial_state, flags)
+  } else {
+    # default single infection case
+    initial_state <- c(initial_state, flags)
+  }
+  
   dust2::dust_system_set_state(sys, initial_state)
 
   state <- dust2::dust_system_simulate(sys, seq(0, time_end))
@@ -339,6 +350,7 @@ daedalus <- function(
 
   # handle infection input and convert to a list of daedalus_infection
   infection <- validate_infection_input(infection)
+  flags[["ipr"]] <- infection$r0
 
   # collect optional ODE control params and create ode_control obj
   ode_control <- rlang::list2(...)
@@ -405,6 +417,7 @@ daedalus <- function(
     list(
       beta = get_beta(infection, country),
       susc = susc,
+      ngm = get_ngm(country, infection),
       # all three below needed for npi-linked behaviour response
       # temporary as these can be vecs, see future PRs
       auto_social_distancing = auto_social_distancing,
@@ -428,6 +441,7 @@ daedalus <- function(
 
   timesteps <- seq(0, time_end)
   output_data <- prepare_output(output$data, country, timesteps)
+  rt_data <- output$data[["ipr"]]
   event_info <- get_daedalus_response_times(output)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
@@ -435,6 +449,7 @@ daedalus <- function(
   output <- list(
     total_time = time_end,
     model_data = output_data,
+    rt_data = rt_data,
     country_parameters = unclass(country),
     infection_parameters = unclass(infection), # infection is list
     response_data = list(
