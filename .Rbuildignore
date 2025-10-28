@@ -25,7 +25,7 @@
 ^\.Rproj\.user$
 ^CITATION\.cff$
 ^codecov\.yml$
-^scratch.R
+^scratch*
 ^data-raw$
 ^doc$
 ^Meta$
@@ -36,3 +36,4 @@
 ^format-R.sh$
 ^air.toml$
 ^\.vscode$
+^.*\.png$
