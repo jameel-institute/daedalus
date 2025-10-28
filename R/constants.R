@@ -126,7 +126,7 @@ N_OUTPUT_COLS <- 6L
 
 #' @name model_constants
 #' @keywords model_constant
-N_FLAGS <- 3L
+N_FLAGS <- 9L # see function `initial_flags()`
 
 #' @name model_constants
 #' @keywords model_constant
