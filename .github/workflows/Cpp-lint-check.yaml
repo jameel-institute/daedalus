@@ -29,5 +29,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: sudo apt-get install cppcheck
-      - run: cppcheck --std=c++14 --enable=performance,portability,warning,style --error-exitcode=1 inst/dust
+      - run: cppcheck --std=c++14 --enable=performance,portability,warning,style --inline-suppr --error-exitcode=1 inst/dust
       - run: cppcheck --std=c++14 --language=c++ --enable=performance,portability,warning,style --inline-suppr --error-exitcode=1 inst/include/*.h
