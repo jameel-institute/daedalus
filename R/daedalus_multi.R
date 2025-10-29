@@ -147,7 +147,7 @@ daedalus_multi_infection <- function(
     time_end,
     parameters,
     initial_state,
-    flags,
+    flags_list,
     ode_control,
     n_param_sets
   )

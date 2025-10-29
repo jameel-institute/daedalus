@@ -166,14 +166,14 @@ daedalus_internal <- function(
   # add initial flags; handle multi-infection case
   if (is.list(flags)) {
     # case for when flags is a list passed from daedalus_multi_infection()
+    # groups are cols
     initial_state <- matrix(
       initial_state,
-      n_groups,
       length(initial_state),
-      byrow = TRUE
+      n_groups
     )
-    flags <- matrix(unlist(flags), n_groups, N_FLAGS, byrow = TRUE)
-    initial_state <- cbind(initial_state, flags)
+    flags <- matrix(unlist(flags), N_FLAGS, n_groups)
+    initial_state <- rbind(initial_state, flags)
   } else {
     # default single infection case
     initial_state <- c(initial_state, flags)
