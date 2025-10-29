@@ -62,8 +62,12 @@ make_full_contacts <- function(country) {
   cm[i_WORKING_AGE, i_WORKING_AGE] <- cm[i_WORKING_AGE, i_WORKING_AGE] +
     stats::weighted.mean(country$contacts_workplace, country$workers)
   cm[i_WORKING_AGE, ] <- cm[i_WORKING_AGE, ] +
-    country$contacts_consumer_worker |>
-      apply(2, stats::weighted.mean, country$workers)
+    apply(
+      country$contacts_consumer_worker,
+      2,
+      stats::weighted.mean,
+      country$workers
+    )
 
   cm
 }
