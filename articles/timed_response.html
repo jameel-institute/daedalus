@@ -6,7 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Modelling time-limited economic closures • daedalus</title>
-<script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/Source_Code_Pro-0.4.10/font.css" rel="stylesheet">
@@ -22,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.35</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.36</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +88,7 @@
       <h1>Modelling time-limited economic closures</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/v0.2.35/vignettes/timed_response.Rmd" class="external-link"><code>vignettes/timed_response.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/vignettes/timed_response.Rmd" class="external-link"><code>vignettes/timed_response.Rmd</code></a></small>
       <div class="d-none name"><code>timed_response.Rmd</code></div>
     </div>
 
@@ -162,8 +168,7 @@ follows the rules for NPI launching and ending laid out above.</p></li>
 <li><p>When a response is activated upon hitting its start time, the
 same response will not be logged as activating due to the hospital
 capacity trigger, even if that condition is met, as long as the response
-is active (that is, model time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>&lt;</mo><annotation encoding="application/x-tex">&lt;</annotation></semantics></math>
+is active (that is, model time <span class="math inline">\(&lt;\)</span>
 end time, or epidemic is still growing).</p></li>
 <li><p>When a response ends due to time conditions being met, it may
 launch again if the hospital capacity condition is met. Future versions
@@ -267,10 +272,8 @@ closure period, which allows responses to be ramped up and down — an
 expected use-case in real-time modelling.</p>
 <p>Repeated time-limited NPIs are created by passing vectors to
 <code>start_time</code> and <code>end_time</code> in
-<code><a href="../reference/class_npi.html">daedalus_timed_npi()</a></code>. The
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>−</mo><mi>t</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">i-th</annotation></semantics></math>
-element of each vector gives the start and end time of a each closure
-period.</p>
+<code><a href="../reference/class_npi.html">daedalus_timed_npi()</a></code>. The <span class="math inline">\(i-th\)</span> element of each vector gives the
+start and end time of a each closure period.</p>
 <p><strong>Note that:</strong></p>
 <ol style="list-style-type: decimal">
 <li><p>[daedalus_timed_npi()] creates a
@@ -319,14 +322,7 @@ from school closures to an elimination strategy and back again.</p>
 <span></span>
 <span><span class="co"># examine event times</span></span>
 <span><span class="va">output</span><span class="op">$</span><span class="va">event_data</span></span>
-<span><span class="co">#&gt;                         name      time index sign</span></span>
-<span><span class="co">#&gt; 1              npi_time_on_1  30.00000     4    1</span></span>
-<span><span class="co">#&gt; 2             npi_time_off_1  59.00000     5    1</span></span>
-<span><span class="co">#&gt; 3              npi_time_on_2  60.00000     6    1</span></span>
-<span><span class="co">#&gt; 4 hosp_cap_exceeded_state_on  71.28785    13    1</span></span>
-<span><span class="co">#&gt; 5             npi_time_off_2  89.00000     7    1</span></span>
-<span><span class="co">#&gt; 6              npi_time_on_3  90.00000     8    1</span></span>
-<span><span class="co">#&gt; 7             npi_time_off_3 120.00000     9    1</span></span></code></pre></div>
+<span><span class="co">#&gt; NULL</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

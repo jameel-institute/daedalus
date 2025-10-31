@@ -32,6 +32,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/epi_output_helpers.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_beta.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_costs.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/get_daedalus_multi_response_times.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_daedalus_response_times.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_data.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_fiscal_costs.html</loc></url>
@@ -50,6 +51,8 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/prepare_contacts.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/prepare_output.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/prepare_parameters.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/process_event_times.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/reff_calculation.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/set_data.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/summary_constants.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/tools.html</loc></url>

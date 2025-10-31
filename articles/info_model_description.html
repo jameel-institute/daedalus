@@ -6,7 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>General model description • daedalus</title>
-<script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/Source_Code_Pro-0.4.10/font.css" rel="stylesheet">
@@ -22,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.35</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.36</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +88,7 @@
       <h1>General model description</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/v0.2.35/vignettes/info_model_description.Rmd" class="external-link"><code>vignettes/info_model_description.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/vignettes/info_model_description.Rmd" class="external-link"><code>vignettes/info_model_description.Rmd</code></a></small>
       <div class="d-none name"><code>info_model_description.Rmd</code></div>
     </div>
 
@@ -143,56 +149,47 @@ strategy in Mexico in <span class="citation">Johnson et al. (<a href="#ref-johns
 </h3>
 <p><em>daedalus</em> simulates a country’s population split into seven
 possible disease state compartments. Model compartments are stratified
-by age-sector sector
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
-and vaccination
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
-classes.</p>
-<p>A susceptible individual
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
-can become exposed to the virus and enter a latent state
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>E</mi><annotation encoding="application/x-tex">E</annotation></semantics></math>,
-from which they can develop either a symptomatic
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">Is</annotation></semantics></math>
-or asymptomatic
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mi>a</mi></mrow><annotation encoding="application/x-tex">Ia</annotation></semantics></math>
-infection. Whereas asymptomatic infected individuals are assumed to
-always recover, symptomatic ones can either recover
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math>
-or develop a more severe condition requiring hospitalisation
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>H</mi><annotation encoding="application/x-tex">H</annotation></semantics></math>,
-from which they can either recover or die
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>.</p>
+by age-sector sector <span class="math inline">\(i\)</span> and
+vaccination <span class="math inline">\(j\)</span> classes.</p>
+<p>A susceptible individual <span class="math inline">\(S\)</span> can
+become exposed to the virus and enter a latent state <span class="math inline">\(E\)</span>, from which they can develop either a
+symptomatic <span class="math inline">\(Is\)</span> or asymptomatic
+<span class="math inline">\(Ia\)</span> infection. Whereas asymptomatic
+infected individuals are assumed to always recover, symptomatic ones can
+either recover <span class="math inline">\(R\)</span> or develop a more
+severe condition requiring hospitalisation <span class="math inline">\(H\)</span>, from which they can either recover or
+die <span class="math inline">\(D\)</span>.</p>
 <p><img src="figures/daedalus.png"></p>
 <div class="section level4">
 <h4 id="ordinary-differential-equations">Ordinary differential equations<a class="anchor" aria-label="anchor" href="#ordinary-differential-equations"></a>
 </h4>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mfrac><mrow><mi>d</mi><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><msub><mi>ζ</mi><mrow><mi>e</mi><mi>f</mi><msub><mi>f</mi><mrow><mi>j</mi><mo>=</mo><mn>0</mn></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>=</mo><mn>0</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><msub><mi>Λ</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>ρ</mi><msub><mi>R</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><msub><mi>ζ</mi><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow></msub><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>=</mo><mn>1</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mfrac><mrow><mi>d</mi><msub><mi>E</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><msub><mi>Λ</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>σ</mi><msub><mi>E</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mfrac><mrow><mi>d</mi><mi>I</mi><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mtext mathvariant="normal">symp</mtext></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>σ</mi><msub><mi>E</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><msub><mi>γ</mi><mrow><mi>I</mi><mi>a</mi></mrow></msub><mi>I</mi><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mfrac><mrow><mi>d</mi><mi>I</mi><msub><mi>s</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><msub><mi>p</mi><mtext mathvariant="normal">symp</mtext></msub><mi>σ</mi><msub><mi>E</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><msub><mi>γ</mi><mrow><mi>I</mi><mi>s</mi></mrow></msub><mi>I</mi><msub><mi>s</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><msup><mi>η</mi><mi>i</mi></msup><mi>I</mi><msub><mi>s</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mfrac><mrow><mi>d</mi><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><msup><mi>η</mi><mi>i</mi></msup><mi>I</mi><msub><mi>s</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><msup><mi>ω</mi><mi>i</mi></msup><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><msubsup><mi>γ</mi><mi>H</mi><mi>i</mi></msubsup><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mfrac><mrow><mi>d</mi><msub><mi>R</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><msub><mi>ζ</mi><mrow><mi>e</mi><mi>f</mi><msub><mi>f</mi><mrow><mi>j</mi><mo>=</mo><mn>0</mn></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>R</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>=</mo><mn>0</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>γ</mi><mrow><mi>I</mi><mi>s</mi></mrow></msub><mi>I</mi><msub><mi>s</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>γ</mi><mrow><mi>I</mi><mi>a</mi></mrow></msub><mi>I</mi><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msubsup><mi>γ</mi><mi>H</mi><mi>i</mi></msubsup><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>ρ</mi><msub><mi>R</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><msub><mi>ζ</mi><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow></msub><msub><mi>R</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>=</mo><mn>1</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mfrac><mrow><mi>d</mi><msub><mi>D</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><msup><mi>ω</mi><mi>i</mi></msup><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
-    &amp; \frac{dS_{i,j}}{dt} = \zeta_{eff_{j=0}}(t) S_{i,j=0}(t) - \Lambda_{i,j} (t) S_{i,j}(t)  + \rho R_{i,j}(t) - \zeta_{j=1} S_{i,j=1}(t)\\
-    &amp; \frac{dE_{i,j}}{dt} = \Lambda_{i,j} (t) S_{i,j}(t) - \sigma E_{i,j}(t) \\
-    &amp; \frac{dIa_{i,j}}{dt} = (1 - p_\text{symp}) \sigma E_{i,j}(t) - \gamma_{Ia} Ia_{i,j}(t) \\
-    &amp; \frac{dIs_{i,j}}{dt} = p_\text{symp} \sigma E_{i,j}(t) - \gamma_{Is} Is_{i,j}(t) - \eta^i Is_{i,j}(t) \\
-    &amp; \frac{dH_{i,j}}{dt} = \eta^i Is_{i,j}(t) - \omega^i H_{i,j}(t) - \gamma_H^i H_{i,j}(t) \\
-    &amp; \frac{dR_{i,j}}{dt} = \zeta_{eff_{j=0}}(t) R_{i,j=0}(t) + \gamma_{Is} Is_{i,j}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_H^i H_{i,j}(t) - \rho R_{i,j}(t) - \zeta_{j=1} R_{i,j=1}(t)\\
+<p><span class="math display">\[\begin{align}
+    &amp; \frac{dS_{i,j}}{dt} = \zeta_{eff_{j=0}}(t) S_{i,j=0}(t) -
+\Lambda_{i,j} (t) S_{i,j}(t)  + \rho R_{i,j}(t) - \zeta_{j=1}
+S_{i,j=1}(t)\\
+    &amp; \frac{dE_{i,j}}{dt} = \Lambda_{i,j} (t) S_{i,j}(t) - \sigma
+E_{i,j}(t) \\
+    &amp; \frac{dIa_{i,j}}{dt} = (1 - p_\text{symp}) \sigma E_{i,j}(t) -
+\gamma_{Ia} Ia_{i,j}(t) \\
+    &amp; \frac{dIs_{i,j}}{dt} = p_\text{symp} \sigma E_{i,j}(t) -
+\gamma_{Is} Is_{i,j}(t) - \eta^i Is_{i,j}(t) \\
+    &amp; \frac{dH_{i,j}}{dt} = \eta^i Is_{i,j}(t) - \omega^i H_{i,j}(t)
+- \gamma_H^i H_{i,j}(t) \\
+    &amp; \frac{dR_{i,j}}{dt} = \zeta_{eff_{j=0}}(t) R_{i,j=0}(t) +
+\gamma_{Is} Is_{i,j}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_H^i
+H_{i,j}(t) - \rho R_{i,j}(t) - \zeta_{j=1} R_{i,j=1}(t)\\
     &amp; \frac{dD_{i,j}}{dt} = \omega^i H_{i,j}(t)\\
-\end{align}</annotation></semantics></math></p>
+\end{align}\]</span></p>
 <p>Should be noted that whilst some model parameters vary over time
-(e.g.,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ζ</mi><mrow><mi>e</mi><mi>f</mi><msub><mi>f</mi><mrow><mi>j</mi><mo>=</mo><mn>0</mn></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\zeta_{eff_{j=0}}(t)</annotation></semantics></math>
+(e.g., <span class="math inline">\(\zeta_{eff_{j=0}}(t)\)</span>
 effective vaccination rate scaled for available susceptible population)
-others are assumed fixed (e.g.,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>σ</mi><annotation encoding="application/x-tex">\sigma</annotation></semantics></math>
-constant rate of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mo>→</mo><mi>I</mi></mrow><annotation encoding="application/x-tex">E \rightarrow I</annotation></semantics></math>
-progression), which is indicated by
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(t)</annotation></semantics></math>.</p>
+others are assumed fixed (e.g., <span class="math inline">\(\sigma\)</span> constant rate of <span class="math inline">\(E \rightarrow I\)</span> progression), which is
+indicated by <span class="math inline">\((t)\)</span>.</p>
 <p>One parameter that varies endogenously is the age-specific mortality
-rate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>ω</mi><mi>i</mi></msup><annotation encoding="application/x-tex">\omega^i</annotation></semantics></math>;
-mortality rates for all groups increased by 160% when the total number
-of individuals in the ‘hospitalised’ compartment exceeds the
-country-specific surge hospital capacity available for responding to the
-outbreak.</p>
+rate <span class="math inline">\(\omega^i\)</span>; mortality rates for
+all groups increased by 160% when the total number of individuals in the
+‘hospitalised’ compartment exceeds the country-specific surge hospital
+capacity available for responding to the outbreak.</p>
 <div class="alert alert-info">
 <p><strong>Note that</strong>, as default, <em>daedalus</em> ships a
 collection of pre-defined parameter sets that represent historical
@@ -205,32 +202,22 @@ then passed to the model function <code><a href="../reference/daedalus.html">dae
 <div class="section level4">
 <h4 id="age-sector-classes">Age-sector classes<a class="anchor" aria-label="anchor" href="#age-sector-classes"></a>
 </h4>
-<p>There are 49 age-sector classes
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
-in <em>daedalus</em>: four age
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>∈</mo><mn>1</mn><mo>:</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">i \in 1:4</annotation></semantics></math>
-groups
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>−</mo><mn>5</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo><mo stretchy="false" form="prefix">[</mo><mn>5</mn><mo>−</mo><mn>20</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mo stretchy="false" form="prefix">[</mo><mn>20</mn><mo>−</mo><mn>65</mn><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mn>65</mn><mo>+</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">( [0-5], [5-20), [20-65),65+)</annotation></semantics></math>
-and, given population in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">i=3</annotation></semantics></math>
-(20-65) represents unemployed adults ofr working age, 45 economic groups
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>∈</mo><mn>5</mn><mo>:</mo><mn>49</mn></mrow><annotation encoding="application/x-tex">i \in 5:49</annotation></semantics></math>
-(see in Economic model below).</p>
+<p>There are 49 age-sector classes <span class="math inline">\(i\)</span> in <em>daedalus</em>: four age <span class="math inline">\(i \in 1:4\)</span> groups <span class="math inline">\(( [0-5], [5-20), [20-65),65+)\)</span> and, given
+population in <span class="math inline">\(i=3\)</span> (20-65)
+represents unemployed adults ofr working age, 45 economic groups <span class="math inline">\(i \in 5:49\)</span> (see in Economic model
+below).</p>
 </div>
 <div class="section level4">
 <h4 id="vaccination-classes">Vaccination classes<a class="anchor" aria-label="anchor" href="#vaccination-classes"></a>
 </h4>
 <p>As a default, <em>daedalus</em> further disaggregates the population
-into the vaccination classes
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>j</mi><mo>∈</mo><mn>1</mn><mo>:</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">j \in 1:2</annotation></semantics></math>
-of unvaccinated and vaccinated. We assume only the population in the
-susceptible and recovered compartments can be vaccinated, given
-transition rate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ζ</mi><mrow><mi>e</mi><mi>f</mi><msub><mi>f</mi><mrow><mi>j</mi><mo>=</mo><mn>0</mn></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\zeta_{eff_{j=0}}(t)</annotation></semantics></math>,
-which is determined by the user (see Table @ref(tab:vaccine)).
-Vaccinated individuals can lose their immunity and transition back to an
-unvaccinated class, given rate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>.</p>
+into the vaccination classes <span class="math inline">\(j \in
+1:2\)</span> of unvaccinated and vaccinated. We assume only the
+population in the susceptible and recovered compartments can be
+vaccinated, given transition rate <span class="math inline">\(\zeta_{eff_{j=0}}(t)\)</span>, which is determined
+by the user (see Table @ref(tab:vaccine)). Vaccinated individuals can
+lose their immunity and transition back to an unvaccinated class, given
+rate <span class="math inline">\(\rho\)</span>.</p>
 </div>
 </div>
 <div class="section level3">
@@ -253,50 +240,51 @@ parameters.</caption>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Λ</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Lambda_{i,j} (t)</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(\Lambda_{i,j}
+(t)\)</span></td>
 <td align="left">Force of infection by age-sector and vaccination
 class</td>
 </tr>
 <tr class="even">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>σ</mi><annotation encoding="application/x-tex">\sigma</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(\sigma\)</span></td>
 <td align="left">Rate of progression from exposed to infectious</td>
 </tr>
 <tr class="odd">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mtext mathvariant="normal">symp</mtext></msub><annotation encoding="application/x-tex">p_\text{symp}</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(p_\text{symp}\)</span></td>
 <td align="left">Proportion of exposed individuals becoming
 symptomatic</td>
 </tr>
 <tr class="even">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>η</mi><mi>i</mi></msup><annotation encoding="application/x-tex">\eta^i</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(\eta^i\)</span></td>
 <td align="left">Probability of hospitalisation by age, conditional on
 symptomatic infection</td>
 </tr>
 <tr class="odd">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>γ</mi><mrow><mi>I</mi><mi>a</mi></mrow></msub><annotation encoding="application/x-tex">\gamma_{Ia}</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(\gamma_{Ia}\)</span></td>
 <td align="left">Recovery rate for asymptomatic infections</td>
 </tr>
 <tr class="even">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>γ</mi><mrow><mi>I</mi><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">\gamma_{Is}</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(\gamma_{Is}\)</span></td>
 <td align="left">Recovery rate for symptomatic infections</td>
 </tr>
 <tr class="odd">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>γ</mi><mi>H</mi><mi>i</mi></msubsup><annotation encoding="application/x-tex">\gamma_H^i</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(\gamma_H^i\)</span></td>
 <td align="left">Recovery rate for hospitalised individuals by age</td>
 </tr>
 <tr class="even">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(\rho\)</span></td>
 <td align="left">Rate of waning immunity (recovered to susceptible)</td>
 </tr>
 <tr class="odd">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>ω</mi><mi>i</mi></msup><annotation encoding="application/x-tex">\omega^i</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(\omega^i\)</span></td>
 <td align="left">Death rate among hospitalised individuals by age</td>
 </tr>
 <tr class="even">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ζ</mi><mrow><mi>e</mi><mi>f</mi><msub><mi>f</mi><mrow><mi>j</mi><mo>=</mo><mn>0</mn></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\zeta_{eff_{j=0}}(t)</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(\zeta_{eff_{j=0}}(t)\)</span></td>
 <td align="left">Vaccination rate</td>
 </tr>
 <tr class="odd">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ζ</mi><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">\zeta_{j=1}</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(\zeta_{j=1}\)</span></td>
 <td align="left">Vaccine protection waning rate</td>
 </tr>
 </tbody>
@@ -304,84 +292,63 @@ symptomatic infection</td>
 <div class="section level4">
 <h4 id="seed-and-force-of-infection">Seed and force of infection<a class="anchor" aria-label="anchor" href="#seed-and-force-of-infection"></a>
 </h4>
-<p>For any given pathogen, we assume a seed of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mrow><mo>−</mo><mn>7</mn></mrow></msup><annotation encoding="application/x-tex">10^{-7}</annotation></semantics></math>
-infections, all of which are further assumed to be symptomatic.</p>
-<p>The force of infection
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda_{i,j} (t)</annotation></semantics></math>
-accounts for the infection contributions of symptomatically
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><msub><mi>s</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">Is_{ij}(t)</annotation></semantics></math>
-and asymptomatically
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><msub><mi>a</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">Ia_{ij}(t)</annotation></semantics></math>
-infected individuals in the community and in workplaces.</p>
-<p>We let
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>δ</mi><mi>I</mi><mi>c</mi><mi>o</mi><mi>m</mi><msup><mi>m</mi><mi>i</mi></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\delta Icomm^i(t)</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>δ</mi><mi>I</mi><mi>w</mi><mi>o</mi><mi>r</mi><msup><mi>k</mi><mi>i</mi></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\delta Iwork^i(t)</annotation></semantics></math>
-denote the number of infected individuals in the community and the
-workplace, respectively, weighted by their infectivity given
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mi>δ</mi><mi>I</mi><mi>c</mi><mi>o</mi><mi>m</mi><msub><mi>m</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>v</mi><mrow><mi>e</mi><mi>f</mi><msub><mi>f</mi><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>I</mi><msub><mi>a</mi><mrow><mi>i</mi><mo>∈</mo><mn>1</mn><mo>:</mo><mn>4</mn><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>ϵ</mi><mo>+</mo><mi>I</mi><msub><mi>s</mi><mrow><mi>i</mi><mo>∈</mo><mn>1</mn><mo>:</mo><mn>4</mn><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mi>δ</mi><mi>I</mi><mi>w</mi><mi>o</mi><mi>r</mi><msub><mi>k</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>v</mi><mrow><mi>e</mi><mi>f</mi><msub><mi>f</mi><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>I</mi><msub><mi>a</mi><mrow><mi>i</mi><mo>∈</mo><mn>5</mn><mo>:</mo><mn>49</mn><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>ϵ</mi><mo>+</mo><mi>I</mi><msub><mi>s</mi><mrow><mi>i</mi><mo>∈</mo><mn>5</mn><mo>:</mo><mn>49</mn><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
-    &amp; \delta Icomm_{ij}(t) = v_{eff_{j=1}} (Ia_{i \in 1:4,j}(t) \epsilon + Is_{i \in 1:4,j}(t))\\
-    &amp; \delta Iwork_{ij}(t) = v_{eff_{j=1}} (Ia_{i \in 5:49,j}(t) \epsilon + Is_{i \in 5:49,j}(t)),
-\end{align}</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϵ</mi><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math>
+<p>For any given pathogen, we assume a seed of <span class="math inline">\(10^{-7}\)</span> infections, all of which are
+further assumed to be symptomatic.</p>
+<p>The force of infection <span class="math inline">\(\lambda_{i,j}
+(t)\)</span> accounts for the infection contributions of symptomatically
+<span class="math inline">\(Is_{ij}(t)\)</span> and asymptomatically
+<span class="math inline">\(Ia_{ij}(t)\)</span> infected individuals in
+the community and in workplaces.</p>
+<p>We let <span class="math inline">\(\delta Icomm^i(t)\)</span> and
+<span class="math inline">\(\delta Iwork^i(t)\)</span> denote the number
+of infected individuals in the community and the workplace,
+respectively, weighted by their infectivity given <span class="math display">\[\begin{align}
+    &amp; \delta Icomm_{ij}(t) = v_{eff_{j=1}} (Ia_{i \in 1:4,j}(t)
+\epsilon + Is_{i \in 1:4,j}(t))\\
+    &amp; \delta Iwork_{ij}(t) = v_{eff_{j=1}} (Ia_{i \in 5:49,j}(t)
+\epsilon + Is_{i \in 5:49,j}(t)),
+\end{align}\]</span> where <span class="math inline">\(\epsilon\)</span>
 is the relative infectiousness of an asymptomatically infected
-individual relative to a symptomatic one, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>v</mi><mrow><mi>e</mi><mi>f</mi><msub><mi>f</mi><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow></msub></mrow></msub><annotation encoding="application/x-tex">v_{eff_{j=1}}</annotation></semantics></math>
-the reduced susceptibility of a vaccinated individual relative to an
-unvaccinated one of the same age.</p>
-<p>The force of infection from the community
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mrow><mi>c</mi><mi>o</mi><mi>m</mi><msub><mi>m</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda_{comm_{i,j}} (t)</annotation></semantics></math>
-on a susceptible individual is thus modelled as
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>λ</mi><mrow><mi>c</mi><mi>o</mi><mi>m</mi><msub><mi>m</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>β</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><munder><mo>∑</mo><mrow><mi>i</mi><mi>′</mi></mrow></munder><msub><mi>m</mi><mrow><mi>i</mi><mo>,</mo><mi>i</mi><mi>′</mi></mrow></msub><munder><mo>∑</mo><mrow><mi>j</mi><mi>′</mi></mrow></munder><mi>δ</mi><mi>I</mi><mi>c</mi><mi>o</mi><mi>m</mi><msub><mi>m</mi><mrow><mi>i</mi><mi>′</mi><mo>,</mo><mi>j</mi><mi>′</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+individual relative to a symptomatic one, and <span class="math inline">\(v_{eff_{j=1}}\)</span> the reduced susceptibility
+of a vaccinated individual relative to an unvaccinated one of the same
+age.</p>
+<p>The force of infection from the community <span class="math inline">\(\lambda_{comm_{i,j}} (t)\)</span> on a susceptible
+individual is thus modelled as <span class="math display">\[\begin{align}
 \lambda_{comm_{i,j}} (t) &amp; =
-    \beta (t) \cdot \sum_{i'} m_{i,i'} \sum_{j'} \delta Icomm_{i',j'} (t)
-\end{align}</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\beta(t)</annotation></semantics></math>
+    \beta (t) \cdot \sum_{i'} m_{i,i'} \sum_{j'} \delta
+Icomm_{i',j'} (t)
+\end{align}\]</span> where <span class="math inline">\(\beta(t)\)</span>
 represents a time-varying contact rate scaling factor, determined by
-social distancing interventions simulated, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>m</mi><mrow><mi>i</mi><mo>,</mo><mi>i</mi><mi>′</mi></mrow></msub><annotation encoding="application/x-tex">m_{i,i'}</annotation></semantics></math>
-is the (symmetric) person-to-person contact rate between age group
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">i'</annotation></semantics></math>.</p>
-<p>The force of infection within the workplace
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mrow><mi>w</mi><mi>o</mi><mi>r</mi><msub><mi>k</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda_{work_{i,j}} (t)</annotation></semantics></math>
-is modelled as
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>λ</mi><mrow><mi>w</mi><mi>o</mi><mi>r</mi><msub><mi>k</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>β</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><msub><mi>Φ</mi><mi>i</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mi>′</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>i</mi><mi>′</mi><mo>=</mo><mi>N</mi></mrow></munderover><msub><mi>C</mi><mrow><mi>i</mi><mo>,</mo><mi>i</mi><mi>′</mi></mrow></msub><munder><mo>∑</mo><mrow><mi>j</mi><mi>′</mi></mrow></munder><mi>δ</mi><mi>I</mi><mi>w</mi><mi>o</mi><mi>r</mi><msub><mi>k</mi><mrow><mi>i</mi><mi>′</mi><mo>,</mo><mi>j</mi><mi>′</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+social distancing interventions simulated, and <span class="math inline">\(m_{i,i'}\)</span> is the (symmetric)
+person-to-person contact rate between age group <span class="math inline">\(i\)</span> and <span class="math inline">\(i'\)</span>.</p>
+<p>The force of infection within the workplace <span class="math inline">\(\lambda_{work_{i,j}} (t)\)</span> is modelled as
+<span class="math display">\[\begin{align}
 \lambda_{work_{i,j}} (t) &amp; =
-    \beta (t) \cdot \Phi_i(t) \cdot \sum_{i'=0}^{i'=N} C_{i,i'} \sum_{j'} \delta Iwork_{i',j'} (t)
-\end{align}</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>C</mi><mrow><mi>i</mi><mo>,</mo><mi>i</mi><mi>′</mi></mrow></msub><annotation encoding="application/x-tex">C_{i,i'}</annotation></semantics></math>
-is a contact matrix specific to the workplace, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Φ</mi><mi>i</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Phi_i(t)</annotation></semantics></math>
-is a scaling factor determined by economic closure interventions
+    \beta (t) \cdot \Phi_i(t) \cdot \sum_{i'=0}^{i'=N}
+C_{i,i'} \sum_{j'} \delta Iwork_{i',j'} (t)
+\end{align}\]</span> where <span class="math inline">\(C_{i,i'}\)</span> is a contact matrix specific
+to the workplace, and <span class="math inline">\(\Phi_i(t)\)</span> is
+a scaling factor determined by economic closure interventions
 simulated.</p>
 <p>Lastly, the force of infection from infected individuals in the
-community to susceptible workers
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mrow><mi>c</mi><mn>2</mn><msub><mi>w</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda_{c2w_{i,j}} (t)</annotation></semantics></math>
-(i.e., infected individuals from the community attending shops) is given
-by
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>λ</mi><mrow><mi>c</mi><mn>2</mn><msub><mi>w</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>β</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><msub><mi>Φ</mi><mi>i</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mi>′</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>i</mi><mi>′</mi><mo>=</mo><mi>N</mi></mrow></munderover><mi>C</mi><mi>t</mi><mi>o</mi><msub><mi>W</mi><mrow><mi>i</mi><mo>,</mo><mi>i</mi><mi>′</mi></mrow></msub><munder><mo>∑</mo><mrow><mi>j</mi><mi>′</mi></mrow></munder><mi>δ</mi><mi>I</mi><mi>c</mi><mi>o</mi><mi>m</mi><msub><mi>m</mi><mrow><mi>i</mi><mi>′</mi><mo>,</mo><mi>j</mi><mi>′</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+community to susceptible workers <span class="math inline">\(\lambda_{c2w_{i,j}} (t)\)</span> (i.e., infected
+individuals from the community attending shops) is given by <span class="math display">\[\begin{align}
 \lambda_{c2w_{i,j}} (t) &amp; =
-    \beta (t) \cdot \Phi_i(t) \cdot \sum_{i'=0}^{i'=N} CtoW_{i,i'} \sum_{j'} \delta Icomm_{i',j'} (t)
-\end{align}</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>t</mi><mi>o</mi><msub><mi>W</mi><mrow><mi>i</mi><mo>,</mo><mi>i</mi><mi>′</mi></mrow></msub></mrow><annotation encoding="application/x-tex">CtoW_{i,i'}</annotation></semantics></math>
-is a contact matrix specific to consumers attending workplaces.</p>
+    \beta (t) \cdot \Phi_i(t) \cdot \sum_{i'=0}^{i'=N}
+CtoW_{i,i'} \sum_{j'} \delta Icomm_{i',j'} (t)
+\end{align}\]</span> where <span class="math inline">\(CtoW_{i,i'}\)</span> is a contact matrix
+specific to consumers attending workplaces.</p>
 <p>The total force of infection acting on susceptible individuals is
 then assumed to be an addition of the above. For conciseness, this can
-be taken as
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Λ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>λ</mi><mrow><mi>c</mi><mi>o</mi><mi>m</mi><msub><mi>m</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>λ</mi><mrow><mi>w</mi><mi>o</mi><mi>r</mi><msub><mi>k</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>λ</mi><mrow><mi>c</mi><mn>2</mn><msub><mi>w</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{equation}
-    \Lambda_{ij} (t) = \lambda_{comm_{ij}} (t) + \lambda_{work_{ij}} (t) + \lambda_{c2w_{i,j}} (t)
-\end{equation}</annotation></semantics></math> however, it should be
-noted that the force of infection within the workplace
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mrow><mi>w</mi><mi>o</mi><mi>r</mi><msub><mi>k</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda_{work_{ij}} (t)</annotation></semantics></math>
-is a column vector of length 45, given the number of economic sector
-classes in the model, whilst
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mrow><mi>c</mi><mi>o</mi><mi>m</mi><msub><mi>m</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda_{comm_{ij}} (t)</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mrow><mi>c</mi><mn>2</mn><msub><mi>w</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda_{c2w_{ij}} (t)</annotation></semantics></math>
-are of length 49, encompassing all age-sector classes.</p>
+be taken as <span class="math display">\[\begin{equation}
+    \Lambda_{ij} (t) = \lambda_{comm_{ij}} (t) + \lambda_{work_{ij}} (t)
++ \lambda_{c2w_{i,j}} (t)
+\end{equation}\]</span> however, it should be noted that the force of
+infection within the workplace <span class="math inline">\(\lambda_{work_{ij}} (t)\)</span> is a column
+vector of length 45, given the number of economic sector classes in the
+model, whilst <span class="math inline">\(\lambda_{comm_{ij}}
+(t)\)</span> and <span class="math inline">\(\lambda_{c2w_{ij}}
+(t)\)</span> are of length 49, encompassing all age-sector classes.</p>
 </div>
 <div class="section level4">
 <h4 id="disease-transition-rates">Disease transition rates<a class="anchor" aria-label="anchor" href="#disease-transition-rates"></a>
@@ -392,12 +359,9 @@ profile can be created by the user by generating a list object
 specifying these parameter values (see list structure for these
 pathogens in <code><a href="https://jameel-institute.github.io/daedalus.data/reference/epidemic_data.html">daedalus.data::infection_data</a></code>). *Note disease
 severity progression is modelled with competing rates (e.g., for
-individuals in the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mi>a</mi></mrow><annotation encoding="application/x-tex">Ia</annotation></semantics></math>
-compartment, of recovery
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>γ</mi><mrow><mi>I</mi><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">\gamma_{Is}</annotation></semantics></math>
-vs hospitalisation by age
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>η</mi><mi>i</mi></msup><annotation encoding="application/x-tex">\eta^i</annotation></semantics></math>);
+individuals in the <span class="math inline">\(Ia\)</span> compartment,
+of recovery <span class="math inline">\(\gamma_{Is}\)</span> vs
+hospitalisation by age <span class="math inline">\(\eta^i\)</span>);
 where NA values are specified, we assume these individuals cannot
 undergo the respective disease severity transition.</caption>
 <colgroup>
@@ -423,7 +387,7 @@ undergo the respective disease severity transition.</caption>
 <tbody>
 <tr class="odd">
 <td align="left">Basic reproduction number</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mn>0</mn></msub><annotation encoding="application/x-tex">R_0</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(R_0\)</span></td>
 <td align="left">1.58</td>
 <td align="left">1.80</td>
 <td align="left">2.50</td>
@@ -433,7 +397,7 @@ undergo the respective disease severity transition.</caption>
 </tr>
 <tr class="even">
 <td align="left">Probability symptomatic</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mi>s</mi><mi>y</mi><mi>m</mi><mi>p</mi><mi>t</mi></mrow></msub><annotation encoding="application/x-tex">p_{sympt}</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(p_{sympt}\)</span></td>
 <td align="left">0.669</td>
 <td align="left">0.669</td>
 <td align="left">0.669</td>
@@ -443,7 +407,7 @@ undergo the respective disease severity transition.</caption>
 </tr>
 <tr class="odd">
 <td align="left">Relative infectiousness (asymptomatic:symptomatic)</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϵ</mi><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
 <td align="left">0.58</td>
 <td align="left">0.58</td>
 <td align="left">0.58</td>
@@ -453,7 +417,7 @@ undergo the respective disease severity transition.</caption>
 </tr>
 <tr class="even">
 <td align="left">Latent period (days)</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mi>σ</mi></mrow><annotation encoding="application/x-tex">1/\sigma</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(1/\sigma\)</span></td>
 <td align="left">1.1</td>
 <td align="left">1.1</td>
 <td align="left">1.1</td>
@@ -463,7 +427,7 @@ undergo the respective disease severity transition.</caption>
 </tr>
 <tr class="odd">
 <td align="left">Infectious period asymptomatic (days)</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><msub><mi>γ</mi><mrow><mi>I</mi><mi>a</mi></mrow></msub></mrow><annotation encoding="application/x-tex">1/\gamma_{Ia}</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(1/\gamma_{Ia}\)</span></td>
 <td align="left">2.5</td>
 <td align="left">2.5</td>
 <td align="left">2.5</td>
@@ -473,7 +437,7 @@ undergo the respective disease severity transition.</caption>
 </tr>
 <tr class="even">
 <td align="left">Infectious period symptomatic (days)</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><msub><mi>γ</mi><mrow><mi>I</mi><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">1/\gamma_{Is}</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(1/\gamma_{Is}\)</span></td>
 <td align="left">2.5</td>
 <td align="left">2.5</td>
 <td align="left">2.5</td>
@@ -483,7 +447,7 @@ undergo the respective disease severity transition.</caption>
 </tr>
 <tr class="odd">
 <td align="left">Infection-induced immune period (days)</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mi>ρ</mi></mrow><annotation encoding="application/x-tex">1/\rho</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\(1/\rho\)</span></td>
 <td align="left">365</td>
 <td align="left">365</td>
 <td align="left">365</td>
@@ -504,8 +468,8 @@ undergo the respective disease severity transition.</caption>
 </tr>
 <tr class="odd">
 <td align="left">Hospitalisation rate given symptomatic infection
-(days<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><annotation encoding="application/x-tex">^{-1}</annotation></semantics></math>)</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><msup><mi>η</mi><mi>i</mi></msup></mrow><annotation encoding="application/x-tex">1/\eta^i</annotation></semantics></math></td>
+(days<span class="math inline">\(^{-1}\)</span>)</td>
+<td align="left"><span class="math inline">\(1/\eta^i\)</span></td>
 <td align="left"></td>
 <td align="left"></td>
 <td align="left"></td>
@@ -554,9 +518,8 @@ undergo the respective disease severity transition.</caption>
 <td align="left">15</td>
 </tr>
 <tr class="even">
-<td align="left">Recovery rate hospitalised
-(days<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><annotation encoding="application/x-tex">^{-1}</annotation></semantics></math>)</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><msubsup><mi>γ</mi><mi>H</mi><mi>i</mi></msubsup></mrow><annotation encoding="application/x-tex">1/\gamma_H^i</annotation></semantics></math></td>
+<td align="left">Recovery rate hospitalised (days<span class="math inline">\(^{-1}\)</span>)</td>
+<td align="left"><span class="math inline">\(1/\gamma_H^i\)</span></td>
 <td align="left"></td>
 <td align="left"></td>
 <td align="left"></td>
@@ -605,9 +568,8 @@ undergo the respective disease severity transition.</caption>
 <td align="left">16.9</td>
 </tr>
 <tr class="odd">
-<td align="left">Death given hospitalised
-(days<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><annotation encoding="application/x-tex">^{-1}</annotation></semantics></math>)</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><msup><mi>ω</mi><mi>i</mi></msup></mrow><annotation encoding="application/x-tex">1/\omega^i</annotation></semantics></math></td>
+<td align="left">Death given hospitalised (days<span class="math inline">\(^{-1}\)</span>)</td>
+<td align="left"><span class="math inline">\(1/\omega^i\)</span></td>
 <td align="left"></td>
 <td align="left"></td>
 <td align="left"></td>
@@ -730,15 +692,12 @@ efficacy against other clinical severity end-points see <span class="citation">J
 <h2 id="economic-model">Economic model<a class="anchor" aria-label="anchor" href="#economic-model"></a>
 </h2>
 <p><em>daedalus</em> assigns monetary values to the years of life lost
-(YLL)
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>K</mi><mn>1</mn></msub><annotation encoding="application/x-tex">K_1</annotation></semantics></math>,
-economic activity losses
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>K</mi><mn>2</mn></msub><annotation encoding="application/x-tex">K_2</annotation></semantics></math>
-and years of education lost
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>K</mi><mn>3</mn></msub><annotation encoding="application/x-tex">K_3</annotation></semantics></math>.
-The following sections describe the methodology for calculating each of
-these losses. The total socioeconomic loss (TSL) of a respiratory
-pandemic is therefore given by</p>
+(YLL) <span class="math inline">\(K_1\)</span>, economic activity losses
+<span class="math inline">\(K_2\)</span> and years of education lost
+<span class="math inline">\(K_3\)</span>. The following sections
+describe the methodology for calculating each of these losses. The total
+socioeconomic loss (TSL) of a respiratory pandemic is therefore given
+by</p>
 <pre class="math"><code><span><span class="va">TSL</span> <span class="op">=</span> <span class="va">K_1</span> <span class="op">+</span> <span class="va">K_2</span> <span class="op">+</span> <span class="va">K_3.</span></span></code></pre>
 <div class="section level3">
 <h3 id="years-of-life-lost">Years of life lost<a class="anchor" aria-label="anchor" href="#years-of-life-lost"></a>
@@ -746,12 +705,11 @@ pandemic is therefore given by</p>
 <p>We estimate the number of years of life lost by age and country using
 life tables from the <span class="citation">Global Burden of Disease
 Collaborative Network (<a href="#ref-gbd_life">2020</a>)</span>.
-Formally, we used the life expectancy by age and country
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>L</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><annotation encoding="application/x-tex">\hat{L}_i</annotation></semantics></math>
-to estimate life years lost for deceased individuals given</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Y</mi><mi>L</mi><msup><mi>L</mi><mi>i</mi></msup><mo>=</mo><msubsup><mo>∫</mo><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><mi>t</mi></msubsup><munder><mo>∑</mo><mi>j</mi></munder><msub><mi>D</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>d</mi><mi>t</mi><mo>⋅</mo><msub><mover><mi>L</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+Formally, we used the life expectancy by age and country <span class="math inline">\(\hat{L}_i\)</span> to estimate life years lost for
+deceased individuals given</p>
+<p><span class="math display">\[\begin{equation}
 YLL^i = \int_{t=0}^t \sum_{j} D_{i,j}(t)dt \cdot \hat{L}_i.
-\end{equation}</annotation></semantics></math></p>
+\end{equation}\]</span></p>
 <p>We then use the VSL approach to estimate the monetary value of lives
 lost. The VSL reflects individuals’ willingness to trade wealth for a
 reduction in mortality risk (<span class="citation">Cutler and Summers
@@ -761,137 +719,97 @@ and adjust for differences in income elasticity by country, which are
 further assumed to be higher in lower-income settings because the
 opportunity cost of spending on basic necessities becomes large if
 incomes are at or below subsistence (<span class="citation">Hammitt (<a href="#ref-hammitt2020">2020</a>)</span>).</p>
-<p>Formally, for country
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
-we estimate its VSL by age
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mi>S</mi><msubsup><mi>L</mi><mi>a</mi><mi>i</mi></msubsup></mrow><annotation encoding="application/x-tex">VSL_a^i</annotation></semantics></math>
-as a function of GDP given</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mi>S</mi><msubsup><mi>L</mi><mi>a</mi><mi>i</mi></msubsup><mo>=</mo><mi>V</mi><mi>S</mi><msubsup><mi>L</mi><mrow><mi>U</mi><mi>S</mi><mi>A</mi></mrow><mi>i</mi></msubsup><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>r</mi><mi>a</mi></msub><mfrac><mrow><mi>G</mi><mi>D</mi><msup><mi>P</mi><mi>a</mi></msup></mrow><mrow><mi>G</mi><mi>D</mi><msub><mi>P</mi><mrow><mi>U</mi><mi>S</mi><mi>A</mi></mrow></msub></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>r</mi><mi>e</mi></msub></msup></mrow><annotation encoding="application/x-tex">\begin{equation}
+<p>Formally, for country <span class="math inline">\(a\)</span> we
+estimate its VSL by age <span class="math inline">\(VSL_a^i\)</span> as
+a function of GDP given</p>
+<p><span class="math display">\[\begin{equation}
 VSL_a^i = VSL_{USA}^i \left(r_a \frac{GDP^a}{GDP_{USA}}  \right)^{r_e}
-\end{equation}</annotation></semantics></math></p>
-<p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mi>a</mi></msub><annotation encoding="application/x-tex">r_a</annotation></semantics></math>
-is the country’s conversion rate of its market exchange rate GDP to a
-purchasing power parity GDP, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mi>e</mi></msub><annotation encoding="application/x-tex">r_e</annotation></semantics></math>
-its income elasticity, which we estimated from OECD data as in <span class="citation">Robinson, Sullivan, and Shogren (<a href="#ref-robinson2021">2021</a>)</span>.</p>
-<p>The monetary value of years of life lost
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>K</mi><mn>1</mn></msub><annotation encoding="application/x-tex">K_1</annotation></semantics></math>
-is then</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>K</mi><mn>1</mn></msub><mo>=</mo><munder><mo>∑</mo><mi>i</mi></munder><mi>Y</mi><mi>L</mi><msup><mi>L</mi><mi>i</mi></msup><mo>⋅</mo><mi>V</mi><mi>S</mi><msubsup><mi>L</mi><mi>a</mi><mi>i</mi></msubsup><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(r_a\)</span> is the country’s
+conversion rate of its market exchange rate GDP to a purchasing power
+parity GDP, and <span class="math inline">\(r_e\)</span> its income
+elasticity, which we estimated from OECD data as in <span class="citation">Robinson, Sullivan, and Shogren (<a href="#ref-robinson2021">2021</a>)</span>.</p>
+<p>The monetary value of years of life lost <span class="math inline">\(K_1\)</span> is then</p>
+<p><span class="math display">\[\begin{equation}
 K_1 = \sum_i YLL^i \cdot VSL_a^i.
-\end{equation}</annotation></semantics></math></p>
+\end{equation}\]</span></p>
 </div>
 <div class="section level3">
 <h3 id="economic-activity-losses">Economic activity losses<a class="anchor" aria-label="anchor" href="#economic-activity-losses"></a>
 </h3>
-<p>We calculate the cost of economic closures by each of 45
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
-sectors in terms of lost gross value added (GVA). <em>daedalus</em> runs
-in continuous time, with outputs calculated at daily time steps.</p>
+<p>We calculate the cost of economic closures by each of 45 <span class="math inline">\(k\)</span> sectors in terms of lost gross value
+added (GVA). <em>daedalus</em> runs in continuous time, with outputs
+calculated at daily time steps.</p>
 <p>The daily GDP generated by a country in the absence of closures is
-composed of the maximum daily GVA
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">y_k(t)</annotation></semantics></math>
-for each sector
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>.
-There is a 1:1 mapping of the 45 economic sectors and the age-sector
-population strata
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>∈</mo><mn>5</mn><mo>:</mo><mn>49</mn></mrow><annotation encoding="application/x-tex">i \in 5:49</annotation></semantics></math>.
-For conciseness, in this section we index economic sectors and
-age-sector classes only as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>.</p>
-<p>Formally, the maximum possible GDP generated
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">Y_0(t)</annotation></semantics></math>
-by all economic sectors
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>m</mi><mi>S</mi></msub><annotation encoding="application/x-tex">m_S</annotation></semantics></math>
-in the absence of mandated closures (i.e., as a result of NPIs) at time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
-is defined by</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>m</mi><mi>S</mi></msub></munderover><msub><mi>y</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+composed of the maximum daily GVA <span class="math inline">\(y_k(t)\)</span> for each sector <span class="math inline">\(k\)</span>. There is a 1:1 mapping of the 45
+economic sectors and the age-sector population strata <span class="math inline">\(i \in 5:49\)</span>. For conciseness, in this
+section we index economic sectors and age-sector classes only as <span class="math inline">\(k\)</span>.</p>
+<p>Formally, the maximum possible GDP generated <span class="math inline">\(Y_0(t)\)</span> by all economic sectors <span class="math inline">\(m_S\)</span> in the absence of mandated closures
+(i.e., as a result of NPIs) at time <span class="math inline">\(t\)</span> is defined by</p>
+<p><span class="math display">\[\begin{equation}
 Y_0(t)=\sum_{k=1}^{m_S}y_k(t),
-\end{equation}</annotation></semantics></math></p>
-<p>where all economic sectors contribute their daily GVA
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">y_k(t)</annotation></semantics></math>.</p>
+\end{equation}\]</span></p>
+<p>where all economic sectors contribute their daily GVA <span class="math inline">\(y_k(t)\)</span>.</p>
 <p>If an economic sector is, however, affected by closures on a given
 day, we estimate its GVA losses as</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>y</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>κ</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{equation}
+<p><span class="math display">\[\begin{equation}
 y_k(t) = y_k(0) \cdot (1 - \kappa_k(t))
-\end{equation}</annotation></semantics></math></p>
-<p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">y_k(0)</annotation></semantics></math>
-is the respective sector’s daily GVA in the absence of closure and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>κ</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\kappa_k(t)</annotation></semantics></math>
-its relative openness (i.e., from 0 to 1, where 0 is completely open and
-1 completely closed). We thus assume sectors contribute $0 USD in GVA on
-day
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
-if completely closed.</p>
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(y_k(0)\)</span> is the respective
+sector’s daily GVA in the absence of closure and <span class="math inline">\(\kappa_k(t)\)</span> its relative openness (i.e.,
+from 0 to 1, where 0 is completely open and 1 completely closed). We
+thus assume sectors contribute $0 USD in GVA on day <span class="math inline">\(t\)</span> if completely closed.</p>
 <p>In addition to GVA losses from closures, economic sectors can lose
 productivity whilst being open given depletion of their workforce (i.e.,
-due to self-isolation, sickness, hospitalisation or death).
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">x_{k}(t)</annotation></semantics></math>
-is the proportion of the workforce contributing to economic production
-in sector
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
-out of the total workforce
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>N</mi><mi>k</mi></msub><annotation encoding="application/x-tex">N_k</annotation></semantics></math>
-on day
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>.
-As the workforce of a sector is depleted, we assume a smaller fraction
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>x</mi><mo accent="true">̂</mo></mover><mi>j</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{x}_{j}(t)</annotation></semantics></math>
-will be available to contribute to production given</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>x</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>x</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>0</mn></mrow><mn>1</mn></munderover><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mi>I</mi><msup><mi>a</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>I</mi><msup><mi>s</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msup><mi>H</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msup><mi>D</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><msub><mi>N</mi><mi>k</mi></msub></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
-\hat{x}_{k}(t) = x_{k}(t) \left(1 - \sum_{j=0}^{1} \left( \frac{Ia^{j,k}(t) + Is^{j,k}(t) + H^{j,k}(t) + D^{j,k}(t)}{N_k} \right) \right).
-\end{equation}</annotation></semantics></math></p>
-<p>The total GDP generated at time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
-is then</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Y</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>m</mi><mi>S</mi></msub></munderover><msub><mi>y</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mover><mi>x</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+due to self-isolation, sickness, hospitalisation or death). <span class="math inline">\(x_{k}(t)\)</span> is the proportion of the
+workforce contributing to economic production in sector <span class="math inline">\(k\)</span> out of the total workforce <span class="math inline">\(N_k\)</span> on day <span class="math inline">\(t\)</span>. As the workforce of a sector is
+depleted, we assume a smaller fraction <span class="math inline">\(\hat{x}_{j}(t)\)</span> will be available to
+contribute to production given</p>
+<p><span class="math display">\[\begin{equation}
+\hat{x}_{k}(t) = x_{k}(t) \left(1 - \sum_{j=0}^{1} \left(
+\frac{Ia^{j,k}(t) + Is^{j,k}(t) + H^{j,k}(t) + D^{j,k}(t)}{N_k} \right)
+\right).
+\end{equation}\]</span></p>
+<p>The total GDP generated at time <span class="math inline">\(t\)</span> is then</p>
+<p><span class="math display">\[\begin{equation}
 Y(t) = \sum_{k=1}^{m_S} y_k(t) \hat{x}_{k}(t),
-\end{equation}</annotation></semantics></math></p>
+\end{equation}\]</span></p>
 <p>and the GDP loss compared to the maximum is</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>K</mi><mn>2</mn></msub><mo>=</mo><msubsup><mo>∫</mo><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><mi>t</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Y</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>Y</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mi>d</mi><mi>t</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+<p><span class="math display">\[\begin{equation}
 K_2 = \int_{t=0}^t \left( Y_0(t) - Y(t) \right)dt.
-\end{equation}</annotation></semantics></math></p>
+\end{equation}\]</span></p>
 </div>
 <div class="section level3">
 <h3 id="years-of-education-lost">Years of education lost<a class="anchor" aria-label="anchor" href="#years-of-education-lost"></a>
 </h3>
-<p>We monetise the value of a school day
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mi>S</mi><mi>D</mi></mrow><annotation encoding="application/x-tex">VSD</annotation></semantics></math>
-as a country-specific parameter, as previously done in <span class="citation">Psacharopoulos et al. (<a href="#ref-psacharopoulos2021">2021</a>)</span>, given by</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mi>S</mi><mi>D</mi><mo>=</mo><mfrac><mrow><mi>V</mi><mi>P</mi><mi>E</mi><mo>⋅</mo><mi>M</mi><mi>A</mi><mi>E</mi><mo>⋅</mo><mi>R</mi><mi>Y</mi><mi>E</mi></mrow><mn>365</mn></mfrac></mrow><annotation encoding="application/x-tex">\begin{equation}
+<p>We monetise the value of a school day <span class="math inline">\(VSD\)</span> as a country-specific parameter, as
+previously done in <span class="citation">Psacharopoulos et al. (<a href="#ref-psacharopoulos2021">2021</a>)</span>, given by</p>
+<p><span class="math display">\[\begin{equation}
 VSD = \frac{VPE \cdot MAE \cdot RYE}{365}
-\end{equation}</annotation></semantics></math></p>
-<p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mi>A</mi><mi>E</mi></mrow><annotation encoding="application/x-tex">MAE</annotation></semantics></math>
-is the mean annual earnings (estimated using GDP multiplied by labour
-share of income, as in <span class="citation">Feenstra, Inklaar, and
-Timmer (<a href="#ref-feenstra2015">2015</a>)</span>),
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>Y</mi><mi>E</mi></mrow><annotation encoding="application/x-tex">RYE</annotation></semantics></math>
-the rate of return for one year of education, assumed fixed at 0.08, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mi>P</mi><mi>E</mi></mrow><annotation encoding="application/x-tex">VPE</annotation></semantics></math>
-is the yearly present value of lost earnings given by</p>
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(MAE\)</span> is the mean annual
+earnings (estimated using GDP multiplied by labour share of income, as
+in <span class="citation">Feenstra, Inklaar, and Timmer (<a href="#ref-feenstra2015">2015</a>)</span>), <span class="math inline">\(RYE\)</span> the rate of return for one year of
+education, assumed fixed at 0.08, and <span class="math inline">\(VPE\)</span> is the yearly present value of lost
+earnings given by</p>
 <p><strong>TODO</strong>: Rob, I cannot find any reference in the
 <em>daedalus</em> code or data of how this was calculated. Is it that
 the country data files were prepared and saved following the equation
-for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>p</mi><mn>12</mn></msup><annotation encoding="application/x-tex">p^{12}</annotation></semantics></math>
-in your technical appendix? If you could please corroborate and re-write
-the correct form of that equation here it will be ace. Thanks!</p>
+for <span class="math inline">\(p^{12}\)</span> in your technical
+appendix? If you could please corroborate and re-write the correct form
+of that equation here it will be ace. Thanks!</p>
 <p>Thus, in addition to GVA losses from closures, as done for all
 economic sectors (see section above), we estimate total education sector
 losses as</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>K</mi><mn>3</mn></msub><mo>=</mo><msubsup><mo>∫</mo><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><mi>t</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>e</mi><mi>d</mi><mi>u</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>N</mi><mrow><mi>i</mi><mo>=</mo><mn>2</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>V</mi><mi>S</mi><mi>D</mi><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>κ</mi><mrow><mi>e</mi><mi>d</mi><mi>u</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mi>d</mi><mi>t</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
-K_3 = \int_{t=0}^t \left( y_{edu}(t) + N_{i=2}(t) \cdot VSD \cdot (1 - \kappa_{edu}(t)) \cdot (1 - \pi) \right)dt
-\end{equation}</annotation></semantics></math></p>
-<p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>N</mi><mrow><mi>i</mi><mo>=</mo><mn>2</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">N_{i=2}(t)</annotation></semantics></math>
-is the number of pupils available at time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
+<p><span class="math display">\[\begin{equation}
+K_3 = \int_{t=0}^t \left( y_{edu}(t) + N_{i=2}(t) \cdot VSD \cdot (1 -
+\kappa_{edu}(t)) \cdot (1 - \pi) \right)dt
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(N_{i=2}(t)\)</span> is the number
+of pupils available at time <span class="math inline">\(t\)</span>
 (i.e., population of school-age not infected, hospitalised or deceased),
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math>
-a fixed parameter of the effectiveness of remote education.</p>
+<span class="math inline">\(\pi\)</span> a fixed parameter of the
+effectiveness of remote education.</p>
 </div>
 </div>
 <div class="section level2">

@@ -6,7 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Value of educational time lost • daedalus</title>
-<script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/Source_Code_Pro-0.4.10/font.css" rel="stylesheet">
@@ -22,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.35</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.36</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +88,7 @@
       <h1>Value of educational time lost</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/v0.2.35/vignettes/info_edu_value.Rmd" class="external-link"><code>vignettes/info_edu_value.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/vignettes/info_edu_value.Rmd" class="external-link"><code>vignettes/info_edu_value.Rmd</code></a></small>
       <div class="d-none name"><code>info_edu_value.Rmd</code></div>
     </div>
 
@@ -98,31 +104,28 @@ reduced efficacy compared to in-person schooling.</p>
 <div class="section level2">
 <h2 id="value-of-a-school-year">Value of a school year<a class="anchor" aria-label="anchor" href="#value-of-a-school-year"></a>
 </h2>
-<p>The value of a school year in a country
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">VSY</mtext><mi>c</mi></msub><annotation encoding="application/x-tex">\text{VSY}_c</annotation></semantics></math>)
-is the product of the country-specific gross national income
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">GNI</mtext><mi>c</mi></msub><annotation encoding="application/x-tex">\text{GNI}_c</annotation></semantics></math>)
-per capita, the rate of return on education
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math>),
-and the present value of expected future earnings (which we denote as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>V</mi><annotation encoding="application/x-tex">V</annotation></semantics></math>).</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">VSY</mtext><mi>c</mi></msub><mo>=</mo><msub><mtext mathvariant="normal">GNI</mtext><mi>c</mi></msub><mo>×</mo><mi>V</mi><mo>×</mo><mi>R</mi></mrow><annotation encoding="application/x-tex">\text{VSY}_c = \text{GNI}_c \times V \times R</annotation></semantics></math></p>
+<p>The value of a school year in a country (<span class="math inline">\(\text{VSY}_c\)</span>) is the product of the
+country-specific gross national income (<span class="math inline">\(\text{GNI}_c\)</span>) per capita, the rate of
+return on education (<span class="math inline">\(R\)</span>), and the
+present value of expected future earnings (which we denote as <span class="math inline">\(V\)</span>).</p>
+<p><span class="math display">\[\text{VSY}_c = \text{GNI}_c \times V
+\times R\]</span></p>
 <div class="section level3">
 <h3 id="valuation-constants">Valuation constants<a class="anchor" aria-label="anchor" href="#valuation-constants"></a>
 </h3>
 <p>The following constants are assumed when calculating the value of a
 school year:</p>
 <ul>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0.03</mn></mrow><annotation encoding="application/x-tex">r = 0.03</annotation></semantics></math>:
-the discount rate for future earnings;</p></li>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>m</mi><mi>Y</mi></msub><mo>=</mo><mn>45</mn></mrow><annotation encoding="application/x-tex">m_Y = 45</annotation></semantics></math>:
-the expected future years of work;</p></li>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mn>12.5</mn></mrow><annotation encoding="application/x-tex">a = 12.5</annotation></semantics></math>:
-the mean age of school-going individuals. <strong>Note that</strong> the
-mean age of school-goers is a simple mean of the age-bin
+<li><p><span class="math inline">\(r = 0.03\)</span>: the discount rate
+for future earnings;</p></li>
+<li><p><span class="math inline">\(m_Y = 45\)</span>: the expected
+future years of work;</p></li>
+<li><p><span class="math inline">\(a = 12.5\)</span>: the mean age of
+school-going individuals. <strong>Note that</strong> the mean age of
+school-goers is a simple mean of the age-bin
 <code>[5, 20)</code>.</p></li>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>=</mo><mn>0.08</mn></mrow><annotation encoding="application/x-tex">R = 0.08</annotation></semantics></math>:
-the rate of return on one year of education.</p></li>
+<li><p><span class="math inline">\(R = 0.08\)</span>: the rate of return
+on one year of education.</p></li>
 </ul>
 </div>
 <div class="section level3">
@@ -136,10 +139,10 @@ Bank’s World Development Indicators</a>.</p>
 <h3 id="present-value-of-future-earnings">Present value of future earnings<a class="anchor" aria-label="anchor" href="#present-value-of-future-earnings"></a>
 </h3>
 <p>A constant scaling factor for the present value of future (lost)
-earnings
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>V</mi><annotation encoding="application/x-tex">V</annotation></semantics></math>)
-is calculated using the valuation constants defined above.</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mn>1</mn><mo>−</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>r</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo>−</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>m</mi><mi>Y</mi></msub><mo>+</mo><mn>20</mn><mo>−</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msup></mrow><mi>r</mi></mfrac><mo>−</mo><mfrac><mrow><mn>1</mn><mo>−</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>r</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo>−</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>20</mn><mo>−</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msup></mrow><mi>r</mi></mfrac></mrow><annotation encoding="application/x-tex">\frac{1 - (1 + r)^{-(m_Y + 20 - a)}}{r} - \frac{1 - (1 + r)^{-(20 - a)}}{r}</annotation></semantics></math></p>
+earnings (<span class="math inline">\(V\)</span>) is calculated using
+the valuation constants defined above.</p>
+<p><span class="math display">\[\frac{1 - (1 + r)^{-(m_Y + 20 - a)}}{r}
+- \frac{1 - (1 + r)^{-(20 - a)}}{r}\]</span></p>
 </div>
 </div>
 <div class="section level2">
@@ -150,26 +153,21 @@ is calculated using the valuation constants defined above.</p>
 <li><p>The number of school days lost due to pandemic-mitigation
 measures (in DAEDALUS, these are school closures); this is explained
 more below;</p></li>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><msub><mi>E</mi><mtext mathvariant="normal">remote</mtext></msub></mrow><annotation encoding="application/x-tex">1 - E_{\text{remote}}</annotation></semantics></math>:
-the loss in educational efficacy due to remote education during
+<li><p><span class="math inline">\(1 - E_{\text{remote}}\)</span>: the
+loss in educational efficacy due to remote education during
 closures;</p></li>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">VSD</mtext><mi>c</mi></msub><annotation encoding="application/x-tex">\text{VSD}_c</annotation></semantics></math>:
-the value of a school day, which is the value of a school year divided
-by 365
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">VSY</mtext><mi>c</mi></msub><mi>/</mi><mn>365</mn></mrow><annotation encoding="application/x-tex">\text{VSY}_c / 365</annotation></semantics></math>);
-and</p></li>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>:
-the number of school age children.</p></li>
+<li><p><span class="math inline">\(\text{VSD}_c\)</span>: the value of a
+school day, which is the value of a school year divided by 365 (<span class="math inline">\(\text{VSY}_c / 365\)</span>); and</p></li>
+<li><p><span class="math inline">\(N\)</span>: the number of school age
+children.</p></li>
 </ul>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">VSD</mtext><mi>c</mi></msub><mo>×</mo><mi>N</mi><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>O</mi><mtext mathvariant="normal">edu</mtext></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>×</mo><mi>T</mi><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>E</mi><mtext mathvariant="normal">remote</mtext></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{VSD}_c \times N \times (1 - O_{\text{edu}}) \times T \times (1 - E_{\text{remote}})</annotation></semantics></math></p>
+<p><span class="math display">\[\text{VSD}_c \times N \times (1 -
+O_{\text{edu}}) \times T \times (1 - E_{\text{remote}})\]</span></p>
 <p>The <strong>number of school days lost</strong> is calculated as the
-product of the closure coefficient for the educational sector
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><msub><mi>O</mi><mtext mathvariant="normal">edu</mtext></msub></mrow><annotation encoding="application/x-tex">1 - O_{\text{edu}}</annotation></semantics></math>)
-and the number of days a pandemic-mitigation measure is active
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math>.
-The closure coefficient indicates the stringency of measures applied to
-schooling, and can take a value in the range
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 1]</annotation></semantics></math>.</p>
+product of the closure coefficient for the educational sector (<span class="math inline">\(1 - O_{\text{edu}}\)</span>) and the number of
+days a pandemic-mitigation measure is active <span class="math inline">\(T\)</span>. The closure coefficient indicates the
+stringency of measures applied to schooling, and can take a value in the
+range <span class="math inline">\([0, 1]\)</span>.</p>
 </div>
 <div class="section level2">
 <h2 id="future-developments">Future developments<a class="anchor" aria-label="anchor" href="#future-developments"></a>
@@ -179,10 +177,8 @@ includes:</p>
 <ul>
 <li><p>Accounting for the numbers of children in each age-bin in
 demographic data and correctly calculating the present value of future
-earnings
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>V</mi><annotation encoding="application/x-tex">V</annotation></semantics></math>)
-by accounting for differences in expected remaining years of
-work;</p></li>
+earnings (<span class="math inline">\(V\)</span>) by accounting for
+differences in expected remaining years of work;</p></li>
 <li><p>Including the effect of education missed due to student absences
 caused by illness or isolation.</p></li>
 </ul>

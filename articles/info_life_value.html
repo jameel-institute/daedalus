@@ -6,7 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Value of life-years lost • daedalus</title>
-<script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/Source_Code_Pro-0.4.10/font.css" rel="stylesheet">
@@ -22,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.35</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.36</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +88,7 @@
       <h1>Value of life-years lost</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/v0.2.35/vignettes/info_life_value.Rmd" class="external-link"><code>vignettes/info_life_value.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/vignettes/info_life_value.Rmd" class="external-link"><code>vignettes/info_life_value.Rmd</code></a></small>
       <div class="d-none name"><code>info_life_value.Rmd</code></div>
     </div>
 
@@ -154,19 +160,12 @@ as a 1 in 10,000 decrease in the chance of dying in a specific year
 <span class="citation">(<a href="#ref-robinson2019">Robinson et al.
 2019</a>)</span>.</p>
 </div>
-<p>The value of a statistical life for an individual of country
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math>
-in age group
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
-denoted as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">VSL</mtext><msub><mi>c</mi><mi>i</mi></msub></msub><annotation encoding="application/x-tex">\text{VSL}_{c_i}</annotation></semantics></math>
-is the product of the country-specific VLY
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">VLY</mtext><mi>c</mi></msub><annotation encoding="application/x-tex">\text{VLY}_{c}</annotation></semantics></math>)
-and the country- and age-specific life expectancy
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><msub><mi>c</mi><mi>i</mi></msub></msub><annotation encoding="application/x-tex">T_{c_i}</annotation></semantics></math>),
-and depends on the country and age-group of the individual; this can be
-expressed as:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">VSL</mtext><msub><mi>c</mi><mi>i</mi></msub></msub><mo>=</mo><msub><mtext mathvariant="normal">VLY</mtext><mi>c</mi></msub><mo>×</mo><msub><mi>T</mi><msub><mi>c</mi><mi>i</mi></msub></msub></mrow><annotation encoding="application/x-tex">\text{VSL}_{c_i} = \text{VLY}_c \times T_{c_i}</annotation></semantics></math></p>
+<p>The value of a statistical life for an individual of country <span class="math inline">\(c\)</span> in age group <span class="math inline">\(i\)</span> denoted as <span class="math inline">\(\text{VSL}_{c_i}\)</span> is the product of the
+country-specific VLY (<span class="math inline">\(\text{VLY}_{c}\)</span>) and the country- and
+age-specific life expectancy (<span class="math inline">\(T_{c_i}\)</span>), and depends on the country and
+age-group of the individual; this can be expressed as:</p>
+<p><span class="math display">\[\text{VSL}_{c_i} = \text{VLY}_c \times
+T_{c_i}\]</span></p>
 <p>In <em>daedalus</em>, the country- and age-specifc VSL values can be
 accessed from the package data object <code>daedalus::life_value</code>.
 These values are also automatically accessed and included when a
@@ -193,14 +192,10 @@ These values are also automatically accessed and included when a
 <p>In a <code><a href="../reference/daedalus.html">daedalus()</a></code> scenario, the total value of lives lost
 is the sum of the products of the country- and age-specific VSL and the
 number of deaths in each age-group in that country:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>Σ</mi><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></msubsup><msub><mtext mathvariant="normal">VSL</mtext><msub><mi>c</mi><mi>i</mi></msub></msub><mo>×</mo><msub><mi>D</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">\Sigma_{i = 1}^{N} \text{VSL}_{c_i} \times D_i</annotation></semantics></math></p>
-<p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>i</mi></msub><annotation encoding="application/x-tex">D_i</annotation></semantics></math>
-is the total number of deaths in age group
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>,
-with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>∈</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>3</mn><mo>,</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">i \in 1, 2, 3, 4</annotation></semantics></math>
-(as detailed above).</p>
+<p><span class="math display">\[\Sigma_{i = 1}^{N} \text{VSL}_{c_i}
+\times D_i\]</span></p>
+<p>where <span class="math inline">\(D_i\)</span> is the total number of
+deaths in age group <span class="math inline">\(i\)</span>, with <span class="math inline">\(i \in 1, 2, 3, 4\)</span> (as detailed above).</p>
 <p>For users’ convenience, the total value of lives lost is reported in
 million dollars, to bring it in line with the scaling used for other
 pandemic costs.</p>
