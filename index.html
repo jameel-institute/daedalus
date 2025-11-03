@@ -30,7 +30,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.36</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.37</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -134,12 +134,12 @@
 <span></span>
 <span><span class="co"># get pandemic costs as a total in million dollars</span></span>
 <span><span class="fu"><a href="reference/get_costs.html">get_costs</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"total"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 1651142</span></span>
+<span><span class="co">#&gt; [1] 1644627</span></span>
 <span></span>
 <span><span class="co"># disaggregate total for economic, education, and health costs</span></span>
 <span><span class="fu"><a href="reference/get_costs.html">get_costs</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"domain"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    economic   education  life_value  life_years </span></span>
-<span><span class="co">#&gt;    35682.59     2189.32  1613270.54 35033019.38</span></span></code></pre></div>
+<span><span class="co">#&gt;     economic    education   life_value   life_years </span></span>
+<span><span class="co">#&gt;    29545.800     1810.278  1613270.542 35033019.375</span></span></code></pre></div>
 <p>Users can select infection parameters from among seven epidemics caused by directly-transmitted viral respiratory pathogens, which are stored in the stand-alone helper package <code>daedalus.data</code>. These can be called as <code><a href="https://jameel-institute.github.io/daedalus.data/reference/epidemic_data.html">daedalus.data::infection_data</a></code>, while epidemic identifiers are stored as <code><a href="https://jameel-institute.github.io/daedalus.data/reference/epidemic_data.html">daedalus.data::epidemic_names</a></code>.</p>
 <p>Users can override default country contact data and epidemic-specific infection arguments by passing custom classes to <code><a href="reference/daedalus.html">daedalus()</a></code>; see the package website for more details.</p>
 <p>Users can also model the implementation of pandemic response measures: for more on this see the documentation for the main model function <code><a href="reference/daedalus.html">daedalus()</a></code>, and the vignette on modelling interventions on the package website.</p>
@@ -148,7 +148,11 @@
 <h2 id="related-projects">Related projects<a class="anchor" aria-label="anchor" href="#related-projects"></a>
 </h2>
 <p><em>daedalus</em> is an R implementation of the scenario model from a <a href="https://github.com/robj411/p2_drivers" class="external-link">project on the economics of pandemic preparedness</a>.</p>
-<p><a href="https://github.com/jameel-institute/daedalus.data" class="external-link"><em>daedalus.data</em></a> is a stand-alone helper R package to handle input data for the <em>daedalus</em> model. Its purpose is to allow users to flexibly manipulate or change epidemiological and economic data, without needing to modify the model itself.</p>
+<ul>
+<li><p><a href="https://github.com/jameel-institute/daedalus.data" class="external-link"><em>daedalus.data</em></a> is a stand-alone helper R package to handle input data for the <em>daedalus</em> model. Its purpose is to allow users to flexibly manipulate or change epidemiological and economic data, without needing to modify the model itself.</p></li>
+<li><p><a href="https://github.com/jameel-institute/daedalus.compare" class="external-link"><em>daedalus.compare</em></a> is an R package that sits both downstream of <em>daedalus</em> and also wraps some <em>daedalus</em> functions to help users conveniently run multiple epidemic scenarios.</p></li>
+<li><p><a href="https://github.com/jameel-institute/daedalus.data" class="external-link"><em>daedalus.api</em></a> is an R package that connects <em>daedalus</em> with the <a href="https://daedalus.jameel-institute.org/" class="external-link">DAEDALUS Explore</a> dashboard.</p></li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

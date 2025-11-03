@@ -13,7 +13,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.36</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.37</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,9 +58,21 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/v0.2.36/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.37" id="daedalus-0237">daedalus 0.2.37<a class="anchor" aria-label="anchor" href="#daedalus-0237"></a></h2>
+<p>This patch version:</p>
+<ul><li><p>Implements a new mechanism to modify the infection transmission rate <span class="math inline">\(\beta\)</span> due to population-level behaviour (via <a href="https://github.com/kunph7" class="external-link">@kunph7</a>);</p></li>
+<li><p>Adds the header <code>daedalus_behaviour.h</code> with new behavioural scaling functions, and adds helper functions to capture behavioural parameters from R for use in the ODE RHS using lambdas;</p></li>
+<li><p>Implements constructors for the <code>&lt;daedalus_behaviour&gt;</code> class which inherits from <code>&lt;daedalus_response&gt;</code>: this is currently a simple parameter list, but can be extended to full-fledged <code>daedalus::events::response</code> if needed.</p></li>
+<li><p>Implements constructors for the ‘old’ and ‘new’ behavioural mechanisms as <code><a href="../reference/class_behaviour.html">daedalus_old_behaviour()</a></code> and <code><a href="../reference/class_behaviour.html">daedalus_new_behaviour()</a></code> — both create the same class of object but with different parameters;</p></li>
+</ul><div class="section level3">
+<h3 id="breaking-changes-0-2-37">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-37"></a></h3>
+<ul><li>Removes the <code>auto_social_distancing</code> argument from <code><a href="../reference/daedalus.html">daedalus()</a></code> and <code><a href="../reference/daedalus_multi_infection.html">daedalus_multi_infection()</a></code> and replaces it with a <code>behaviour</code> argument.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.36" id="daedalus-0236">daedalus 0.2.36<a class="anchor" aria-label="anchor" href="#daedalus-0236"></a></h2>
 <p>This patch version allows NPIs to end in reaction to an epidemic signal (PR <a href="https://github.com/jameel-institute/daedalus/issues/122" class="external-link">#122</a>).</p>

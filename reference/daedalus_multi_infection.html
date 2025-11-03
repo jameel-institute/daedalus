@@ -15,7 +15,7 @@ running the model under uncertainty in infection parameters."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.36</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.37</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,7 +60,7 @@ running the model under uncertainty in infection parameters."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run daedalus for multiple infection parameter sets</h1>
-      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/v0.2.36/R/daedalus_multi.R" class="external-link"><code>R/daedalus_multi.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/R/daedalus_multi.R" class="external-link"><code>R/daedalus_multi.R</code></a></small>
       <div class="d-none name"><code>daedalus_multi_infection.Rd</code></div>
     </div>
 
@@ -76,8 +76,8 @@ running the model under uncertainty in infection parameters.</p>
 <span>  <span class="va">infection</span>,</span>
 <span>  response_strategy <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  vaccine_investment <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  behaviour <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  response_time <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  auto_social_distancing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"off"</span>, <span class="st">"independent"</span>, <span class="st">"npi_linked"</span><span class="op">)</span>,</span>
 <span>  initial_state_manual <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  time_end <span class="op">=</span> <span class="fl">600</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -103,7 +103,8 @@ To override package defaults for country characteristics, pass a
 
 
 <dt id="arg-infection">infection<a class="anchor" aria-label="anchor" href="#arg-infection"></a></dt>
-<dd><p>A list of <code>&lt;daedalus_infection&gt;</code> objects.</p></dd>
+<dd><p>A list of <code>&lt;daedalus_infection&gt;</code> objects. Must have a
+minimum length of 2.</p></dd>
 
 
 <dt id="arg-response-strategy">response_strategy<a class="anchor" aria-label="anchor" href="#arg-response-strategy"></a></dt>
@@ -125,6 +126,15 @@ across all age groups. Other accepted values are <code>"low"</code>, <code>"medi
 <code>"high"</code>. See <code><a href="class_vaccination.html">daedalus_vaccination()</a></code> for more information.</p></dd>
 
 
+<dt id="arg-behaviour">behaviour<a class="anchor" aria-label="anchor" href="#arg-behaviour"></a></dt>
+<dd><p>An optional object of class <code>&lt;daedalus_behaviour&gt;</code> which
+determines how population-level perception of epidemic signals affects
+infection transmission. May be <code>NULL</code> for no behavioural modification of
+infection transmission. See
+the <code>&lt;daedalus_behaviour&gt;</code> <a href="class_behaviour.html">class documentation</a> for more
+details on the available behavioural mechanisms</p></dd>
+
+
 <dt id="arg-response-time">response_time<a class="anchor" aria-label="anchor" href="#arg-response-time"></a></dt>
 <dd><p>A single numeric value for the time in days
 at which the selected response is activated. This is ignored if the response
@@ -132,12 +142,6 @@ has already been activated by the hospitalisation threshold being reached.
 Defaults to 30 days. Responses have a default maximum duration of 365 days.
 This can be changed by passing a <code>&lt;daedalus_npi&gt;</code> object to
 <code>response_strategy</code>.</p></dd>
-
-
-<dt id="arg-auto-social-distancing">auto_social_distancing<a class="anchor" aria-label="anchor" href="#arg-auto-social-distancing"></a></dt>
-<dd><p>A string giving the option for the form of
-spontaneous social distancing in the model, which reduces infection
-transmission as a function of daily deaths. See <strong>Details</strong> for more.</p></dd>
 
 
 <dt id="arg-initial-state-manual">initial_state_manual<a class="anchor" aria-label="anchor" href="#arg-initial-state-manual"></a></dt>
@@ -165,12 +169,8 @@ returned for each day. Defaults to 300 days.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list of <code>&lt;daedalus_output&gt;</code> objects.</p>
-    </div>
-    <div class="section level2">
-    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>See details of how <code>auto_social_distancing</code> affects the model in
-documentation for <code><a href="daedalus.html">daedalus()</a></code>.</p>
+    <p>A list of <code>&lt;daedalus_output&gt;</code> objects of the same length as
+<code>infection</code>.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

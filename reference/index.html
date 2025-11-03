@@ -13,7 +13,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.36</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.37</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -152,7 +152,24 @@
         </dt>
         <dd>Represent non-pharmaceutical intervention strategies for DAEDALUS</dd>
       </dl></div><div class="section level2">
-      <h2 id="class--4">Class <code>&lt;daedalus_output&gt;</code><a class="anchor" aria-label="anchor" href="#class--4"></a></h2>
+      <h2 id="class--4">Class <code>&lt;daedalus_behaviour&gt;</code><a class="anchor" aria-label="anchor" href="#class--4"></a></h2>
+
+      <div class="section-desc"><p>Represent and access parameters for behavioural models</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="class_behaviour.html">daedalus_old_behaviour()</a></code> <code><a href="class_behaviour.html">daedalus_new_behaviour()</a></code> <code><a href="class_behaviour.html">is_daedalus_behaviour()</a></code> <code><a href="class_behaviour.html">print(<i>&lt;daedalus_behaviour&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Represent behaviour-change mechanisms in DAEDALUS</dd>
+      </dl></div><div class="section level2">
+      <h2 id="class--5">Class <code>&lt;daedalus_output&gt;</code><a class="anchor" aria-label="anchor" href="#class--5"></a></h2>
 
       <div class="section-desc"><p>Class to store model output for further processing</p></div>
 
@@ -239,7 +256,7 @@
 
       <dl><dt>
 
-          <code><a href="model_constants.html">N_AGE_GROUPS</a></code> <code><a href="model_constants.html">i_AGE_GROUPS</a></code> <code><a href="model_constants.html">N_VACCINE_STRATA</a></code> <code><a href="model_constants.html">N_VACCINE_DATA_GROUPS</a></code> <code><a href="model_constants.html">AGE_GROUPS</a></code> <code><a href="model_constants.html">i_WORKING_AGE</a></code> <code><a href="model_constants.html">i_SCHOOL_AGE</a></code> <code><a href="model_constants.html">N_ECON_SECTORS</a></code> <code><a href="model_constants.html">i_ECON_SECTORS</a></code> <code><a href="model_constants.html">i_EDUCATION_SECTOR</a></code> <code><a href="model_constants.html">N_ECON_STRATA</a></code> <code><a href="model_constants.html">i_NOT_WORKING</a></code> <code><a href="model_constants.html">DIM_AGE_GROUPS</a></code> <code><a href="model_constants.html">DIM_EPI_COMPARTMENTS</a></code> <code><a href="model_constants.html">DIM_ECON_SECTORS</a></code> <code><a href="model_constants.html">DIM_VACCINE_STRATA</a></code> <code><a href="model_constants.html">i_UNVACCINATED_STRATUM</a></code> <code><a href="model_constants.html">i_VACCINATED_STRATUM</a></code> <code><a href="model_constants.html">i_NEW_VAX_STRATUM</a></code> <code><a href="model_constants.html">VACCINE_GROUPS</a></code> <code><a href="model_constants.html">N_OUTPUT_COLS</a></code> <code><a href="model_constants.html">N_FLAGS</a></code> <code><a href="model_constants.html">FLAG_NAMES</a></code>
+          <code><a href="model_constants.html">N_AGE_GROUPS</a></code> <code><a href="model_constants.html">i_AGE_GROUPS</a></code> <code><a href="model_constants.html">N_VACCINE_STRATA</a></code> <code><a href="model_constants.html">N_VACCINE_DATA_GROUPS</a></code> <code><a href="model_constants.html">AGE_GROUPS</a></code> <code><a href="model_constants.html">i_WORKING_AGE</a></code> <code><a href="model_constants.html">i_SCHOOL_AGE</a></code> <code><a href="model_constants.html">N_ECON_SECTORS</a></code> <code><a href="model_constants.html">i_ECON_SECTORS</a></code> <code><a href="model_constants.html">i_EDUCATION_SECTOR</a></code> <code><a href="model_constants.html">N_ECON_STRATA</a></code> <code><a href="model_constants.html">i_NOT_WORKING</a></code> <code><a href="model_constants.html">DIM_AGE_GROUPS</a></code> <code><a href="model_constants.html">DIM_EPI_COMPARTMENTS</a></code> <code><a href="model_constants.html">DIM_ECON_SECTORS</a></code> <code><a href="model_constants.html">DIM_VACCINE_STRATA</a></code> <code><a href="model_constants.html">i_UNVACCINATED_STRATUM</a></code> <code><a href="model_constants.html">i_VACCINATED_STRATUM</a></code> <code><a href="model_constants.html">i_NEW_VAX_STRATUM</a></code> <code><a href="model_constants.html">VACCINE_GROUPS</a></code> <code><a href="model_constants.html">N_OUTPUT_COLS</a></code> <code><a href="model_constants.html">FLAG_NAMES</a></code>
 
         </dt>
         <dd>DAEDALUS model constants</dd>
@@ -274,7 +291,7 @@
 
       <dl><dt>
 
-          <code><a href="class_response.html">new_daedalus_response()</a></code> <code><a href="class_response.html">response_class_names</a></code> <code><a href="class_response.html">new_daedalus_behaviour()</a></code> <code><a href="class_response.html">is_daedalus_response()</a></code> <code><a href="class_response.html">validate_daedalus_response()</a></code>
+          <code><a href="class_response.html">new_daedalus_response()</a></code> <code><a href="class_response.html">response_class_names</a></code> <code><a href="class_response.html">is_daedalus_response()</a></code> <code><a href="class_response.html">validate_daedalus_response()</a></code>
 
         </dt>
         <dd>Constructor for the &lt;daedalus_response&gt; super-class and sub-classes</dd>
@@ -397,7 +414,7 @@
           <code><a href="prepare_parameters.html">prepare_parameters()</a></code>
 
         </dt>
-        <dd>Prepare country parameters for model</dd>
+        <dd>Prepare infection parameters for model</dd>
       </dl><dl><dt>
 
           <code><a href="process_event_times.html">process_event_times()</a></code>
@@ -422,6 +439,12 @@
 
         </dt>
         <dd>Convert an uptake limit from a percentage to a number</dd>
+      </dl><dl><dt>
+
+          <code><a href="validate_behaviour_input.html">validate_behaviour_input()</a></code>
+
+        </dt>
+        <dd>Internal helper function to prepare parameters</dd>
       </dl><dl><dt>
 
           <code><a href="validate_country_input.html">validate_country_input()</a></code>
