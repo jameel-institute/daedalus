@@ -21,7 +21,7 @@ constexpr int i_VAX_STRATUM = 1;  // C++ index, second layer in a tensor
 constexpr int DDL_N_AGE_GROUPS = 4;
 constexpr int DDL_N_ECON_GROUPS = 45;
 
-constexpr int iS = 0, iE = 1, iIs = 2, iIa = 3, iHr = 4, iHd = 5, iR = 6, 
+constexpr int iS = 0, iE = 1, iIs = 2, iIa = 3, iHr = 4, iHd = 5, iR = 6,
               iD = 7, idE = 8, idH = 9;
 
 // Tensor indices for groups (age + econ sector), compartments, and vax strata
@@ -29,8 +29,8 @@ constexpr int iS = 0, iE = 1, iIs = 2, iIa = 3, iHr = 4, iHd = 5, iR = 6,
 constexpr size_t i_GRPS = 0, i_COMPS = 1, i_VAX_GRPS = 2;
 
 // for C++ < 20
-inline const std::vector<size_t> i_DATA_COMPARTMENTS = {7, 8};
-inline const std::vector<size_t> seq_DATA_COMPARTMENTS = {8, 9};
+inline const std::vector<size_t> i_DATA_COMPARTMENTS = {8, 9};
+inline const std::vector<size_t> seq_DATA_COMPARTMENTS = {9, 10};
 
 // flag positions relative to state size
 // NOTE: IPR is continuous value

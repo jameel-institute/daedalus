@@ -3,7 +3,7 @@
 #' @name tools
 #' @rdname tools
 #'
-#' @details
+#' @description
 #' `weighted_rowsums()` is used to get the row-wise sums of a matrix after
 #' column-wise multiplication by a vector of weights.
 #'
@@ -69,7 +69,30 @@ weighted_rowsums <- function(x, weights) {
 }
 
 #' @name tools
+#'
+#' @description
+#' `interest_accumulation()` is used to calculate the new principal after
+#' assuming an interest `rate` and with some external `contribution`. Used in
+#' `get_fiscal_costs()` when the borrowed principal to fund pandemic response
+#' both compounds over time, and increases due to fresh borrowing in each
+#' timestep.
+#'
 #' @keywords internal
 interest_accumulation <- function(principal, contribution, rate) {
   contribution + (1.0 + rate) * principal
+}
+
+#' @name tools
+#'
+#' @description
+#' `annual_rate_daily()` is used to convert an annual rate of interest to a
+#' daily rate, for use in `interest_accumulation()` and eventually in
+#' `get_fiscal_costs()`.
+#'
+#' @keywords internal
+annual_rate_daily <- function(x) {
+  year_days <- 365.0
+
+  # rate x assumed to be a decimal; e.g. 5% as 0.05
+  (1 + x)^(1 / year_days) - 1
 }

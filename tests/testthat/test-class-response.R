@@ -47,34 +47,34 @@ test_that("daedalus_response: Validator checks", {
     new_daedalus_response(
       "low",
       "daedalus_vaccination",
-      duration = -1
+      max_duration = -1
     ),
-    "(duration)*(must be a vector of integer-ish numbers)"
+    "(max_duration)*(must be a single integer-ish number)"
   )
   expect_error(
     new_daedalus_response(
       "low",
       "daedalus_vaccination",
-      duration = 1.5
+      max_duration = 1.5
     ),
-    "(duration)*(must be a vector of integer-ish numbers)"
+    "(max_duration)*(must be a single integer-ish number)"
   )
   expect_error(
     new_daedalus_response(
       "low",
       "daedalus_vaccination",
-      duration = c(1, NA_integer_, 2)
+      max_duration = c(1, NA_integer_, 2)
     ),
-    "(duration)*(must be a vector of integer-ish numbers)"
+    "(max_duration)*(must be a single integer-ish number)"
   )
   expect_error(
     new_daedalus_response(
       "low",
       "daedalus_vaccination",
       time_on = c(10, 12),
-      duration = 1
+      time_off = 1
     ),
-    "(duration)*(must be a vector)*(same length as `time_on`)"
+    "(time_off)*(must be a vector)*(of length 2)"
   )
 
   expect_error(

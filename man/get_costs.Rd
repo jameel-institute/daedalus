@@ -4,7 +4,11 @@
 \alias{get_costs}
 \title{Get epidemic costs from a DAEDALUS model run}
 \usage{
-get_costs(x, summarise_as = c("none", "total", "domain"))
+get_costs(
+  x,
+  summarise_as = c("none", "total", "domain"),
+  productivity_loss_infection = 1
+)
 }
 \arguments{
 \item{x}{A \verb{<daedalus_output>} object from a call to \code{\link[=daedalus]{daedalus()}}.}
@@ -14,6 +18,11 @@ the costs should be returned. Select "none", the default, for the raw costs
 along with overall and domain-specific totals; "total" for the overall cost,
 and "domain" for the total costs per domain; the domains are 'economic',
 'education', and 'life years'.}
+
+\item{productivity_loss_infection}{A single number in the range
+\eqn{[0, 1]} giving the loss in productivity associated with symptomatic
+infection. Currently defaults to 1.0 for compatibility with earlier function
+versions.}
 }
 \value{
 A list of different cost values, including the total cost. See
@@ -62,4 +71,5 @@ adjustment is applied.
 output <- daedalus("Canada", "influenza_1918")
 
 get_costs(output)
+
 }

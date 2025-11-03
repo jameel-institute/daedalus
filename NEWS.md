@@ -1,6 +1,6 @@
-# daedalus 0.2.26
+# daedalus 0.2.38
 
-This development version splits H into two compartments and uses HFR as the probability of death conditional on hospitalisation.
+This development version splits H into two compartments and uses HFR as the probability of death conditional on hospitalisation (PR #109).
 
 ## Notes
 
@@ -9,6 +9,154 @@ This development version splits H into two compartments and uses HFR as the prob
 - On the C++ code, people in Is enter Hd given
 
 - This change will affect the downstream packages `daedalus.api` and `daedalus.compare`, but has no effect on `daedalus.data`. So the `daedalus` user experience remains unchanged.
+
+# daedalus 0.2.37
+
+This patch version:
+
+- Implements a new mechanism to modify the infection transmission rate $\beta$ due to population-level behaviour (via @kunph7);
+
+- Adds the header `daedalus_behaviour.h` with new behavioural scaling functions, and adds helper functions to capture behavioural parameters from R for use in the ODE RHS using lambdas;
+
+- Implements constructors for the `<daedalus_behaviour>` class which inherits from `<daedalus_response>`: this is currently a simple parameter list, but can be extended to full-fledged `daedalus::events::response` if needed.
+
+- Implements constructors for the 'old' and 'new' behavioural mechanisms as `daedalus_old_behaviour()` and `daedalus_new_behaviour()` --- both create the same class of object but with different parameters;
+
+## Breaking changes
+
+- Removes the `auto_social_distancing` argument from `daedalus()` and `daedalus_multi_infection()` and replaces it with a `behaviour` argument.
+
+# daedalus 0.2.36
+
+This patch version allows NPIs to end in reaction to an epidemic signal (PR #122).
+
+- Converts the `daedalus_ode` class to a `mixed`-time ODE system and uses the `update` functionality to access `dy` and end NPIs based on the instantaneous value of $R_t$;
+
+- Adds functionality to calculate $R_t$ in the ODE model; adds functionality to easily get the next-generation matrix in R;
+
+- Updates the function `get_beta()` to include workplace contacts in the age-specific contact matrix;
+
+- Allows an $R_t$ time-series to be returned from model runs;
+
+- Updates how event times are inferred as `event_data` is no longer returned as part of `<daedalus_output>`; the manual NPI ending using `update` is not picked up as an event;
+
+- Updates the costs functions and tests for renamed output elements;
+
+- Updates a number of snapshot tests due to reduction in the transmission rate $\beta$ from updates to `get_beta()`;
+
+- Updates `daedalus::events` to make event generation logic for a `daedalus::events::response` clearer.
+
+# daedalus 0.2.35
+
+This patch version fixes how closures scale within-sector worker-worker contact rates to be quadratic rather than linear, which increases the impact of applying a response strategy in a model run (PR #126 by @patcatgit).
+
+# daedalus 0.2.34
+
+This patch modifies the costs and fiscal costs calculation by changing how absences due to illness are calculated in `get_costs()` and `get_fiscal_costs()` (PR #115 reviewed by @robj411).
+
+- Only $H$ and $D$ are counted as fully absent;
+
+- $I_a$ were previously counted but are no longer counted as absent;
+
+- $I_s$ are counted as present at work when calculating new workplace infections, but also as having complete productivity loss. The level of productivity loss can be changed in `get_costs()` and `get_fiscal_costs()` using the argument `productivity_loss_infection`.
+
+Snapshot tests are updated to reflect that all costs are reduced due to no longer counting $I_a$.
+
+## Notes
+
+`get_fiscal_costs()` is updated:
+
+- Labour availability match the multiplicative implementation in `get_costs()`;
+
+- Interest rate, spending rate, and tax rate have been corrected to be rates rather than percentages, and the interest rate is converted from an annual to a daily rate;
+
+- GVA gap now accounts for government support.
+
+# daedalus 0.2.33
+
+This patch version allows multiple, sequential, time-limited NPIs with varying effects (PR #117).
+
+- Added the function `daedalus_timed_npi()` to create time-limited NPIs which are not responsive to model state, and which accept multiple start and end times (with non-overlapping intervals), with corresponding openness coefficients.
+
+- Changes to `<daedalus_npi>` to accommodate timed NPIs.
+
+- Changes to C++ `daedalus::events::response` class to log the index of any timed events: this allows indexing NPI coefficients, and retains boolean flag for other responses.
+
+- Function `daedalus_npi()` no longer specifies a default end time, and does not allow multiple start and end times (this is moved to `daedalus_timed_npi()`).
+
+- Updated vignette on timed NPIs to show multiple timed-NPI functionality with different openness coefficients.
+
+# daedalus 0.2.32
+
+This patch version demotes `auto_social_distancing` from a full `daedalus::events::response` while retaining the mechanism of behavioural effects (PR #113).
+The mechanism options are mostly handled on the R side (options `"off"` and `"independent"`, by setting initial flag values), with only `"npi_linked"` handled on the C++ side (by setting the reference flag index to the same as `i_npi_flag`).
+This allows the mechanism to remain NPI-linked when necessary without needing to specify time- and state-dependence rules separately.
+
+The internal function `daedalus::events::switch_by_flag` converts flag values > 1.0 to 1.0 internally to account for changes to the NPI flag to an implicit index in PR #117.
+
+# daedalus 0.2.31
+
+This patch version adds functionality to allow multiple, sequential, time-limited NPIs (PR #111 reviewed by @pabloperguz).
+
+- `<daedalus_response>` and sub-classes have separate `time_off` and `max_duration` members; `time_off` may be a vector while `max_duration` is a single number defaulting to `365` for `<daedalus_npi>` only. `<daedalus_vaccination>` has no default value allowing events to continue indefinitely.
+
+- Events returned from `daedalus()` now differentiate between time-limitation and maximum-duration events; the internal function `get_daedalus_response_times()` handles these different names.
+
+- C++ class `daedalus::events::response` now expects members `time_on` and `time_off` to be vectors; this is handled for `<daedalus_npi>` and `<daedalus_vaccination>` via `daedalus::inputs::read_response` but is manually set for other events.
+
+- C++ class `daedalus::events::response` member function `make_time_test` now checks for start and end time with an `expected_value` argument for the expected value of the flag. Function `make_duration_test` only handles the condition that the maximum duration is reached.
+
+- A new vignette `timed_response.Rmd` shows how to use the time-limitation functionality in `<daedalus_npi>`.
+
+- General tests for events in `test-daedalus_events.R` have been moved to either NPI or vaccination test files.
+
+### Breaking changes
+
+- Older versions of _daedalus_ that pass the `duration` argument to a response object to implement time-limits will fail.
+
+### Notes
+
+- The 'auto social-distancing' option `npi_linked` is not fully compatible with the new changes to `<daedalus_npi>`, and auto social-distancing will only launch during the first interval that an NPI is active; this will be fixed in PR #113.
+
+# daedalus 0.2.30
+
+This patch version:
+
+- Introduces the `<daedalus_hosp_overflow>` class for internal use;
+
+- Fixes issues related to vaccination 'pulling along' other state-dependent events by correcting the R and C++ functions `get_state_indices()` and `daedalus::helpers::get_state_idx`;
+
+- Fixes flag checking in the `daedalus::response` class event factories (previous indexing used the absolute indices of flags in `state` which worked for the wrong reason).
+
+# daedalus 0.2.29
+
+This patch version implements a request from UKHSA to allow modelling pre-existing immunity by placing some proportion of the model population in the vaccinated stratum during model initialisation, by specifying `p_immune` in `initial_state_manual` in `daedalus()` and `daedalus_multi_infection()`. See function documentation details for more (PR #118 reviewed by @OliverPolhillUKHSA).
+
+# daedalus 0.2.28
+
+This patch makes a small fix to the internal function `prepare_data()` to make it robust to user-created country demography vectors when the vector names are stripped. Timesteps are now taken from the parent function `daedalus()` and `daedalus_multi_infection()`.
+
+# daedalus 0.2.27
+
+IPR is calculated using the transmission rate $\beta$ in the absence of modifiers from an NPI or spontaneous behavioural changes.
+
+# daedalus 0.2.26
+
+This patch adds the `<daedalus_npi>` class which is used to store NPI response parameters. `daedalus()` now accepts these objects as inputs to `response_strategy`.
+
+- Changes to the `<daedalus_response>` super-class to add an optional string identifier to identify pre-defined scenarios.
+
+- Helper functions added for the new NPI class;
+
+- Minor edits to the `<daedalus_response>` super-class to accommodate the NPI class;
+
+- Minor edits to `<daedalus_vaccination>`;
+
+- C++ `daedalus::inputs::read_response` now reads `<daedalus_response>` class member `name`.
+
+## Notes
+
+From this version onwards, _daedalus_ requires _daedalus.data_ >= v0.0.3 to provide the data `closure_strategy_names` and `closure_strategy_data`.
 
 # daedalus 0.2.25
 

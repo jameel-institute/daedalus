@@ -20,9 +20,15 @@ To override package defaults for country characteristics, pass a
 \verb{<daedalus_country>} object instead. See \code{\link[=daedalus_country]{daedalus_country()}} for more.}
 
 \item{initial_state_manual}{An optional \strong{named} list with the names
-\code{p_infectious} and \code{p_asymptomatic} for the proportion of infectious and
-symptomatic individuals in each age group and economic sector.
-Defaults to \code{1e-6} and \code{0.0} respectively.}
+\code{p_infectious}, \code{p_asymptomatic}, and \code{p_immune}.
+\code{p_infectious} and \code{p_asymptomatic} give the proportion of
+infectious and symptomatic individuals in each age group and economic sector.
+Defaults to \code{1e-6} and \code{0.0} respectively.
+\code{p_immune} may be a single number in the range \verb{0.0 <= p_immune <= 1.0} or a
+4-element vector in that range (the number of age groups in the model), for
+the proportion of individuals in the population or in each age group that
+have some pre-existing immunity to infection (reduced susceptibility). See
+\strong{Details} for more.}
 }
 \value{
 An array with as many dimensions as \code{N_VACCINE_DATA_GROUPS}

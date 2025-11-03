@@ -4,12 +4,10 @@
 \alias{get_daedalus_response_times}
 \title{Get model response times from dust2 output}
 \usage{
-get_daedalus_response_times(output, time_end)
+get_daedalus_response_times(output)
 }
 \arguments{
 \item{output}{dust2 output \code{daedalus_internal()}.}
-
-\item{time_end}{The model end time, passed from \code{\link[=daedalus]{daedalus()}}.}
 }
 \value{
 A list of event start and end times, closure periods, and the

@@ -4,9 +4,6 @@
 #' `<daedalus_vaccination>`. See [daedalus_vaccination()] for the user-facing
 #' helper function which calls this function internally.
 #'
-#' @param name A vaccination investment scenario name from among
-#' [daedalus::vaccine_investment_scenarios].
-#'
 #' @param parameters A named list of parameters for the vaccination scenario.
 #' These must be `start_time` (single numeric), `rate` (single numeric),
 #' `uptake_limit` (single numeric), `country`
@@ -21,9 +18,9 @@
 #' @keywords internal
 #'
 #' @noRd
-new_daedalus_vaccination <- function(name, parameters, ...) {
+new_daedalus_vaccination <- function(parameters, ...) {
   new_daedalus_response(
-    name,
+    name = "vaccination", # used by daedalus::response class to gen event names
     parameters,
     class = "daedalus_vaccination",
     ...
@@ -118,7 +115,8 @@ daedalus_vaccination <- function(
   efficacy = 50,
   waning_period = 180
 ) {
-  # input checking
+  # input checking -- currently we do not allow flexibility in
+  # naming vaccine scenarios
   name <- rlang::arg_match(name, daedalus.data::vaccination_scenario_names)
 
   checkmate::assert_integerish(start_time, lower = 0, null.ok = TRUE)
@@ -149,8 +147,8 @@ daedalus_vaccination <- function(
   params[names(user_params)] <- user_params
 
   x <- new_daedalus_vaccination(
-    name,
     params,
+    identifier = name,
     id_flag = get_flag_index("vax_flag", country),
     time_on = params[["start_time"]],
     id_state_off = get_state_indices("new_vax", country),
@@ -195,16 +193,6 @@ validate_daedalus_vaccination <- function(x) {
       attributes"
     )
   }
-
-  # fmt: skip
-  stopifnot(
-    "Vaccination `name` must be among
-    `daedalus.data::vaccination_scenario_names`" =
-      checkmate::test_string(x$name) &&
-        checkmate::test_subset(
-          x$name, c(daedalus.data::vaccination_scenario_names, "dummy")
-        )
-  )
 
   invisible(lapply(daedalus.data::vaccination_parameter_names, function(n) {
     lgl <- checkmate::test_number(x$parameters[[n]], lower = 0.0, finite = TRUE)
@@ -253,7 +241,7 @@ format.daedalus_vaccination <- function(x, ...) {
   chkDots(...)
 
   cli::cli_text("{.cls {class(x)}}")
-  cli::cli_text("Advance vaccine investment: {cli::style_bold(x$name)}")
+  cli::cli_text("Vaccine investment scenario: {cli::style_bold(x$identifier)}")
   divid <- cli::cli_div(theme = list(.val = list(digits = 3)))
   cli::cli_bullets(
     class = divid,
@@ -334,26 +322,33 @@ prepare_parameters.daedalus_vaccination <- function(x, ...) {
 
 #' Dummy vaccination
 #'
+#' The efficacy of a dummy vaccination object is set to 50% as a stop-gap
+#' implementation of pre-existing population immunity. In scenarios where a
+#' 'true' vaccination scenario is to be passed, it doesn't matter. In scenarios
+#' where no vaccination is intended, it allows any individuals with pre-existing
+#' immunity to be only partially susceptible, while still preventing any
+#' model-time vaccinations as the `rate` is set to 0.
+#'
 #' @return A `daedalus_vaccination` object intended to have no effect;
 #' vaccination rate and efficacy are set to zero.
 #'
 #' @keywords internal
-dummy_vaccination <- function() {
+dummy_vaccination <- function(country) {
   # a dummy vaccination with rates and start set to zero
   params <- list(
     rate = 0,
-    efficacy = 0,
+    efficacy = 50, # set > 0 for any pre-existing immunity in initial_state
     start_time = 0,
     uptake_limit = 0,
     waning_period = 1
   )
   x <- new_daedalus_vaccination(
-    "dummy",
     params,
-    id_flag = NA_integer_,
+    identifier = "no vaccination",
+    id_flag = get_flag_index("vax_flag", country),
     root_state_on = 1L,
     root_state_off = 1L,
-    id_time_log = 1L # NOTE: this is never used as vax is never switched on
+    id_time_log = get_flag_index("vax_start_time", country)
   )
   validate_daedalus_vaccination(x)
   x
@@ -370,11 +365,20 @@ dummy_vaccination <- function() {
 #'
 #' @return A `<daedalus_vaccination>` object.
 validate_vaccination_input <- function(x, country) {
-  checkmate::assert_multi_class(
+  is_good_class <- checkmate::test_multi_class(
     x,
     c("daedalus_vaccination", "character"),
     null.ok = TRUE
   )
+
+  if (!is_good_class) {
+    cli::cli_abort(
+      "daedalus: Got an unexpected value of class {.cls {class(x)}} \
+      for `vaccine_investment`; it may only be `NULL`, \
+      `<daedalus_vaccination>`, or a string giving the name of a pre-defined \
+      vaccination strategy."
+    )
+  }
 
   if (is_daedalus_vaccination(x)) {
     invisible(x)
@@ -387,6 +391,34 @@ validate_vaccination_input <- function(x, country) {
 
     x
   } else {
-    dummy_vaccination()
+    dummy_vaccination(country)
   }
+}
+
+#' Prepare susceptibility matrix for a vaccine-country pair
+#'
+#' @description
+#' Helper function to prepare a susceptibility matrix to be used internally to
+#' modulate the number of infections in vaccinated groups.
+#'
+#' @inheritParams daedalus
+#'
+#' @returns A matrix with dimensions as follows:
+#' - Rows: number of age and economic groups in `country`;
+#' - Cols: number of vaccination strata in the DAEDALUS model, given as
+#' `N_VAX_STRATA`.
+#'
+#' @keywords internal
+make_susc_matrix <- function(vaccination, country) {
+  # no input checks for this internal function
+  efficacy <- get_data(vaccination, "efficacy")
+  tau <- 1.0 - efficacy / 100.0
+
+  n_strata <- get_data(country, "n_strata")
+
+  # default assumption is full susceptibility
+  susc_matrix <- matrix(1, n_strata, N_VACCINE_STRATA)
+  susc_matrix[, i_VACCINATED_STRATUM] <- rep(tau, n_strata)
+
+  susc_matrix
 }

@@ -33,10 +33,11 @@ namespace helpers {
 /// dimension.
 /// @return A vector of compartments which
 inline std::vector<size_t> get_state_idx(
-    const std::vector<size_t> &seq_compartments,
-    const int &n_strata,
+    const std::vector<size_t> &seq_compartments, const int &n_strata,
     const int &n_vax) {
-  std::vector<size_t> i_to_zero;
+  std::vector<size_t> idx;
+
+  const size_t stride = n_strata * daedalus::constants::N_COMPARTMENTS;
 
   std::vector<int> seq_strata(n_strata);
   std::iota(seq_strata.begin(), seq_strata.end(), 1);
@@ -45,51 +46,45 @@ inline std::vector<size_t> get_state_idx(
   std::iota(seq_vax.begin(), seq_vax.end(), 1);
 
   for (const auto &i : seq_compartments) {
+    const size_t max_index = i * n_strata;
     for (const auto &j : seq_strata) {
       for (const auto &k : seq_vax) {
         // cppcheck-suppress useStlAlgorithm
-        i_to_zero.push_back(static_cast<size_t>(i * n_strata * k - j));
+        idx.push_back(static_cast<size_t>(max_index + stride * (k - 1) - j));
       }
     }
   }
 
-  return i_to_zero;
+  return idx;
 }
-
-
 
 /// @brief Process severity parameters to define a death death, based on the
 /// HFR and lengths of hospital stay of the pathogen being simulated, as
 /// specified in `daedalus.data`.
 inline daedalus::types::TensorMat<double> get_omega(
     const daedalus::types::TensorMat<double> &hfr,
-    const double &gamma_H_recovery,
-    const double &gamma_H_death) {
-
+    const double &gamma_H_recovery, const double &gamma_H_death) {
   const double thD = 1.0 / gamma_H_death;
   const double thR = 1.0 / gamma_H_recovery;
 
   const daedalus::types::TensorMat<double> t_hosp =
-    hfr * thD + (1.0 - hfr) * thR;
+      hfr * thD + (1.0 - hfr) * thR;
   const daedalus::types::TensorMat<double> omega = hfr / t_hosp;
 
   return omega;
 }
-
 
 /// @brief Process severity parameters to define a death death, based on the
 /// HFR and lengths of hospital stay of the pathogen being simulated, as
 /// specified in `daedalus.data`.
 inline daedalus::types::TensorMat<double> get_gamma_H(
     const daedalus::types::TensorMat<double> &hfr,
-    const double &gamma_H_recovery,
-    const double &gamma_H_death) {
-
+    const double &gamma_H_recovery, const double &gamma_H_death) {
   const double thD = 1.0 / gamma_H_death;
   const double thR = 1.0 / gamma_H_recovery;
 
   const daedalus::types::TensorMat<double> t_hosp =
-    hfr * thD + (1.0 - hfr) * thR;
+      hfr * thD + (1.0 - hfr) * thR;
   const daedalus::types::TensorMat<double> gamma_H = (1.0 - hfr) / t_hosp;
 
   return gamma_H;
@@ -130,18 +125,48 @@ inline double scale_nu(
   return scaled_nu;
 }
 
-/// @brief Get a coefficient of public concern over epidemic deaths. Used to
-/// implement spontaneous social distancing, potentially in the absence of NPIs,
-/// with lower concern coefficients indicating higher concern and reduced
-/// social contacts.
-/// @param new_deaths The total number of new deaths at time t.
-/// @param rate The rate at which concern rises with each new death.
-/// @param lower_limit The limit to
-/// @return A value in the range 0.0 - 1.0, higher values indicate less concern.
-inline double get_concern_coefficient(const double &new_deaths,
-                                      const double &rate = 0.001,
-                                      const double &lower_limit = 0.2) {
-  return std::pow(1.0 - rate, new_deaths) * (1.0 - lower_limit) + lower_limit;
+/// @brief Get the largest real eigenvalue of a matrix.
+/// @param m A matrix.
+/// @return The leading eigenvalue.
+inline const double get_leading_eigenvalue(const Eigen::MatrixXd &m) {
+  Eigen::VectorXcd eigvals = m.eigenvalues();
+
+  double max_eigval = 0.0;  // could be lower
+  for (size_t i = 0; i < eigvals.size(); i++) {
+    if (eigvals[i].imag() == 0 && eigvals[i].real() > max_eigval) {
+      max_eigval = eigvals[i].real();
+    }
+  }
+
+  return max_eigval;
+}
+
+/// @brief Count the number of individuals in a compartment by age.
+/// @param state An Eigen Tensor of the state.
+/// @param idx_compartment An integer for the compartment.
+/// @return An array of susceptibles per age group.
+inline const Eigen::ArrayXd get_comp_age(
+    const daedalus::types::TensorAry<double> &state,
+    const size_t &idx_compartment) {
+  daedalus::types::TensorVec<double> t_x_comp =
+      state.chip(idx_compartment, daedalus::constants::i_COMPS)
+          .sum(Eigen::array<Eigen::Index, 1>{1});
+
+  Eigen::ArrayXd comp(t_x_comp.dimension(0));
+  Eigen::ArrayXd comp_age(daedalus::constants::DDL_N_AGE_GROUPS);
+
+  for (size_t i = 0; i < t_x_comp.size(); i++) {
+    comp(i) = t_x_comp(i);
+  }
+  const double tail_sum =
+      comp.tail(daedalus::constants::DDL_N_ECON_GROUPS).sum();
+
+  comp_age(0) = comp(0);
+  comp_age(1) = comp(1);
+  comp_age(2) = comp(2) + tail_sum;
+  comp_age(3) = comp(3);
+
+  return comp_age;
 }
 }  // namespace helpers
 

@@ -4,7 +4,7 @@ test_that("Hospital capacity: basic expectations", {
   # NOTE: Not testing every country and infection
   response_strategy <- c("elimination", "school_closures", "economic_closures")
   cx <- daedalus_country("China")
-  cx$hospital_capacity <- 100L
+  cx$hospital_capacity <- 100
   invisible(lapply(response_strategy, function(x) {
     expect_no_condition({
       daedalus(
@@ -25,34 +25,37 @@ test_that("Closures: hospital capacity and closure time", {
 
   x <- daedalus(
     cty_x,
-    "sars_cov_1",
+    "sars_cov_2_omicron",
     response_strategy = "elimination",
-    response_time = 298
+    response_time = 101, # prevent auto-response
+    time_end = 100
   )
   y <- daedalus(
     cty_y,
-    "sars_cov_1",
+    "sars_cov_2_omicron",
     response_strategy = "elimination",
-    response_time = 298
+    response_time = 101, # prevent auto-response
+    time_end = 100
   )
 
   expect_lt(
-    x$response_data$closure_info$closure_times_start,
-    y$response_data$closure_info$closure_times_start
+    x$response_data$npi_info$npi_times_start,
+    y$response_data$npi_info$npi_times_start
   )
 
   # hospital capacity override from `daedalus()`
   cty_x$hospital_capacity <- cty_y$hospital_capacity * 2 # 4x higher
   x <- daedalus(
     cty_x,
-    "sars_cov_1",
+    "sars_cov_2_omicron",
     response_strategy = "elimination",
-    response_time = 298
+    response_time = 101, # no auto response
+    time_end = 100
   )
 
   expect_gt(
-    x$response_data$closure_info$closure_times_start,
-    y$response_data$closure_info$closure_times_start
+    x$response_data$npi_info$npi_times_start,
+    y$response_data$npi_info$npi_times_start
   )
 })
 

@@ -5,9 +5,6 @@
 \alias{class_response}
 \alias{new_daedalus_response}
 \alias{response_class_names}
-\alias{new_daedalus_npi}
-\alias{new_daedalus_behaviour}
-\alias{new_daedalus_mortality}
 \alias{is_daedalus_response}
 \alias{validate_daedalus_response}
 \title{Constructor for the <daedalus_response> super-class and sub-classes}
@@ -19,9 +16,11 @@ new_daedalus_response(
   name,
   class = response_class_names,
   parameters = list(),
+  identifier = NA_character_,
   id_flag = NA_integer_,
   time_on = NA_real_,
-  duration = NA_real_,
+  time_off = NA_real_,
+  max_duration = NA_real_,
   id_state_on = NA_integer_,
   value_state_on = NA_real_,
   id_state_off = NA_integer_,
@@ -32,12 +31,6 @@ new_daedalus_response(
 )
 
 response_class_names
-
-new_daedalus_npi()
-
-new_daedalus_behaviour()
-
-new_daedalus_mortality()
 
 is_daedalus_response(x)
 
@@ -57,13 +50,19 @@ class when building off this constructor.}
 \item{parameters}{Sub-class parameters passed from sub-class constructors.
 Defaults to an empty list to aid development.}
 
+\item{identifier}{An optional string giving the name of a pre-defined
+response strategy. Sub-class constructors and helper functions provide the
+names and handle cases where the strategy is a custom one.}
+
 \item{id_flag}{Index for the state-flag that should be changed when this
 response is on or off. Typically auto-calculated by sub-class constructor or
 helper functions; see e.g. \code{\link[=daedalus_vaccination]{daedalus_vaccination()}}.}
 
 \item{time_on}{Intended to be a numeric vector of start times.}
 
-\item{duration}{Intended to be a numeric vector of durations.}
+\item{time_off}{Intended to be a numeric vector of end times.}
+
+\item{max_duration}{Intended to be a number for the maximum duration.}
 
 \item{id_state_on}{Intended to be a numeric vector of compartment indices
 which are checked for roots that when found launch an event. The check is
@@ -102,7 +101,8 @@ the sub-classes returned by the sub-class constructors:
 \item \code{new_daedalus_npi()}: \verb{<daedalus_npi>};
 \item \code{new_daedalus_vax()}: \verb{<daedalus_vax>};
 \item \code{new_daedalus_behaviour()}: \verb{<daedalus_behaviour>};
-\item \code{new_daedalus_mortality()}: \verb{<daedalus_mortality>}.
+\item \code{new_daedalus_hosp_overflow()}: \verb{<daedalus_hosp_overflow>}. This function
+is not exposed to users.
 }
 }
 \description{

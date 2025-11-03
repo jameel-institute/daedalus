@@ -8,7 +8,7 @@ initial_flags <- function() {
   vax_flag <- 0.0
   npi_flag <- 0.0
   ipr <- 0.0 # incidence-prevalence ratio
-  sd_flag <- 0.0 # spontaneous social distancing flag
+  behav_flag <- 0.0 # behvioural module flag
   hosp_flag <- 0.0 # flag for hosp capacity being exceeded
   npi_start_time <- 0.0 # true NPI start time
   vax_start_time <- 0.0 # true vaccination start time
@@ -19,7 +19,7 @@ initial_flags <- function() {
     ipr = ipr,
     npi_flag = npi_flag,
     vax_flag = vax_flag,
-    sd_flag = sd_flag,
+    behav_flag = behav_flag,
     hosp_flag = hosp_flag,
     npi_start_time = npi_start_time,
     vax_start_time = vax_start_time,
@@ -28,90 +28,164 @@ initial_flags <- function() {
   )
 }
 
+#' Process event data
+#'
+#' @keywords internal
+process_event_times <- function(event_data_list, event) {
+  resp_start_time <- sprintf("%s_start_time", event)
+  resp_time_on <- unique(event_data_list[[resp_start_time]])
+  resp_time_on <- resp_time_on[resp_time_on > 0]
+
+  resp_flag <- sprintf("%s_flag", event)
+
+  # as.numeric to handle possible array-type input
+  resp_duration <- rle(as.numeric(event_data_list[[resp_flag]]))
+  resp_duration <- resp_duration[["lengths"]][as.logical(
+    resp_duration$values
+  )]
+
+  if (length(resp_duration) == 0L) {
+    # handle no resps case
+    resp_time_on <- NA_real_
+    resp_time_off <- NA_real_
+    resp_duration <- NA_real_
+    npi_periods <- NA_integer_
+  } else {
+    # NOTE: reduce by 1 as logging means time is rounded up (I think)
+    resp_time_on <- round(resp_time_on)
+    resp_duration <- round(resp_duration)
+    resp_time_off <- round(resp_time_on + resp_duration)
+    npi_periods <- unlist(
+      Map(seq, resp_time_on, resp_time_off)
+    )
+  }
+
+  # return list for consistency with daedalus
+  resp_time_list <- list(
+    resp_time_on,
+    resp_time_off,
+    resp_duration,
+    npi_periods
+  )
+  base_names <- c("times_start", "times_end", "durations", "periods")
+  names(resp_time_list) <- sprintf(
+    "%s_%s",
+    event,
+    base_names
+  )
+
+  resp_time_list
+}
+
 #' Get model response times from dust2 output
 #'
 #' @param output dust2 output `daedalus_internal()`.
-#' @param time_end The model end time, passed from [daedalus()].
 #'
 #' @return A list of event start and end times, closure periods, and the
 #' duration of each closure event, suitable for a `<daedalus_output>` object.
 #'
 #' @keywords internal
-get_daedalus_response_times <- function(output, time_end) {
+get_daedalus_response_times <- function(output) {
   # internal function with no input checking
-  event_data <- output$event_data[[1]]
-  resp_times_on <- event_data[grepl("npi_\\w*_on$", event_data$name), "time"]
-  resp_time_on_realised <- if (length(resp_times_on) == 0) {
-    NA_real_
-  } else {
-    floor(resp_times_on)
-  }
 
-  resp_times_off <- event_data[grepl("npi_\\w*_off$", event_data$name), "time"]
-  resp_time_off_realised <- if (all(is.na(resp_time_on_realised))) {
-    NA_real_
-  } else if (length(resp_times_off) == 0) {
-    time_end
-  } else {
-    floor(resp_times_off)
-  }
+  # NOTE: npi activated on the last day of a model run is counted
+  # as active for 1 day. This throws off some tests checking for npi durations
 
-  # handle unterminated npi
-  if (length(resp_time_off_realised) == (length(resp_time_on_realised) - 1)) {
-    resp_time_off_realised <- c(resp_time_off_realised, time_end)
-  } else if (length(resp_time_on_realised) < length(resp_time_off_realised)) {
-    cli::cli_abort(
-      "Model NPIs: More end events than start events! Check model dynamics."
-    )
-  }
+  event_data <- output$data[FLAG_NAMES]
+  event_names <- c("npi", "vax")
 
-  durations <- resp_time_off_realised - resp_time_on_realised
+  event_info <- lapply(event_names, function(event) {
+    resp_data <- event_data[grepl(event, names(event_data), fixed = TRUE)]
+    process_event_times(resp_data, event)
+  })
 
-  if (all(is.na(durations))) {
-    closure_periods <- NA_integer_
-  } else {
-    closure_periods <- unlist(
-      Map(seq, resp_time_on_realised, resp_time_off_realised)
-    )
-  }
+  output_names <- c("npi_data", "vaccination_data")
+  names(event_info) <- output_names
 
-  # return list for consistency with daedalus
-  list(
-    closure_times_start = resp_time_on_realised,
-    closure_times_end = resp_time_off_realised,
-    closure_durations = durations,
-    closure_periods = closure_periods
-  )
+  event_info
+}
+
+#' Get response times from a dust2 system with multiple groups
+#'
+#' @inheritParams get_daedalus_response_times
+#'
+#' @keywords internal
+get_daedalus_multi_response_times <- function(
+  output,
+  n_groups
+) {
+  event_data <- output$data[FLAG_NAMES]
+  event_names <- c("npi", "vax")
+
+  output_names <- c("npi_data", "vaccination_data")
+
+  event_info <- lapply(event_names, function(event) {
+    resp_data <- event_data[grepl(event, names(event_data), fixed = TRUE)]
+
+    # some processing to get into a list format similar to single-infection case
+    # similar handling to `prepare_output()` in R/prepare_output.R
+    resp_data <- lapply(resp_data, asplit, 1)
+    resp_data <- data.table::transpose(resp_data)
+
+    # data.table::transpose strips names, reassign here
+    names <- sprintf("%s_%s", event, c("flag", "start_time"))
+    resp_data <- lapply(resp_data, function(l) {
+      names(l) <- names
+      l
+    })
+
+    lapply(resp_data, process_event_times, event)
+  })
+
+  names(event_info) <- output_names
+
+  event_info
 }
 
 #' Internal function for daedalus
 #'
 #' @return A list of state values as returned by `dust2::dust_unpack_state()`.
+#'
 #' @keywords internal
 daedalus_internal <- function(
   time_end,
-  params,
-  state,
+  parameters,
+  initial_state,
   flags,
   ode_control,
   n_groups
 ) {
   sys <- dust2::dust_system_create(
     daedalus_ode,
-    params,
+    parameters,
     n_groups = n_groups,
-    ode_control = ode_control
+    ode_control = ode_control,
+    dt = 1.0
   )
 
-  # add initial flags
-  state <- c(state, flags)
-  dust2::dust_system_set_state(sys, state)
+  # add initial flags; handle multi-infection case
+  if (is.list(flags)) {
+    # case for when flags is a list passed from daedalus_multi_infection()
+    # groups are cols
+    initial_state <- matrix(
+      initial_state,
+      length(initial_state),
+      n_groups
+    )
+    flags <- matrix(unlist(flags), N_FLAGS, n_groups)
+    initial_state <- rbind(initial_state, flags)
+  } else {
+    # default single infection case
+    initial_state <- c(initial_state, flags)
+  }
+
+  dust2::dust_system_set_state(sys, initial_state)
 
   state <- dust2::dust_system_simulate(sys, seq(0, time_end))
 
   list(
     data = dust2::dust_unpack_state(sys, state),
-    event_data = dust2::dust_system_internals(sys)[["events"]]
+    events = dust2::dust_system_internals(sys)[["events"]]
   )
 }
 
@@ -139,13 +213,11 @@ daedalus_internal <- function(
 #' of an infection. Create and pass a `<daedalus_infection>` to tweak infection
 #' parameters using [daedalus_infection()].
 #'
-#' @param response_strategy A string for the name of response strategy followed;
-#' defaults to "none". The response strategy determines the country-specific
-#' response threshold following which the response is activated. See
-#' `response_threshold`.
-#'
+#' @param response_strategy A string for the name of response strategy followed,
+#' a numeric of length 45 (number of economic sectors), or a `<daedalus_npi>`
+#' object. Defaults to "none".
 #' While the response strategy is active, economic contacts are scaled using the
-#' package data object `daedalus.data::closure_data`.
+#' package data object `daedalus.data::closure_strategy_data`.
 #'
 #' @param vaccine_investment Either a single string or a
 #' `<daedalus_vaccination>` object specifying the vaccination parameters
@@ -159,19 +231,27 @@ daedalus_internal <- function(
 #' @param response_time A single numeric value for the time in days
 #' at which the selected response is activated. This is ignored if the response
 #' has already been activated by the hospitalisation threshold being reached.
-#' Defaults to 30 days.
+#' Defaults to 30 days. Responses have a default maximum duration of 365 days.
+#' This can be changed by passing a `<daedalus_npi>` object to
+#' `response_strategy`.
 #'
-#' @param response_duration A single integer-ish number that gives the number of
-#' days after `response_time` that an NPI should end.
-#'
-#' @param auto_social_distancing A string giving the option for the form of
-#' spontaneous social distancing in the model, which reduces infection
-#' transmission as a function of daily deaths. See **Details** for more.
+#' @param behaviour An optional object of class `<daedalus_behaviour>` which
+#' determines how population-level perception of epidemic signals affects
+#' infection transmission. May be `NULL` for no behavioural modification of
+#' infection transmission. See
+#' the `<daedalus_behaviour>` [class documentation][class_behaviour] for more
+#' details on the available behavioural mechanisms
 #'
 #' @param initial_state_manual An optional **named** list with the names
-#' `p_infectious` and `p_asymptomatic` for the proportion of infectious and
-#' symptomatic individuals in each age group and economic sector.
+#' `p_infectious`, `p_asymptomatic`, and `p_immune`.
+#' `p_infectious` and `p_asymptomatic` give the proportion of
+#' infectious and symptomatic individuals in each age group and economic sector.
 #' Defaults to `1e-6` and `0.0` respectively.
+#' `p_immune` may be a single number in the range `0.0 <= p_immune <= 1.0` or a
+#' 4-element vector in that range (the number of age groups in the model), for
+#' the proportion of individuals in the population or in each age group that
+#' have some pre-existing immunity to infection (reduced susceptibility). See
+#' **Details** for more.
 #'
 #' @param time_end An integer-like value for the number of timesteps
 #' at which to return data. This is treated as the number of days with data
@@ -195,37 +275,28 @@ daedalus_internal <- function(
 #' the proportion of initially infectious individuals who are considered to be
 #' asymptomatic. Defaults to 0.0.
 #'
-#' ## Details: Spontaneous social distancing
+#' - `p_immune`: Either a single number or a vector of 4 elements (the number
+#' of age groups) in the range \eqn{[0.0, 1.0]} for the proportion of the
+#' population (or each age group) that is considered to have pre-existing
+#' immunity. This is a stop-gap implementation that assumes one of two cases:
+#' (1) if no vaccination is intended in the model and `vaccine_investment` is
+#' `NULL`, the susceptibility of individuals pre-existing immunity is 50%; or
+#' (2) if a vaccination strategy is specified, the pre-existing immunity is
+#' assumed to be from a prior rollout, and the susceptibility is determined by
+#' the chosen vaccination strategy (as `1 - efficacy`).
 #'
-#' There are three possible options for this behavioural module, given below.
-#' **Note that** a major issue with including this in a model run (any value
-#' other than `"off"`) is that it leads to substantially lower response costs,
-#' and generally better health outcomes (lives lost), **without accounting for
-#' any attendant economic or social costs**. As such, please treat this option
-#' as **highly experimental**.
-#'
-#' - `"off"`: There is no effect of daily deaths on infection transmissibility.
-#' This is the **default choice**.
-#'
-#' - `"independent"`: Public-concern over deaths reduces transmissibility, and
-#' is independent of any mandated responses. It begins at the start of the
-#' simulation, and continues until the simulation ends.
-#'
-#' - `"npi_linked`": Public-concern over deaths reduces transmissibility, but
-#' only when a  mandated response is active. Note that there is currently no way
-#' to end a response triggered by a state, i.e., an NPI launched due to hospital
-#' capacity being breached.
 #'
 #' @return A `<daedalus_output>` object if `infection` is a string or a single
-#' `<daedalus_infection>` object. Otherwise, a list of `<daedalus_output>`s
-#' of the same length of `infection` if a list of `<daedalus_infection>`s is
-#' passed to `infection`.
+#' `<daedalus_infection>` object.
 #'
 #' @examples
 #' # country and infection specified by strings using default characteristics
 #' output <- daedalus(
 #'   "Canada", "influenza_1918"
 #' )
+#'
+#' # print output
+#' output
 #'
 #' # country passed as <daedalus_country> with some characteristics modified
 #' country_x <- daedalus_country(
@@ -246,15 +317,21 @@ daedalus_internal <- function(
 #'   initial_state_manual = list(p_infectious = 1e-3)
 #' )
 #'
+#' # including behavioural modification
+#' output <- daedalus(
+#'   "Canada", "influenza_1918",
+#'   behaviour = daedalus_old_behaviour(),
+#'   time_end = 100
+#' )
+#'
 #' @export
 daedalus <- function(
   country,
   infection,
   response_strategy = NULL,
   vaccine_investment = NULL,
+  behaviour = NULL,
   response_time = 30,
-  response_duration = 365,
-  auto_social_distancing = c("off", "independent", "npi_linked"),
   initial_state_manual = NULL,
   time_end = 600,
   ...
@@ -267,6 +344,7 @@ daedalus <- function(
 
   # handle infection input and convert to a list of daedalus_infection
   infection <- validate_infection_input(infection)
+  flags[["ipr"]] <- infection$r0
 
   # collect optional ODE control params and create ode_control obj
   ode_control <- rlang::list2(...)
@@ -276,40 +354,21 @@ daedalus <- function(
     ode_control <- NULL
   }
 
-  # checks on interventions
-  # also prepare the appropriate economic openness vectors
-  # allowing for a numeric vector, or NULL for truly no response
-  if (is.null(response_strategy)) {
-    response_strategy <- "none" # for output class
-    openness <- rep(1.0, N_ECON_SECTORS)
-    response_time <- NULL # to be filtered out later
-  } else if (is.numeric(response_strategy)) {
-    checkmate::assert_numeric(
-      response_strategy,
-      lower = 0,
-      upper = 1,
-      len = N_ECON_SECTORS
-    )
-    openness <- response_strategy
-  } else if (
-    length(response_strategy) == 1 &&
-      response_strategy %in% names(daedalus.data::closure_data)
-  ) {
-    openness <- daedalus.data::closure_data[[response_strategy]]
-  } else {
-    cli::cli_abort(
-      "Got an unexpected value for `response_strategy`. Options are `NULL`, \
-      a numeric vector, or a recognised strategy. See function docs."
-    )
-  }
+  npi <- validate_npi_input(
+    response_strategy,
+    country,
+    infection,
+    response_time
+    # set response duration to default internal value if pre-canned npi passed
+  )
 
-  # checks on vaccination input; make copy to allow for true vax start at 0.0
-  # if users want that
+  response_identifier <- npi$identifier
+
   vaccination <- validate_vaccination_input(vaccine_investment, country)
 
   if (
     get_data(vaccination, "start_time") == 0.0 &&
-      !is.null(vaccine_investment)
+      (!is.null(vaccine_investment))
   ) {
     # check vaccination start time and set vaccination flag
     flags["vax_flag"] <- 1.0
@@ -323,42 +382,12 @@ daedalus <- function(
     ))
   }
 
-  # NULL converted to "none"; WIP: this will be moved to a class constructor
-  if (identical(response_strategy, "none")) {
-    # set response time to NULL when response is NULL
-    response_time <- NULL
-  } else {
-    is_good_response_time <- checkmate::test_integerish(
-      response_time,
-      upper = time_end, # for compat with daedalus
-      lower = 1L, # responses cannot start at 0, unless strategy is null
-      any.missing = FALSE,
-      len = 1
-    )
-    if (!is_good_response_time) {
-      cli::cli_abort(
-        "Expected `response_time` to be between 1 and {time_end}."
-      )
-    }
-
-    is_good_response_duration <- checkmate::test_count(
-      response_duration
-    )
-    if (!is_good_response_duration) {
-      cli::cli_abort(
-        "Expected `response_duration` to be a single positive integer-like"
-      )
-    }
+  #### BEHAVIOURAL MODULE ####
+  # validate input and set flag to on if not null
+  behaviour <- validate_behaviour_input(behaviour)
+  if (behaviour$identifier != "no behaviour") {
+    flags["behav_flag"] <- 1.0
   }
-
-  #### spontaneous social distancing ####
-  auto_social_distancing <- rlang::arg_match(auto_social_distancing)
-  auto_social_distancing <- switch(
-    auto_social_distancing,
-    off = 0,
-    independent = 1,
-    npi_linked = 2
-  )
 
   #### Prepare initial state and parameters ####
   initial_state <- make_initial_state(country, initial_state_manual)
@@ -370,18 +399,21 @@ daedalus <- function(
     prepare_parameters(country),
     prepare_parameters(infection),
     prepare_parameters(vaccination),
+    prepare_parameters(behaviour),
+    # NOTE: there is no prepare_parameters.npi method but there might/should be
     list(
       beta = get_beta(infection, country),
       susc = susc,
-      openness = openness,
-      response_time = response_time,
-      response_duration = response_duration,
-      auto_social_distancing = auto_social_distancing,
-      vaccination = vaccination
+      ngm = get_ngm(country, infection),
+      # all three below needed for npi-linked behaviour response
+      # temporary as these can be vecs, see future PRs
+      vaccination = vaccination,
+      npi = npi,
+      hosp_overflow = new_daedalus_hosp_overflow(country)
     )
   )
 
-  # filter out NULLs so missing values can be read as NAN in C++
+  # filter out NULLs so missing values can be treated as NA_REAL in C++
   parameters <- drop_null(parameters)
 
   output <- daedalus_internal(
@@ -392,24 +424,28 @@ daedalus <- function(
     ode_control,
     n_groups = 1
   )
-  output_data <- prepare_output(output$data, country)
+
+  timesteps <- seq(0, time_end)
+  output_data <- prepare_output(output$data, country, timesteps)
+  rt_data <- output$data[["ipr"]]
+  event_info <- get_daedalus_response_times(output)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
   output <- list(
     total_time = time_end,
     model_data = output_data,
+    rt_data = rt_data,
     country_parameters = unclass(country),
     infection_parameters = unclass(infection), # infection is list
+    vaccination_parameters = unclass(vaccination),
+    behaviour_parameters = unclass(behaviour),
     response_data = list(
-      response_strategy = response_strategy,
-      openness = openness,
-      closure_info = get_daedalus_response_times(
-        output,
-        time_end
-      )
-    ),
-    event_data = output$event_data[[1]]
+      response_strategy = response_identifier,
+      openness = get_data(npi, "openness"),
+      npi_info = event_info[["npi_data"]],
+      vaccination_info = event_info[["vaccination_data"]]
+    )
   )
   as_daedalus_output(output)
 }

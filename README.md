@@ -81,12 +81,12 @@ data <- daedalus("Canada", "influenza_1918")
 
 # get pandemic costs as a total in million dollars
 get_costs(data, "total")
-#> [1] 1605991
+#> [1] 1469908
 
 # disaggregate total for economic, education, and health costs
 get_costs(data, "domain")
 #>     economic    education   life_value   life_years 
-#>    34420.998     2137.099  1569433.234 34081069.139
+#>    29756.419     1897.382  1438253.766 31232437.916
 ```
 
 Users can select infection parameters from among seven epidemics caused
@@ -110,11 +110,20 @@ website.
 on the economics of pandemic
 preparedness](https://github.com/robj411/p2_drivers).
 
-[*daedalus.data*](https://github.com/jameel-institute/daedalus.data) is
-a stand-alone helper R package to handle input data for the *daedalus*
-model. Its purpose is to allow users to flexibly manipulate or change
-epidemiological and economic data, without needing to modify the model
-itself.
+- [*daedalus.data*](https://github.com/jameel-institute/daedalus.data)
+  is a stand-alone helper R package to handle input data for the
+  *daedalus* model. Its purpose is to allow users to flexibly manipulate
+  or change epidemiological and economic data, without needing to modify
+  the model itself.
+
+- [*daedalus.compare*](https://github.com/jameel-institute/daedalus.compare)
+  is an R package that sits both downstream of *daedalus* and also wraps
+  some *daedalus* functions to help users conveniently run multiple
+  epidemic scenarios.
+
+- [*daedalus.api*](https://github.com/jameel-institute/daedalus.data) is
+  an R package that connects *daedalus* with the [DAEDALUS
+  Explore](https://daedalus.jameel-institute.org/) dashboard.
 
 ## References
 

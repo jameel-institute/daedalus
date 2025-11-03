@@ -13,11 +13,12 @@ get_fiscal_costs(
   interest_rate = 4,
   tax_rate = 35,
   spending_rate = 45,
-  starting_debt = 0
+  starting_debt = 0,
+  productivity_loss_infection = 1
 )
 }
 \arguments{
-\item{x}{A \verb{<daedalus_output>} object.}
+\item{x}{A \verb{<daedalus_output>} object from a call to \code{\link[=daedalus]{daedalus()}}.}
 
 \item{support_level}{The proportion of pandemic-related economic losses that
 a government compensates, as a proportion.}
@@ -42,12 +43,17 @@ of GDP.}
 
 \item{starting_debt}{The value of national starting debt. Currently assumed
 to be zero while country-specific data are collected.}
+
+\item{productivity_loss_infection}{A single number in the range
+\eqn{[0, 1]} giving the loss in productivity associated with symptomatic
+infection. Currently defaults to 1.0 for compatibility with earlier function
+versions.}
 }
 \value{
 A two-element list giving:
 \itemize{
 \item A list of \code{fiscal_costs} with elements giving the fiscal costs
-\eqn{\text{TCG_t}} and a breakdown of these costs, as well as interest;
+\eqn{\text{TCG}_t} and a breakdown of these costs, as well as interest;
 \item A list of \code{public_debt} of the public debt \eqn{b_t}, which is
 the net of baseline public spending, pandemic response costs, and
 pandemic-impacted revenue.
@@ -65,12 +71,13 @@ function is intended to be called after \code{\link[=daedalus]{daedalus()}} and 
 required to compute fiscal costs may need to be bundled along with model
 outputs.
 Note that all rates (interest rate, spending rate, and tax rate) are given as
-annual percentages, and are simply divided by 365 to give the daily
-rate.
+annual percentages. Only the interest rate is converted to an daily value
+from an annual one for use in compounding.
 \subsection{Public spending}{
 
 Spending is calculated as:
-\eqn{G_t = \sigma(\text{GVA}^* - \text{GVA}_t) + Cv_t + Cp_t}
+
+\deqn{G_t = \sigma(\text{GVA}^* - \text{GVA}_t) + Cv_t + Cp_t}
 
 where \eqn{Cv_t} is the time-specific cost of vaccination, and is calculated
 as the cost of new vaccinations in each timestep: \eqn{P_v \times \delta V_t}
@@ -81,27 +88,47 @@ and is calculated as \eqn{\psi (\bar N - D_t) P_p}, where
 \eqn{\bar N - D_t} is the remaining number of individuals in the population,
 and \eqn{\psi} is the proportion taking up any protection offered by the
 response.
+}
 
-The total cost to the public of the pandemic over each day of the pandemic
-is assumed to be made up of borrowing, and is then
-\eqn{\text{TCG}_t = G_t + (1 + R_t^T) \text{TCG}_{t - 1}}, where
-\eqn{R_t^T} is the daily rate of interest to be paid on the borrowed amount.
-This rate is currently modelled as being constant over time.
+\subsection{Interest on spending and fiscal cost}{
+
+We assume that the government borrows to spend on pandemic mitigation
+measures outlined above such that the total cost to the public is then
+
+\deqn{\text{TCG}_t = G_t + (1 + R_t^T) \text{TCG}_{t - 1}}
+
+where \eqn{R_t^T} is the daily rate of interest to be paid on the borrowed
+amount.
+
+The interest rate is modelled as being constant over time. Users pass the
+annual rate of interest as a percentage, and this is converted to a daily
+rate using the internal function \code{annual_rate_daily()} as
+\eqn{(1 + R_t^T)^{1 / 365} - 1}.
+}
+
+\subsection{Total public debt}{
 
 The total public debt at the end of the pandemic \eqn{b_t} is then the sum of
-total public spending on the pandemic \eqn{\text{TCG}_t},
-existing day-to-day public spending \eqn{\bar G} which is assumed to be a
-fraction of daily GDP \eqn{\nu \text{GDP}}, existing debt owed due to past
-daily spending, interest to be paid on the debt, less the revenues collected
-\eqn{\mu \text{GVA}_{t-1}}. The daily GVA is the pre-pandemic GVA scaled by
-the available labour supply during the pandemic, taking into account labour
-restrictions due to illness-related absences and deaths, and response-related
+:
+\itemize{
+\item total public spending on the pandemic \eqn{\text{TCG}_t},
+\item existing day-to-day public spending \eqn{\bar G} which is assumed to be a
+fraction of daily GDP \eqn{\nu \text{GDP}},
+\item existing debt owed due to past daily spending (including on pandemic
+mitigation), and interest to be paid on the debt,
+\item less the revenues collected from taxation, \eqn{\mu \text{GVA}_{t-1}},
+where \eqn{\mu} is the mean rate of taxation.
+}
+
+The daily GVA is the pre-pandemic GVA scaled by the available labour supply
+during the pandemic, taking into account labour restrictions due to
+illness-related absences and deaths, and response-related
 restrictions.
 
 GDP is calculated as the sum of sector-specific daily GVA, and existing debt
 is currently assumed to be zero and is not included in the equation.
 
-\eqn{b_t = \bar G + \text{TCG}_{t-1} + (1 + R_{t-1}^T) b_{t-1} -
+\deqn{b_t = \bar G + \text{TCG}_{t-1} + (1 + R_{t-1}^T) b_{t-1} -
   \mu \text{GVA}_{t-1}
 }
 }
@@ -121,5 +148,8 @@ o <- daedalus(
   "CAN", "influenza_2009",
   time_end = 30
 )
+
+# Compare public debt added estimates with other estimates from Covid-19:
+# https://www.ctf.ca/EN/EN/Newsletters/Perspectives/2020/3/200302.aspx
 get_fiscal_costs(o)
 }

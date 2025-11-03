@@ -13,6 +13,10 @@
 #' "daedalus_mortality". No default argument, users are forced to specify a
 #' class when building off this constructor.
 #'
+#' @param identifier An optional string giving the name of a pre-defined
+#' response strategy. Sub-class constructors and helper functions provide the
+#' names and handle cases where the strategy is a custom one.
+#'
 #' @param parameters Sub-class parameters passed from sub-class constructors.
 #' Defaults to an empty list to aid development.
 #'
@@ -22,7 +26,9 @@
 #'
 #' @param time_on Intended to be a numeric vector of start times.
 #'
-#' @param duration Intended to be a numeric vector of durations.
+#' @param time_off Intended to be a numeric vector of end times.
+#'
+#' @param max_duration Intended to be a number for the maximum duration.
 #'
 #' @param id_state_on Intended to be a numeric vector of compartment indices
 #' which are checked for roots that when found launch an event. The check is
@@ -64,16 +70,19 @@
 #'
 #' - `new_daedalus_behaviour()`: `<daedalus_behaviour>`;
 #'
-#' - `new_daedalus_mortality()`: `<daedalus_mortality>`.
+#' - `new_daedalus_hosp_overflow()`: `<daedalus_hosp_overflow>`. This function
+#' is not exposed to users.
 #'
 #' @keywords internal
 new_daedalus_response <- function(
   name,
   class = response_class_names,
   parameters = list(),
+  identifier = NA_character_,
   id_flag = NA_integer_,
   time_on = NA_real_,
-  duration = NA_real_,
+  time_off = NA_real_,
+  max_duration = NA_real_,
   id_state_on = NA_integer_,
   value_state_on = NA_real_,
   id_state_off = NA_integer_,
@@ -88,10 +97,12 @@ new_daedalus_response <- function(
   x <- list(
     name = name,
     class = class,
+    identifier = identifier,
     parameters = parameters,
     id_flag = id_flag,
     time_on = time_on,
-    duration = duration,
+    time_off = time_off,
+    max_duration = max_duration,
     id_state_on = id_state_on,
     value_state_on = value_state_on,
     id_state_off = id_state_off,
@@ -113,23 +124,8 @@ response_class_names <- c(
   "daedalus_npi",
   "daedalus_vaccination",
   "daedalus_behaviour",
-  "daedalus_mortality"
+  "daedalus_hosp_overflow"
 )
-
-#' @name class_response
-new_daedalus_npi <- function() {
-  new_daedalus_response("npi", "daedalus_npi")
-}
-
-#' @name class_response
-new_daedalus_behaviour <- function() {
-  new_daedalus_response("behaviour", "daedalus_behaviour")
-}
-
-#' @name class_response
-new_daedalus_mortality <- function() {
-  new_daedalus_response("mortality", "daedalus_mortality")
-}
 
 #' @name class_response
 is_daedalus_response <- function(x) {
@@ -149,10 +145,12 @@ validate_daedalus_response <- function(x) {
   expected_fields <- c(
     "name",
     "class",
+    "identifier",
     "parameters",
     "id_flag",
     "time_on",
-    "duration",
+    "time_off",
+    "max_duration",
     "id_state_on",
     "value_state_on",
     "id_state_off",
@@ -174,7 +172,8 @@ validate_daedalus_response <- function(x) {
 
   is_good_time_on <- checkmate::test_integerish(
     x$time_on,
-    lower = 0
+    lower = 0,
+    any.missing = TRUE
   )
   if (!is_good_time_on) {
     cli::cli_abort(
@@ -183,15 +182,28 @@ validate_daedalus_response <- function(x) {
     )
   }
 
-  is_good_duration <- checkmate::test_integerish(
-    x$duration,
+  is_good_time_off <- checkmate::test_integerish(
+    x$time_off,
     lower = 0,
-    len = length(x$time_on)
+    len = length(x$time_on),
+    any.missing = TRUE
   )
-  if (!is_good_duration) {
+  if (!is_good_time_off) {
     cli::cli_abort(
-      "{.cls daedalus_response} member {.str duration} must be a vector of
-      integer-ish numbers of the same length as `time_on`, but it is not."
+      "{.cls daedalus_response} member {.str time_off} must be a vector of
+      integer-ish numbers of length {length(x$time_on)}, but it is a \
+      {.cls {class(x$time_on)}} of length {length(x$time_off)}."
+    )
+  }
+
+  is_good_max_duration <- checkmate::test_count(
+    x$max_duration,
+    na.ok = TRUE # allow NAs for indefinite events
+  )
+  if (!is_good_max_duration) {
+    cli::cli_abort(
+      "{.cls daedalus_response} member {.str max_duration} must be a single
+      integer-ish number, but it is not."
     )
   }
 

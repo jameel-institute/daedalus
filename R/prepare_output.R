@@ -75,6 +75,8 @@ out_list_to_df <- function(output, new_vaccinations, timesteps, labels) {
 #' @param country A `<daedalus_country>` object from which to get data on the
 #' number of demographic, economic, and vaccine groups.
 #'
+#' @param timesteps A numeric vector of model timesteps.
+#'
 #' @return A `<data.frame>` in long or 'tidy' format with the columns
 #' "time", "age_group", "compartment", "econ_sector", and "value", for the
 #' age-group specific value of the number of individuals in each economic sector
@@ -89,15 +91,14 @@ out_list_to_df <- function(output, new_vaccinations, timesteps, labels) {
 #' economic sectors (including non-working).
 #'
 #' @keywords internal
-prepare_output <- function(output, country) {
+prepare_output <- function(output, country, timesteps) {
   # internal function: no input checking
-  timesteps <- seq_len(utils::tail(dim(output[[1]]), 1)) - 1
   n_times <- length(timesteps)
 
-  # find groups if any
+  # find groups if any; this is only needed for daedalus_multi_infection
   n_groups <- 1
-  if (length(dim(output[[1]])) == 3L) {
-    n_groups <- dim(output[[1]])[[2]]
+  if (length(dim(first(output))) == 3L) {
+    n_groups <- dim(first(output))[[2]]
   }
 
   # remove flags and new vaccinations data
@@ -110,6 +111,12 @@ prepare_output <- function(output, country) {
   n_age_groups <- length(demography)
   n_econ_sectors <- length(get_data(country, "workers"))
   age_group_names <- names(demography)
+
+  # users may re-assign demography values, losing vector names
+  if (is.null(age_group_names)) {
+    age_group_names <- sprintf("age_group_%i", seq_along(demography))
+  }
+
   i_working_age <- get_data(country, "group_working_age")
 
   # age group labels

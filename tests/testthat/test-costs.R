@@ -37,6 +37,22 @@ test_that("Costs: basic expectations", {
   )
 })
 
+test_that("Costs: productivity parameter for infections", {
+  costs_1 <- get_costs(
+    daedalus("GBR", "sars_cov_1", time_end = 100)
+  )
+
+  costs_2 <- get_costs(
+    daedalus("GBR", "sars_cov_1", time_end = 100),
+    productivity_loss_infection = 0.5
+  )
+
+  expect_lt(
+    costs_2$economic_costs$economic_cost_absences,
+    costs_1$economic_costs$economic_cost_absences
+  )
+})
+
 test_that("Costs: scenario expectations", {
   ## when response = "none"
   output <- daedalus("Canada", "influenza_2009", time_end = 400)
@@ -47,7 +63,7 @@ test_that("Costs: scenario expectations", {
 
   # expect life years lost costs in response scenarios are higher than no resp.
   o <- lapply(
-    names(daedalus.data::closure_data),
+    names(daedalus.data::closure_strategy_data),
     function(x) {
       daedalus(
         "GBR",
@@ -58,7 +74,7 @@ test_that("Costs: scenario expectations", {
   )
 
   a <- lapply(o, get_costs, "domain")
-  names(a) <- names(daedalus.data::closure_data)
+  names(a) <- names(daedalus.data::closure_strategy_data)
 
   v <- vapply(a, `[[`, FUN.VALUE = 1, "life_years")
 
@@ -76,13 +92,16 @@ test_that("Costs: scenario expectations", {
       costs <- get_costs(output)
 
       # closure costs must be at least one day of reduced GVA
+      # NOTE: using last() here to approximate a more comprehensive calculation
+      # in `R/costs.R`
       expected_cost_closures <- output$country_parameters$gva *
-        (1 - output$response_data$openness) *
-        sum(output$response_data$closure_info$closure_durations)
+        (1 - last(output$response_data$openness)) *
+        sum(output$response_data$npi_info$npi_durations)
 
       expect_identical(
         costs$economic_costs$economic_cost_closures,
-        sum(expected_cost_closures)
+        sum(expected_cost_closures),
+        tolerance = 1e-6 # difference < 1e-6 on MacOS CI causes error
       )
     })
   })

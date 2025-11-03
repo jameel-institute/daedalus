@@ -22,3 +22,4 @@ format-cpp.sh
 lint-cpp.sh
 format-r.sh
 .vscode
+*.png

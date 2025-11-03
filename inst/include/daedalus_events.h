@@ -1,16 +1,30 @@
 // Copyright 2025 Imperial College of Science, Technology and Medicine.
 // See repository licence in LICENSE.md.
 
+/* NOTE: daedalus response objects are intended to return dust2 events.
+dust2 events require a condition and an action function.
+
+The condition function operates on a pointer to an array that is a SUBSET of the
+state variable; this subset is given by the dust2::event member `index` which
+may be a vector. Access y[0] to access the first value of the subset of state
+variable. Unclear how non-contiguous indices are handled.
+
+The action function operates on a pointer to the whole (or first element) of
+the state variable, and absolute indexing must be used.
+*/
+
 #pragma once
 
 // clang-format off
 #include "daedalus_types.h"
 
 #include <R_ext/Arith.h>
+#include <algorithm>
 #include <functional>
 #include <string>
 #include <vector>
 
+#include <cpp11.hpp>
 #include <dust2/common.hpp>
 // clang-format on
 
@@ -18,19 +32,59 @@ namespace daedalus {
 
 namespace events {
 
+using TensorMat = daedalus::types::TensorMat<double>;
+
 /// @brief A temporary(?) special value to indicate that events should log time
 /// in state.
 const double value_log_time = -999.0;
+
+/// @brief Check if a flag has a value that is not 'off'. The NPI flag can be
+/// any whole value represented as a double as it represents an index rather
+/// than a boolean.
+/// @param value The value to be tested.
+/// @return A bool for whether the flag is on, or a non-zero index.
+const bool is_flag_on(const double &value) {
+  // as flags can be any whole number as a double: 0.0, 1.0, 2.0 (for NPIs only)
+  return value > 0.0;
+}
+
+/// @brief Check if a flag has an 'off' value.
+/// @param value The value to be tested.
+/// @return A bool for whether the flag is off.
+const bool is_flag_off(const double &value) { return value < 1e-9; }
+
+/// @brief Check if the value to be assigned to a flag would change the current
+/// value.
+/// @param new_value The value to be assigned.
+/// @param old_value The current or old value.
+/// @return A bool for whether the new value and old value are different.
+const bool is_flag_changing(const double &new_value, const double &old_value) {
+  // since flag changes from 0 <--> 1 or greater, a diff of 0.5 is reasonable
+  return std::abs(new_value - old_value) > 0.5;
+}
+
+/// @brief Check if a value is a special magic number value.
+/// @param value The value to check.
+/// @return A bool for whether the special value is passed.
+const bool is_special_value(const double &value) {
+  return std::abs(value - value_log_time) < 1e-6;
+}
+
+/// @brief A small enum to hold expected flag values.
+enum FLAG_VALUE { OFF = 0, ON = 1 };
 
 /// @brief Get values depending on a flag variable
 /// @tparam T
 /// @param value A value, typically of the openness coefficient. For an 80%
 /// closure of a sector, the openness coefficient would be 0.2.
-/// @param flag Either 0.0 or 1.0.
+/// @param flag Initially expected to be either 0.0 or 1.0. May be > 1.0 for
+/// NPI-linked responses, when values > 1.0 are set to 1.0 internally.
 /// @return Either `value` when `flag` = 1.0, or 1.0 when `flag` = 0.0.
 template <typename T>
 inline T switch_by_flag(T value, const double flag) {
-  return (1.0 - (1.0 - value) * flag);
+  // account for flag as index as used in PR 117 for time-varying NPI coeffs
+  double flag_bool = flag > 1.0 ? 1.0 : flag;
+  return (1.0 - (1.0 - value) * flag_bool);
 }
 
 /// @brief Class holding NPI related information. Intended to live inside
@@ -42,18 +96,23 @@ class response {
 
  public:
   const std::string name;
-  const double time_on, duration, state_on, state_off;
+  const cpp11::list parameters;
+  const std::vector<double> time_on, time_off;
+  const double max_duration;
+  const double state_on, state_off;
   const size_t i_flag;
   const std::vector<size_t> i_state_on, i_state_off;
   const int root_state_on, root_state_off;
   const size_t i_time_start;
   const double min_dur;
 
+  const std::vector<TensorMat> get_openness_coefs();
+
   /// @brief Constructor for a response.
   /// @param name A string for the name, used to generate event names.
-  /// @param time_on The time at which the response should start. 0.0 indicates
-  /// no response.
-  /// @param duration The duration of the response. 0.0 indicates no response.
+  /// @param time_on The time at which the response should start.
+  /// @param time_off The time off of the response.
+  /// @param max_duration The maximum duration of the response.
   /// @param state_on The state (sum) value at which the response should start.
   /// @param state_off The state (sum) value at which the response should end.
   /// @param i_flag The index of the state variable holding the flag to modify,
@@ -67,17 +126,20 @@ class response {
   /// @param i_time_start The index of the state variable that holds the
   /// realised start time for an event. Typically useful for state-triggered
   /// events.
-  /// @param min_dur The minimum event duration (7 days). Used to prevent
+  /// @param min_dur The minimum event time_off (7 days). Used to prevent
   /// unexpected event termination if two state roots are found in one step.
-  response(const std::string &name, const double &time_on,
-           const double &duration, const double &state_on,
-           const double &state_off, const size_t &i_flag,
-           const std::vector<size_t> &i_state_on,
+  response(const std::string &name, const cpp11::list parameters,
+           const std::vector<double> &time_on,
+           const std::vector<double> &time_off, const double max_duration,
+           const double &state_on, const double &state_off,
+           const size_t &i_flag, const std::vector<size_t> &i_state_on,
            const std::vector<size_t> &i_state_off, const int &root_state_on,
            const int &root_state_off, const size_t &i_time_start)
       : name(name),
+        parameters(parameters),
         time_on(time_on),
-        duration(duration),
+        time_off(time_off),
+        max_duration(max_duration),
         state_on(state_on),
         state_off(state_off),
         i_flag(i_flag),
@@ -88,31 +150,61 @@ class response {
         i_time_start(i_time_start),
         min_dur(7.0) {}
 
-  /// @brief Root-find on time.
+  /// @brief Root-find on time. NOTE that this function is expected to receive
+  /// `*y` that is not indexed, allowing use of `i_flag` directly. (?)
   /// @param value The time value to check current time against.
+  /// @param expected_value The expected flag value. Used to switch between
+  /// testing for time-on vs time-off. May be ON or OFF.
   /// @return A lambda function suitable for creating a dust2::event test.
-  inline test_type make_time_test(const double value) const {
-    auto fn_test = [value, &i_flag = i_flag](const double t, const double *y) {
-      if (y[i_flag] > 0.0) {
-        return 1.0;  // return FALSE if flag already on
-      } else {
-        return t - value;  // time - start_time
-      }
-    };
+  inline test_type make_time_test(const double value,
+                                  const FLAG_VALUE &expected_value) const {
+    // flag expected off
+    if (expected_value == OFF) {
+      auto fn_test = [value](const double t, const double *y) {
+        // NOTE: y[0] is flag as time is not passed
+        if (is_flag_on(y[0])) {
+          return 1.0;  // return FALSE if flag already on
+        } else {
+          return t - value;  // time -  start_time
+        }
+      };
 
-    return fn_test;
+      return fn_test;
+    }
+
+    // flag expected on
+    if (expected_value == ON) {
+      auto fn_test = [value](const double t, const double *y) {
+        // NOTE: y[0] is flag as time is not passed
+        if (is_flag_off(y[0])) {
+          return 1.0;
+        } else {
+          return t - value;
+        }
+      };
+
+      return fn_test;
+    } else {
+      // NOTE: included to satisfy cppcheck
+      auto fn_default = [](const double t, const double *y) {
+        cpp11::stop("Invalid expected_value passed to state_test factory.");
+        return 1.0;
+      };
+
+      return fn_default;
+    }
   }
 
-  /// @brief Root-find on a duration after some time read from state.
+  /// @brief Root-find on a time_off after some time read from state.
   /// @param id_state The index of state where the start time is recorded.
-  /// @param value The duration to check against, which is added to the
+  /// @param value The time_off to check against, which is added to the
   /// logged/realised start-time to get the value.
   /// @return A lambda function suitable for creating a dust2::event test.
-  inline test_type make_duration_test(const size_t &id_state,
-                                      const double value) const {
-    auto fn_test = [id_state, value](const double t, const double *y) {
-      if (y[id_state] > 0.0) {
-        return t - (value + y[id_state]);  // return val only if flag already on
+  inline test_type make_duration_test(const double value) const {
+    auto fn_test = [value](const double t, const double *y) {
+      // NOTE: y[0] is start_time, y[1] is flag
+      if (is_flag_on(y[1])) {
+        return t - (value + y[0]);  // return val only if flag already on
       } else {
         return 1.0;  // prevent (t - value) when event has not launched yet
       }
@@ -127,41 +219,46 @@ class response {
   /// @param value The value against which to compare the summed state.
   /// @expected_value Either 0.0 or 1.0 for whether the existing flag state is
   /// off or on, respectively.
+  /// @param expected_value The expected flag value. Used to switch between
+  /// testing for time-on vs time-off. May be ON or OFF.
   /// @return A lambda function suitable for creating a dust2::event test.
   inline test_type make_state_test(const std::vector<size_t> &idx_state,
-                                   const double value,
-                                   const double expected_value) const {
-    if (expected_value < 1.0) {
-      // flag expected off
-      auto fn_test = [idx_state, value, &i_flag = i_flag](const double t,
-                                                          const double *y) {
-        if (y[i_flag] > 0.0) {
+                                   const double &value,
+                                   const FLAG_VALUE &expected_value) const {
+    // prepare flag and start_time indices
+    const size_t size_n = idx_state.size();
+    const size_t flag_pos = size_n - 1;
+    const size_t time_pos = size_n - 2;
+
+    if (expected_value == OFF) {
+      auto fn_test = [value, size_n, flag_pos, time_pos](const double t,
+                                                         const double *y) {
+        const double current_flag = y[flag_pos];
+        if (is_flag_on(current_flag)) {
           return 1.0;  // handle case where flag is already on, return false
         } else {
-          const int size_n = idx_state.size() - 1;
-          const double sum_state = std::accumulate(y, y + size_n, 0);
+          const double sum_state = std::accumulate(y, y + time_pos, 0);
           return sum_state - value;
         }
       };
 
       return fn_test;
-    } else if (expected_value > 0.0) {
-      // flag expected on
-      auto fn_test = [idx_state, value, &i_flag = i_flag, &min_dur = min_dur,
-                      &i_time_start = i_time_start](const double t,
-                                                    const double *y) {
-        if (y[i_flag] < 1.0) {
+    } else if (expected_value == ON) {
+      auto fn_test = [value, size_n, flag_pos, time_pos, &min_dur = min_dur](
+                         const double t, const double *y) {
+        const double current_flag = y[flag_pos];
+        if (is_flag_off(current_flag)) {
           return 1.0;  // handle case where flag is already off, return false
         } else {
           // check duration that event has been on and return FALSE if min
           // duration hasn't been met
-          const int size_n = idx_state.size() - 1;
-          const double current_dur = t - (min_dur + y[size_n]);
+          const double real_time_start = y[time_pos];
+          const double current_dur = t - (min_dur + real_time_start);
 
           if (current_dur < min_dur) {
             return 1.0;
           } else {
-            const double sum_state = std::accumulate(y, y + size_n, 0);
+            const double sum_state = std::accumulate(y, y + time_pos, 0);
             return sum_state - value;
           }
         }
@@ -171,7 +268,7 @@ class response {
     } else {
       // NOTE: included to satisfy cppcheck
       auto fn_default = [](const double t, const double *y) {
-        cpp11::warning("Invalid expected_value passed to state_test factory.");
+        cpp11::stop("Invalid expected_value passed to state_test factory.");
         return 1.0;
       };
 
@@ -179,8 +276,11 @@ class response {
     }
   }
 
-  /// @brief Make event action lambda.
-  /// @return A lambda suitable as an action in a dust2::event.
+  /// @brief Make event action function.
+  /// @param flags The flag (really, the state) indices to set.
+  /// @param values The values to set the i-th element of `flags` to.
+  /// @return A function suitable to be passed to a `dust2::event` as an event
+  /// function.
   inline action_type make_flag_setter(const std::vector<size_t> &flags,
                                       const std::vector<double> &values) const {
     auto fn_action = [flags, values](const double t, const double sign,
@@ -190,16 +290,11 @@ class response {
         const double new_value = values[i];
         const double flag_value = y[yi];
 
-        const bool is_flag_on = flag_value > 0.0;
-        const bool is_special_value =
-            std::abs(new_value - value_log_time) < 1e-6;
-        const bool is_flag_changing = std::abs(new_value - flag_value) > 0.0;
-
-        if (is_special_value) {
-          if (!is_flag_on) {
+        if (is_special_value(new_value)) {
+          if (is_flag_off(flag_value)) {
             y[yi] = t;
           }
-        } else if (is_flag_changing) {
+        } else if (is_flag_changing(new_value, flag_value)) {
           y[yi] = new_value;
         }
       }
@@ -235,26 +330,38 @@ class response {
     // 3. launch event on state threshold
 
     dust2::ode::events_type<double> events;
+    const size_t n_timed_events = time_on.size();
 
-    if (!ISNA(time_on)) {
-      const std::string name_ev_time_on = name + "_time_on";
-      dust2::ode::event<double> ev_time_on = make_event(
-          name_ev_time_on, {}, make_time_test(time_on),
-          make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
-          dust2::ode::root_type::increase);
+    // check if the first time on is not NULL
+    // we don't expect a case where time_on is NULL, but time_off is non-NULL
+    // events ending on maximum duration are handled differently
+    const bool is_valid_time_on = !ISNA(time_on[0]);
 
-      events.push_back(ev_time_on);
-    }
+    // generate events for each pair of time_on and time_off
+    /*
+    For daedalus_npi(), time_off optional; for daedalus_timed_npi(), time_off
+    is enforced on the R side
+    */
+    if (is_valid_time_on) {
+      for (size_t i = 0; i < n_timed_events; i++) {
+        const double flag_index = static_cast<double>(i + 1);  // start from 1
+        const std::string name_ev_time_on =
+            name + "_time_on_" + std::to_string(i + 1);
 
-    // event ended on duration
-    if (!ISNA(duration)) {
-      const std::string name_ev_time_off = name + "_time_off";
-      dust2::ode::event<double> ev_time_off = make_event(
-          name_ev_time_off, {}, make_duration_test(i_time_start, duration),
-          make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
-          dust2::ode::root_type::increase);
+        events.push_back(make_event(
+            name_ev_time_on, {i_flag}, make_time_test(time_on[i], OFF),
+            make_flag_setter({i_flag, i_time_start},
+                             {flag_index, value_log_time}),
+            dust2::ode::root_type::increase));
 
-      events.push_back(ev_time_off);
+        const std::string name_ev_time_off =
+            name + "_time_off_" + std::to_string(i + 1);
+
+        events.push_back(make_event(
+            name_ev_time_off, {i_flag}, make_time_test(time_off[i], ON),
+            make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
+            dust2::ode::root_type::increase));
+      }
     }
 
     // event launched by state
@@ -264,12 +371,18 @@ class response {
           root_state_on > 0 ? dust2::ode::root_type::increase
                             : dust2::ode::root_type::decrease;
 
+      // collect state indices to subset and add start_time index to check
+      // for minimum duration requirements.
       std::vector<size_t> tmp_i_state_on = i_state_on;
       tmp_i_state_on.push_back(i_time_start);
 
+      // add flag index location when subsetting state variable to allow
+      // checking current state of flag
+      tmp_i_state_on.push_back(i_flag);
+
       dust2::ode::event<double> ev_state_on = make_event(
           name_ev_state_on, tmp_i_state_on,
-          make_state_test(tmp_i_state_on, state_on, 0.0),
+          make_state_test(tmp_i_state_on, state_on, OFF),
           make_flag_setter({i_flag, i_time_start}, {1.0, value_log_time}),
           root_type_on);
 
@@ -283,15 +396,30 @@ class response {
           root_state_on > 0 ? dust2::ode::root_type::increase
                             : dust2::ode::root_type::decrease;
 
+      // same as above
       std::vector<size_t> tmp_i_state_off = i_state_off;
       tmp_i_state_off.push_back(i_time_start);
+      tmp_i_state_off.push_back(i_flag);
 
       dust2::ode::event<double> ev_state_off = make_event(
           name_ev_state_off, tmp_i_state_off,
-          make_state_test(tmp_i_state_off, state_off, 1.0),
+          make_state_test(tmp_i_state_off, state_off, ON),
           make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}), root_type_off);
 
       events.push_back(ev_state_off);
+    }
+
+    if (!ISNA(max_duration)) {
+      // test for maximum duration
+      const std::string name_ev_max_dur = name + "_max_duration";
+
+      dust2::ode::event<double> ev_max_dur =
+          make_event(name_ev_max_dur, {i_time_start, i_flag},
+                     make_duration_test(max_duration),
+                     make_flag_setter({i_flag, i_time_start}, {0.0, 0.0}),
+                     dust2::ode::root_type::increase);
+
+      events.push_back(ev_max_dur);
     }
 
     return events;
@@ -315,6 +443,30 @@ inline dust2::ode::events_type<double> get_combined_events(
   }
 
   return combined_events;
+}
+
+/// @brief Get openness coefficient regimes as a vector of Eigen
+/// tensors suitable for use in the ODE RHS. Only really works with
+/// `daedalus::events::response` objects that represent NPIs, and not with
+/// objects representing vaccinations or other events for now.
+/// @return A vector of coefficient Tensors with the index representing the
+/// openness regime.
+inline const std::vector<TensorMat> response::get_openness_coefs() {
+  const cpp11::list openness(parameters["openness"]);
+  const size_t n_regimes = openness.size();
+
+  std::vector<TensorMat> openness_coefs(openness.size());
+
+  // NOTE: crude - clean up?
+  for (size_t i = 0; i < n_regimes; i++) {
+    cpp11::doubles tmp_param = openness[i];
+    TensorMat tmp_openness(daedalus::constants::DDL_N_ECON_GROUPS, 1);
+    std::copy(tmp_param.begin(), tmp_param.end(), tmp_openness.data());
+
+    openness_coefs[i] = tmp_openness;
+  }
+
+  return openness_coefs;
 }
 
 }  // namespace events

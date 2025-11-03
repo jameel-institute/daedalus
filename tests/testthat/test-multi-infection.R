@@ -86,6 +86,6 @@ test_that("daedalus_multi_infection: errors", {
       infection,
       response_strategy = rep("dummy", N_ECON_SECTORS)
     ),
-    "Got an unexpected value for `response_strategy`"
+    "`response_strategy` must be one of"
   )
 })

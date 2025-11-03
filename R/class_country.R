@@ -490,7 +490,8 @@ prepare_parameters.daedalus_country <- function(x, ...) {
     n_age_groups = n_age_groups,
     n_econ_groups = n_econ_groups,
     popsize = sum(get_data(x, "demography")),
-    hospital_capacity = hospital_capacity
+    hospital_capacity = hospital_capacity,
+    demography = get_data(x, "demography")
   )
 }
 

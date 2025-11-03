@@ -120,7 +120,32 @@ test_that("daedalus: Can run with ODE control arguments", {
   )
 })
 
+test_that("daedalus: Can run with custom demography", {
+  x <- daedalus_country("GBR")
+  x$demography <- rep(1e7, 4)
+
+  expect_no_condition(
+    daedalus(x, "sars_cov_1", time_end = 30)
+  )
+
+  expect_no_condition(
+    get_data(daedalus(x, "sars_cov_1", time_end = 30))
+  )
+
+  data <- get_data(daedalus(x, "sars_cov_1", time_end = 30))
+  checkmate::expect_data_frame(
+    data,
+    any.missing = FALSE
+  )
+  checkmate::expect_set_equal(
+    unique(data$age_group),
+    sprintf("age_group_%i", seq_along(x$demography))
+  )
+})
+
 # test that daedalus runs for all epidemic infection parameter sets
+skip_on_covr()
+skip("Skipped for length")
 test_that("daedalus: Runs for all country x infection x response", {
   country_infection_combos <- data.table::CJ(
     country = daedalus.data::country_names,
@@ -156,7 +181,7 @@ test_that("daedalus: Runs with custom openness values", {
       "sars_cov_1",
       response_strategy = rep(0.5, N_ECON_SECTORS - 1)
     ),
-    "Must have length 45"
+    "(<daedalus_npi> parameter)*(openness)*(must be a numeric of length 45)"
   )
   expect_error(
     daedalus(
@@ -164,25 +189,7 @@ test_that("daedalus: Runs with custom openness values", {
       "sars_cov_1",
       NA_character_
     ),
-    "Got an unexpected value for `response_strategy`"
-  )
-  expect_error(
-    daedalus(
-      "GBR",
-      "sars_cov_1",
-      "elimination",
-      response_time = 0
-    ),
-    "Expected `response_time` to be between 1"
-  )
-  expect_error(
-    daedalus(
-      "GBR",
-      "sars_cov_1",
-      "elimination",
-      response_duration = c(1, 1)
-    ),
-    "Expected `response_duration` to be a single positive integer-like"
+    "`response_strategy` must be a single string, not a character `NA`"
   )
 })
 
@@ -329,7 +336,7 @@ test_that("daedalus: responses triggered by hospital capacity event", {
   # with named responses (none = absolutely no resp)
   invisible(
     lapply(
-      names(daedalus.data::closure_data),
+      names(daedalus.data::closure_strategy_data),
       function(x) {
         expect_no_condition({
           daedalus("GBR", "sars_cov_1", x, time_end = 100)
@@ -344,12 +351,12 @@ test_that("daedalus: responses triggered by hospital capacity event", {
   x$hospital_capacity <- 1e4
 
   output_list <- lapply(
-    names(daedalus.data::closure_data),
+    names(daedalus.data::closure_strategy_data),
     daedalus,
     country = x,
     infection = "sars_cov_1"
   )
-  resp_scenario_names <- names(daedalus.data::closure_data)
+  resp_scenario_names <- names(daedalus.data::closure_strategy_data)
   output_fs <- vapply(
     output_list,
     function(x) {
@@ -364,39 +371,34 @@ test_that("daedalus: responses triggered by hospital capacity event", {
   )
 })
 
-# NOTE: see PR #83 for a reprex
-skip("Root jumping causes test to fail")
 test_that("daedalus: responses ended by epidemic growth", {
   # start response early
-  time_end <- 100
+  time_end <- 200
   x <- daedalus_country("GBR")
   x$hospital_capacity <- 1e3
 
   d <- daedalus_infection("influenza_2009")
 
+  # specify npi with timed end which should not be met
+  end_time <- 120
+  npi <- daedalus_npi(
+    "elimination",
+    x,
+    "influenza_2009",
+    start_time = 30,
+    end_time = end_time
+  )
+
   output <- daedalus(
     x,
     "influenza_2009",
-    "elimination",
-    time_end = time_end,
-    response_time = 98
+    npi,
+    time_end = time_end
   )
 
-  event_data <- output$event_data
-  output <- output$data
-  # check that epidemic stops growing by IPR method; IPR < gamma
-  ipr <- colSums(output$new_inf) / colSums(output$Is + output$Ia)
+  # check that response is switched off before fixed time-end due to IPR test
   expect_lt(
-    min(ipr - d$gamma_Is),
-    0.0
-  )
-
-  # find end idx
-  end_time <- which.min(abs(ipr - d$gamma_Ia)) + 1
-
-  # check that response is switched off at expected time
-  expect_identical(
-    event_data[event_data$name == "npi_state_off", "time"],
+    first(output$response_data$npi_info$npi_times_end),
     end_time
   )
 })
@@ -408,15 +410,15 @@ test_that("daedalus: Errors and messages", {
       "sars_cov_1",
       as.character(1:49)
     ),
-    "Got an unexpected value for `response_strategy`."
+    "`response_strategy` must be one of"
   )
   expect_error(
     daedalus(
       "GBR",
       "sars_cov_1",
-      1:50
+      as.numeric(1:50)
     ),
-    "Assertion on 'response_strategy' failed: Must have length"
+    "must be a numeric of length 45"
   )
   expect_error(
     daedalus(

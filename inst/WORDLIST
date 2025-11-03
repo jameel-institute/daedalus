@@ -8,6 +8,7 @@ Cov
 Covid
 Cpp
 CtoW
+Diekmann
 EPPI
 FOI
 Forchini
@@ -16,7 +17,10 @@ GNI
 GVA
 Guzman
 HFR
+Hd
+Hesterbeek
 Hosptial
+Hr
 IDM
 IFR
 Ia
@@ -35,8 +39,11 @@ RcppEigen
 Readmes
 SARS
 SEIR
+Soc
 Sumali
 TSL
+Timesteps
+UKHSA
 VLY
 VPE
 VSD
@@ -44,6 +51,7 @@ VSL
 VSLY
 VSY
 YLL
+api
 arg
 asumes
 asymp
@@ -51,7 +59,8 @@ cdot
 cpp
 dD
 dE
-dH
+dHd
+dHr
 dIa
 dIs
 dR
@@ -67,7 +76,6 @@ fn
 frac
 ij
 int
-iso
 lintr
 monty
 npi
@@ -77,13 +85,18 @@ org
 pak
 parameterise
 pathogendata
+recov
 recovered’
 rightarrow
+rollout
 rootfinding
+rsif
+sigmoidal
 socioeconomic
 specifc
 started’
 struct
+susceptibles
 symp
 sympt
 th
