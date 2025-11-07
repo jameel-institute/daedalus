@@ -13,7 +13,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.37</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.38</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,6 +61,16 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.38" id="daedalus-0238">daedalus 0.2.38<a class="anchor" aria-label="anchor" href="#daedalus-0238"></a></h2>
+<p>This development version splits H into two compartments and uses HFR as the probability of death conditional on hospitalisation (PR <a href="https://github.com/jameel-institute/daedalus/issues/109" class="external-link">#109</a>).</p>
+<div class="section level3">
+<h3 id="notes-0-2-38">Notes<a class="anchor" aria-label="anchor" href="#notes-0-2-38"></a></h3>
+<ul><li><p>Hospital compartments are now named Hr and Hd, for those hospitalised leading to recovery and death, respectively.</p></li>
+<li><p>On the C++ code, people in Is enter Hd given</p></li>
+<li><p>This change will affect the downstream packages <code>daedalus.api</code> and <code>daedalus.compare</code>, but has no effect on <code>daedalus.data</code>. So the <code>daedalus</code> user experience remains unchanged.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.37" id="daedalus-0237">daedalus 0.2.37<a class="anchor" aria-label="anchor" href="#daedalus-0237"></a></h2>
 <p>This patch version:</p>

@@ -28,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.37</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.38</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -157,8 +157,10 @@ symptomatic <span class="math inline">\(Is\)</span> or asymptomatic
 <span class="math inline">\(Ia\)</span> infection. Whereas asymptomatic
 infected individuals are assumed to always recover, symptomatic ones can
 either recover <span class="math inline">\(R\)</span> or develop a more
-severe condition requiring hospitalisation <span class="math inline">\(H\)</span>, from which they can either recover or
-die <span class="math inline">\(D\)</span>.</p>
+severe condition requiring hospitalisation that would lead to either
+recovery <span class="math inline">\(Hr\)</span> or death <span class="math inline">\(Hd\)</span>. We assume different lengths of
+hospital stay for this compartments, after which individuals transition
+to the recovered <span class="math inline">\(R\)</span> or death <span class="math inline">\(D\)</span> compartments.</p>
 <p><img src="figures/daedalus.png"></p>
 <div class="section level4">
 <h4 id="ordinary-differential-equations">Ordinary differential equations<a class="anchor" aria-label="anchor" href="#ordinary-differential-equations"></a>
@@ -173,12 +175,14 @@ E_{i,j}(t) \\
 \gamma_{Ia} Ia_{i,j}(t) \\
     &amp; \frac{dIs_{i,j}}{dt} = p_\text{symp} \sigma E_{i,j}(t) -
 \gamma_{Is} Is_{i,j}(t) - \eta^i Is_{i,j}(t) \\
-    &amp; \frac{dH_{i,j}}{dt} = \eta^i Is_{i,j}(t) - \omega^i H_{i,j}(t)
-- \gamma_H^i H_{i,j}(t) \\
+    &amp; \frac{dHr_{i,j}}{dt} = \eta^i (1 - HFR_{i}) Is_{i,j}(t) -
+\gamma_{Hr} H_{i,j}(t) \\
+    &amp; \frac{dHd_{i,j}}{dt} = \eta^i HFR_{i} Is_{i,j}(t) -
+\gamma_{Hd} Hd_{i,j}(t) \\
     &amp; \frac{dR_{i,j}}{dt} = \zeta_{eff_{j=0}}(t) R_{i,j=0}(t) +
-\gamma_{Is} Is_{i,j}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_H^i
-H_{i,j}(t) - \rho R_{i,j}(t) - \zeta_{j=1} R_{i,j=1}(t)\\
-    &amp; \frac{dD_{i,j}}{dt} = \omega^i H_{i,j}(t)\\
+\gamma_{Is} Is_{i,j}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_{Hr}
+Hr_{i,j}(t) - \rho R_{i,j}(t) - \zeta_{j=1} R_{i,j=1}(t)\\
+    &amp; \frac{dD_{i,j}}{dt} = \gamma_{Hd} Hd_{i,j}(t)\\
 \end{align}\]</span></p>
 <p>Should be noted that whilst some model parameters vary over time
 (e.g., <span class="math inline">\(\zeta_{eff_{j=0}}(t)\)</span>
@@ -268,16 +272,16 @@ symptomatic infection</td>
 <td align="left">Recovery rate for symptomatic infections</td>
 </tr>
 <tr class="odd">
-<td align="left"><span class="math inline">\(\gamma_H^i\)</span></td>
-<td align="left">Recovery rate for hospitalised individuals by age</td>
+<td align="left"><span class="math inline">\(\gamma_{Hr}\)</span></td>
+<td align="left">Recovery rate for hospitalised individuals</td>
 </tr>
 <tr class="even">
-<td align="left"><span class="math inline">\(\rho\)</span></td>
-<td align="left">Rate of waning immunity (recovered to susceptible)</td>
+<td align="left"><span class="math inline">\(\gamma_{Hd}\)</span></td>
+<td align="left">Death rate for hospitalised individuals</td>
 </tr>
 <tr class="odd">
-<td align="left"><span class="math inline">\(\omega^i\)</span></td>
-<td align="left">Death rate among hospitalised individuals by age</td>
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">Rate of waning immunity (recovered to susceptible)</td>
 </tr>
 <tr class="even">
 <td align="left"><span class="math inline">\(\zeta_{eff_{j=0}}(t)\)</span></td>
@@ -456,6 +460,26 @@ undergo the respective disease severity transition.</caption>
 <td align="left">365</td>
 </tr>
 <tr class="even">
+<td align="left">Length of hospital stay leading to recovery (days)</td>
+<td align="left"><span class="math inline">\(1/\gamma_{Hr}\)</span></td>
+<td align="left">5</td>
+<td align="left">5</td>
+<td align="left">5</td>
+<td align="left">5.5</td>
+<td align="left">7.6</td>
+<td align="left">12</td>
+</tr>
+<tr class="odd">
+<td align="left">Length of hospital stay leading to death (days)</td>
+<td align="left"><span class="math inline">\(1/\gamma_{Hd}\)</span></td>
+<td align="left">5</td>
+<td align="left">5</td>
+<td align="left">5</td>
+<td align="left">5.5</td>
+<td align="left">7.6</td>
+<td align="left">12</td>
+</tr>
+<tr class="even">
 <td align="left">
 <strong>Age specific parameters</strong>*</td>
 <td align="left"></td>
@@ -518,8 +542,9 @@ undergo the respective disease severity transition.</caption>
 <td align="left">15</td>
 </tr>
 <tr class="even">
-<td align="left">Recovery rate hospitalised (days<span class="math inline">\(^{-1}\)</span>)</td>
-<td align="left"><span class="math inline">\(1/\gamma_H^i\)</span></td>
+<td align="left">Hospital fatality ratio conditional on symptomatic
+infection leading to hospitalisation (%)</td>
+<td align="left"><span class="math inline">\(HFR^i\)</span></td>
 <td align="left"></td>
 <td align="left"></td>
 <td align="left"></td>
@@ -530,92 +555,42 @@ undergo the respective disease severity transition.</caption>
 <tr class="odd">
 <td align="left">0-4 years</td>
 <td align="left"></td>
-<td align="left">5.2</td>
-<td align="left">5.4</td>
-<td align="left">5.7</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td align="left">25.3</td>
+<td align="left">13.5</td>
+<td align="left">8</td>
+<td align="left">1.0</td>
+<td align="left">1.0</td>
+<td align="left">1.0</td>
 </tr>
 <tr class="even">
 <td align="left">5-19 years</td>
 <td align="left"></td>
+<td align="left">16.0</td>
+<td align="left">13.5</td>
+<td align="left">8</td>
+<td align="left">14.9</td>
+<td align="left">12.4</td>
+<td align="left">12.4</td>
+</tr>
+<tr class="odd">
+<td align="left">20-64 years</td>
+<td align="left"></td>
+<td align="left">24.2</td>
+<td align="left">13.5</td>
+<td align="left">8</td>
+<td align="left">5.2</td>
 <td align="left">5.3</td>
-<td align="left">5.4</td>
-<td align="left">5.7</td>
-<td align="left">5.9</td>
-<td align="left">8.3</td>
-<td align="left">13.1</td>
-</tr>
-<tr class="odd">
-<td align="left">20-64 years</td>
-<td align="left"></td>
-<td align="left">5.2</td>
-<td align="left">5.4</td>
-<td align="left">5.7</td>
-<td align="left">6.8</td>
-<td align="left">9.4</td>
-<td align="left">14.8</td>
+<td align="left">5.3</td>
 </tr>
 <tr class="even">
 <td align="left">65+ years</td>
 <td align="left"></td>
-<td align="left">13.7</td>
-<td align="left">5.4</td>
-<td align="left">5.7</td>
-<td align="left">8.1</td>
-<td align="left">10.7</td>
-<td align="left">16.9</td>
-</tr>
-<tr class="odd">
-<td align="left">Death given hospitalised (days<span class="math inline">\(^{-1}\)</span>)</td>
-<td align="left"><span class="math inline">\(1/\omega^i\)</span></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-</tr>
-<tr class="even">
-<td align="left">0-4 years</td>
-<td align="left"></td>
-<td align="left">126.3</td>
-<td align="left">67.5</td>
-<td align="left">40</td>
-<td align="left">5.5</td>
-<td align="left">7.6</td>
-<td align="left">12</td>
-</tr>
-<tr class="odd">
-<td align="left">5-19 years</td>
-<td align="left"></td>
-<td align="left">79.8</td>
-<td align="left">67.5</td>
-<td align="left">40</td>
-<td align="left">82.1</td>
-<td align="left">94.3</td>
-<td align="left">148.9</td>
-</tr>
-<tr class="even">
-<td align="left">20-64 years</td>
-<td align="left"></td>
-<td align="left">120.9</td>
-<td align="left">67.5</td>
-<td align="left">40</td>
-<td align="left">28.4</td>
-<td align="left">40.5</td>
-<td align="left">64</td>
-</tr>
-<tr class="odd">
-<td align="left">65+ years</td>
-<td align="left"></td>
-<td align="left">7.9</td>
-<td align="left">67.5</td>
-<td align="left">40</td>
-<td align="left">17.3</td>
-<td align="left">26.3</td>
-<td align="left">41.6</td>
+<td align="left">1.6</td>
+<td align="left">13.5</td>
+<td align="left">8</td>
+<td align="left">3.2</td>
+<td align="left">3.5</td>
+<td align="left">3.5</td>
 </tr>
 </tbody>
 </table>
