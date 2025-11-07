@@ -17,8 +17,10 @@ GNI
 GVA
 Guzman
 HFR
+Hd
 Hesterbeek
 Hosptial
+Hr
 IDM
 IFR
 Ia
@@ -35,7 +37,6 @@ Pianella
 Rcpp
 RcppEigen
 Readmes
-R’
 SARS
 SEIR
 Soc
@@ -58,7 +59,8 @@ cdot
 cpp
 dD
 dE
-dH
+dHd
+dHr
 dIa
 dIs
 dR
@@ -83,6 +85,7 @@ org
 pak
 parameterise
 pathogendata
+recov
 recovered’
 rightarrow
 rollout

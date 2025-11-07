@@ -24,6 +24,7 @@
 \alias{i_NEW_VAX_STRATUM}
 \alias{VACCINE_GROUPS}
 \alias{N_OUTPUT_COLS}
+\alias{N_FLAGS}
 \alias{FLAG_NAMES}
 \title{DAEDALUS model constants}
 \format{
@@ -66,6 +67,8 @@ An object of class \code{integer} of length 1.
 An object of class \code{integer} of length 1.
 
 An object of class \code{character} of length 3.
+
+An object of class \code{integer} of length 1.
 
 An object of class \code{integer} of length 1.
 
@@ -113,6 +116,8 @@ i_NEW_VAX_STRATUM
 VACCINE_GROUPS
 
 N_OUTPUT_COLS
+
+N_FLAGS
 
 FLAG_NAMES
 }

@@ -1,3 +1,15 @@
+# daedalus 0.2.38
+
+This development version splits H into two compartments and uses HFR as the probability of death conditional on hospitalisation (PR #109).
+
+## Notes
+
+- Hospital compartments are now named Hr and Hd, for those hospitalised leading to recovery and death, respectively.
+
+- On the C++ code, people in Is enter Hd given
+
+- This change will affect the downstream packages `daedalus.api` and `daedalus.compare`, but has no effect on `daedalus.data`. So the `daedalus` user experience remains unchanged.
+
 # daedalus 0.2.37
 
 This patch version:

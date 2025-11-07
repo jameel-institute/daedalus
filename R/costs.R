@@ -90,7 +90,13 @@ get_costs <- function(
   model_data <- get_data(x)
   worker_prod_loss <- model_data[
     model_data$compartment %in%
-      c("infect_symp", "hospitalised", "dead") &
+      c(
+        "infect_symp",
+        "infect_asymp",
+        "hospitalised_recov",
+        "hospitalised_death",
+        "dead"
+      ) &
       model_data$econ_sector != "sector_00",
   ]
 
@@ -480,7 +486,13 @@ get_fiscal_costs <- function(
   model_data <- get_data(x)
   worker_prod_loss <- model_data[
     model_data$compartment %in%
-      c("infect_symp", "hospitalised", "dead") &
+      c(
+        "infect_symp",
+        "infect_asymp",
+        "hospitalised_recov",
+        "hospitalised_death",
+        "dead"
+      ) &
       model_data$econ_sector != "sector_00",
   ]
 

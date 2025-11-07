@@ -28,9 +28,10 @@
 // hardcoded as key to model structure
 const size_t iS = daedalus::constants::iS, iE = daedalus::constants::iE,
              iIs = daedalus::constants::iIs, iIa = daedalus::constants::iIa,
-             iH = daedalus::constants::iH, iR = daedalus::constants::iR,
-             iD = daedalus::constants::iD, idE = daedalus::constants::idE,
-             idH = daedalus::constants::idH;
+             iHr = daedalus::constants::iHr, iHd = daedalus::constants::iHd,
+             iR = daedalus::constants::iR, iD = daedalus::constants::iD,
+             idE = daedalus::constants::idE, idH = daedalus::constants::idH;
+// declare new Hd and Hr compartments here
 
 // groups = rows, compartments = cols, vax strata = layers
 const size_t i_GRPS = daedalus::constants::i_GRPS,
@@ -84,8 +85,9 @@ class daedalus_ode {
   /// @brief Shared parameters and values. All const as not expected to update.
   struct shared_state {
     // NOTE: n_strata unknown at compile time
-    const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is;
-    const TensorMat eta, omega, gamma_H;
+    const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is,
+        gamma_H_recovery, gamma_H_death;
+    const TensorMat eta, hfr;
 
     const real_type nu, psi;
 
@@ -112,8 +114,8 @@ class daedalus_ode {
   struct internal_state {
     TensorMat t_infectious, t_comm_inf_contacts, t_foi_comm, alt_new_infections,
         t_comm_inf_age, t_work_inf_contacts, t_foi_work, t_cw_inf_contacts,
-        t_foi_cw, susc_workers, sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR,
-        hToD, rToS;
+        t_foi_cw, susc_workers, sToE, eToIs, eToIa, isToR, iaToR, isToHr,
+        isToHd, hrToR, hdToD, rToS;
     // for Rt calculations
     Eigen::ArrayXd p_susc;
   };
@@ -123,9 +125,10 @@ class daedalus_ode {
     TensorMat mat2d(shared.n_strata, N_VAX_STRATA);
     mat2d.setZero();
     TensorMat sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
-              iaToR = mat2d, isToH = mat2d, hToR = mat2d, hToD = mat2d,
-              rToS = mat2d, t_infectious = mat2d, t_comm_inf_contacts = mat2d,
-              t_foi_comm = mat2d, alt_new_infections = mat2d;
+              iaToR = mat2d, isToH = mat2d, isToHd = mat2d, isToHr = mat2d,
+              hrToR = mat2d, hdToD = mat2d, rToS = mat2d, t_infectious = mat2d,
+              t_comm_inf_contacts = mat2d, t_foi_comm = mat2d,
+              alt_new_infections = mat2d;
 
     // infection related
     TensorMat mat2d_econ(shared.n_econ_groups, N_VAX_STRATA);
@@ -146,7 +149,7 @@ class daedalus_ode {
       t_comm_inf_age,
       t_work_inf_contacts, t_foi_work, t_cw_inf_contacts, t_foi_cw,
       susc_workers,
-      sToE, eToIs, eToIa, isToR, iaToR, isToH, hToR, hToD, rToS,
+      sToE, eToIs, eToIa, isToR, iaToR, isToHr, isToHd, hrToR, hdToD, rToS,
       p_susc
     };
     // clang-format on
@@ -169,7 +172,8 @@ class daedalus_ode {
                           {"exposed", dim_vec},
                           {"infect_symp", dim_vec},
                           {"infect_asymp", dim_vec},
-                          {"hospitalised", dim_vec},
+                          {"hospitalised_recov", dim_vec},
+                          {"hospitalised_death", dim_vec},
                           {"recovered", dim_vec},
                           {"dead", dim_vec},
                           {"new_infections", dim_vec},
@@ -178,7 +182,8 @@ class daedalus_ode {
                           {"exposed_vax", dim_vec},
                           {"infect_symp_vax", dim_vec},
                           {"infect_asymp_vax", dim_vec},
-                          {"hospitalised_vax", dim_vec},
+                          {"hospitalised_recov_vax", dim_vec},
+                          {"hospitalised_death_vax", dim_vec},
                           {"recovered_vax", dim_vec},
                           {"dead_vax", dim_vec},
                           {"new_infections_vax", dim_vec},
@@ -233,13 +238,6 @@ class daedalus_ode {
     dust2::r::read_real_vector(pars, n_strata, hfr_temp.data(), "hfr", true);
     TensorMat eta = eta_temp.broadcast(bcast);
     TensorMat hfr = hfr_temp.broadcast(bcast);
-
-    // CALCULATE AGE VARYING OMEGA AND Gamma_h
-    const TensorMat omega =
-        daedalus::helpers::get_omega(hfr, gamma_H_recovery, gamma_H_death);
-
-    const TensorMat gamma_H =
-        daedalus::helpers::get_gamma_H(hfr, gamma_H_recovery, gamma_H_death);
 
     // CONTACT PARAMETERS (MATRICES)
     // contact matrix
@@ -323,18 +321,18 @@ class daedalus_ode {
 
     // clang-format off
     return shared_state{
-        beta,         sigma,          p_sigma,      epsilon,
-        rho,          gamma_Ia,       gamma_Is,     eta,
-        omega,        gamma_H,        nu,           psi,
-        n_strata,     n_age_groups,   n_econ_groups,
-        popsize,      cm,             cm_cw,
-        cm_work,      ngm,            demography,
-        susc,         openness,
-        behav_enum,   behav_fn,
-        i_ipr,  // state index holding incidence/prevalence ratio
-        i_npi_flag,   i_vax_flag, i_behav_flag,    i_hosp_overflow_flag,
-        npi,          vaccination,
-        hosp_cap_exceeded};
+        beta, sigma, p_sigma, epsilon, rho,
+        gamma_Ia, gamma_Is, gamma_H_recovery, gamma_H_death,
+        eta, hfr,
+        nu, psi,
+        n_strata, n_age_groups, n_econ_groups, popsize,
+        cm, cm_cw, cm_work, ngm, demography,
+        susc,
+        openness,
+        behav_enum, behav_fn,
+        i_ipr, i_npi_flag, i_vax_flag, i_behav_flag, i_hosp_overflow_flag,
+        npi, vaccination, hosp_cap_exceeded
+    };
     // clang-format on
   }
 
@@ -395,19 +393,20 @@ class daedalus_ode {
 
     // calculate total hospitalisations to check if hosp capacity is exceeded;
     // scale mortality rate by 1.6 if so
-    Eigen::Tensor<double, 0> total_hosp = t_x.chip(iH, i_COMPS).sum();
+    Eigen::Tensor<double, 0> total_hosp =
+        t_x.chip(iHr, i_COMPS).sum() + t_x.chip(iHd, i_COMPS).sum();
     const double d_total_hosp = total_hosp(0) + 1.0;
 
-    const double omega_modifier =
+    const double hfr_modifier =
         daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,
                                          state[shared.i_hosp_overflow_flag]);
 
     // calculate new deaths and new hospitalisations
-    internal.hToD =
-        omega_modifier * shared.omega * t_x.chip(iH, i_COMPS);  // new deaths
+    internal.hdToD =
+        shared.gamma_H_death * t_x.chip(iHd, i_COMPS);  // new deaths
 
     /// BEHAVIOUR SCALING OF TRANSMISSION
-    Eigen::Tensor<double, 0> new_deaths = internal.hToD.sum();
+    Eigen::Tensor<double, 0> new_deaths = internal.hdToD.sum();
     const double d_new_deaths = new_deaths(0);
 
     double behav_modifier = 1.0;
@@ -492,23 +491,29 @@ class daedalus_ode {
     internal.isToR = shared.gamma_Is * t_x.chip(iIs, i_COMPS);
     internal.iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
 
-    internal.isToH = shared.eta * t_x.chip(iIs, i_COMPS);
-    internal.hToR = shared.gamma_H * t_x.chip(iH, i_COMPS);
+    internal.isToHd =
+        shared.eta * t_x.chip(iIs, i_COMPS) * shared.hfr * hfr_modifier;
+    internal.isToHr = shared.eta * t_x.chip(iIs, i_COMPS) - internal.isToHd;
+    internal.hrToR = shared.gamma_H_recovery * t_x.chip(iHr, i_COMPS);
 
     internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
 
     // update next step
     t_dx.chip(iS, i_COMPS) = -internal.sToE + internal.rToS;
     t_dx.chip(iE, i_COMPS) = internal.sToE - internal.eToIs - internal.eToIa;
-    t_dx.chip(iIs, i_COMPS) = internal.eToIs - internal.isToR - internal.isToH;
+    t_dx.chip(iIs, i_COMPS) =
+        internal.eToIs - internal.isToR - internal.isToHr - internal.isToHd;
     t_dx.chip(iIa, i_COMPS) = internal.eToIa - internal.iaToR;
-    t_dx.chip(iH, i_COMPS) = internal.isToH - internal.hToD - internal.hToR;
+    t_dx.chip(iHr, i_COMPS) = internal.isToHr - internal.hrToR;
+    t_dx.chip(iHd, i_COMPS) = internal.isToHd - internal.hdToD;
     t_dx.chip(iR, i_COMPS) =
-        internal.isToR + internal.iaToR + internal.hToR - internal.rToS;
+        internal.isToR + internal.iaToR + internal.hrToR - internal.rToS;
 
-    t_dx.chip(iD, i_COMPS) = internal.hToD;
+    t_dx.chip(iD, i_COMPS) = internal.hdToD;
     t_dx.chip(idE, i_COMPS) = internal.sToE;
-    t_dx.chip(idH, i_COMPS) = internal.isToH;
+    t_dx.chip(idH, i_COMPS) = internal.isToHr + internal.isToHd;
+
+    // update next step of new compartments here
 
     // vaccination related changes
     // calculate vaccination rate

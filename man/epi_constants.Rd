@@ -11,13 +11,13 @@
 \alias{N_INFECTION_SUBSYSTEM}
 \title{Epidemiological compartments and indices}
 \format{
-An object of class \code{character} of length 9.
+An object of class \code{character} of length 10.
 
-An object of class \code{list} of length 9.
+An object of class \code{list} of length 10.
 
 An object of class \code{integer} of length 1.
 
-An object of class \code{integer} of length 7.
+An object of class \code{integer} of length 8.
 
 An object of class \code{integer} of length 1.
 
@@ -50,9 +50,10 @@ indices from a named list, and of extracting names without having to call
 \code{names()}.
 }
 \details{
-DAEDALUS has 7 epidemiological compartments: susceptible, exposed, infectious
+DAEDALUS has 8 epidemiological compartments: susceptible, exposed, infectious
 and symptomatic ("infect_symp"), infectious and asymptomatic ("infect_asymp")
-, hospitalised, recovered, and dead.
+, hospitalised leading to recovery ("hospitalised_recov"),
+hospitalised leading to death ("hospitalised_death"), recovered, and dead.
 
 There are 2 additional compartments that track the number of new infections
 and new hospitalisations.

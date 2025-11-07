@@ -4,13 +4,7 @@
 \alias{validate_npi_input}
 \title{Validate npi inputs}
 \usage{
-validate_npi_input(
-  x,
-  country,
-  infection,
-  response_time,
-  response_duration = 365
-)
+validate_npi_input(x, country, infection, response_time, max_duration = 365)
 }
 \arguments{
 \item{x}{An object to be validated as input to the \code{vaccine_investment}

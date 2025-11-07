@@ -187,6 +187,11 @@ daedalus_npi <- function(
     )
   )
 
+  id_state_hosp <- c(
+    get_state_indices("hospitalised_recov", country),
+    get_state_indices("hospitalised_death", country)
+  )
+
   # NOTE: npis start on hospital capacity, but this can be extended
   x <- new_daedalus_npi(
     "reactive_npi",
@@ -196,7 +201,7 @@ daedalus_npi <- function(
     time_on = start_time,
     time_off = end_time,
     max_duration = max_duration,
-    id_state_on = get_state_indices("hospitalised", country),
+    id_state_on = id_state_hosp,
     id_state_off = get_state_indices("ipr", country),
     value_state_on = get_data(country, "hospital_capacity"),
     value_state_off = get_data(infection, "gamma_Is"),
@@ -387,7 +392,7 @@ validate_npi_input <- function(
   country,
   infection,
   response_time,
-  response_duration = 365
+  max_duration = 365
 ) {
   is_good_class <- checkmate::test_multi_class(
     x,
@@ -430,7 +435,7 @@ validate_npi_input <- function(
       infection,
       x,
       response_time,
-      response_duration
+      max_duration
     )
 
     z

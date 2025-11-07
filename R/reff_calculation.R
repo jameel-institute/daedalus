@@ -38,6 +38,7 @@ get_beta <- function(infection, country) {
     rep(gamma_Is, n_demog)
   )
   # this assumes equal duration infectious to recovery and hospitalisation
+  # is this also assuming isToH never contribute to FoI?
 
   v_mat <- diag(vvec)
 
