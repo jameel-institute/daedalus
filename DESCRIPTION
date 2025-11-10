@@ -1,6 +1,6 @@
 Package: daedalus
 Title: Model Health, Social, and Economic Costs of a Pandemic
-Version: 0.2.38
+Version: 0.3.0
 Authors@R: c(
     person("Pratik", "Gupte", , "p.gupte24@imperial.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5294-7819")),
@@ -21,9 +21,9 @@ Authors@R: c(
   )
 Description: Model the health, education, and economic costs of directly
     transmitted respiratory virus pandemics, under different scenarios of
-    prior vaccine investment and reactive interventions, using the
-    'DAEDALUS' integrated health-economics model adapted from Haw et al.
-    (2022) <doi.org/10.1038/s43588-022-00233-0>.
+    prior vaccine investment, policy interventions, and public behavioural
+    change, using the 'DAEDALUS' integrated health-economics model adapted
+    from Haw et al.  (2022) <doi.org/10.1038/s43588-022-00233-0>.
 License: MIT + file LICENSE
 URL: https://github.com/jameel-institute/daedalus,
     https://jameel-institute.github.io/daedalus/

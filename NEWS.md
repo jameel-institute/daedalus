@@ -1,3 +1,11 @@
+# daedalus 0.3.0
+
+This is a minor version release for use in the Jameel Institute Symposium Daedalus preview event.
+
+- Updates to vignettes to fix formatting and table and section linking.
+
+- Updates to Readme to make information easier to find.
+
 # daedalus 0.2.38
 
 This development version splits H into two compartments and uses HFR as the probability of death conditional on hospitalisation (PR #109).
