@@ -27,11 +27,13 @@ This approach balances the ability to run _daedalus_ scenarios for a large numbe
 
 ::: {.alert .alert-info}
 **Note that** the VSL values used in a call to `daedalus()` for any country can always be substituted with values considered to be more appropriate (e.g., from a national health ministry).
+
+**Note also that** preparatory calculations of the value of a statistical life are performed in the data preparation scripts in our companion data package [_daedalus.data_]().
 :::
 
 ## Value of a life year
 
-The value of a life year (VLY) in a country is assumed to be the gross national income (GNI) per capita scaled for purchasing power parity in international dollars.
+The value of a life year for a country $VLY_\text{c}$ is taken to be the gross national income (GNI) per capita scaled for purchasing power parity in international dollars.
 
 Country GNI values are for the most recent year available, and are taken from the [World Bank's World Development Indicators](https://databank.worldbank.org/source/world-development-indicators).
 
@@ -39,9 +41,9 @@ Country GNI values are for the most recent year available, and are taken from th
 **Note that** there is no discounting applied to older age groups, that is, all remaining years of life are valued the same, and are not adjusted for disabilities or quality.
 :::
 
-## Life expectancy
+## Life expectancy and years of life lost
 
-Life-expectancy data in terms of years for each country and territory is initially accessed for age-bins and separated by sex.
+Life-expectancy data in terms of years for each country and territory is initially accessed for age-bins and separated by sex, from the @gbd_life.
 
 The life-expectancy data is then aggregated by the DAEDALUS age bins: 0 -- 4, 5 -- 19 (school age), 20 -- 65 (working age), 65+ (retired or not working).
 
