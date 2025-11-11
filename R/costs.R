@@ -73,7 +73,9 @@ get_costs <- function(
 
   gva <- x$country_parameters$gva
   openness <- x$response_data$openness
-  openness <- openness[-1L] # remove null openness
+  # NOTE: we assume that only the operational openness(-es) is/are returned.
+  # all NPIs carry information on the openness when they are inactive (1.0),
+  # but these are not carried into a `<daedalus_output>`
 
   # NOTE: might be good to split these into separate functions for different
   # cost domains, but might end up replicating a good bit of code
