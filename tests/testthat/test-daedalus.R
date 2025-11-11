@@ -144,9 +144,8 @@ test_that("daedalus: Can run with custom demography", {
 })
 
 # test that daedalus runs for all epidemic infection parameter sets
-skip_on_covr()
-skip("Skipped for length")
 test_that("daedalus: Runs for all country x infection x response", {
+  skip_on_covr()
   country_infection_combos <- data.table::CJ(
     country = daedalus.data::country_names,
     infection = daedalus.data::epidemic_names
@@ -351,12 +350,13 @@ test_that("daedalus: responses triggered by hospital capacity event", {
   x$hospital_capacity <- 1e4
 
   output_list <- lapply(
-    names(daedalus.data::closure_strategy_data),
+    daedalus.data::closure_strategy_names,
     daedalus,
     country = x,
-    infection = "sars_cov_1"
+    infection = "sars_cov_1",
+    time_end = 300
   )
-  resp_scenario_names <- names(daedalus.data::closure_strategy_data)
+  resp_scenario_names <- daedalus.data::closure_strategy_names
   output_fs <- vapply(
     output_list,
     function(x) {

@@ -2,6 +2,10 @@
 
 This is a minor version release for use in the Jameel Institute Symposium Daedalus preview event.
 
+- Updates to what information about NPI closures is returned from `get_data.daedalus_npi(x, "openness")`.
+
+- Updates to an epidemic size test to avoid potentially spurious failures where 'school closures' seems to be worse than 'none'.
+
 - Updates to vignettes to fix formatting and table and section linking.
 
 - Updates to Readme to make information easier to find.
