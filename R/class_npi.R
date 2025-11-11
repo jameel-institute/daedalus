@@ -458,5 +458,9 @@ get_data.daedalus_npi <- function(x, to_get, ...) {
     ))
   }
 
-  x$parameters[[to_get]]
+  if (to_get == "openness") {
+    x$parameters[[to_get]][-1] # do not return null openness ie. when not active
+  } else {
+    x$parameters[[to_get]]
+  }
 }
