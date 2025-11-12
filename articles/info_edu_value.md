@@ -1,0 +1,88 @@
+# Value of educational time lost
+
+This vignette explains how the value of lost educational time is
+calculated in *daedalus*.
+
+In *daedalus*, educational time is assumed to be lost due to
+pandemic-mitigation restrictions on education, such as **school
+closures**.
+
+We also assume that education shifts to a remote format that has a
+reduced efficacy compared to in-person schooling.
+
+## Value of a school year
+
+The value of a school year in a country (\\\text{VSY}\_c\\) is the
+product of the country-specific gross national income
+(\\\text{GNI}\_c\\) per capita, the rate of return on education (\\R\\),
+and the present value of expected future earnings (which we denote as
+\\V\\).
+
+\\\text{VSY}\_c = \text{GNI}\_c \times V \times R\\
+
+### Valuation constants
+
+The following constants are assumed when calculating the value of a
+school year:
+
+- \\r = 0.03\\: the discount rate for future earnings;
+
+- \\m_Y = 45\\: the expected future years of work;
+
+- \\a = 12.5\\: the mean age of school-going individuals. **Note that**
+  the mean age of school-goers is a simple mean of the age-bin
+  `[5, 20)`.
+
+- \\R = 0.08\\: the rate of return on one year of education.
+
+### Country GNI
+
+Country GNI values are for the most recent year available, and are taken
+from the [World Bank’s World Development
+Indicators](https://databank.worldbank.org/source/world-development-indicators).
+
+### Present value of future earnings
+
+A constant scaling factor for the present value of future (lost)
+earnings (\\V\\) is calculated using the valuation constants defined
+above.
+
+\\\frac{1 - (1 + r)^{-(m_Y + 20 - a)}}{r} - \frac{1 - (1 + r)^{-(20 -
+a)}}{r}\\
+
+## Value of education lost
+
+The value of lost education is the product of:
+
+- The number of school days lost due to pandemic-mitigation measures (in
+  DAEDALUS, these are school closures); this is explained more below;
+
+- \\1 - E\_{\text{remote}}\\: the loss in educational efficacy due to
+  remote education during closures;
+
+- \\\text{VSD}\_c\\: the value of a school day, which is the value of a
+  school year divided by 365 (\\\text{VSY}\_c / 365\\); and
+
+- \\N\\: the number of school age children.
+
+\\\text{VSD}\_c \times N \times (1 - O\_{\text{edu}}) \times T \times
+(1 - E\_{\text{remote}})\\
+
+The **number of school days lost** is calculated as the product of the
+closure coefficient for the educational sector (\\1 - O\_{\text{edu}}\\)
+and the number of days a pandemic-mitigation measure is active \\T\\.
+The closure coefficient indicates the stringency of measures applied to
+schooling, and can take a value in the range \\\[0, 1\]\\.
+
+## Future developments
+
+Future development on the valuation of education lost is planned, and
+includes:
+
+- Accounting for the numbers of children in each age-bin in demographic
+  data and correctly calculating the present value of future earnings
+  (\\V\\) by accounting for differences in expected remaining years of
+  work;
+
+- Including the effect of education missed due to student absences
+  caused by illness or isolation.

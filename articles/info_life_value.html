@@ -28,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.38</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -111,13 +111,16 @@ update official life-values from national governments.</p>
 <code><a href="../reference/daedalus.html">daedalus()</a></code> for any country can always be substituted with
 values considered to be more appropriate (e.g., from a national health
 ministry).</p>
+<p><strong>Note also that</strong> preparatory calculations of the value
+of a statistical life are performed in the data preparation scripts in
+our companion data package <a href=""><em>daedalus.data</em></a>.</p>
 </div>
 <div class="section level2">
 <h2 id="value-of-a-life-year">Value of a life year<a class="anchor" aria-label="anchor" href="#value-of-a-life-year"></a>
 </h2>
-<p>The value of a life year (VLY) in a country is assumed to be the
-gross national income (GNI) per capita scaled for purchasing power
-parity in international dollars.</p>
+<p>The value of a life year for a country <span class="math inline">\(VLY_\text{c}\)</span> is taken to be the gross
+national income (GNI) per capita scaled for purchasing power parity in
+international dollars.</p>
 <p>Country GNI values are for the most recent year available, and are
 taken from the <a href="https://databank.worldbank.org/source/world-development-indicators" class="external-link">World
 Bank’s World Development Indicators</a>.</p>
@@ -128,10 +131,10 @@ and are not adjusted for disabilities or quality.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="life-expectancy">Life expectancy<a class="anchor" aria-label="anchor" href="#life-expectancy"></a>
+<h2 id="life-expectancy-and-years-of-life-lost">Life expectancy and years of life lost<a class="anchor" aria-label="anchor" href="#life-expectancy-and-years-of-life-lost"></a>
 </h2>
 <p>Life-expectancy data in terms of years for each country and territory
-is initially accessed for age-bins and separated by sex.</p>
+is initially accessed for age-bins and separated by sex, from the <span class="citation">Global Burden of Disease Collaborative Network (<a href="#ref-gbd_life">2020</a>)</span>.</p>
 <p>The life-expectancy data is then aggregated by the DAEDALUS age bins:
 0 – 4, 5 – 19 (school age), 20 – 65 (working age), 65+ (retired or not
 working).</p>
@@ -204,6 +207,11 @@ pandemic costs.</p>
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-gbd_life" class="csl-entry">
+Global Burden of Disease Collaborative Network. 2020. <span>“Global
+Burden of Disease Study 2019 (GBD 2019) Life Tables 1950-2019.”</span>
+Institute for Health Metrics and Evaluation (IHME). <a href="https://doi.org/10.6069/1PF5-1M37" class="external-link">https://doi.org/10.6069/1PF5-1M37</a>.
+</div>
 <div id="ref-robinson2019" class="csl-entry">
 Robinson, Lisa A., James K. Hammitt, Michele Cecchini, Kalipso
 Chalkidou, Karl Claxton, Maureen Cropper, Patrick Hoang-Vu Eozenou, et
@@ -224,7 +232,7 @@ NY: Social Science Research Network. <a href="https://doi.org/10.2139/ssrn.40158
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

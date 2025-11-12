@@ -28,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.38</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,11 +123,11 @@ hospitalisation or death</li>
 <p>Presently, we have equipped <em>daedalus</em> with parameters to
 simulate seven potential pathogens (influenza A 2009, influenza A 1957,
 influenza A 1918, SARS-CoV-1, SARS-CoV-2 pre-Alpha variant, SARS-CoV-2
-Delta and SARS-CoV-2 Omicron BA.1, see @ref(tab:pathogendata)) across 67
-countries. In addition, <em>daedalus</em> allows the user the
-flexibility to incorporate additional respiratory pathogen and/or
-country parameters and data, as considered appropriate for their use
-case.</p>
+Delta and SARS-CoV-2 Omicron BA.1, see <a href="#pathogendata">this
+table on pathogen parameters</a>) across 67 countries. In addition,
+<em>daedalus</em> allows the user the flexibility to incorporate
+additional respiratory pathogen and/or country parameters and data, as
+considered appropriate for their use case.</p>
 <p>The following sections present a technical description of the
 epidemiological and economic components of <em>daedalus</em>. For
 examples of its implementation in research case studies, see</p>
@@ -153,37 +153,39 @@ by age-sector sector <span class="math inline">\(i\)</span> and
 vaccination <span class="math inline">\(j\)</span> classes.</p>
 <p>A susceptible individual <span class="math inline">\(S\)</span> can
 become exposed to the virus and enter a latent state <span class="math inline">\(E\)</span>, from which they can develop either a
-symptomatic <span class="math inline">\(Is\)</span> or asymptomatic
-<span class="math inline">\(Ia\)</span> infection. Whereas asymptomatic
+symptomatic <span class="math inline">\(I_s\)</span> or asymptomatic
+<span class="math inline">\(I_a\)</span> infection. Whereas asymptomatic
 infected individuals are assumed to always recover, symptomatic ones can
 either recover <span class="math inline">\(R\)</span> or develop a more
 severe condition requiring hospitalisation that would lead to either
-recovery <span class="math inline">\(Hr\)</span> or death <span class="math inline">\(Hd\)</span>. We assume different lengths of
+recovery <span class="math inline">\(H_r\)</span> or death <span class="math inline">\(H_d\)</span>. We assume different lengths of
 hospital stay for this compartments, after which individuals transition
 to the recovered <span class="math inline">\(R\)</span> or death <span class="math inline">\(D\)</span> compartments.</p>
 <p><img src="figures/daedalus.png"></p>
 <div class="section level4">
 <h4 id="ordinary-differential-equations">Ordinary differential equations<a class="anchor" aria-label="anchor" href="#ordinary-differential-equations"></a>
 </h4>
-<p><span class="math display">\[\begin{align}
+<p><span class="math display">\[
+\begin{aligned}
     &amp; \frac{dS_{i,j}}{dt} = \zeta_{eff_{j=0}}(t) S_{i,j=0}(t) -
 \Lambda_{i,j} (t) S_{i,j}(t)  + \rho R_{i,j}(t) - \zeta_{j=1}
 S_{i,j=1}(t)\\
     &amp; \frac{dE_{i,j}}{dt} = \Lambda_{i,j} (t) S_{i,j}(t) - \sigma
 E_{i,j}(t) \\
     &amp; \frac{dIa_{i,j}}{dt} = (1 - p_\text{symp}) \sigma E_{i,j}(t) -
-\gamma_{Ia} Ia_{i,j}(t) \\
+\gamma_{I_a} I_{a_{i,j}}(t) \\
     &amp; \frac{dIs_{i,j}}{dt} = p_\text{symp} \sigma E_{i,j}(t) -
-\gamma_{Is} Is_{i,j}(t) - \eta^i Is_{i,j}(t) \\
-    &amp; \frac{dHr_{i,j}}{dt} = \eta^i (1 - HFR_{i}) Is_{i,j}(t) -
-\gamma_{Hr} H_{i,j}(t) \\
-    &amp; \frac{dHd_{i,j}}{dt} = \eta^i HFR_{i} Is_{i,j}(t) -
-\gamma_{Hd} Hd_{i,j}(t) \\
+\gamma_{I_s} I_{s_{i,j}}(t) - \eta^i I_{s_{i,j}}(t) \\
+    &amp; \frac{dHr_{i,j}}{dt} = \eta^i (1 - \text{HFR}_{i})
+I_{s_{i,j}}(t) - \gamma_{H_r} H_{r_{i,j}}(t) \\
+    &amp; \frac{dHd_{i,j}}{dt} = \eta^i \text{HFR}_{i} I_{s_{i,j}}(t) -
+\gamma_{H_d} H_{d_{i,j}}(t) \\
     &amp; \frac{dR_{i,j}}{dt} = \zeta_{eff_{j=0}}(t) R_{i,j=0}(t) +
-\gamma_{Is} Is_{i,j}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_{Hr}
+\gamma_{I_s} I_{s_{i,j}}(t) + \gamma_{Ia} Ia_{i,j}(t) + \gamma_{Hr}
 Hr_{i,j}(t) - \rho R_{i,j}(t) - \zeta_{j=1} R_{i,j=1}(t)\\
     &amp; \frac{dD_{i,j}}{dt} = \gamma_{Hd} Hd_{i,j}(t)\\
-\end{align}\]</span></p>
+\end{aligned}
+\]</span></p>
 <p>Should be noted that whilst some model parameters vary over time
 (e.g., <span class="math inline">\(\zeta_{eff_{j=0}}(t)\)</span>
 effective vaccination rate scaled for available susceptible population)
@@ -197,18 +199,20 @@ capacity available for responding to the outbreak.</p>
 <div class="alert alert-info">
 <p><strong>Note that</strong>, as default, <em>daedalus</em> ships a
 collection of pre-defined parameter sets that represent historical
-respiratory pandemic pathogens (see @ref(tab:pathogendata)), as
-contained in <em>daedalus.data</em>. These can be saved as an object of
-class <code>daedalus_infection</code> and modified by the user to be
-then passed to the model function <code><a href="../reference/daedalus.html">daedalus::daedalus()</a></code>.</p>
+respiratory pandemic pathogens (see <a href="#pathogendata">this table
+on pathogen parameters</a>), as contained in <em>daedalus.data</em>.
+These can be saved as an object of class <code>daedalus_infection</code>
+and modified by the user to be then passed to the model function
+[daedalus::daedalus()].</p>
 </div>
 </div>
 <div class="section level4">
 <h4 id="age-sector-classes">Age-sector classes<a class="anchor" aria-label="anchor" href="#age-sector-classes"></a>
 </h4>
-<p>There are 49 age-sector classes <span class="math inline">\(i\)</span> in <em>daedalus</em>: four age <span class="math inline">\(i \in 1:4\)</span> groups <span class="math inline">\(( [0-5], [5-20), [20-65),65+)\)</span> and, given
-population in <span class="math inline">\(i=3\)</span> (20-65)
-represents unemployed adults ofr working age, 45 economic groups <span class="math inline">\(i \in 5:49\)</span> (see in Economic model
+<p>There are 49 age-sector classes <span class="math inline">\(i\)</span> in <em>daedalus</em>: four age <span class="math inline">\(i \in 1:4\)</span> groups <span class="math inline">\(([0, 5), [5, 20), [20-65), 65+)\)</span> and,
+given population in <span class="math inline">\(i=3\)</span> (20–64
+years old) represents unemployed adults ofr working age, 45 economic
+groups <span class="math inline">\(i \in 5:49\)</span> (see in the <a href="#econ-model">section on the <em>economic model</em></a>
 below).</p>
 </div>
 <div class="section level4">
@@ -218,10 +222,10 @@ below).</p>
 into the vaccination classes <span class="math inline">\(j \in
 1:2\)</span> of unvaccinated and vaccinated. We assume only the
 population in the susceptible and recovered compartments can be
-vaccinated, given transition rate <span class="math inline">\(\zeta_{eff_{j=0}}(t)\)</span>, which is determined
-by the user (see Table @ref(tab:vaccine)). Vaccinated individuals can
-lose their immunity and transition back to an unvaccinated class, given
-rate <span class="math inline">\(\rho\)</span>.</p>
+vaccinated, given transition rate <span class="math inline">\(\zeta_{\text{eff}_{j=0}}(t)\)</span>, which is
+determined by the user (see this <a href="#vaccine">table on vaccination
+scenario parameters</a>). Vaccinated individuals can lose their immunity
+and transition back to an unvaccinated class, given rate <span class="math inline">\(\rho\)</span>.</p>
 </div>
 </div>
 <div class="section level3">
@@ -230,10 +234,9 @@ rate <span class="math inline">\(\rho\)</span>.</p>
 <p><em>daedalus</em> can simulate nine different pathogens (influenza A
 2009, influenza A 1957, influenza A 1918, SARS-CoV-1, SARS-CoV-2
 pre-Alpha variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1) with
-pathogen-specific transition (see Table @ref(tab:pathogendata)).</p>
+pathogen-specific transition (see <a href="#pathogendata">this table on
+pathogen parameters</a>).</p>
 <table class="table">
-<caption>(#tab:transitionpars) Definition of model transition
-parameters.</caption>
 <colgroup>
 <col width="50%">
 <col width="50%">
@@ -293,6 +296,8 @@ symptomatic infection</td>
 </tr>
 </tbody>
 </table>
+<p><span id="transitionpars">Table: Definition of model transition
+parameters.</span></p>
 <div class="section level4">
 <h4 id="seed-and-force-of-infection">Seed and force of infection<a class="anchor" aria-label="anchor" href="#seed-and-force-of-infection"></a>
 </h4>
@@ -300,74 +305,77 @@ symptomatic infection</td>
 further assumed to be symptomatic.</p>
 <p>The force of infection <span class="math inline">\(\lambda_{i,j}
 (t)\)</span> accounts for the infection contributions of symptomatically
-<span class="math inline">\(Is_{ij}(t)\)</span> and asymptomatically
-<span class="math inline">\(Ia_{ij}(t)\)</span> infected individuals in
-the community and in workplaces.</p>
-<p>We let <span class="math inline">\(\delta Icomm^i(t)\)</span> and
-<span class="math inline">\(\delta Iwork^i(t)\)</span> denote the number
-of infected individuals in the community and the workplace,
-respectively, weighted by their infectivity given <span class="math display">\[\begin{align}
-    &amp; \delta Icomm_{ij}(t) = v_{eff_{j=1}} (Ia_{i \in 1:4,j}(t)
-\epsilon + Is_{i \in 1:4,j}(t))\\
-    &amp; \delta Iwork_{ij}(t) = v_{eff_{j=1}} (Ia_{i \in 5:49,j}(t)
-\epsilon + Is_{i \in 5:49,j}(t)),
-\end{align}\]</span> where <span class="math inline">\(\epsilon\)</span>
-is the relative infectiousness of an asymptomatically infected
-individual relative to a symptomatic one, and <span class="math inline">\(v_{eff_{j=1}}\)</span> the reduced susceptibility
-of a vaccinated individual relative to an unvaccinated one of the same
-age.</p>
-<p>The force of infection from the community <span class="math inline">\(\lambda_{comm_{i,j}} (t)\)</span> on a susceptible
-individual is thus modelled as <span class="math display">\[\begin{align}
-\lambda_{comm_{i,j}} (t) &amp; =
-    \beta (t) \cdot \sum_{i'} m_{i,i'} \sum_{j'} \delta
-Icomm_{i',j'} (t)
-\end{align}\]</span> where <span class="math inline">\(\beta(t)\)</span>
-represents a time-varying contact rate scaling factor, determined by
-social distancing interventions simulated, and <span class="math inline">\(m_{i,i'}\)</span> is the (symmetric)
+<span class="math inline">\(I_{s_{ij}}(t)\)</span> and asymptomatically
+<span class="math inline">\(I_{a_{ij}}(t)\)</span> infected individuals
+in the community and in workplaces.</p>
+<p>We let <span class="math inline">\(\delta
+I_{\text{comm}}^i(t)\)</span> and <span class="math inline">\(\delta
+I_{\text{work}}^i(t)\)</span> denote the number of infected individuals
+in the community and the workplace, respectively, weighted by their
+infectivity given</p>
+<p><span class="math display">\[
+\begin{aligned}
+    &amp; \delta I_{\text{comm}_{ij}}(t) = v_{eff_{j=1}} (I_{a_{i \in
+1:4,j}}(t) \epsilon + I_{s_{i \in 1:4,j}}(t))\\
+    &amp; \delta I_{\text{work}_{ij}}(t) = v_{eff_{j=1}} (I_{a_{i \in
+5:49,j}}(t) \epsilon + I_{s_{i \in 5:49,j}}(t))
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(\epsilon\)</span> is the relative
+infectiousness of an asymptomatically infected individual relative to a
+symptomatic one, and <span class="math inline">\(v_{\text{eff}_{j=1}}\)</span> the reduced
+susceptibility of a vaccinated individual relative to an unvaccinated
+one of the same age.</p>
+<p>The force of infection from the community <span class="math inline">\(\lambda_{\text{comm}_{i,j}} (t)\)</span> on a
+susceptible individual is thus modelled as</p>
+<p><span class="math display">\[
+\lambda_{\text{comm}_{i,j}} (t) = \beta (t) \cdot \sum_{i'}
+m_{i,i'} \sum_{j'} \delta I_{{\text{comm}}_{i',j'}} (t)
+\]</span></p>
+<p>where <span class="math inline">\(\beta(t)\)</span> represents a
+time-varying contact rate scaling factor, determined by social
+distancing interventions simulated, and <span class="math inline">\(m_{i,i'}\)</span> is the (symmetric)
 person-to-person contact rate between age group <span class="math inline">\(i\)</span> and <span class="math inline">\(i'\)</span>.</p>
-<p>The force of infection within the workplace <span class="math inline">\(\lambda_{work_{i,j}} (t)\)</span> is modelled as
-<span class="math display">\[\begin{align}
-\lambda_{work_{i,j}} (t) &amp; =
-    \beta (t) \cdot \Phi_i(t) \cdot \sum_{i'=0}^{i'=N}
-C_{i,i'} \sum_{j'} \delta Iwork_{i',j'} (t)
-\end{align}\]</span> where <span class="math inline">\(C_{i,i'}\)</span> is a contact matrix specific
-to the workplace, and <span class="math inline">\(\Phi_i(t)\)</span> is
-a scaling factor determined by economic closure interventions
-simulated.</p>
+<p>The force of infection within the workplace <span class="math inline">\(\lambda_{work_{i,j}} (t)\)</span> is modelled
+as</p>
+<p><span class="math display">\[
+\lambda_{\text{work}_{i,j}} (t) = \beta (t) \cdot \Phi_i(t) \cdot
+\sum_{i'=0}^{i'=N} C_{i,i'} \sum_{j'} \delta
+I_{\text{work}_{i',j'}} (t)
+\]</span></p>
+<p>where <span class="math inline">\(C_{i,i'}\)</span> is a contact
+matrix specific to the workplace, and <span class="math inline">\(\Phi_i(t)\)</span> is a scaling factor determined
+by economic closure interventions simulated.</p>
 <p>Lastly, the force of infection from infected individuals in the
-community to susceptible workers <span class="math inline">\(\lambda_{c2w_{i,j}} (t)\)</span> (i.e., infected
-individuals from the community attending shops) is given by <span class="math display">\[\begin{align}
-\lambda_{c2w_{i,j}} (t) &amp; =
-    \beta (t) \cdot \Phi_i(t) \cdot \sum_{i'=0}^{i'=N}
-CtoW_{i,i'} \sum_{j'} \delta Icomm_{i',j'} (t)
-\end{align}\]</span> where <span class="math inline">\(CtoW_{i,i'}\)</span> is a contact matrix
-specific to consumers attending workplaces.</p>
+community to susceptible workers <span class="math inline">\(\lambda_{\text{comm}\rightarrow\text{workers}_{i,j}}
+(t)\)</span> (i.e., infected individuals from the community attending
+shops) is given by</p>
+<p><span class="math display">\[
+\lambda_{\text{comm}\rightarrow\text{workers}_{i,j}} (t) =
+    \beta (t) \cdot \Phi_i(t) \cdot \sum_{i'=0}^{i'=N} {C
+\rightarrow W}_{i,i'} \sum_{j'} \delta
+I_{{\text{comm}}_{i',j'}} (t)
+\]</span></p>
+<p>where <span class="math inline">\(C \rightarrow W_{i,i'}\)</span>
+is a contact matrix specific to consumers attending workplaces.</p>
 <p>The total force of infection acting on susceptible individuals is
 then assumed to be an addition of the above. For conciseness, this can
-be taken as <span class="math display">\[\begin{equation}
-    \Lambda_{ij} (t) = \lambda_{comm_{ij}} (t) + \lambda_{work_{ij}} (t)
-+ \lambda_{c2w_{i,j}} (t)
-\end{equation}\]</span> however, it should be noted that the force of
-infection within the workplace <span class="math inline">\(\lambda_{work_{ij}} (t)\)</span> is a column
-vector of length 45, given the number of economic sector classes in the
-model, whilst <span class="math inline">\(\lambda_{comm_{ij}}
-(t)\)</span> and <span class="math inline">\(\lambda_{c2w_{ij}}
+be taken as</p>
+<p><span class="math display">\[
+    \Lambda_{ij} (t) = \lambda_{\text{comm}_{ij}} (t) +
+\lambda_{\text{work}_{ij}} (t) +
+\lambda_{\text{comm}\rightarrow\text{workers}_{i,j}} (t)
+\]</span></p>
+<p>however, it should be noted that the force of infection within the
+workplace <span class="math inline">\(\lambda_{work_{ij}} (t)\)</span>
+is a column vector of length 45, given the number of economic sector
+classes in the model, whilst <span class="math inline">\(\lambda_{\text{comm}_{ij}} (t)\)</span> and <span class="math inline">\(\lambda_{\text{comm}\rightarrow\text{workers}_{i,j}}
 (t)\)</span> are of length 49, encompassing all age-sector classes.</p>
 </div>
 <div class="section level4">
 <h4 id="disease-transition-rates">Disease transition rates<a class="anchor" aria-label="anchor" href="#disease-transition-rates"></a>
 </h4>
 <table class="table">
-<caption>(#tab:pathogendata) Pathogen parameters. A different pathogen
-profile can be created by the user by generating a list object
-specifying these parameter values (see list structure for these
-pathogens in <code><a href="https://jameel-institute.github.io/daedalus.data/reference/epidemic_data.html">daedalus.data::infection_data</a></code>). *Note disease
-severity progression is modelled with competing rates (e.g., for
-individuals in the <span class="math inline">\(Ia\)</span> compartment,
-of recovery <span class="math inline">\(\gamma_{Is}\)</span> vs
-hospitalisation by age <span class="math inline">\(\eta^i\)</span>);
-where NA values are specified, we assume these individuals cannot
-undergo the respective disease severity transition.</caption>
 <colgroup>
 <col width="12%">
 <col width="12%">
@@ -401,7 +409,7 @@ undergo the respective disease severity transition.</caption>
 </tr>
 <tr class="even">
 <td align="left">Probability symptomatic</td>
-<td align="left"><span class="math inline">\(p_{sympt}\)</span></td>
+<td align="left"><span class="math inline">\(p_{\text{sympt}}\)</span></td>
 <td align="left">0.669</td>
 <td align="left">0.669</td>
 <td align="left">0.669</td>
@@ -491,8 +499,7 @@ undergo the respective disease severity transition.</caption>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">Hospitalisation rate given symptomatic infection
-(days<span class="math inline">\(^{-1}\)</span>)</td>
+<td align="left">Hospitalisation rate given symptomatic infection (<span class="math inline">\(\text{days}^{-1}\)</span>)</td>
 <td align="left"><span class="math inline">\(1/\eta^i\)</span></td>
 <td align="left"></td>
 <td align="left"></td>
@@ -544,7 +551,7 @@ undergo the respective disease severity transition.</caption>
 <tr class="even">
 <td align="left">Hospital fatality ratio conditional on symptomatic
 infection leading to hospitalisation (%)</td>
-<td align="left"><span class="math inline">\(HFR^i\)</span></td>
+<td align="left"><span class="math inline">\(\text{HFR}^i\)</span></td>
 <td align="left"></td>
 <td align="left"></td>
 <td align="left"></td>
@@ -594,6 +601,16 @@ infection leading to hospitalisation (%)</td>
 </tr>
 </tbody>
 </table>
+<p><span id="pathogendata">Table: Pathogen parameters. A different
+pathogen profile can be created by the user by generating a list object
+specifying these parameter values (see list structure for these
+pathogens in <code><a href="https://jameel-institute.github.io/daedalus.data/reference/epidemic_data.html">daedalus.data::infection_data</a></code>). *Note disease
+severity progression is modelled with competing rates (e.g., for
+individuals in the <span class="math inline">\(I_a\)</span> compartment,
+of recovery <span class="math inline">\(\gamma_{I_s}\)</span> vs
+hospitalisation by age <span class="math inline">\(\eta^i\)</span>);
+where NA values are specified, we assume these individuals cannot
+undergo the respective disease severity transition.</span></p>
 </div>
 <div class="section level4">
 <h4 id="vaccination">Vaccination<a class="anchor" aria-label="anchor" href="#vaccination"></a>
@@ -602,13 +619,6 @@ infection leading to hospitalisation (%)</td>
 vaccine investment scenarios, which can be modified as necessary by the
 user.</p>
 <table style="width:100%;" class="table">
-<caption>(#tab:vaccine) Vaccination parameters. These pre-specified
-parameters can be modified by the user and/or additional strategies can
-be added by generating a list object with the same structure (see
-<code><a href="https://jameel-institute.github.io/daedalus.data/reference/vaccine_scenarios.html">daedalus.data::vaccination_scenario_data</a></code>). *Note the
-default version of <em>daedalus</em> only models vaccine efficacy
-against infection; for use cases with added functionality to simulate
-efficacy against other clinical severity end-points see <span class="citation">Johnson et al. (<a href="#ref-johnson_indonesia">2023</a>)</span>.</caption>
 <colgroup>
 <col width="16%">
 <col width="16%">
@@ -660,55 +670,38 @@ efficacy against other clinical severity end-points see <span class="citation">J
 </tr>
 </tbody>
 </table>
+<p><span id="vaccine">Table: Vaccination parameters. These pre-specified
+parameters can be modified by the user and/or additional strategies can
+be added by generating a list object with the same structure (see
+<code><a href="https://jameel-institute.github.io/daedalus.data/reference/vaccine_scenarios.html">daedalus.data::vaccination_scenario_data</a></code>). *Note the
+default version of <em>daedalus</em> only models vaccine efficacy
+against infection; for use cases with added functionality to simulate
+efficacy against other clinical severity end-points see <span class="citation">Johnson et al. (<a href="#ref-johnson_indonesia">2023</a>)</span>.</span></p>
 </div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="economic-model">Economic model<a class="anchor" aria-label="anchor" href="#economic-model"></a>
+<h2 id="econ-model">Modelling economic losses<a class="anchor" aria-label="anchor" href="#econ-model"></a>
 </h2>
-<p><em>daedalus</em> assigns monetary values to the years of life lost
-(YLL) <span class="math inline">\(K_1\)</span>, economic activity losses
-<span class="math inline">\(K_2\)</span> and years of education lost
-<span class="math inline">\(K_3\)</span>. The following sections
-describe the methodology for calculating each of these losses. The total
-socioeconomic loss (TSL) of a respiratory pandemic is therefore given
-by</p>
-<pre class="math"><code><span><span class="va">TSL</span> <span class="op">=</span> <span class="va">K_1</span> <span class="op">+</span> <span class="va">K_2</span> <span class="op">+</span> <span class="va">K_3.</span></span></code></pre>
-<div class="section level3">
-<h3 id="years-of-life-lost">Years of life lost<a class="anchor" aria-label="anchor" href="#years-of-life-lost"></a>
-</h3>
-<p>We estimate the number of years of life lost by age and country using
-life tables from the <span class="citation">Global Burden of Disease
-Collaborative Network (<a href="#ref-gbd_life">2020</a>)</span>.
-Formally, we used the life expectancy by age and country <span class="math inline">\(\hat{L}_i\)</span> to estimate life years lost for
-deceased individuals given</p>
-<p><span class="math display">\[\begin{equation}
-YLL^i = \int_{t=0}^t \sum_{j} D_{i,j}(t)dt \cdot \hat{L}_i.
-\end{equation}\]</span></p>
-<p>We then use the VSL approach to estimate the monetary value of lives
-lost. The VSL reflects individuals’ willingness to trade wealth for a
-reduction in mortality risk (<span class="citation">Cutler and Summers
-(<a href="#ref-cutler2020">2020</a>)</span>). Following standardised
-methods (<span class="citation">Hammitt (<a href="#ref-hammitt2020">2020</a>)</span>;<span class="citation">Ananthapavan et al. (<a href="#ref-ananthapavan2021">2021</a>)</span>;<span class="citation">Robinson, Sullivan, and Shogren (<a href="#ref-robinson2021">2021</a>)</span>), we assume the VSL of the USA
-and adjust for differences in income elasticity by country, which are
-further assumed to be higher in lower-income settings because the
-opportunity cost of spending on basic necessities becomes large if
-incomes are at or below subsistence (<span class="citation">Hammitt (<a href="#ref-hammitt2020">2020</a>)</span>).</p>
-<p>Formally, for country <span class="math inline">\(a\)</span> we
-estimate its VSL by age <span class="math inline">\(VSL_a^i\)</span> as
-a function of GDP given</p>
-<p><span class="math display">\[\begin{equation}
-VSL_a^i = VSL_{USA}^i \left(r_a \frac{GDP^a}{GDP_{USA}}  \right)^{r_e}
-\end{equation}\]</span></p>
-<p>where <span class="math inline">\(r_a\)</span> is the country’s
-conversion rate of its market exchange rate GDP to a purchasing power
-parity GDP, and <span class="math inline">\(r_e\)</span> its income
-elasticity, which we estimated from OECD data as in <span class="citation">Robinson, Sullivan, and Shogren (<a href="#ref-robinson2021">2021</a>)</span>.</p>
-<p>The monetary value of years of life lost <span class="math inline">\(K_1\)</span> is then</p>
-<p><span class="math display">\[\begin{equation}
-K_1 = \sum_i YLL^i \cdot VSL_a^i.
-\end{equation}\]</span></p>
-</div>
+<p><em>daedalus</em> assigns monetary values to three key types of model
+outcomes that we interpret as losses: the years of life lost due to
+epidemic-related deaths, economic activity lost due to worker illness
+and epidemic mitigation measures, and years of education lost due to
+worker illnesses and epidemic mitigation measures.</p>
+<p>The life-years lost and education-days lost valuations models are
+explained in more detail in their own vignettes (see links below), and
+here we focus on the valuation of economic losses.</p>
+<ul>
+<li><p><strong>Value of life-years lost</strong>: Calculated using a
+value of a statistical life approach based on the country-specific gross
+national income (as the broadest possible data source); see this
+vignette on how the <a href="https://jameel-institute.github.io/daedalus/articles/info_life_value.html">value
+of life-years lost is calculated</a>.</p></li>
+<li><p><strong>Value of education-days lost</strong>: Calculated using
+an approach based on the present value of future earnings; see this
+vignette on how the <a href="https://jameel-institute.github.io/daedalus/articles/info_edu_value.html">value
+of educational time lost is calculated</a>.</p></li>
+</ul>
 <div class="section level3">
 <h3 id="economic-activity-losses">Economic activity losses<a class="anchor" aria-label="anchor" href="#economic-activity-losses"></a>
 </h3>
@@ -720,16 +713,17 @@ composed of the maximum daily GVA <span class="math inline">\(y_k(t)\)</span> fo
 economic sectors and the age-sector population strata <span class="math inline">\(i \in 5:49\)</span>. For conciseness, in this
 section we index economic sectors and age-sector classes only as <span class="math inline">\(k\)</span>.</p>
 <p>Formally, the maximum possible GDP generated <span class="math inline">\(Y_0(t)\)</span> by all economic sectors <span class="math inline">\(m_S\)</span> in the absence of mandated closures
-(i.e., as a result of NPIs) at time <span class="math inline">\(t\)</span> is defined by</p>
-<p><span class="math display">\[\begin{equation}
+(i.e., as a result of non-pharmaceutical interventions that restrict
+economic workplace capacity) at time <span class="math inline">\(t\)</span> is defined by</p>
+<p><span class="math display">\[
 Y_0(t)=\sum_{k=1}^{m_S}y_k(t),
-\end{equation}\]</span></p>
+\]</span></p>
 <p>where all economic sectors contribute their daily GVA <span class="math inline">\(y_k(t)\)</span>.</p>
 <p>If an economic sector is, however, affected by closures on a given
 day, we estimate its GVA losses as</p>
-<p><span class="math display">\[\begin{equation}
+<p><span class="math display">\[
 y_k(t) = y_k(0) \cdot (1 - \kappa_k(t))
-\end{equation}\]</span></p>
+\]</span></p>
 <p>where <span class="math inline">\(y_k(0)\)</span> is the respective
 sector’s daily GVA in the absence of closure and <span class="math inline">\(\kappa_k(t)\)</span> its relative openness (i.e.,
 from 0 to 1, where 0 is completely open and 1 completely closed). We
@@ -740,83 +734,25 @@ due to self-isolation, sickness, hospitalisation or death). <span class="math in
 workforce contributing to economic production in sector <span class="math inline">\(k\)</span> out of the total workforce <span class="math inline">\(N_k\)</span> on day <span class="math inline">\(t\)</span>. As the workforce of a sector is
 depleted, we assume a smaller fraction <span class="math inline">\(\hat{x}_{j}(t)\)</span> will be available to
 contribute to production given</p>
-<p><span class="math display">\[\begin{equation}
+<p><span class="math display">\[
 \hat{x}_{k}(t) = x_{k}(t) \left(1 - \sum_{j=0}^{1} \left(
-\frac{Ia^{j,k}(t) + Is^{j,k}(t) + H^{j,k}(t) + D^{j,k}(t)}{N_k} \right)
-\right).
-\end{equation}\]</span></p>
+\frac{I_a^{j,k}(t) + I_s^{j,k}(t) + H^{j,k}(t) + D^{j,k}(t)}{N_k}
+\right) \right).
+\]</span></p>
 <p>The total GDP generated at time <span class="math inline">\(t\)</span> is then</p>
-<p><span class="math display">\[\begin{equation}
+<p><span class="math display">\[
 Y(t) = \sum_{k=1}^{m_S} y_k(t) \hat{x}_{k}(t),
-\end{equation}\]</span></p>
+\]</span></p>
 <p>and the GDP loss compared to the maximum is</p>
-<p><span class="math display">\[\begin{equation}
-K_2 = \int_{t=0}^t \left( Y_0(t) - Y(t) \right)dt.
-\end{equation}\]</span></p>
-</div>
-<div class="section level3">
-<h3 id="years-of-education-lost">Years of education lost<a class="anchor" aria-label="anchor" href="#years-of-education-lost"></a>
-</h3>
-<p>We monetise the value of a school day <span class="math inline">\(VSD\)</span> as a country-specific parameter, as
-previously done in <span class="citation">Psacharopoulos et al. (<a href="#ref-psacharopoulos2021">2021</a>)</span>, given by</p>
-<p><span class="math display">\[\begin{equation}
-VSD = \frac{VPE \cdot MAE \cdot RYE}{365}
-\end{equation}\]</span></p>
-<p>where <span class="math inline">\(MAE\)</span> is the mean annual
-earnings (estimated using GDP multiplied by labour share of income, as
-in <span class="citation">Feenstra, Inklaar, and Timmer (<a href="#ref-feenstra2015">2015</a>)</span>), <span class="math inline">\(RYE\)</span> the rate of return for one year of
-education, assumed fixed at 0.08, and <span class="math inline">\(VPE\)</span> is the yearly present value of lost
-earnings given by</p>
-<p><strong>TODO</strong>: Rob, I cannot find any reference in the
-<em>daedalus</em> code or data of how this was calculated. Is it that
-the country data files were prepared and saved following the equation
-for <span class="math inline">\(p^{12}\)</span> in your technical
-appendix? If you could please corroborate and re-write the correct form
-of that equation here it will be ace. Thanks!</p>
-<p>Thus, in addition to GVA losses from closures, as done for all
-economic sectors (see section above), we estimate total education sector
-losses as</p>
-<p><span class="math display">\[\begin{equation}
-K_3 = \int_{t=0}^t \left( y_{edu}(t) + N_{i=2}(t) \cdot VSD \cdot (1 -
-\kappa_{edu}(t)) \cdot (1 - \pi) \right)dt
-\end{equation}\]</span></p>
-<p>where <span class="math inline">\(N_{i=2}(t)\)</span> is the number
-of pupils available at time <span class="math inline">\(t\)</span>
-(i.e., population of school-age not infected, hospitalised or deceased),
-<span class="math inline">\(\pi\)</span> a fixed parameter of the
-effectiveness of remote education.</p>
+<p><span class="math display">\[
+\int_{t=0}^t \left( Y_0(t) - Y(t) \right)dt.
+\]</span></p>
 </div>
 </div>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
-<div id="ref-ananthapavan2021" class="csl-entry">
-Ananthapavan, Jaithri, Marj Moodie, Andrew J. Milat, and Rob Carter.
-2021. <span>“Systematic Review to Update <span>‘Value of a Statistical
-Life’</span> Estimates for Australia.”</span> <em>International Journal
-of Environmental Research and Public Health</em> 18 (11): 6168. <a href="https://doi.org/10.3390/ijerph18116168" class="external-link">https://doi.org/10.3390/ijerph18116168</a>.
-</div>
-<div id="ref-cutler2020" class="csl-entry">
-Cutler, David M., and Lawrence H. Summers. 2020. <span>“The COVID-19
-Pandemic and the $16 Trillion Virus.”</span> <em>JAMA</em> 324 (15):
-1495–96. <a href="https://doi.org/10.1001/jama.2020.19759" class="external-link">https://doi.org/10.1001/jama.2020.19759</a>.
-</div>
-<div id="ref-feenstra2015" class="csl-entry">
-Feenstra, Robert C., Robert Inklaar, and Marcel P. Timmer. 2015.
-<span>“The Next Generation of the Penn World Table.”</span> <em>American
-Economic Review</em> 105 (10): 3150–82. <a href="https://doi.org/10.1257/aer.20130954" class="external-link">https://doi.org/10.1257/aer.20130954</a>.
-</div>
-<div id="ref-gbd_life" class="csl-entry">
-Global Burden of Disease Collaborative Network. 2020. <span>“Global
-Burden of Disease Study 2019 (GBD 2019) Life Tables 1950-2019.”</span>
-Institute for Health Metrics and Evaluation (IHME). <a href="https://doi.org/10.6069/1PF5-1M37" class="external-link">https://doi.org/10.6069/1PF5-1M37</a>.
-</div>
-<div id="ref-hammitt2020" class="csl-entry">
-Hammitt, James K. 2020. <span>“Valuing Mortality Risk in the Time of
-COVID-19.”</span> <em>Journal of Risk and Uncertainty</em> 61 (2):
-129–54. <a href="https://doi.org/10.1007/s11166-020-09338-1" class="external-link">https://doi.org/10.1007/s11166-020-09338-1</a>.
-</div>
 <div id="ref-haw2022" class="csl-entry">
 Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo
 Pianella, Robert Johnson, Sumali Bajaj, et al. 2022. <span>“Optimizing
@@ -838,18 +774,6 @@ Forchini, Matteo Pianella, Neil Ferguson, Peter C. Smith, and Katharina
 D. Hauck. 2023. <span>“The Societal Value of SARS-CoV-2 Booster
 Vaccination in Indonesia.”</span> <em>Vaccine</em> 41 (11): 1885–91. <a href="https://doi.org/10.1016/j.vaccine.2023.01.068" class="external-link">https://doi.org/10.1016/j.vaccine.2023.01.068</a>.
 </div>
-<div id="ref-psacharopoulos2021" class="csl-entry">
-Psacharopoulos, George, Victoria Collis, Harry Anthony Patrinos, and
-Emiliana Vegas. 2021. <span>“The COVID-19 Cost of School Closures in
-Earnings and Income Across the World.”</span> <em>Comparative Education
-Review</em>, May. <a href="https://doi.org/10.1086/713540" class="external-link">https://doi.org/10.1086/713540</a>.
-</div>
-<div id="ref-robinson2021" class="csl-entry">
-Robinson, Lisa A., Ryan Sullivan, and Jason F. Shogren. 2021. <span>“Do
-the Benefits of COVID‐19 Policies Exceed the Costs? Exploring
-Uncertainties in the Age–VSL Relationship.”</span> <em>Risk
-Analysis</em> 41 (5): 761–70. <a href="https://doi.org/10.1111/risa.13561" class="external-link">https://doi.org/10.1111/risa.13561</a>.
-</div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -863,7 +787,7 @@ Analysis</em> 41 (5): 761–70. <a href="https://doi.org/10.1111/risa.13561" cla
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
