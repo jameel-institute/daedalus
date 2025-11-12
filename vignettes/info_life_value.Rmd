@@ -28,7 +28,7 @@ This approach balances the ability to run _daedalus_ scenarios for a large numbe
 ::: {.alert .alert-info}
 **Note that** the VSL values used in a call to `daedalus()` for any country can always be substituted with values considered to be more appropriate (e.g., from a national health ministry).
 
-**Note also that** preparatory calculations of the value of a statistical life are performed in the data preparation scripts in our companion data package [_daedalus.data_]().
+**Note also that** preparatory calculations of the value of a statistical life are performed in the data preparation scripts in our companion data package [_daedalus.data_](https://github.com/jameel-institute/daedalus.data/).
 :::
 
 ## Value of a life year
