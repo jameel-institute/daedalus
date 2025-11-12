@@ -24,7 +24,7 @@ more appropriate (e.g., from a national health ministry).
 **Note also that** preparatory calculations of the value of a
 statistical life are performed in the data preparation scripts in our
 companion data package
-[*daedalus.data*](https://jameel-institute.github.io/daedalus/articles/).
+[*daedalus.data*](https://github.com/jameel-institute/daedalus.data/).
 
 ## Value of a life year
 

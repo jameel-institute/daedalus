@@ -4,7 +4,9 @@ Model the health, education, and economic costs of directly transmitted
 respiratory virus pandemics, under different scenarios of prior vaccine
 investment, policy interventions, and public behavioural change, using
 the 'DAEDALUS' integrated health-economics model adapted from Haw et al.
-(2022) \<doi.org/10.1038/s43588-022-00233-0\>.
+(2022)
+[doi:10.1038/s43588-022-00233-0](https://doi.org/10.1038/s43588-022-00233-0)
+.
 
 ## See also
 
