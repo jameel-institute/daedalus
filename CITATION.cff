@@ -8,11 +8,11 @@ message: 'To cite package "daedalus" in publications use:'
 type: software
 license: MIT
 title: 'daedalus: Model Health, Social, and Economic Costs of a Pandemic'
-version: 0.2.25
+version: 0.3.0
 abstract: Model the health, education, and economic costs of directly transmitted
-  respiratory virus pandemics, under different scenarios of prior vaccine investment
-  and reactive interventions, using the 'DAEDALUS' integrated health-economics model
-  adapted from Haw et al. (2022) <doi.org/10.1038/s43588-022-00233-0>.
+  respiratory virus pandemics, under different scenarios of prior vaccine investment,
+  policy interventions, and public behavioural change, using the 'DAEDALUS' integrated
+  health-economics model adapted from Haw et al. (2022) <https://doi.org/10.1038/s43588-022-00233-0>.
 authors:
 - family-names: Gupte
   given-names: Pratik
@@ -111,6 +111,7 @@ references:
     given-names: Robert
     orcid: https://orcid.org/0000-0002-7365-0042
   year: '2025'
+  version: '>= 0.0.3'
 - type: software
   title: data.table
   abstract: 'data.table: Extension of `data.frame`'
@@ -206,7 +207,7 @@ references:
   year: '2025'
   doi: 10.32614/CRAN.package.rlang
 - type: software
-  title: utils
+  title: stats
   abstract: 'R: A Language and Environment for Statistical Computing'
   notes: Imports
   authors:
@@ -215,6 +216,19 @@ references:
     name: R Foundation for Statistical Computing
     address: Vienna, Austria
   year: '2025'
+- type: software
+  title: bookdown
+  abstract: 'bookdown: Authoring Books and Technical Documents with R Markdown'
+  notes: Suggests
+  url: https://pkgs.rstudio.com/bookdown/
+  repository: https://CRAN.R-project.org/package=bookdown
+  authors:
+  - family-names: Xie
+    given-names: Yihui
+    email: xie@yihui.name
+    orcid: https://orcid.org/0000-0003-0645-5666
+  year: '2025'
+  doi: 10.32614/CRAN.package.bookdown
 - type: software
   title: countrycode
   abstract: 'countrycode: Convert Country Names and Country Codes'
@@ -319,6 +333,18 @@ references:
   year: '2025'
   doi: 10.32614/CRAN.package.knitr
 - type: software
+  title: latex2exp
+  abstract: 'latex2exp: Use LaTeX Expressions in Plots'
+  notes: Suggests
+  url: https://www.stefanom.io/latex2exp/
+  repository: https://CRAN.R-project.org/package=latex2exp
+  authors:
+  - family-names: Meschiari
+    given-names: Stefano
+    email: stefano.meschiari@gmail.com
+  year: '2025'
+  doi: 10.32614/CRAN.package.latex2exp
+- type: software
   title: rmarkdown
   abstract: 'rmarkdown: Dynamic Documents for R'
   notes: Suggests
@@ -362,31 +388,6 @@ references:
     orcid: https://orcid.org/0000-0003-3925-190X
   year: '2025'
   doi: 10.32614/CRAN.package.rmarkdown
-- type: software
-  title: bookdown
-  abstract: 'bookdown: Authoring Books and Technical Documents with R Markdown'
-  notes: Suggests
-  url: https://pkgs.rstudio.com/bookdown/
-  repository: https://CRAN.R-project.org/package=bookdown
-  authors:
-  - family-names: Xie
-    given-names: Yihui
-    email: xie@yihui.name
-    orcid: https://orcid.org/0000-0003-0645-5666
-  year: '2025'
-  doi: 10.32614/CRAN.package.bookdown
-- type: software
-  title: latex2exp
-  abstract: 'latex2exp: Use LaTeX Expressions in Plots'
-  notes: Suggests
-  url: https://www.stefanom.io/latex2exp/
-  repository: https://CRAN.R-project.org/package=latex2exp
-  authors:
-  - family-names: Meschiari
-    given-names: Stefano
-    email: stefano.meschiari@gmail.com
-  year: '2025'
-  doi: 10.32614/CRAN.package.latex2exp
 - type: software
   title: scales
   abstract: 'scales: Scale Functions for Visualization'
