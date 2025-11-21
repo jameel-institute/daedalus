@@ -114,10 +114,6 @@ daedalus_old_behaviour <- function(rate = 0.001, lower_limit = 0.2) {
 
 #' @name class_behaviour
 #'
-#' @param hospital_capacity The emergency hospital capacity of a country, but
-#' **may also be** a `<daedalus_country>` object from which the hospital
-#' capacity is extracted. See \eqn{\bar H} in Details.
-#'
 #' @param behav_effectiveness A single double value for the effectiveness of
 #' adopting behavioural measures against the risk of infection. Expected to be
 #' in the range \eqn{[0, 1]}, where 0 represents no effectiveness, and 1
@@ -130,7 +126,7 @@ daedalus_old_behaviour <- function(rate = 0.001, lower_limit = 0.2) {
 #'
 #' @param responsiveness A single double value for the population responsiveness
 #' to an epidemic signal. Must have a lower value of 0, but the upper bound is
-#' open. See \eqn{k_2} in Details. Defaults to 1.5.
+#' open. See \eqn{k_2} in Details. Defaults to 0.0001.
 #'
 #' @param k0 A single, optional double value which is a scaling parameter for
 #' the sigmoidal relationship between \eqn{p_t} and `behav_effectiveness`.
@@ -143,29 +139,12 @@ daedalus_old_behaviour <- function(rate = 0.001, lower_limit = 0.2) {
 #'
 #' @export
 daedalus_new_behaviour <- function(
-  hospital_capacity,
   behav_effectiveness = 0.5,
   baseline_optimism = 0.5,
-  responsiveness = 1.5,
+  responsiveness = 0.0001,
   k0 = 4.59,
   k1 = -9.19
 ) {
-  checkmate::assert_multi_class(
-    hospital_capacity,
-    c("numeric", "daedalus_country")
-  )
-
-  if (is_daedalus_country(hospital_capacity)) {
-    hospital_capacity <- get_data(hospital_capacity, "hospital_capacity")
-  } else {
-    checkmate::assert_number(
-      hospital_capacity,
-      lower = 1,
-      finite = TRUE,
-      .var.name = "hospital_capacity"
-    )
-  }
-
   checkmate::assert_number(
     behav_effectiveness,
     lower = 0,
@@ -201,7 +180,6 @@ daedalus_new_behaviour <- function(
   # note that this order is important and differs from the argument order
   # due to R argument convention (default valued args after others)
   parameters <- list(
-    hospital_capacity = hospital_capacity,
     behav_effectiveness = behav_effectiveness,
     baseline_optimism = baseline_optimism,
     k0 = k0,
@@ -260,7 +238,6 @@ validate_daedalus_behaviour <- function(x) {
     "lower_limit"
   )
   expected_fields_new <- c(
-    "hospital_capacity",
     "behav_effectiveness",
     "baseline_optimism",
     "k0",

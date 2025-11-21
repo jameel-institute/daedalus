@@ -15,10 +15,9 @@
     Message
       <daedalus_behaviour/daedalus_response>
       Behaviour model: new behaviour
-      hospital_capacity: 10000
       behav_effectiveness: 0.5
       baseline_optimism: 0.5
       k0: 4.59
       k1: -9.19
-      responsiveness: 1.5
+      responsiveness: 1e-04
 

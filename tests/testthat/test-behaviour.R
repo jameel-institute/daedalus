@@ -18,9 +18,7 @@ test_that("Behaviour mechanisms: work with daedalus()", {
     daedalus(
       "GBR",
       "sars_cov_1",
-      behaviour = daedalus_new_behaviour(
-        daedalus_country("GBR")
-      ),
+      behaviour = daedalus_new_behaviour(),
       time_end = 200
     )
   )
@@ -40,7 +38,7 @@ test_that("Behaviour mechanisms: work with daedalus()", {
   data_behav_new <- daedalus(
     "GBR",
     "sars_cov_1",
-    behaviour = daedalus_new_behaviour(daedalus_country("GBR")),
+    behaviour = daedalus_new_behaviour(),
     time_end = 200
   )
 
@@ -82,9 +80,7 @@ test_that("Behaviour mechanisms work with daedalus_multi_infection()", {
     daedalus_multi_infection(
       "GBR",
       infection_list,
-      behaviour = daedalus_new_behaviour(
-        daedalus_country("GBR")
-      ),
+      behaviour = daedalus_new_behaviour(),
       time_end = 20
     )
   )

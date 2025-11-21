@@ -18,13 +18,10 @@ test_that("Class <daedalus_behaviour> works for original mechanism", {
 
 test_that("Class <daedalus_behaviour> works for new mechanism", {
   expect_no_condition(
-    daedalus_new_behaviour(1e4)
-  )
-  expect_no_condition(
-    daedalus_new_behaviour(daedalus_country("GB"))
+    daedalus_new_behaviour()
   )
 
-  behav <- daedalus_new_behaviour(1e4)
+  behav <- daedalus_new_behaviour()
   expect_s3_class(behav, c("daedalus_behaviour", "daedalus_response"))
   expect_identical(
     behav$identifier,
@@ -67,67 +64,54 @@ test_that("Class <daedalus_behaviour>: errors correctly", {
 
   # errors from daedalus_new_behaviour()
   expect_error(
-    daedalus_new_behaviour(-1e4),
-    "Assertion on 'hospital_capacity' failed: Element 1 is not >= 1"
-  )
-  expect_error(
-    daedalus_new_behaviour(c(1e4, 1e4)),
-    "Assertion on 'hospital_capacity' failed: Must have length 1."
-  )
-  expect_error(
-    daedalus_new_behaviour("1e4"),
-    "('hospital_capacity')*(inherit from class 'numeric'/'daedalus_country')"
-  )
-
-  expect_error(
-    daedalus_new_behaviour(1e4, -0.5),
+    daedalus_new_behaviour(-0.5),
     "Assertion on 'behav_effectiveness' failed: Element 1 is not >= 0"
   )
   expect_error(
-    daedalus_new_behaviour(1e4, c(0.5, 0.5)),
+    daedalus_new_behaviour(c(0.5, 0.5)),
     "Assertion on 'behav_effectiveness' failed: Must have length 1."
   )
   expect_error(
-    daedalus_new_behaviour(1e4, "0.5"),
+    daedalus_new_behaviour("0.5"),
     "Assertion on 'behav_effectiveness' failed: Must be of type 'number'"
   )
 
   expect_error(
-    daedalus_new_behaviour(1e4, 0.5, -1),
+    daedalus_new_behaviour(0.5, -1),
     "Assertion on 'baseline_optimism' failed: Element 1 is not >= 0"
   )
   expect_error(
-    daedalus_new_behaviour(1e4, 0.5, c(1, 1)),
+    daedalus_new_behaviour(0.5, c(1, 1)),
     "Assertion on 'baseline_optimism' failed: Must have length 1."
   )
   expect_error(
-    daedalus_new_behaviour(1e4, 0.5, c("1", "1")),
+    daedalus_new_behaviour(0.5, c("1", "1")),
     "Assertion on 'baseline_optimism' failed: Must be of type 'number'"
   )
 
   expect_error(
-    daedalus_new_behaviour(1e4, 0.5, 0.5, 1.5, -4),
+    daedalus_new_behaviour(0.5, 0.5, 1.5, -4),
     "Assertion on 'k0' failed: Element 1 is not >= 0"
   )
   expect_error(
-    daedalus_new_behaviour(1e4, 0.5, 0.5, 1.5, c(4, 4)),
+    daedalus_new_behaviour(0.5, 0.5, 1.5, c(4, 4)),
     "Assertion on 'k0' failed: Must have length 1."
   )
   expect_error(
-    daedalus_new_behaviour(1e4, 0.5, 0.5, 1.5, "4"),
+    daedalus_new_behaviour(0.5, 0.5, 1.5, "4"),
     "Assertion on 'k0' failed: Must be of type 'number'"
   )
 
   expect_error(
-    daedalus_new_behaviour(1e4, 0.5, 0.5, 1.5, 4, 1),
+    daedalus_new_behaviour(0.5, 0.5, 1.5, 4, 1),
     "Assertion on 'k1' failed: Element 1 is not <= 0"
   )
   expect_error(
-    daedalus_new_behaviour(1e4, 0.5, 0.5, 1.5, 4, c(-9, -9)),
+    daedalus_new_behaviour(0.5, 0.5, 1.5, 4, c(-9, -9)),
     "Assertion on 'k1' failed: Must have length 1."
   )
   expect_error(
-    daedalus_new_behaviour(1e4, 0.5, 0.5, 1.5, 4, "-9"),
+    daedalus_new_behaviour(0.5, 0.5, 1.5, 4, "-9"),
     "Assertion on 'k1' failed: Must be of type 'number'"
   )
 })

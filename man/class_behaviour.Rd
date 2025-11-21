@@ -11,10 +11,9 @@
 daedalus_old_behaviour(rate = 0.001, lower_limit = 0.2)
 
 daedalus_new_behaviour(
-  hospital_capacity,
   behav_effectiveness = 0.5,
   baseline_optimism = 0.5,
-  responsiveness = 1.5,
+  responsiveness = 1e-04,
   k0 = 4.59,
   k1 = -9.19
 )
@@ -30,10 +29,6 @@ additional daily death in the 'old' behavioural model.}
 \item{lower_limit}{The lower limit of the scaling factor in the 'old'
 behavioural model; prevents scaling factor from reaching zero.}
 
-\item{hospital_capacity}{The emergency hospital capacity of a country, but
-\strong{may also be} a \verb{<daedalus_country>} object from which the hospital
-capacity is extracted. See \eqn{\bar H} in Details.}
-
 \item{behav_effectiveness}{A single double value for the effectiveness of
 adopting behavioural measures against the risk of infection. Expected to be
 in the range \eqn{[0, 1]}, where 0 represents no effectiveness, and 1
@@ -46,7 +41,7 @@ See \eqn{\bar B} in Details. Defaults to 0.5.}
 
 \item{responsiveness}{A single double value for the population responsiveness
 to an epidemic signal. Must have a lower value of 0, but the upper bound is
-open. See \eqn{k_2} in Details. Defaults to 1.5.}
+open. See \eqn{k_2} in Details. Defaults to 0.0001.}
 
 \item{k0}{A single, optional double value which is a scaling parameter for
 the sigmoidal relationship between \eqn{p_t} and \code{behav_effectiveness}.

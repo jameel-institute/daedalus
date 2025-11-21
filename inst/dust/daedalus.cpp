@@ -393,7 +393,7 @@ class daedalus_ode {
     // scale mortality rate by 1.6 if so
     Eigen::Tensor<double, 0> total_hosp =
         t_x.chip(iHr, i_COMPS).sum() + t_x.chip(iHd, i_COMPS).sum();
-    const double d_total_hosp = total_hosp(0) + 1.0;
+    const double d_total_hosp = total_hosp(0);
 
     const double hfr_modifier =
         daedalus::events::switch_by_flag(daedalus::constants::d_mort_multiplier,

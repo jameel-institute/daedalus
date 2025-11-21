@@ -33,7 +33,6 @@ inline double scale_beta_old(const double &new_deaths,
 /// @brief New method of calculation public concern to scale transmission, based
 /// on assumed optimism and responsiveness.
 /// @param total_hosp The number of daily new hospitalisations.
-/// @param hosp_cap The country hospital capacity.
 /// @param delta Effectiveness of protective behaviour. Note that values are
 /// expected to be [0, 1], with 0 = no effect, 1 = fully effective.
 /// @param optimism Baseline optimism about the epidemic.
@@ -42,16 +41,14 @@ inline double scale_beta_old(const double &new_deaths,
 /// @param k1 Scaling factor for optimism.
 /// @param k2 Responsiveness to the epidemic signal (new hospitalisations).
 /// @return The scaling factor to reduce transmission rate.
-inline double scale_beta_new(const double &total_hosp, const double &hosp_cap,
-                             const double &delta, const double &optimism,
-                             const double &k0, const double &k1,
-                             const double &k2) {
+inline double scale_beta_new(const double &total_hosp, const double &delta,
+                             const double &optimism, const double &k0,
+                             const double &k1, const double &k2) {
   // proportion taking protective behaviour;
   // p_t = 1 / (1 + e^(-(k0 + k1 * B + k2 * hosp / hosp_capacity)))
   // NOTE: k1 is a negative value
   const double p_behav =
-      1.0 / (1.0 + std::exp(-(k0 + (k1 * optimism) +
-                              (k2 * (total_hosp / hosp_cap)))));
+      1.0 / (1.0 + std::exp(-(k0 + (k1 * optimism) + (k2 * (total_hosp)))));
 
   // scaling factor B =
   // p_t*delta*(p_t*delta + (1 - p_t)) + (1 - p_t)*(p_t*delta + (1 - p_t))
@@ -87,8 +84,8 @@ inline const std::function<double(double)> get_behav_fn(
     case 2: {
       behav_fn = [behav_params](double x) {
         return scale_beta_new(x, behav_params[0], behav_params[1],
-                              behav_params[2], behav_params[3], behav_params[4],
-                              behav_params[5]);
+                              behav_params[2], behav_params[3],
+                              behav_params[4]);
       };
       break;
     }

@@ -1,3 +1,14 @@
+# daedalus 0.3.1
+
+This patch version changes the new behavioural mechanism to be sensitive only to the hospital occupancy demand, rather than the ratio of hospital occupancy to surge hospital capacity.
+This change removes counter-intuitive perverse-incentive outcomes where increasing hospital capacity with the new behavioural mechanism active leads to more deaths.
+
+- The default value of the responsiveness parameter $k_2$ in `daedalus_new_behaviour()` has been changed to `0.0001` as it is now multiplied with the raw hospital occupancy.
+
+**Breaking change**
+
+The function signature for `daedalus_new_behaviour()` has changed and no longer accepts a `hospital_capacity` argument.
+
 # daedalus 0.3.0
 
 This is a minor version release for use in the Jameel Institute Symposium Daedalus preview event.
