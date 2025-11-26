@@ -55,7 +55,7 @@ reference:
   - title: Model output post-processing
     desc: Functions to process model output to calculate pandemic costs and other outcomes.
     contents:
-    - get_costs
+    - daedalus_costs
     - get_fiscal_costs
     - epi_output_helpers
     - get_life_years_lost
