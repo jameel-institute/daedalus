@@ -117,3 +117,74 @@ set_data <- function(x, ...) {
 prepare_parameters <- function(x, ...) {
   UseMethod("prepare_parameters")
 }
+
+#' Get epidemic losses from a DAEDALUS model run
+#'
+#' @description
+#' Calculate the costs of an epidemic and any mitigation measures, either from a
+#' Daedalus model run, or from a timeseries of epidemic data and relevant
+#' demographic and economic parameters.
+#'
+#'
+#' @name daedalus_costs
+#' @rdname daedalus_costs
+#'
+#'
+#' @param x A `<daedalus_output>` object from a call to [daedalus()], or a
+#' `<data.frame>` of an epidemic timeseries.
+#'
+#' If `x` is a `<data.frame>`, it must have the columns `"time"`,
+#' `"compartment"`, `"age_group"`, `"econ_sector"` and `"value"`, giving the
+#' model time, the epidemiological compartment, and the number of individuals
+#' of each age group and economic sector in each compartment at each time.
+#' See **Details** for more on the expectations around how this dataset is
+#' organised.
+#'
+#' @return A list of different cost values, including the total cost. See
+#' **Details** for more information.
+#'
+#' @details
+#'
+#' The total cost in million dollars is returned as `total_cost`. This is
+#' comprised of the following costs.
+#'
+#' ## Economic costs
+#'
+#' A three element list of `economic_cost_total`, the total costs from pandemic
+#' impacts on economic sectors, including both costs of lost gross value added
+#' (GVA) due to pandemic-control restrictions or closures
+#' (`economic_cost_closures`), and pandemic-related absences due to illness and
+#' death (`economic_cost_absences`).
+#'
+#' ## Educational costs
+#'
+#' A three element list of `education_cost_total`, the total costs from pandemic
+#' impacts on education due to pandemic-control restrictions or closures
+#' (`education_cost_closures`), and pandemic-related absences due to illness and
+#' death (`education_cost_absences`).
+#'
+#' ## Life-value lost
+#'
+#' A four-element vector (for the number of age groups) giving the value of
+#' life-years lost per age group. This is calculated as the life-expectancy of
+#' each age group times the value of a statistical life, with all years assumed
+#' to have the same value.
+#'
+#' ## Life-years lost
+#'
+#' A four-element vector (for the number of age groups) giving the value of
+#' life-years lost per age group. This is calculated as the life-expectancy of
+#' each age group times the number of deaths in that age group. No quality
+#' adjustment is applied.
+#'
+#' ## Expectations for non-Daedalus model data
+#'
+#' @examples
+#' output <- daedalus("Canada", "influenza_1918")
+#'
+#' get_costs(output)
+#'
+#' @export
+get_costs <- function(x, ...) {
+  UseMethod("get_costs")
+}

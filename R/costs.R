@@ -1,6 +1,4 @@
-#' Get epidemic costs from a DAEDALUS model run
-#'
-#' @param x A `<daedalus_output>` object from a call to [daedalus()].
+#' @name daedalus_costs
 #'
 #' @param summarise_as A string from among "none", "total", or "domain", for how
 #' the costs should be returned. Select "none", the default, for the raw costs
@@ -13,56 +11,12 @@
 #' infection. Currently defaults to 1.0 for compatibility with earlier function
 #' versions.
 #'
-#' @return A list of different cost values, including the total cost. See
-#' **Details** for more information.
-#'
-#' @details
-#'
-#' The total cost in million dollars is returned as `total_cost`. This is
-#' comprised of the following costs.
-#'
-#' ## Economic costs
-#'
-#' A three element list of `economic_cost_total`, the total costs from pandemic
-#' impacts on economic sectors, including both costs of lost gross value added
-#' (GVA) due to pandemic-control restrictions or closures
-#' (`economic_cost_closures`), and pandemic-related absences due to illness and
-#' death (`economic_cost_absences`).
-#'
-#' ## Educational costs
-#'
-#' A three element list of `education_cost_total`, the total costs from pandemic
-#' impacts on education due to pandemic-control restrictions or closures
-#' (`education_cost_closures`), and pandemic-related absences due to illness and
-#' death (`education_cost_absences`).
-#'
-#' ## Life-value lost
-#'
-#' A four-element vector (for the number of age groups) giving the value of
-#' life-years lost per age group. This is calculated as the life-expectancy of
-#' each age group times the value of a statistical life, with all years assumed
-#' to have the same value.
-#'
-#' ## Life-years lost
-#'
-#' A four-element vector (for the number of age groups) giving the value of
-#' life-years lost per age group. This is calculated as the life-expectancy of
-#' each age group times the number of deaths in that age group. No quality
-#' adjustment is applied.
-#'
-#' @examples
-#' output <- daedalus("Canada", "influenza_1918")
-#'
-#' get_costs(output)
-#'
 #' @export
-get_costs <- function(
+get_costs.daedalus_output <- function(
   x,
   summarise_as = c("none", "total", "domain"),
   productivity_loss_infection = 1.0
 ) {
-  checkmate::assert_class(x, "daedalus_output")
-
   summarise_as <- rlang::arg_match(summarise_as)
 
   checkmate::assert_number(
@@ -94,7 +48,6 @@ get_costs <- function(
     model_data$compartment %in%
       c(
         "infect_symp",
-        "infect_asymp",
         "hospitalised_recov",
         "hospitalised_death",
         "dead"
@@ -177,7 +130,7 @@ get_costs <- function(
     education_cost_closures <- vsd *
       n_students *
       sector_closures[i_EDUCATION_SECTOR] *
-      (1 - edu_effectiveness_remote)
+      (1 - EDU_EFFECTIVENESS_REMOTE)
 
     # multiply loss due to closures by loss due to absences at appropriate times
     # to get true loss due to absences
@@ -208,7 +161,7 @@ get_costs <- function(
   economic_cost_absences <- sum(sector_cost_absences[-i_EDUCATION_SECTOR])
 
   cost_list <- list(
-    total_cost = NA,
+    total_cost = NA_real_,
     economic_costs = list(
       economic_cost_total = economic_cost_closures + economic_cost_absences,
       economic_cost_closures = economic_cost_closures,
@@ -254,6 +207,334 @@ get_costs <- function(
   costs
 }
 
+#' @name daedalus_costs
+#'
+#' @param comp_non_working A character vector giving the names of compartments
+#' in which individuals are assumed to have a reduced ability to work. This
+#' may (and should) include compartments where individuals are infected and
+#' symptomatic, as well as hospitalised or dead.
+#'
+#' @param comp_infected A character vector giving the name of compartments in
+#' which individuals are assumed to be infected with reduced ability to work.
+#' This should **not** include compartments where individuals are assumed to
+#' have **no** ability to work (hospitalised or dead).
+#'
+#' @param comp_dead A string giving the name of the compartment holding the
+#' count of deaths. Note that only a single deaths compartment is supported, so
+#' models with multiple death states should pass the **final state**. Used to
+#' calculate the value of lives lost.
+#'
+#' @param daily_gva A numeric vector of the daily gross-value added (GVA)
+#' in million dollars, by each economic sector of the population (or territory
+#' or state) in which the epidemic occurs.
+#'
+#' @param workforce A numeric vector of the number of workers in each economic
+#' sector of the population. Must be absolute numbers (i.e., not scaled to
+#' thousands or millions). Must have the same length as `daily_gva`.
+#'
+#' @param vsl_by_age A numeric vector of the value of a statistical life (VSL)
+#' for each age age group in `x`.
+#'
+#' @param life_expectancy A numeric vector of the life-expectancy per age group.
+#' Expected to be the same length as `vsl_by_age`.
+#'
+#' @param value_school_year A single number giving the value of a school year.
+#' Users can use the helper function [get_value_school_year()] if a population's
+#' gross income per-capita is known to apply the internal Daedalus model for
+#' valuing a school year, or a value obtained in some other way.
+#'
+#' @param n_students A single number for the number of students in the
+#' population, whose education is expected to be impacted by the epidemic.
+#'
+#' @param edu_effectiveness_remote
+#'
+#' @param npi_data
+#'
+#' @param summarise_as
+#'
+#' @param productivity_loss_infection
+#'
+#' @examples
+#' # example code
+#'
+#' @export
+get_costs.data.frame <- function(
+  x,
+  comp_non_working,
+  comp_infected,
+  comp_dead,
+  daily_gva,
+  workforce,
+  productivity_loss_infection,
+  vsl_by_age,
+  life_expectancy,
+  value_school_year,
+  n_students,
+  edu_effectiveness_remote,
+  npi_data = NULL,
+  summarise_as = c("none", "total", "domain")
+) {
+  # input checks on the data frame of epi timeseries
+  checkmate::assert_data_frame(
+    x,
+    all.missing = FALSE,
+    min.rows = 1,
+    min.cols = length(MIN_DATA_COL_NAMES)
+  )
+  checkmate::assert_names(
+    colnames(x),
+    must.include = MIN_DATA_COL_NAMES
+  )
+
+  x <- x[MIN_DATA_COL_NAMES]
+  checkmate::assert_data_frame(
+    x,
+    any.missing = FALSE,
+    types = c("numeric", "character", "character", "character", "numeric"),
+    min.rows = 1,
+  )
+
+  checkmate::assert_numeric(
+    x[["time"]],
+    lower = 0,
+    finite = TRUE
+  )
+  checkmate::assert_numeric(
+    x[["value"]],
+    lower = 0,
+    finite = TRUE
+  )
+
+  # check compartment names
+  checkmate::assert_character(
+    comp_infected,
+    min.len = 1L
+  )
+  checkmate::assert_character(
+    comp_dead,
+    min.len = 1L
+  )
+  checkmate::assert_character(
+    comp_non_working,
+    min.len = 1L
+  )
+  checkmate::assert_subset(
+    c(comp_infected, comp_dead),
+    comp_non_working
+  )
+
+  checkmate::assert_subset(
+    c(comp_infected, comp_non_working, comp_dead),
+    unique(x[["compartment"]])
+  )
+
+  checkmate::assert_number(productivity_loss_infection, lower = 0, upper = 1)
+
+  # check age groups
+  inferred_age_groups <- length(unique(x[["age_group"]]))
+  checkmate::assert_numeric(
+    vsl_by_age,
+    lower = 0,
+    finite = TRUE,
+    any.missing = FALSE,
+    len = inferred_age_groups
+  )
+  checkmate::assert_numeric(
+    life_expectancy,
+    lower = 0,
+    finite = TRUE,
+    any.missing = FALSE,
+    len = inferred_age_groups
+  )
+
+  # check value of a school year
+  checkmate::assert_number(value_school_year, lower = 0, finite = TRUE)
+
+  checkmate::assert_number(n_students, lower = 0, finite = TRUE)
+
+  checkmate::assert_number(edu_effectiveness_remote, lower = 0, upper = 1)
+
+  # check NPI data
+  checkmate::assert_list(
+    npi_data,
+    types = c("list", "numeric"),
+    null.ok = TRUE
+  )
+  # calculate daily values for some inputs
+  value_school_day <- value_school_year / 365
+
+  # calculate economic losses due to closures
+  if (is.null(npi_data)) {
+    economic_cost_closures <- 0
+    education_cost_closures <- 0
+    sector_cost_closures <- rep(0, length(workforce))
+  } else {
+    checkmate::assert_names(
+      names(npi_data),
+      must.include = c(
+        "npi_durations",
+        "openness",
+        "npi_times_start",
+        "npi_times_end",
+        "npi_periods"
+      )
+    )
+
+    if (length(npi_data$npi_times_start) > 1L) {
+      checkmate::assert_list(
+        npi_data$openness,
+        len = length(npi_data$npi_times_start)
+      )
+      invisible(
+        lapply(checkmate::numeric, npi_data$openness, len = length(workforce))
+      )
+    } else {
+      # wrap vector in list as this is how <daedalus_npi> holds openness coefs
+      checkmate::assert_numeric(
+        npi_data$openness,
+        len = length(workforce)
+      )
+      npi_data$openness <- list(npi_data$openness)
+    }
+
+    npi_duration <- npi_data$npi_durations
+    n_npis <- length(npi_duration)
+    npi_openness <- npi_data$openness
+    n_regimes <- length(npi_openness)
+    openness <- npi_data$openness
+
+    if (n_npis > n_regimes && n_regimes == 1L) {
+      openness <- lapply(seq_along(npi_duration), function(z) {
+        first(openness)
+      })
+    }
+
+    sector_closures <- Map(
+      npi_duration,
+      openness,
+      f = function(duration, openness_coeff) {
+        (1.0 - openness_coeff) * duration
+      }
+    )
+
+    sector_closures <- Reduce(`+`, sector_closures)
+
+    sector_cost_closures <- daily_gva * sector_closures
+    economic_cost_closures <- sum(sector_cost_closures)
+
+    education_cost_closures <- value_school_day *
+      n_students *
+      sector_closures[i_EDUCATION_SECTOR] *
+      (1.0 - edu_effectiveness_remote)
+  }
+
+  # calculate economic losses due to absences related to illness
+  worker_prod_loss <- x[
+    x$compartment %in% comp_non_working & x$econ_sector != "sector_00",
+  ]
+  worker_prod_loss[
+    worker_prod_loss$compartment %in% comp_infected,
+  ]$value <- worker_prod_loss[
+    worker_prod_loss$compartment %in% comp_infected,
+  ]$value *
+    productivity_loss_infection
+
+  worker_prod_loss <- tapply(
+    worker_prod_loss$value,
+    list(worker_prod_loss$time, worker_prod_loss$econ_sector),
+    sum
+  )
+
+  sector_cost_absences <- worker_prod_loss %*% diag(daily_gva / workforce)
+
+  # check if npi data is provided and scale absence costs by closures
+  if (!is.null(npi_data)) {
+    # NOTE: openness list accounts for potential many-to-one mapping
+    sector_cost_absences[npi_data$npi_periods, ] <- Reduce(
+      rbind,
+      Map(
+        npi_data$npi_times_start,
+        npi_data$npi_times_end,
+        openness,
+        f = function(start, end, opcoef) {
+          sector_cost_absences[start:end, ] <-
+            sector_cost_absences[start:end, ] %*% diag(opcoef)
+        }
+      )
+    )
+  }
+
+  sector_cost_absences <- colSums(sector_cost_absences)
+  education_cost_absences <- sector_cost_absences[i_EDUCATION_SECTOR]
+  economic_cost_absences <- sum(sector_cost_absences[-i_EDUCATION_SECTOR])
+
+  # calculate life years and value lost
+  total_deaths <- x[
+    x$compartment %in% comp_dead & x$time == max(x$time),
+  ]
+  total_deaths[["age_group"]] <- factor(
+    total_deaths[["age_group"]],
+    levels = unique(total_deaths[["age_group"]])
+  )
+  total_deaths <- tapply(
+    total_deaths$value,
+    total_deaths[["age_group"]],
+    sum
+  )
+  life_years_lost <- total_deaths * life_expectancy
+  life_value_lost <- total_deaths * vsl_by_age / 1e6 # in million $
+
+  cost_list <- list(
+    total_cost = NA_real_,
+    economic_costs = list(
+      economic_cost_total = economic_cost_closures + economic_cost_absences,
+      economic_cost_closures = economic_cost_closures,
+      economic_cost_absences = economic_cost_absences,
+      sector_cost_closures = sector_cost_closures,
+      sector_cost_absences = sector_cost_absences
+    ),
+    education_costs = list(
+      education_cost_total = education_cost_closures + education_cost_absences,
+      education_cost_closures = education_cost_closures,
+      education_cost_absences = education_cost_absences
+    ),
+    life_value_lost = list(
+      life_value_lost_total = sum(life_value_lost),
+      life_value_lost_age = life_value_lost
+    ),
+    life_years_lost = list(
+      life_years_lost_total = sum(life_years_lost),
+      life_years_lost_age = life_years_lost
+    )
+  )
+
+  # probably a neater way of doing this
+  cost_list$total_cost <- economic_cost_closures +
+    economic_cost_absences +
+    education_cost_closures +
+    education_cost_absences +
+    sum(life_value_lost)
+
+  summarise_as <- rlang::arg_match(summarise_as)
+  summarise_costs(cost_list, summarise_as)
+}
+
+#' @keywords internal
+summarise_costs <- function(cost_list, summarise_as) {
+  switch(
+    summarise_as,
+    none = cost_list,
+    total = cost_list[["total_cost"]],
+    domain = {
+      cost_list[["total_cost"]] <- NULL
+      vec_costs <- vapply(cost_list, `[[`, 1L, FUN.VALUE = numeric(1))
+      names(vec_costs) <- c("economic", "education", "life_value", "life_years")
+
+      vec_costs
+    }
+  )
+}
+
 #' Calculate the present value of lost earnings due to educational disruption
 #'
 #' @keywords internal
@@ -264,10 +545,10 @@ get_costs <- function(
 # NOTE: simplifying assumption of single age group with a mean age of 12.5
 get_value_lost_earnings <- function() {
   mean_age <- mean(c(5, 20))
-  (1 - (1 + earnings_loss_discount)^(-(work_expected_years + 20 - mean_age))) /
-    earnings_loss_discount -
-    (1 - (1 + earnings_loss_discount)^(-(20 - mean_age))) /
-      earnings_loss_discount
+  (1 - (1 + EARNINGS_LOSS_DISCOUNT)^(-(WORK_EXPECTED_YEARS + 20 - mean_age))) /
+    EARNINGS_LOSS_DISCOUNT -
+    (1 - (1 + EARNINGS_LOSS_DISCOUNT)^(-(20 - mean_age))) /
+      EARNINGS_LOSS_DISCOUNT
 }
 
 #' Calculate the value of a school year
@@ -280,7 +561,7 @@ get_value_lost_earnings <- function() {
 #' @keywords internal
 get_value_school_year <- function(gni) {
   # no checking on GNI for this internal function
-  get_value_lost_earnings() * gni * edu_annual_ror
+  get_value_lost_earnings() * gni * EDU_ANNUAL_ROR
 }
 
 #' Get pandemic fiscal costs from a model run
@@ -291,7 +572,7 @@ get_value_school_year <- function(gni) {
 #' a pandemic. Includes costs of economic support, vaccinations given, and NPIs
 #' administered or implemented.
 #'
-#' @inheritParams get_costs
+#' @inheritParams daedalus_costs
 #'
 #' @param support_level The proportion of pandemic-related economic losses that
 #' a government compensates, as a proportion.

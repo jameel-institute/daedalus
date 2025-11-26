@@ -242,16 +242,26 @@ SUMMARY_GROUPS <- c("age_group", "vaccine_group", "econ_sector")
 #' lost earnings.
 #'
 #' @keywords econ_constant
-edu_effectiveness_remote <- 0.33
+EDU_EFFECTIVENESS_REMOTE <- 0.33
 
 #' @name econ_constants
 #' @keywords econ_constant
-edu_annual_ror <- 0.08
+EDU_ANNUAL_ROR <- 0.08
 
 #' @name econ_constants
 #' @keywords econ_constant
-work_expected_years <- 45
+WORK_EXPECTED_YEARS <- 45
 
 #' @name econ_constants
 #' @keywords econ_constant
-earnings_loss_discount <- 0.03
+EARNINGS_LOSS_DISCOUNT <- 0.03
+
+#' @name model_constants
+#' @keywords model_constant
+MIN_DATA_COL_NAMES <- c(
+  "time",
+  "age_group",
+  "compartment",
+  "econ_sector",
+  "value"
+)
