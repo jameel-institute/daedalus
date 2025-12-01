@@ -2,12 +2,16 @@
 #'
 #' @description Generic and methods for S3 classes for safely getting class
 #' parameters.
+#'
 #' @name get_data
 #' @rdname get_data
 #'
 #' @param x An S3 class object from the \pkg{daedalus} package of the
-#' `<daedalus_country>` or `<infection>` class.
+#' `<daedalus_country>`, `<daedalus_infection>`, `<daedalus_npi>`,
+#' `<daedalus_output>`, and `<daedalus_vaccination>` class.
+#'
 #' @param to_get A string giving the name of the element of `x` to return.
+#'
 #' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Other arguments to class
 #' methods. Class methods do not currently support any other arguments.
 #'
@@ -16,8 +20,9 @@
 #'
 #' For `<daedalus_output>` objects, returns the model timeseries data when no
 #' element is specified.
+#'
 #' @keywords generics
-#' @export
+#'
 #' @examples
 #' # simple example of getting data
 #' country_A <- daedalus_country("United Kingdom")
@@ -33,6 +38,8 @@
 #' head(
 #'   get_data(output)
 #' )
+#'
+#' @export
 get_data <- function(x, ...) {
   UseMethod("get_data")
 }
@@ -140,15 +147,38 @@ prepare_parameters <- function(x, ...) {
 #' See **Details** for more on the expectations around how this dataset is
 #' organised.
 #'
+#' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Other arguments to class
+#' methods.
+#'
 #' @return A list of different cost values, including the total cost. See
 #' **Details** for more information.
 #'
 #' @details
 #'
+#' ## Expectations for non-Daedalus model data
+#'
+#' When a `<data.frame> x` is passed, it must have at least one row, at least
+#' some non-missing values, and:
+#'
+#' 1. Columns `"time"`, `"age_group"`, `"compartment"`, `"econ_sector"`, and
+#' `"value"`, giving the model time (numeric), age group identifier (character),
+#' epidemiological compartment identifier (character), economic sector
+#' identifier (character), and the value of the number of individuals in each
+#' age, epi-compartment, and economic group at each time (numeric). Numeric
+#' values must be non-negative \eqn{> 0}, non-missing, and finite.
+#'
+#' 2. Compartments in `comp_infected`, `comp_non_working`, and `comp_dead` must
+#' be found in `x$compartment`.
+#'
+#' 3. All compartments of `comp_infected` and `comp_dead` must be in
+#' `comp_non_working`.
+#'
+#' ## Output
+#'
 #' The total cost in million dollars is returned as `total_cost`. This is
 #' comprised of the following costs.
 #'
-#' ## Economic costs
+#' ### Economic costs
 #'
 #' A three element list of `economic_cost_total`, the total costs from pandemic
 #' impacts on economic sectors, including both costs of lost gross value added
@@ -156,33 +186,26 @@ prepare_parameters <- function(x, ...) {
 #' (`economic_cost_closures`), and pandemic-related absences due to illness and
 #' death (`economic_cost_absences`).
 #'
-#' ## Educational costs
+#' ### Educational costs
 #'
 #' A three element list of `education_cost_total`, the total costs from pandemic
 #' impacts on education due to pandemic-control restrictions or closures
 #' (`education_cost_closures`), and pandemic-related absences due to illness and
 #' death (`education_cost_absences`).
 #'
-#' ## Life-value lost
+#' ### Life-value lost
 #'
 #' A four-element vector (for the number of age groups) giving the value of
 #' life-years lost per age group. This is calculated as the life-expectancy of
 #' each age group times the value of a statistical life, with all years assumed
 #' to have the same value.
 #'
-#' ## Life-years lost
+#' ### Life-years lost
 #'
 #' A four-element vector (for the number of age groups) giving the value of
 #' life-years lost per age group. This is calculated as the life-expectancy of
 #' each age group times the number of deaths in that age group. No quality
 #' adjustment is applied.
-#'
-#' ## Expectations for non-Daedalus model data
-#'
-#' @examples
-#' output <- daedalus("Canada", "influenza_1918")
-#'
-#' get_costs(output)
 #'
 #' @export
 get_costs <- function(x, ...) {

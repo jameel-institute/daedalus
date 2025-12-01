@@ -18,7 +18,15 @@ get_fiscal_costs(
 )
 }
 \arguments{
-\item{x}{A \verb{<daedalus_output>} object from a call to \code{\link[=daedalus]{daedalus()}}.}
+\item{x}{A \verb{<daedalus_output>} object from a call to \code{\link[=daedalus]{daedalus()}}, or a
+\verb{<data.frame>} of an epidemic timeseries.
+
+If \code{x} is a \verb{<data.frame>}, it must have the columns \code{"time"},
+\code{"compartment"}, \code{"age_group"}, \code{"econ_sector"} and \code{"value"}, giving the
+model time, the epidemiological compartment, and the number of individuals
+of each age group and economic sector in each compartment at each time.
+See \strong{Details} for more on the expectations around how this dataset is
+organised.}
 
 \item{support_level}{The proportion of pandemic-related economic losses that
 a government compensates, as a proportion.}

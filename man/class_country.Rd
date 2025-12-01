@@ -72,4 +72,5 @@ set_data(x, contact_matrix = matrix(99, 4, 4))
 # using assignment operators
 x$contact_matrix <- matrix(99, 4, 4)
 x
+
 }

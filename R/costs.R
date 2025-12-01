@@ -11,12 +11,19 @@
 #' infection. Currently defaults to 1.0 for compatibility with earlier function
 #' versions.
 #'
+#' @examples
+#' # for <daedalus_output> objects from `daedalus()`
+#' o <- daedalus("CAN", "sars_cov_1", time_end = 100)
+#' get_costs(o, "domain")
+#'
 #' @export
 get_costs.daedalus_output <- function(
   x,
   summarise_as = c("none", "total", "domain"),
-  productivity_loss_infection = 1.0
+  productivity_loss_infection = 1.0,
+  ...
 ) {
+  chkDots(...)
   summarise_as <- rlang::arg_match(summarise_as)
 
   checkmate::assert_number(
@@ -224,13 +231,13 @@ get_costs.daedalus_output <- function(
 #' models with multiple death states should pass the **final state**. Used to
 #' calculate the value of lives lost.
 #'
-#' @param daily_gva A numeric vector of the daily gross-value added (GVA)
-#' in million dollars, by each economic sector of the population (or territory
-#' or state) in which the epidemic occurs.
-#'
 #' @param workforce A numeric vector of the number of workers in each economic
 #' sector of the population. Must be absolute numbers (i.e., not scaled to
 #' thousands or millions). Must have the same length as `daily_gva`.
+#'
+#' @param daily_gva A numeric vector of the daily gross-value added (GVA)
+#' in million dollars, by each economic sector of the population (or territory
+#' or state) in which the epidemic occurs.
 #'
 #' @param vsl_by_age A numeric vector of the value of a statistical life (VSL)
 #' for each age age group in `x`.
@@ -246,16 +253,67 @@ get_costs.daedalus_output <- function(
 #' @param n_students A single number for the number of students in the
 #' population, whose education is expected to be impacted by the epidemic.
 #'
-#' @param edu_effectiveness_remote
+#' @param edu_effectiveness_remote A single number for the effectiveness of
+#' remote education, in the range \eqn{[0, 1]}.
 #'
-#' @param npi_data
+#' @param npi_data A list with numeric elements that mirrors the elements of a
+#' `<daedalus_npi>`, with the following names:
 #'
-#' @param summarise_as
+#' - `npi_times_start`: A numeric vector of the start times of any NPIs
+#' modelled.
 #'
-#' @param productivity_loss_infection
+#' - `npi_times_end`: A numeric vector of the end times of modelled NPIs.
+#'
+#' - `npi_durations`: A numeric vector of the durations of NPIs.
+#'
+#' - `npi_periods`: A numeric vector giving integer-ish elements in the ranges
+#' specified by the start and end times.
+#'
+#' - `openness`: Either a numeric vector (if modelling a single NPI), or a list
+#' of numeric vectors (if modelling multiple NPIs), giving the openness
+#' coefficients of NPI regimes. Vector lengths must be the same as `workforce`.
 #'
 #' @examples
-#' # example code
+#' # for a data.frame of epi compartment timeseries, as from any epi model
+#' output <- daedalus("Canada", "influenza_1918", time_end = 100)
+#'
+#' data <- get_data(output)
+#' comp_non_working <- c(
+#'   "infect_symp",
+#'   "hospitalised_recov",
+#'   "hospitalised_death",
+#'   "dead"
+#' )
+#' comp_infected <- "infect_symp"
+#' comp_dead <- "dead"
+#'
+#' daily_gva <- output$country_parameters$gva
+#' workforce <- output$country_parameters$workers
+#' vsl_by_age <- output$country_parameters$vsl
+#' life_expectancy <- output$country_parameters$life_expectancy
+#'
+#' value_school_year <- 1e6 # 1 million dollars
+#' n_students <- output$country_parameters$demography[3L]
+#'
+#' edu_effectiveness_remote <- 0.33
+#'
+#' productivity_loss_infection <- 1.0
+#'
+#' get_costs(
+#'   data,
+#'   comp_non_working,
+#'   comp_infected,
+#'   comp_dead,
+#'   daily_gva,
+#'   workforce,
+#'   vsl_by_age,
+#'   life_expectancy,
+#'   value_school_year,
+#'   n_students,
+#'   productivity_loss_infection = productivity_loss_infection,
+#'   edu_effectiveness_remote = edu_effectiveness_remote,
+#'   summarise_as = "domain"
+#' )
 #'
 #' @export
 get_costs.data.frame <- function(
@@ -263,8 +321,8 @@ get_costs.data.frame <- function(
   comp_non_working,
   comp_infected,
   comp_dead,
-  daily_gva,
   workforce,
+  daily_gva,
   productivity_loss_infection,
   vsl_by_age,
   life_expectancy,
@@ -272,8 +330,11 @@ get_costs.data.frame <- function(
   n_students,
   edu_effectiveness_remote,
   npi_data = NULL,
-  summarise_as = c("none", "total", "domain")
+  summarise_as = c("none", "total", "domain"),
+  ...
 ) {
+  chkDots(...)
+
   # input checks on the data frame of epi timeseries
   checkmate::assert_data_frame(
     x,
@@ -286,12 +347,12 @@ get_costs.data.frame <- function(
     must.include = MIN_DATA_COL_NAMES
   )
 
-  x <- x[MIN_DATA_COL_NAMES]
+  x <- x[, MIN_DATA_COL_NAMES]
   checkmate::assert_data_frame(
     x,
     any.missing = FALSE,
     types = c("numeric", "character", "character", "character", "numeric"),
-    min.rows = 1,
+    min.rows = 1
   )
 
   checkmate::assert_numeric(
@@ -328,6 +389,22 @@ get_costs.data.frame <- function(
     unique(x[["compartment"]])
   )
 
+  checkmate::assert_numeric(
+    workforce,
+    lower = 0,
+    finite = TRUE,
+    any.missing = FALSE,
+    min.len = 1
+  )
+
+  checkmate::assert_numeric(
+    daily_gva,
+    lower = 0,
+    finite = TRUE,
+    any.missing = FALSE,
+    len = length(workforce)
+  )
+
   checkmate::assert_number(productivity_loss_infection, lower = 0, upper = 1)
 
   # check age groups
@@ -361,7 +438,7 @@ get_costs.data.frame <- function(
     null.ok = TRUE
   )
   # calculate daily values for some inputs
-  value_school_day <- value_school_year / 365
+  value_school_day <- value_school_year / (365 * 1e6) # millions per day
 
   # calculate economic losses due to closures
   if (is.null(npi_data)) {
@@ -380,13 +457,37 @@ get_costs.data.frame <- function(
       )
     )
 
+    # check that NPI times provided are sensible
+    all_good_times <- all(
+      vapply(
+        npi_data[grepl("npi", names(npi_data), fixed = TRUE)],
+        checkmate::test_numeric,
+        logical(1),
+        min.len = 1,
+        lower = 0,
+        upper = max(x[["time"]])
+      )
+    )
+    if (!all_good_times) {
+      cli::cli_abort(
+        "One of `npi_durations`, `npi_times_start`, `npi_times_end`, or \\
+        `npi_periods` has an issue: it is either not numeric, \\
+        is an empty vector, has a negative value, or has a maximum value 
+        greater than the model's maximum time: {max(x$time)}. Please check!"
+      )
+    }
+
     if (length(npi_data$npi_times_start) > 1L) {
       checkmate::assert_list(
         npi_data$openness,
         len = length(npi_data$npi_times_start)
       )
       invisible(
-        lapply(checkmate::numeric, npi_data$openness, len = length(workforce))
+        lapply(
+          npi_data$openness,
+          checkmate::assert_numeric,
+          len = length(workforce)
+        )
       )
     } else {
       # wrap vector in list as this is how <daedalus_npi> holds openness coefs
@@ -399,9 +500,8 @@ get_costs.data.frame <- function(
 
     npi_duration <- npi_data$npi_durations
     n_npis <- length(npi_duration)
-    npi_openness <- npi_data$openness
-    n_regimes <- length(npi_openness)
     openness <- npi_data$openness
+    n_regimes <- length(openness)
 
     if (n_npis > n_regimes && n_regimes == 1L) {
       openness <- lapply(seq_along(npi_duration), function(z) {

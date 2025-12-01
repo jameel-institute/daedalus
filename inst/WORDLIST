@@ -7,7 +7,6 @@ Codecov
 Cov
 Covid
 Cpp
-CtoW
 Diekmann
 EPPI
 FOI
@@ -24,9 +23,7 @@ Hr
 IDM
 IFR
 Ia
-Icomm
 IfG
-Iwork
 Jameel
 Latif
 NPI
@@ -41,11 +38,9 @@ SARS
 SEIR
 Soc
 Sumali
-TSL
 Timesteps
 UKHSA
 VLY
-VPE
 VSD
 VSL
 VSLY
@@ -71,6 +66,7 @@ econ
 edu
 eff
 eigen
+epi
 erroring
 fn
 frac
@@ -84,7 +80,6 @@ ofr
 org
 pak
 parameterise
-pathogendata
 recov
 recovered’
 rightarrow
@@ -92,7 +87,6 @@ rollout
 rootfinding
 rsif
 sigmoidal
-socioeconomic
 specifc
 started’
 struct
@@ -102,4 +96,3 @@ sympt
 th
 timeseries
 timesteps
-transitionpars

@@ -43,7 +43,6 @@ new_daedalus_country <- function(name, parameters) {
 #' considered to be the working-age group. Defaults to `3`, which is taken from
 #' an internal constant.
 #'
-#' @export
 #' @return
 #'
 #' - `daedalus_country()` returns an object of the S3 class `<daedalus_country>`
@@ -74,6 +73,8 @@ new_daedalus_country <- function(name, parameters) {
 #' # using assignment operators
 #' x$contact_matrix <- matrix(99, 4, 4)
 #' x
+#'
+#' @export
 daedalus_country <- function(
   country,
   parameters = list(

@@ -16,8 +16,6 @@
 
 \method{get_data}{daedalus_npi}(x, to_get, ...)
 
-\method{get_data}{daedalus_npi}(x, to_get, ...)
-
 \method{get_data}{daedalus_output}(x, to_get = NULL, ...)
 
 \method{get_data}{daedalus_vaccination}(x, to_get, ...)
@@ -26,7 +24,8 @@ get_data(x, ...)
 }
 \arguments{
 \item{x}{An S3 class object from the \pkg{daedalus} package of the
-\verb{<daedalus_country>} or \verb{<infection>} class.}
+\verb{<daedalus_country>}, \verb{<daedalus_infection>}, \verb{<daedalus_npi>},
+\verb{<daedalus_output>}, and \verb{<daedalus_vaccination>} class.}
 
 \item{to_get}{A string giving the name of the element of \code{x} to return.}
 
@@ -59,5 +58,6 @@ output <- daedalus("Canada", "influenza_1918")
 head(
   get_data(output)
 )
+
 }
 \keyword{generics}
