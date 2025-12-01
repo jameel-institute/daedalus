@@ -3,10 +3,10 @@
 \docType{data}
 \name{econ_constants}
 \alias{econ_constants}
-\alias{edu_effectiveness_remote}
-\alias{edu_annual_ror}
-\alias{work_expected_years}
-\alias{earnings_loss_discount}
+\alias{EDU_EFFECTIVENESS_REMOTE}
+\alias{EDU_ANNUAL_ROR}
+\alias{WORK_EXPECTED_YEARS}
+\alias{EARNINGS_LOSS_DISCOUNT}
 \title{Economic constants used in DAEDALUS}
 \format{
 An object of class \code{numeric} of length 1.
@@ -18,13 +18,13 @@ An object of class \code{numeric} of length 1.
 An object of class \code{numeric} of length 1.
 }
 \usage{
-edu_effectiveness_remote
+EDU_EFFECTIVENESS_REMOTE
 
-edu_annual_ror
+EDU_ANNUAL_ROR
 
-work_expected_years
+WORK_EXPECTED_YEARS
 
-earnings_loss_discount
+EARNINGS_LOSS_DISCOUNT
 }
 \description{
 Economic constants used in DAEDALUS

@@ -26,6 +26,7 @@
 \alias{N_OUTPUT_COLS}
 \alias{N_FLAGS}
 \alias{FLAG_NAMES}
+\alias{MIN_DATA_COL_NAMES}
 \title{DAEDALUS model constants}
 \format{
 An object of class \code{integer} of length 1.
@@ -73,6 +74,8 @@ An object of class \code{integer} of length 1.
 An object of class \code{integer} of length 1.
 
 An object of class \code{character} of length 9.
+
+An object of class \code{character} of length 5.
 }
 \usage{
 N_AGE_GROUPS
@@ -120,6 +123,8 @@ N_OUTPUT_COLS
 N_FLAGS
 
 FLAG_NAMES
+
+MIN_DATA_COL_NAMES
 }
 \value{
 Values for the model constants.

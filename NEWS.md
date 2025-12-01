@@ -1,3 +1,7 @@
+# daedalus 0.3.1
+
+This patch version makes downstream cost calculations an S3 generic with methods for `<daedalus_output>` and `<data.frame>` classes (PR #138).
+
 # daedalus 0.3.0
 
 This is a minor version release for use in the Jameel Institute Symposium Daedalus preview event.

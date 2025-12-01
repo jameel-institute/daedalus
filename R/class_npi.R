@@ -326,30 +326,6 @@ format.daedalus_npi <- function(x, ...) {
   invisible(x)
 }
 
-#' @name get_data
-#' @export
-get_data.daedalus_npi <- function(x, to_get, ...) {
-  chkDots(...)
-  validate_daedalus_npi(x)
-
-  good_to_get <- checkmate::test_string(to_get) &&
-    checkmate::test_subset(to_get, names(x$parameters))
-
-  if (!good_to_get) {
-    cli::cli_abort(c(
-      "`to_get` must be a string available in the {.cls class(x)}",
-      i = "Allowed values are {.str {names(x$parameters)}}"
-    ))
-  }
-
-  # do not return null or default openness, only used internally
-  if (to_get == "openness") {
-    x$parameters[[to_get]][-1L]
-  } else {
-    x$parameters[[to_get]]
-  }
-}
-
 #' Dummy NPI
 #'
 #' @return A `<daedalus_npi>` object intended to have no effect; openness is
