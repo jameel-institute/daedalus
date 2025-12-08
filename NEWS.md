@@ -1,3 +1,7 @@
+# daedalus 0.3.2
+
+This patch version corrects the expansion of age-stratified contact matrices by correctly distributing the outgoing contacts of working age individuals, preserving the total incoming contacts of all age groups (PR #140). Tests check that contact matrix expansion works as expected.
+
 # daedalus 0.3.1
 
 This patch version makes downstream cost calculations an S3 generic with methods for `<daedalus_output>` and `<data.frame>` classes (PR #138).
