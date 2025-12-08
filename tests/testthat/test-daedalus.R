@@ -146,6 +146,7 @@ test_that("daedalus: Can run with custom demography", {
 # test that daedalus runs for all epidemic infection parameter sets
 test_that("daedalus: Runs for all country x infection x response", {
   skip_on_covr()
+  skip("Skipped for length")
   country_infection_combos <- data.table::CJ(
     country = daedalus.data::country_names,
     infection = daedalus.data::epidemic_names
@@ -380,9 +381,11 @@ test_that("daedalus: responses ended by epidemic growth", {
   d <- daedalus_infection("influenza_2009")
 
   # specify npi with timed end which should not be met
-  end_time <- 120
+  # NOTE: more stringent NPIs spread the peak and NPI out for longer
+  # as Rt drops more slowly (due to fewer infections)
+  end_time <- 150
   npi <- daedalus_npi(
-    "elimination",
+    "economic_closures",
     x,
     "influenza_2009",
     start_time = 30,

@@ -150,3 +150,30 @@ test_that("Initial state preparation:", {
     regexp = "(p_asymptomatic)*(single number in the range \\[0.0, 1.0\\])"
   )
 })
+
+test_that("Contact matrix expansion is correct", {
+  cty <- daedalus_country("GBR")
+  cm <- get_data(cty, "contact_matrix")
+  cmx <- make_conmat_large(cty, "none")
+
+  # expect incoming contacts have been correctly handled
+  checkmate::expect_subset(
+    rowSums(cmx),
+    rowSums(cm)
+  )
+  checkmate::expect_subset(
+    rowSums(cmx)[i_ECON_SECTORS],
+    rowSums(cm)[i_WORKING_AGE]
+  )
+  expect_identical(
+    rowSums(cmx)[setdiff(i_AGE_GROUPS, i_WORKING_AGE)],
+    rowSums(cm)[setdiff(i_AGE_GROUPS, i_WORKING_AGE)],
+    ignore_attr = TRUE
+  )
+
+  # expect that scaling works
+  cmx <- make_conmat_large(cty)
+  expect_all_true(
+    as.vector(cmx) < 1
+  )
+})

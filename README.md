@@ -5,10 +5,9 @@
 
 <!-- badges: start -->
 
-[![Project Status: Concept – Minimal or no implementation has been done
-yet, or the repository is only intended to be a limited example, demo,
-or
-proof-of-concept.](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
+[![Project Status: WIP – Initial development is in progress, but there
+has not yet been a stable, usable release suitable for the
+public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![R build
 status](https://github.com/jameel-institute/daedalus/workflows/R-CMD-check/badge.svg)](https://github.com/jameel-institute/daedalus/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
@@ -106,12 +105,12 @@ output
 
 # get pandemic costs as a total in million dollars
 get_costs(output, "total")
-#> [1] 1469908
+#> [1] 967945.7
 
 # disaggregate total for economic, education, and health costs
 get_costs(output, "domain")
 #>     economic    education   life_value   life_years 
-#>    29756.419     1897.382  1438253.766 31232437.916
+#>    27550.796     1749.039   938645.835 20383188.598
 ```
 
 ## Customising model parameters
