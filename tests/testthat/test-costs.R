@@ -63,22 +63,27 @@ test_that("Costs: scenario expectations", {
 
   # expect life years lost costs in response scenarios are higher than no resp.
   o <- lapply(
-    names(daedalus.data::closure_strategy_data),
+    daedalus.data::closure_strategy_names,
     function(x) {
       daedalus(
         "GBR",
         infection = "influenza_1957",
-        response_strategy = x
+        response_strategy = x,
+        time_end = 200
       )
     }
   )
 
   a <- lapply(o, get_costs, "domain")
-  names(a) <- names(daedalus.data::closure_strategy_data)
+  names(a) <- daedalus.data::closure_strategy_names
 
   v <- vapply(a, `[[`, FUN.VALUE = 1, "life_years")
 
-  expect_true(all(v[1:3] < v["none"]))
+  expect_true(
+    all(
+      v[setdiff(daedalus.data::closure_strategy_names, "none")] < v["none"]
+    )
+  )
 
   ## expect that closure costs are non-zero
   response_names <- c("elimination", "economic_closures", "school_closures")
