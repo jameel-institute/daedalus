@@ -33,16 +33,25 @@ make_conmat_large <- function(country, scaling = c("demography", "none")) {
   total_wk_age <- demog[i_WORKING_AGE]
   wk_age_demog <- c(total_wk_age - total_workers, workers)
   p_wk_age_demog <- wk_age_demog / sum(wk_age_demog)
+  idx_wk_age <- c(i_WORKING_AGE, i_ECON_SECTORS)
 
   cm_nrow <- n_strata
-
   cm <- matrix(NA, cm_nrow, cm_nrow)
+
+  # assing non-working contacts
   cm[i_AGE_GROUPS, i_AGE_GROUPS] <- country$contact_matrix
-  cm[i_AGE_GROUPS, i_ECON_SECTORS] <- matrix(
+  # extract initial working age community contacts
+  wk_age_contacts <- cm[i_WORKING_AGE, i_WORKING_AGE]
+
+  # scale econ sector wk age contacts to non-working groups
+  cm[i_AGE_GROUPS, idx_wk_age] <- matrix(
     cm[i_AGE_GROUPS, i_WORKING_AGE],
     N_AGE_GROUPS,
-    N_ECON_SECTORS
-  )
+    N_ECON_SECTORS + 1L
+  ) %*%
+    diag(p_wk_age_demog)
+
+  # contacts from non-working to econ sectors
   cm[i_ECON_SECTORS, i_AGE_GROUPS] <- matrix(
     cm[i_WORKING_AGE, i_AGE_GROUPS],
     N_ECON_SECTORS,
@@ -50,32 +59,17 @@ make_conmat_large <- function(country, scaling = c("demography", "none")) {
     byrow = TRUE
   )
 
-  wk_age_contacts <- cm[i_WORKING_AGE, i_WORKING_AGE]
+  # community contacts of all working age
   wk_age_contacts <- wk_age_contacts * p_wk_age_demog
 
-  # non-working working age contacts
-  # NOTE: we assume these are outgoing contacts
-  cm[i_WORKING_AGE, i_WORKING_AGE] <- first(wk_age_contacts)
-  cm[i_WORKING_AGE, i_ECON_SECTORS] <- wk_age_contacts[-i_NOT_WORKING]
-  cm[i_ECON_SECTORS, i_WORKING_AGE] <- first(wk_age_contacts)
-
-  # worker-worker community contacts
+  # worker-worker community contacts for econ-sectors
   # specify byrow as we assume these are outgoing contacts
-  wk_comm_contacts <- matrix(
+  cm[i_ECON_SECTORS, i_ECON_SECTORS] <- matrix(
     rep(wk_age_contacts[-1], N_ECON_SECTORS),
     N_ECON_SECTORS,
     N_ECON_SECTORS,
     byrow = TRUE
   )
-  cm[i_ECON_SECTORS, i_ECON_SECTORS] <- wk_comm_contacts
-
-  # handle contacts from working-age sector-wise to other age groups
-  # do not repeat for working age, handled above
-  cm[i_AGE_GROUPS[-i_WORKING_AGE], c(i_WORKING_AGE, i_ECON_SECTORS)] <- cm[
-    i_AGE_GROUPS[-i_WORKING_AGE],
-    c(i_WORKING_AGE, i_ECON_SECTORS)
-  ] %*%
-    diag(p_wk_age_demog)
 
   # handle demography vector for correct scaling
   demog[i_WORKING_AGE] <- total_wk_age - total_workers
