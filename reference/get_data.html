@@ -15,7 +15,7 @@ parameters."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,9 +80,6 @@ parameters.</p>
 <span><span class="co"># S3 method for class 'daedalus_npi'</span></span>
 <span><span class="fu">get_data</span><span class="op">(</span><span class="va">x</span>, <span class="va">to_get</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># S3 method for class 'daedalus_npi'</span></span>
-<span><span class="fu">get_data</span><span class="op">(</span><span class="va">x</span>, <span class="va">to_get</span>, <span class="va">...</span><span class="op">)</span></span>
-<span></span>
 <span><span class="co"># S3 method for class 'daedalus_output'</span></span>
 <span><span class="fu">get_data</span><span class="op">(</span><span class="va">x</span>, to_get <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
@@ -98,7 +95,8 @@ parameters.</p>
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>An S3 class object from the <span class="pkg">daedalus</span> package of the
-<code>&lt;daedalus_country&gt;</code> or <code>&lt;infection&gt;</code> class.</p></dd>
+<code>&lt;daedalus_country&gt;</code>, <code>&lt;daedalus_infection&gt;</code>, <code>&lt;daedalus_npi&gt;</code>,
+<code>&lt;daedalus_output&gt;</code>, and <code>&lt;daedalus_vaccination&gt;</code> class.</p></dd>
 
 
 <dt id="arg-to-get">to_get<a class="anchor" aria-label="anchor" href="#arg-to-get"></a></dt>
@@ -149,6 +147,7 @@ element is specified.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4    3 1993129       0-4   sector_00  unvaccinated susceptible</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5    4 1993127       0-4   sector_00  unvaccinated susceptible</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6    5 1993124       0-4   sector_00  unvaccinated susceptible</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

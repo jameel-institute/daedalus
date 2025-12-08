@@ -27,7 +27,15 @@ get_fiscal_costs(
 - x:
 
   A `<daedalus_output>` object from a call to
-  [`daedalus()`](https://jameel-institute.github.io/daedalus/reference/daedalus.md).
+  [`daedalus()`](https://jameel-institute.github.io/daedalus/reference/daedalus.md),
+  or a `<data.frame>` of an epidemic timeseries.
+
+  If `x` is a `<data.frame>`, it must have the columns `"time"`,
+  `"compartment"`, `"age_group"`, `"econ_sector"` and `"value"`, giving
+  the model time, the epidemiological compartment, and the number of
+  individuals of each age group and economic sector in each compartment
+  at each time. See **Details** for more on the expectations around how
+  this dataset is organised.
 
 - support_level:
 

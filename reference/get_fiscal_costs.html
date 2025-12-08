@@ -19,7 +19,7 @@ administered or implemented."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,7 +96,14 @@ administered or implemented.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>A <code>&lt;daedalus_output&gt;</code> object from a call to <code><a href="daedalus.html">daedalus()</a></code>.</p></dd>
+<dd><p>A <code>&lt;daedalus_output&gt;</code> object from a call to <code><a href="daedalus.html">daedalus()</a></code>, or a
+<code>&lt;data.frame&gt;</code> of an epidemic timeseries.</p>
+<p>If <code>x</code> is a <code>&lt;data.frame&gt;</code>, it must have the columns <code>"time"</code>,
+<code>"compartment"</code>, <code>"age_group"</code>, <code>"econ_sector"</code> and <code>"value"</code>, giving the
+model time, the epidemiological compartment, and the number of individuals
+of each age group and economic sector in each compartment at each time.
+See <strong>Details</strong> for more on the expectations around how this dataset is
+organised.</p></dd>
 
 
 <dt id="arg-support-level">support_level<a class="anchor" aria-label="anchor" href="#arg-support-level"></a></dt>

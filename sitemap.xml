@@ -24,6 +24,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/country_name_from_arg.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus-package.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus_costs.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus_internal.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus_multi_infection.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/dummy_npi.html</loc></url>
@@ -32,7 +33,6 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/epi_constants.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/epi_output_helpers.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_beta.html</loc></url>
-<url><loc>https://jameel-institute.github.io/daedalus/reference/get_costs.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_daedalus_multi_response_times.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_daedalus_response_times.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/get_data.html</loc></url>

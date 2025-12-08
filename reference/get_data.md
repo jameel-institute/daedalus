@@ -14,9 +14,6 @@ get_data(x, to_get, ...)
 # S3 method for class 'daedalus_npi'
 get_data(x, to_get, ...)
 
-# S3 method for class 'daedalus_npi'
-get_data(x, to_get, ...)
-
 # S3 method for class 'daedalus_output'
 get_data(x, to_get = NULL, ...)
 
@@ -31,7 +28,8 @@ get_data(x, ...)
 - x:
 
   An S3 class object from the daedalus package of the
-  `<daedalus_country>` or `<infection>` class.
+  `<daedalus_country>`, `<daedalus_infection>`, `<daedalus_npi>`,
+  `<daedalus_output>`, and `<daedalus_vaccination>` class.
 
 - to_get:
 

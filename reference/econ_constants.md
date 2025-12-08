@@ -5,13 +5,13 @@ Economic constants used in DAEDALUS
 ## Usage
 
 ``` r
-edu_effectiveness_remote
+EDU_EFFECTIVENESS_REMOTE
 
-edu_annual_ror
+EDU_ANNUAL_ROR
 
-work_expected_years
+WORK_EXPECTED_YEARS
 
-earnings_loss_discount
+EARNINGS_LOSS_DISCOUNT
 ```
 
 ## Format

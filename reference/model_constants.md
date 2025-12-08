@@ -53,6 +53,8 @@ N_OUTPUT_COLS
 N_FLAGS
 
 FLAG_NAMES
+
+MIN_DATA_COL_NAMES
 ```
 
 ## Format
@@ -102,6 +104,8 @@ An object of class `integer` of length 1.
 An object of class `integer` of length 1.
 
 An object of class `character` of length 9.
+
+An object of class `character` of length 5.
 
 ## Value
 

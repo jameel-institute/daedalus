@@ -13,7 +13,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,6 +62,10 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.1" id="daedalus-031">daedalus 0.3.1<a class="anchor" aria-label="anchor" href="#daedalus-031"></a></h2>
+<p>This patch version makes downstream cost calculations an S3 generic with methods for <code>&lt;daedalus_output&gt;</code> and <code>&lt;data.frame&gt;</code> classes (PR <a href="https://github.com/jameel-institute/daedalus/issues/138" class="external-link">#138</a>).</p>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.0" id="daedalus-030">daedalus 0.3.0<a class="anchor" aria-label="anchor" href="#daedalus-030"></a></h2>
 <p>This is a minor version release for use in the Jameel Institute Symposium Daedalus preview event.</p>
 <ul><li><p>Updates to what information about NPI closures is returned from <code>get_data.daedalus_npi(x, "openness")</code>.</p></li>
@@ -109,15 +113,15 @@
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.34" id="daedalus-0234">daedalus 0.2.34<a class="anchor" aria-label="anchor" href="#daedalus-0234"></a></h2>
-<p>This patch modifies the costs and fiscal costs calculation by changing how absences due to illness are calculated in <code><a href="../reference/get_costs.html">get_costs()</a></code> and <code><a href="../reference/get_fiscal_costs.html">get_fiscal_costs()</a></code> (PR <a href="https://github.com/jameel-institute/daedalus/issues/115" class="external-link">#115</a> reviewed by <a href="https://github.com/robj411" class="external-link">@robj411</a>).</p>
+<p>This patch modifies the costs and fiscal costs calculation by changing how absences due to illness are calculated in <code><a href="../reference/daedalus_costs.html">get_costs()</a></code> and <code><a href="../reference/get_fiscal_costs.html">get_fiscal_costs()</a></code> (PR <a href="https://github.com/jameel-institute/daedalus/issues/115" class="external-link">#115</a> reviewed by <a href="https://github.com/robj411" class="external-link">@robj411</a>).</p>
 <ul><li><p>Only <span class="math inline">\(H\)</span> and <span class="math inline">\(D\)</span> are counted as fully absent;</p></li>
 <li><p><span class="math inline">\(I_a\)</span> were previously counted but are no longer counted as absent;</p></li>
-<li><p><span class="math inline">\(I_s\)</span> are counted as present at work when calculating new workplace infections, but also as having complete productivity loss. The level of productivity loss can be changed in <code><a href="../reference/get_costs.html">get_costs()</a></code> and <code><a href="../reference/get_fiscal_costs.html">get_fiscal_costs()</a></code> using the argument <code>productivity_loss_infection</code>.</p></li>
+<li><p><span class="math inline">\(I_s\)</span> are counted as present at work when calculating new workplace infections, but also as having complete productivity loss. The level of productivity loss can be changed in <code><a href="../reference/daedalus_costs.html">get_costs()</a></code> and <code><a href="../reference/get_fiscal_costs.html">get_fiscal_costs()</a></code> using the argument <code>productivity_loss_infection</code>.</p></li>
 </ul><p>Snapshot tests are updated to reflect that all costs are reduced due to no longer counting <span class="math inline">\(I_a\)</span>.</p>
 <div class="section level3">
 <h3 id="notes-0-2-34">Notes<a class="anchor" aria-label="anchor" href="#notes-0-2-34"></a></h3>
 <p><code><a href="../reference/get_fiscal_costs.html">get_fiscal_costs()</a></code> is updated:</p>
-<ul><li><p>Labour availability match the multiplicative implementation in <code><a href="../reference/get_costs.html">get_costs()</a></code>;</p></li>
+<ul><li><p>Labour availability match the multiplicative implementation in <code><a href="../reference/daedalus_costs.html">get_costs()</a></code>;</p></li>
 <li><p>Interest rate, spending rate, and tax rate have been corrected to be rates rather than percentages, and the interest rate is converted from an annual to a daily rate;</p></li>
 <li><p>GVA gap now accounts for government support.</p></li>
 </ul></div>
@@ -230,7 +234,7 @@
 <ul><li>Added class member function <code>make_duration_test</code> to class <code>daedalus::events::response</code>. Events are now treated as having a start time and a duration, rather than an end time.</li>
 </ul><p><strong>Note that</strong> this change makes it more likely that short-duration state-triggered events will be launched multiple times in a single simulation run of 600 days. This <strong>will</strong> result in unpredictable closure durations in most cases, as closures can be launched by breaching hospital capacity.</p>
 <ul><li><p>Added class member function <code>make_duration_test</code> to class <code>daedalus::events::response</code>.</p></li>
-<li><p>Updated <code><a href="../reference/get_daedalus_response_times.html">get_daedalus_response_times()</a></code> and <code><a href="../reference/get_costs.html">get_costs()</a></code> to correctly accommodate multiple closures.</p></li>
+<li><p>Updated <code><a href="../reference/get_daedalus_response_times.html">get_daedalus_response_times()</a></code> and <code><a href="../reference/daedalus_costs.html">get_costs()</a></code> to correctly accommodate multiple closures.</p></li>
 <li><p>Updates to input checking, output handling, tests, and documentation for time-limitations on state-triggered events.</p></li>
 <li><p>Event data are now included in <code>&lt;daedalus_output&gt;</code> from <code><a href="../reference/daedalus.html">daedalus()</a></code> and <code><a href="../reference/daedalus_multi_infection.html">daedalus_multi_infection()</a></code>.</p></li>
 <li><p><code>daedalus::events::response</code> member functions for event condition checks now include a check on expected flag status to prevent events which would not change flag status.</p></li>
@@ -493,7 +497,7 @@
 </ul></li>
 <li>
 <p>Downstream functions:</p>
-<ul><li><p><code><a href="../reference/get_costs.html">get_costs()</a></code> returns life-years lost; values of lives lost vector is renamed to <code>life_value_lost</code></p></li>
+<ul><li><p><code><a href="../reference/daedalus_costs.html">get_costs()</a></code> returns life-years lost; values of lives lost vector is renamed to <code>life_value_lost</code></p></li>
 <li><p><code><a href="../reference/get_life_years_lost.html">get_life_years_lost()</a></code> calculates life-years lost from total deaths and life-expectancy.</p></li>
 </ul></li>
 <li>
@@ -644,7 +648,7 @@
 </ol></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.7" id="daedalus-007">daedalus 0.0.7<a class="anchor" aria-label="anchor" href="#daedalus-007"></a></h2>
-<p>This patch adds functionality to calculate pandemic costs using the newly added function <code><a href="../reference/get_costs.html">get_costs()</a></code>. This patch also adds <code>life_value</code>, a list of country-wise, age-specific values of statistical life lost as package data.</p>
+<p>This patch adds functionality to calculate pandemic costs using the newly added function <code><a href="../reference/daedalus_costs.html">get_costs()</a></code>. This patch also adds <code>life_value</code>, a list of country-wise, age-specific values of statistical life lost as package data.</p>
 <p>Other changes:</p>
 <ol style="list-style-type: decimal"><li><p>Data preparation scripts and raw data that are used to generate the <code>life_value</code> data. Subsetting the countries to those for which this data is available leaves 67 countries; Taiwan and Hong Kong are removed due to lack of life value data.</p></li>
 <li><p><code>&lt;daedalus_output&gt;</code> now includes a measure of the total simulation time which could be useful for future calculations of percentage GDP loss.</p></li>

@@ -239,8 +239,8 @@ Represent and store model output for further processing.
 Functions to process model output to calculate pandemic costs and other
 outcomes.
 
-- [`get_costs()`](https://jameel-institute.github.io/daedalus/reference/get_costs.md)
-  : Get epidemic costs from a DAEDALUS model run
+- [`get_costs()`](https://jameel-institute.github.io/daedalus/reference/daedalus_costs.md)
+  : Get epidemic losses from a DAEDALUS model run
 - [`get_fiscal_costs()`](https://jameel-institute.github.io/daedalus/reference/get_fiscal_costs.md)
   : Get pandemic fiscal costs from a model run
 - [`get_incidence()`](https://jameel-institute.github.io/daedalus/reference/epi_output_helpers.md)
@@ -286,6 +286,7 @@ Useful constants used internally.
   [`N_OUTPUT_COLS`](https://jameel-institute.github.io/daedalus/reference/model_constants.md)
   [`N_FLAGS`](https://jameel-institute.github.io/daedalus/reference/model_constants.md)
   [`FLAG_NAMES`](https://jameel-institute.github.io/daedalus/reference/model_constants.md)
+  [`MIN_DATA_COL_NAMES`](https://jameel-institute.github.io/daedalus/reference/model_constants.md)
   : DAEDALUS model constants
 - [`COMPARTMENTS`](https://jameel-institute.github.io/daedalus/reference/epi_constants.md)
   [`idx_COMPARTMENTS`](https://jameel-institute.github.io/daedalus/reference/epi_constants.md)
@@ -298,10 +299,10 @@ Useful constants used internally.
   [`SUMMARY_GROUPS`](https://jameel-institute.github.io/daedalus/reference/summary_constants.md)
   : Model output measures and groups for summaries and derived
   time-series
-- [`edu_effectiveness_remote`](https://jameel-institute.github.io/daedalus/reference/econ_constants.md)
-  [`edu_annual_ror`](https://jameel-institute.github.io/daedalus/reference/econ_constants.md)
-  [`work_expected_years`](https://jameel-institute.github.io/daedalus/reference/econ_constants.md)
-  [`earnings_loss_discount`](https://jameel-institute.github.io/daedalus/reference/econ_constants.md)
+- [`EDU_EFFECTIVENESS_REMOTE`](https://jameel-institute.github.io/daedalus/reference/econ_constants.md)
+  [`EDU_ANNUAL_ROR`](https://jameel-institute.github.io/daedalus/reference/econ_constants.md)
+  [`WORK_EXPECTED_YEARS`](https://jameel-institute.github.io/daedalus/reference/econ_constants.md)
+  [`EARNINGS_LOSS_DISCOUNT`](https://jameel-institute.github.io/daedalus/reference/econ_constants.md)
   : Economic constants used in DAEDALUS
 
 ## Internal functions

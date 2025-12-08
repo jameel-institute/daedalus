@@ -34,7 +34,7 @@ output_list <- lapply(
 Obtaining the health, economic, and social (here, educational) costs,
 all converted to cost measures that can be expressed in dollars, only
 requires output to be passed to the function
-[`get_costs()`](https://jameel-institute.github.io/daedalus/reference/get_costs.md).
+[`get_costs()`](https://jameel-institute.github.io/daedalus/reference/daedalus_costs.md).
 
 ``` r
 # calculate costs

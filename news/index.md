@@ -1,5 +1,11 @@
 # Changelog
 
+## daedalus 0.3.1
+
+This patch version makes downstream cost calculations an S3 generic with
+methods for `<daedalus_output>` and `<data.frame>` classes (PR
+[\#138](https://github.com/jameel-institute/daedalus/issues/138)).
+
 ## daedalus 0.3.0
 
 This is a minor version release for use in the Jameel Institute
@@ -107,7 +113,7 @@ impact of applying a response strategy in a model run (PR
 
 This patch modifies the costs and fiscal costs calculation by changing
 how absences due to illness are calculated in
-[`get_costs()`](https://jameel-institute.github.io/daedalus/reference/get_costs.md)
+[`get_costs()`](https://jameel-institute.github.io/daedalus/reference/daedalus_costs.md)
 and
 [`get_fiscal_costs()`](https://jameel-institute.github.io/daedalus/reference/get_fiscal_costs.md)
 (PR [\#115](https://github.com/jameel-institute/daedalus/issues/115)
@@ -120,7 +126,7 @@ reviewed by [@robj411](https://github.com/robj411)).
 - \\I_s\\ are counted as present at work when calculating new workplace
   infections, but also as having complete productivity loss. The level
   of productivity loss can be changed in
-  [`get_costs()`](https://jameel-institute.github.io/daedalus/reference/get_costs.md)
+  [`get_costs()`](https://jameel-institute.github.io/daedalus/reference/daedalus_costs.md)
   and
   [`get_fiscal_costs()`](https://jameel-institute.github.io/daedalus/reference/get_fiscal_costs.md)
   using the argument `productivity_loss_infection`.
@@ -134,7 +140,7 @@ no longer counting \\I_a\\.
 is updated:
 
 - Labour availability match the multiplicative implementation in
-  [`get_costs()`](https://jameel-institute.github.io/daedalus/reference/get_costs.md);
+  [`get_costs()`](https://jameel-institute.github.io/daedalus/reference/daedalus_costs.md);
 
 - Interest rate, spending rate, and tax rate have been corrected to be
   rates rather than percentages, and the interest rate is converted from
@@ -402,7 +408,7 @@ breaching hospital capacity.
 - Updated
   [`get_daedalus_response_times()`](https://jameel-institute.github.io/daedalus/reference/get_daedalus_response_times.md)
   and
-  [`get_costs()`](https://jameel-institute.github.io/daedalus/reference/get_costs.md)
+  [`get_costs()`](https://jameel-institute.github.io/daedalus/reference/daedalus_costs.md)
   to correctly accommodate multiple closures.
 
 - Updates to input checking, output handling, tests, and documentation
@@ -940,7 +946,7 @@ intervening versions between this and v0.1.0.
 
 6.  Downstream functions:
 
-    - [`get_costs()`](https://jameel-institute.github.io/daedalus/reference/get_costs.md)
+    - [`get_costs()`](https://jameel-institute.github.io/daedalus/reference/daedalus_costs.md)
       returns life-years lost; values of lives lost vector is renamed to
       `life_value_lost`
 
@@ -1308,7 +1314,7 @@ This patch adds hospital capacity data and two downstream effects.
 
 This patch adds functionality to calculate pandemic costs using the
 newly added function
-[`get_costs()`](https://jameel-institute.github.io/daedalus/reference/get_costs.md).
+[`get_costs()`](https://jameel-institute.github.io/daedalus/reference/daedalus_costs.md).
 This patch also adds `life_value`, a list of country-wise, age-specific
 values of statistical life lost as package data.
 
