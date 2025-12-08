@@ -157,18 +157,32 @@ test_that("Contact matrix expansion is correct", {
   cmx <- make_conmat_large(cty, "none")
 
   # expect incoming contacts have been correctly handled
+  # use rounding to get past MacOS excessive precision checks
   checkmate::expect_subset(
-    rowSums(cmx),
-    rowSums(cm)
+    round(rowSums(cmx)),
+    round(rowSums(cm))
   )
   checkmate::expect_subset(
-    rowSums(cmx)[i_ECON_SECTORS],
-    rowSums(cm)[i_WORKING_AGE]
+    round(rowSums(cmx)[i_ECON_SECTORS]),
+    round(rowSums(cm)[i_WORKING_AGE])
   )
-  expect_identical(
+  expect_equal(
     rowSums(cmx)[setdiff(i_AGE_GROUPS, i_WORKING_AGE)],
     rowSums(cm)[setdiff(i_AGE_GROUPS, i_WORKING_AGE)],
-    ignore_attr = TRUE
+    ignore_attr = TRUE,
+    tolerance = 1e-6
+  )
+
+  # expect pop-weighted mean contacts are identical
+  demog <- get_data(cty, "demography")
+  workers <- get_data(cty, "workers")
+  demogx <- c(demog, workers)
+  demogx[i_WORKING_AGE] <- demog[i_WORKING_AGE] - sum(workers)
+
+  expect_equal(
+    weighted.mean(rowSums(cm), demog),
+    weighted.mean(rowSums(cmx), demogx),
+    tolerance = 1e-6
   )
 
   # expect that scaling works
