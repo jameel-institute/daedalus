@@ -36,40 +36,15 @@ make_conmat_large <- function(country, scaling = c("demography", "none")) {
   idx_wk_age <- c(i_WORKING_AGE, i_ECON_SECTORS)
 
   cm_nrow <- n_strata
-  cm <- matrix(NA, cm_nrow, cm_nrow)
-
-  # assing non-working contacts
+  cm <- matrix(NA_real_, cm_nrow, cm_nrow)
   cm[i_AGE_GROUPS, i_AGE_GROUPS] <- country$contact_matrix
-  # extract initial working age community contacts
-  wk_age_contacts <- cm[i_WORKING_AGE, i_WORKING_AGE]
-
-  # scale econ sector wk age contacts to non-working groups
-  cm[i_AGE_GROUPS, idx_wk_age] <- matrix(
-    cm[i_AGE_GROUPS, i_WORKING_AGE],
-    N_AGE_GROUPS,
-    N_ECON_SECTORS + 1L
-  ) %*%
-    diag(p_wk_age_demog)
-
-  # contacts from non-working to econ sectors
   cm[i_ECON_SECTORS, i_AGE_GROUPS] <- matrix(
     cm[i_WORKING_AGE, i_AGE_GROUPS],
     N_ECON_SECTORS,
     N_AGE_GROUPS,
     byrow = TRUE
   )
-
-  # community contacts of all working age
-  wk_age_contacts <- wk_age_contacts * p_wk_age_demog
-
-  # worker-worker community contacts for econ-sectors
-  # specify byrow as we assume these are outgoing contacts
-  cm[i_ECON_SECTORS, i_ECON_SECTORS] <- matrix(
-    rep(wk_age_contacts[-1], N_ECON_SECTORS),
-    N_ECON_SECTORS,
-    N_ECON_SECTORS,
-    byrow = TRUE
-  )
+  cm[, idx_wk_age] <- outer(cm[, i_WORKING_AGE], p_wk_age_demog)
 
   # handle demography vector for correct scaling
   demog[i_WORKING_AGE] <- total_wk_age - total_workers
