@@ -5,7 +5,7 @@ Make large contact matrix for Cpp model.
 ## Usage
 
 ``` r
-make_conmat_large(country)
+make_conmat_large(country, scaling = c("demography", "none"))
 
 make_work_contacts(country)
 
@@ -20,10 +20,20 @@ make_full_contacts(country)
 
   A `<daedalus_country>`.
 
+- scaling:
+
+  A string, either `"demography"` (default) or `"none"`, for whether the
+  matrix should be scaled by the relevant demographic (age or economic
+  sector) group. Scaling by demography is used as a substitute for
+  division by the relevant population size \\N\\ in the force of
+  infection calculation in the ODE RHS, to save computation.
+
 ## Value
 
 1.  `make_conmat_large()` returns a 49x49 contact matrix scaled by the
-    size of demography groups.
+    size of demography and economic sector groups, while splitting up
+    community contacts from working age individuals to other age groups,
+    among the different in proportion to workers in those sectors.
 
 2.  `make_work_contacts()` returns a 45-element vector (for the number
     of economic sectors) scaled by the number of workers per sector.

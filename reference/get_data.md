@@ -76,9 +76,9 @@ head(
 )
 #>   time   value age_group econ_sector vaccine_group compartment
 #> 1    0 1993132       0-4   sector_00  unvaccinated susceptible
-#> 2    1 1993131       0-4   sector_00  unvaccinated susceptible
-#> 3    2 1993130       0-4   sector_00  unvaccinated susceptible
-#> 4    3 1993129       0-4   sector_00  unvaccinated susceptible
-#> 5    4 1993127       0-4   sector_00  unvaccinated susceptible
-#> 6    5 1993124       0-4   sector_00  unvaccinated susceptible
+#> 2    1 1993132       0-4   sector_00  unvaccinated susceptible
+#> 3    2 1993132       0-4   sector_00  unvaccinated susceptible
+#> 4    3 1993131       0-4   sector_00  unvaccinated susceptible
+#> 5    4 1993131       0-4   sector_00  unvaccinated susceptible
+#> 6    5 1993131       0-4   sector_00  unvaccinated susceptible
 ```

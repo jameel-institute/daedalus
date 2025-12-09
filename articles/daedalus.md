@@ -194,14 +194,16 @@ Plot the data to view the epidemic curve.
 ``` r
 data <- get_data(data)
 ggplot(
-  data[data$compartment == "infect_symp" & data$age_group == "20-64", ]
+  data[data$compartment == "infect_symp" & data$age_group == "20-64" &
+    data$vaccine_group == "unvaccinated", ]
 ) +
   geom_line(
-    aes(time, value, colour = econ_sector),
+    aes(
+      time, value,
+      colour = econ_sector,
+      group = econ_sector
+    ),
     show.legend = FALSE
-  ) +
-  facet_wrap(
-    facets = vars(age_group)
   )
 ```
 

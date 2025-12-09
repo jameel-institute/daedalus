@@ -89,12 +89,12 @@ output
 
 # get pandemic costs as a total in million dollars
 get_costs(output, "total")
-#> [1] 1469908
+#> [1] 967945.7
 
 # disaggregate total for economic, education, and health costs
 get_costs(output, "domain")
 #>     economic    education   life_value   life_years 
-#>    29756.419     1897.382  1438253.766 31232437.916
+#>    27550.796     1749.039   938645.835 20383188.598
 ```
 
 ## Customising model parameters
