@@ -472,7 +472,7 @@ get_costs.data.frame <- function(
       cli::cli_abort(
         "One of `npi_durations`, `npi_times_start`, `npi_times_end`, or \\
         `npi_periods` has an issue: it is either not numeric, \\
-        is an empty vector, has a negative value, or has a maximum value 
+        is an empty vector, has a negative value, or has a maximum value
         greater than the model's maximum time: {max(x$time)}. Please check!"
       )
     }
