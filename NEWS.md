@@ -1,3 +1,9 @@
+# daedalus 0.3.3
+
+This patch version adds some extra GitHub Actions workflows: to auto-generate `README.md` from `README.Rmd`, to auto-update the copyright year in license files, and to track dependency changes.
+
+- Added some plotting fixes in vignettes.
+
 # daedalus 0.3.2
 
 This patch version corrects the expansion of age-stratified contact matrices by correctly distributing the outgoing contacts of working age individuals, preserving the total incoming contacts of all age groups (PR #140). Tests check that contact matrix expansion works as expected.
