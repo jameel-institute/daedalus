@@ -28,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -131,7 +131,7 @@ can be passed as a list to the function
 <span>    y <span class="op">=</span> <span class="st">"Count"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value `binwidth`.</span></span></code></pre></div>
-<p><img src="infection_parameter_uncertainty_files/figure-html/draw_r0_samples-1.png" class="r-plt" width="768"></p>
+<p><img src="infection_parameter_uncertainty_files/figure-html/draw_r0_samples-1.png" class="r-plt" alt="" width="768"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># parameterise daedalus_infection objects</span></span>
@@ -144,7 +144,7 @@ can be passed as a list to the function
 <code class="sourceCode R"><span><span class="co"># run model with 100 infection objects</span></span>
 <span><span class="va">output_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus_multi_infection.html">daedalus_multi_infection</a></span><span class="op">(</span></span>
 <span>  <span class="st">"GBR"</span>, <span class="va">infection_list</span>,</span>
-<span>  time_end <span class="op">=</span> <span class="fl">100</span></span>
+<span>  time_end <span class="op">=</span> <span class="fl">200</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># get incidence data and plot epi curves</span></span>
@@ -165,7 +165,7 @@ can be passed as a list to the function
 <span>    alpha <span class="op">=</span> <span class="fl">0.4</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Time"</span>, y <span class="op">=</span> <span class="st">"New infections"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="infection_parameter_uncertainty_files/figure-html/model_multi_infect-1.png" class="r-plt" width="768"></p>
+<p><img src="infection_parameter_uncertainty_files/figure-html/model_multi_infect-1.png" class="r-plt" alt="" width="768"></p>
   </main>
 </div>
 

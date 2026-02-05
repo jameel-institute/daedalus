@@ -28,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -218,7 +218,7 @@ between days 30 and 90 after a pandemic use this code.</p>
 <ul>
 <li><p>Passing <code>NA</code> as the <code>name</code> rather than one
 of the pre-canned NPI strategies found in
-[daedalus.data::closure_strategy_data], and</p></li>
+<code><a href="https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html">daedalus.data::closure_strategy_data</a></code>, and</p></li>
 <li><p>Passing a vector of the same length as the number of economic
 sectors (currently 45) to the <code>openness</code> argument.</p></li>
 </ul>
@@ -267,20 +267,20 @@ NPIs that are active over multiple intervals.</p>
 time points. This is of most use in real-time pandemic response
 use-cases where users are seeking to model policy-makers’ options or
 decisions about imposing and lifting restrictions.</p>
-<p><em>daedalus</em> offers the [daedalus_timed_npi()] function to
-specify time-limited NPIs that are not responsive to model state, and
-which allow multiple closure periods.</p>
-<p>[daedalus_timed_npi()] also allows specifying a different openness
-coefficient vector (i.e., stringency of economic closures) for each
-closure period, which allows responses to be ramped up and down — an
-expected use-case in real-time modelling.</p>
+<p><em>daedalus</em> offers the <code><a href="../reference/class_npi.html">daedalus_timed_npi()</a></code>
+function to specify time-limited NPIs that are not responsive to model
+state, and which allow multiple closure periods.</p>
+<p><code><a href="../reference/class_npi.html">daedalus_timed_npi()</a></code> also allows specifying a different
+openness coefficient vector (i.e., stringency of economic closures) for
+each closure period, which allows responses to be ramped up and down —
+an expected use-case in real-time modelling.</p>
 <p>Repeated time-limited NPIs are created by passing vectors to
 <code>start_time</code> and <code>end_time</code> in
-<code><a href="../reference/class_npi.html">daedalus_timed_npi()</a></code>. The <span class="math inline">\(i-th\)</span> element of each vector gives the
+<code><a href="../reference/class_npi.html">daedalus_timed_npi()</a></code>. The <span class="math inline">\(i\)</span>-th element of each vector gives the
 start and end time of a each closure period.</p>
 <p><strong>Note that:</strong></p>
 <ol style="list-style-type: decimal">
-<li><p>[daedalus_timed_npi()] creates a
+<li><p><code><a href="../reference/class_npi.html">daedalus_timed_npi()</a></code> creates a
 <code>&lt;daedalus_npi&gt;</code> object, just with different event
 triggers;</p></li>
 <li><p>These objects do not trigger or end on model state;</p></li>
@@ -291,7 +291,7 @@ regime can be active at any time;</p></li>
 <li><p>Sequential time-limited responses cannot be created by tweaking
 pre-canned responses, but the openness coefficients may be used by
 accessing them manually from
-[daedalus.data::closure_strategy_data].</p></li>
+<code><a href="https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html">daedalus.data::closure_strategy_data</a></code>.</p></li>
 </ol>
 <p>The example below show ramping responses up and down by switching
 from school closures to an elimination strategy and back again.</p>
@@ -325,8 +325,22 @@ from school closures to an elimination strategy and back again.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># examine event times</span></span>
-<span><span class="va">output</span><span class="op">$</span><span class="va">event_data</span></span>
-<span><span class="co">#&gt; NULL</span></span></code></pre></div>
+<span><span class="va">output</span><span class="op">$</span><span class="va">response_data</span><span class="op">$</span><span class="va">npi_info</span></span>
+<span><span class="co">#&gt; $npi_times_start</span></span>
+<span><span class="co">#&gt; [1] 30 60 90</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $npi_times_end</span></span>
+<span><span class="co">#&gt; [1]  59  89 120</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $npi_durations</span></span>
+<span><span class="co">#&gt; [1] 29 29 30</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $npi_periods</span></span>
+<span><span class="co">#&gt;  [1]  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44  45  46  47  48</span></span>
+<span><span class="co">#&gt; [20]  49  50  51  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67</span></span>
+<span><span class="co">#&gt; [39]  68  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86</span></span>
+<span><span class="co">#&gt; [58]  87  88  89  90  91  92  93  94  95  96  97  98  99 100 101 102 103 104 105</span></span>
+<span><span class="co">#&gt; [77] 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

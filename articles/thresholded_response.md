@@ -19,7 +19,8 @@ canada$hospital_capacity <- response_threshold
 data_baseline <- daedalus(
   canada,
   daedalus_infection("influenza_1918", rho = 0.0), # prevent re-infection
-  response_strategy = "none"
+  response_strategy = "none",
+  time_end = 200
 )
 
 # get the model timeseries
@@ -32,7 +33,8 @@ data_baseline$scenario <- "no_response"
 data_intervention <- daedalus(
   canada,
   daedalus_infection("influenza_1918", rho = 0.0), # prevent re-infection
-  response_strategy = "elimination"
+  response_strategy = "elimination",
+  time_end = 200
 )
 
 # get the model timeseries
@@ -61,8 +63,9 @@ data <- rbindlist(list(data_baseline, data_intervention))
 
 ``` r
 # sum over age and econ strata as total is more relevant
-data <- data[compartment == "hospitalised", .(value = sum(value)),
-  by = c("time", "compartment", "scenario")
+data <- data[
+  compartment %like% "hospitalised", .(value = sum(value)),
+  by = c("time", "scenario")
 ]
 
 # check actual outcomes of interest - these don't look as good
@@ -76,7 +79,3 @@ ggplot(data) +
 ```
 
 ![](thresholded_response_files/figure-html/plot_data-1.png)
-
-**Note that** the effect of response strategies that introduce closures
-does not appear to be very large — this is because the full range of
-interventions associated with each strategy is yet to be implemented.

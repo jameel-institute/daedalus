@@ -126,7 +126,9 @@ Creating a time-limited NPI with a single active duration using
 requires:
 
 - Passing `NA` as the `name` rather than one of the pre-canned NPI
-  strategies found in \[daedalus.data::closure_strategy_data\], and
+  strategies found in
+  [`daedalus.data::closure_strategy_data`](https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html),
+  and
 
 - Passing a vector of the same length as the number of economic sectors
   (currently 45) to the `openness` argument.
@@ -181,25 +183,28 @@ points. This is of most use in real-time pandemic response use-cases
 where users are seeking to model policy-makers’ options or decisions
 about imposing and lifting restrictions.
 
-*daedalus* offers the \[daedalus_timed_npi()\] function to specify
-time-limited NPIs that are not responsive to model state, and which
-allow multiple closure periods.
+*daedalus* offers the
+[`daedalus_timed_npi()`](https://jameel-institute.github.io/daedalus/reference/class_npi.md)
+function to specify time-limited NPIs that are not responsive to model
+state, and which allow multiple closure periods.
 
-\[daedalus_timed_npi()\] also allows specifying a different openness
-coefficient vector (i.e., stringency of economic closures) for each
-closure period, which allows responses to be ramped up and down — an
-expected use-case in real-time modelling.
+[`daedalus_timed_npi()`](https://jameel-institute.github.io/daedalus/reference/class_npi.md)
+also allows specifying a different openness coefficient vector (i.e.,
+stringency of economic closures) for each closure period, which allows
+responses to be ramped up and down — an expected use-case in real-time
+modelling.
 
 Repeated time-limited NPIs are created by passing vectors to
 `start_time` and `end_time` in
 [`daedalus_timed_npi()`](https://jameel-institute.github.io/daedalus/reference/class_npi.md).
-The \\i-th\\ element of each vector gives the start and end time of a
+The \\i\\-th element of each vector gives the start and end time of a
 each closure period.
 
 **Note that:**
 
-1.  \[daedalus_timed_npi()\] creates a `<daedalus_npi>` object, just
-    with different event triggers;
+1.  [`daedalus_timed_npi()`](https://jameel-institute.github.io/daedalus/reference/class_npi.md)
+    creates a `<daedalus_npi>` object, just with different event
+    triggers;
 
 2.  These objects do not trigger or end on model state;
 
@@ -212,7 +217,7 @@ each closure period.
 5.  Sequential time-limited responses cannot be created by tweaking
     pre-canned responses, but the openness coefficients may be used by
     accessing them manually from
-    \[daedalus.data::closure_strategy_data\].
+    [`daedalus.data::closure_strategy_data`](https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html).
 
 The example below show ramping responses up and down by switching from
 school closures to an elimination strategy and back again.
@@ -247,6 +252,20 @@ output <- daedalus(
 )
 
 # examine event times
-output$event_data
-#> NULL
+output$response_data$npi_info
+#> $npi_times_start
+#> [1] 30 60 90
+#> 
+#> $npi_times_end
+#> [1]  59  89 120
+#> 
+#> $npi_durations
+#> [1] 29 29 30
+#> 
+#> $npi_periods
+#>  [1]  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44  45  46  47  48
+#> [20]  49  50  51  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67
+#> [39]  68  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86
+#> [58]  87  88  89  90  91  92  93  94  95  96  97  98  99 100 101 102 103 104 105
+#> [77] 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120
 ```

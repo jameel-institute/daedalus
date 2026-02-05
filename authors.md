@@ -32,14 +32,14 @@ Source:
 [`DESCRIPTION`](https://github.com/jameel-institute/daedalus/blob/main/DESCRIPTION)
 
 Gupte P, Doohan P, Johnson R, Perez-Guzman P, FitzJohn R, Russell E,
-Mears D, Hauck K (2025). *daedalus: Model Health, Social, and Economic
-Costs of a Pandemic*. R package version 0.3.2,
+Mears D, Hauck K (2026). *daedalus: Model Health, Social, and Economic
+Costs of a Pandemic*. R package version 0.3.3,
 <https://github.com/jameel-institute/daedalus>.
 
     @Manual{,
       title = {daedalus: Model Health, Social, and Economic Costs of a Pandemic},
       author = {Pratik Gupte and Patrick Doohan and Robert Johnson and Pablo Perez-Guzman and Rich FitzJohn and Emma Russell and David Mears and Katharina Hauck},
-      year = {2025},
-      note = {R package version 0.3.2},
+      year = {2026},
+      note = {R package version 0.3.3},
       url = {https://github.com/jameel-institute/daedalus},
     }

@@ -59,7 +59,7 @@ Run the model for the U.K. with the infection list passed as
 # run model with 100 infection objects
 output_list <- daedalus_multi_infection(
   "GBR", infection_list,
-  time_end = 100
+  time_end = 200
 )
 
 # get incidence data and plot epi curves
