@@ -11,7 +11,9 @@ uptake_percent_to_number(uptake_limit, country)
 \emph{percentage} of the population that can be vaccinated. When this limit is
 reached, vaccination ends. Passed to the \code{value_state_off} argument in
 \code{\link[=new_daedalus_response]{new_daedalus_response()}} via the class constructor
-\code{new_daedalus_vaccination()}.}
+\code{new_daedalus_vaccination()}. Defaults to \code{NULL} and is optional if \code{name}
+is a pre-canned strategy in which case \code{uptake_limit} is taken from
+pre-canned scenario data.}
 
 \item{country}{A \verb{<daedalus_country>} object or a 2- or 3-character string
 that can be coerced to a \verb{<daedalus_country>} (e.g. \code{"GBR"} for the United

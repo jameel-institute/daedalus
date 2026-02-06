@@ -1,3 +1,7 @@
+# daedalus 0.3.4
+
+This patch version allows users to define custom names for `<daedalus_vaccination>` scenarios. `daedalus_vaccination()` treats all optional parameters as compulsory if a custom name is passed.
+
 # daedalus 0.3.3
 
 This patch version adds some extra GitHub Actions workflows: to auto-generate `README.md` from `README.Rmd`, to auto-update the copyright year in license files, and to track dependency changes.

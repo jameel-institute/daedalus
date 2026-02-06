@@ -22,42 +22,49 @@ is_daedalus_vaccination(x)
 \method{print}{daedalus_vaccination}(x, ...)
 }
 \arguments{
-\item{name}{A vaccination investment scenario name from among
-\link[daedalus.data:vaccine_scenarios]{daedalus.data::vaccination_scenario_names}.
-Selecting an epidemic automatically pulls in vaccination parameters
-associated with the epidemic; these are stored as packaged data in
-\code{daedalus.data::vaccination_scenario_data}.}
+\item{name}{A vaccination investment scenario name as a string.
+Passing a name from among \link[daedalus.data:vaccine_scenarios]{daedalus.data::vaccination_scenario_names} leads
+to any optional parameters (see below) being drawn from pre-canned scenarios.
+These are stored as packaged data in
+\code{daedalus.data::vaccination_scenario_data}.
+
+Passing a name that is not among pre-canned scenarios causes all following
+parameters to become compulsory and non-optional.}
 
 \item{country}{A \verb{<daedalus_country>} object or a 2- or 3-character string
 that can be coerced to a \verb{<daedalus_country>} (e.g. \code{"GBR"} for the United
 Kingdom). Used to determine when vaccination should end.}
 
 \item{start_time}{The number of days after the start of the epidemic that
-vaccination begins. Must be a single number. Defaults to \code{NULL} and the start
+vaccination begins. Must be a single number. Defaults to \code{NULL} and is
+optional if \code{name} is a pre-canned strategy. If so, the start
 time is taken from the vaccination scenarios specified by \code{name}. Passed to
 the \code{time_on} argument in \code{\link[=new_daedalus_response]{new_daedalus_response()}} via the class constructor
 \code{new_daedalus_vaccination()}.}
 
 \item{rate}{A single number for the \emph{percentage} of the total population that
 can be vaccinated each day. This is converted into a proportion automatically
-within \code{\link[=daedalus]{daedalus()}}.}
+within \code{\link[=daedalus]{daedalus()}}. Defaults to \code{NULL} and is optional if \code{name} is a
+pre-canned strategy; if so \code{rate} is taken from pre-canned scenario data.}
 
 \item{uptake_limit}{A single number giving the upper limit for the
 \emph{percentage} of the population that can be vaccinated. When this limit is
 reached, vaccination ends. Passed to the \code{value_state_off} argument in
 \code{\link[=new_daedalus_response]{new_daedalus_response()}} via the class constructor
-\code{new_daedalus_vaccination()}.}
+\code{new_daedalus_vaccination()}. Defaults to \code{NULL} and is optional if \code{name}
+is a pre-canned strategy in which case \code{uptake_limit} is taken from
+pre-canned scenario data.}
 
 \item{efficacy}{A single number in the range \verb{[0, 100]} giving the efficacy
 of vaccination in preventing infection. A value of 0 indicates that
 vaccinated individuals are as susceptible to infection as unvaccinated ones,
 while 100 would indicate completely non-leaky vaccination that completely
-protects against infection.}
+protects against infection. Defaults to 50\%.}
 
 \item{waning_period}{A single number representing the number of days over
 which the average individual wanes out of the vaccinated stratum to the
 unvaccinated stratum. Only individuals in the susceptible and recovered
-compartments can wane out of being vaccinated.}
+compartments can wane out of being vaccinated. Defaults to 180 days.}
 
 \item{x}{An object to be tested or printed as a \verb{<daedalus_vaccination>}.}
 
@@ -80,7 +87,12 @@ restart once individuals wane out of the vaccinated compartment.
 # for no advance vaccine investment in the UK
 daedalus_vaccination("none", "GBR")
 
-# modifying parameters during initialisation
+# modifying parameters for pre-defined strategies during initialisation
 # set daily vaccination rate to 1.5\% of population
 daedalus_vaccination("low", "GBR", rate = 1.5)
+
+# a fully customised strategy
+daedalus_vaccination(
+  "custom", "GBR", start_time = 100, rate = 1.5, uptake_limit = 70
+)
 }
