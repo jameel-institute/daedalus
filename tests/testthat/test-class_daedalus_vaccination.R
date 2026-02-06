@@ -134,11 +134,11 @@ test_that("Vaccination events launch and end as expected", {
 test_that("class <daedalus_vaccination>: errors", {
   expect_error(
     daedalus_vaccination("LOW", "GBR"),
-    "`name` must be one of"
+    "(Assertion)*(failed)"
   )
   expect_error(
     daedalus_vaccination("dummy", "GBR"),
-    "`name` must be one of"
+    "(Assertion)*(failed)"
   )
   expect_error(
     daedalus_vaccination("medium", rate = "0.01", "GBR"),

@@ -50,27 +50,34 @@ uptake_percent_to_number <- function(uptake_limit, country) {
 #' easy parameter access and editing, as well as processing raw vaccination
 #' characteristics for the DAEDALUS model.
 #'
-#' @param name A vaccination investment scenario name from among
-#' [daedalus.data::vaccination_scenario_names].
-#' Selecting an epidemic automatically pulls in vaccination parameters
-#' associated with the epidemic; these are stored as packaged data in
+#' @param name A vaccination investment scenario name as a string.
+#' Passing a name from among [daedalus.data::vaccination_scenario_names] leads
+#' to any optional parameters (see below) being drawn from pre-canned scenarios.
+#' These are stored as packaged data in
 #' `daedalus.data::vaccination_scenario_data`.
 #'
+#' Passing a name that is not among pre-canned scenarios causes all following
+#' parameters to become compulsory and non-optional.
+#'
 #' @param start_time The number of days after the start of the epidemic that
-#' vaccination begins. Must be a single number. Defaults to `NULL` and the start
+#' vaccination begins. Must be a single number. Defaults to `NULL` and is
+#' optional if `name` is a pre-canned strategy. If so, the start
 #' time is taken from the vaccination scenarios specified by `name`. Passed to
 #' the `time_on` argument in [new_daedalus_response()] via the class constructor
 #' `new_daedalus_vaccination()`.
 #'
 #' @param rate A single number for the _percentage_ of the total population that
 #' can be vaccinated each day. This is converted into a proportion automatically
-#' within [daedalus()].
+#' within [daedalus()]. Defaults to `NULL` and is optional if `name` is a
+#' pre-canned strategy; if so `rate` is taken from pre-canned scenario data.
 #'
 #' @param uptake_limit A single number giving the upper limit for the
 #' _percentage_ of the population that can be vaccinated. When this limit is
 #' reached, vaccination ends. Passed to the `value_state_off` argument in
 #' [new_daedalus_response()] via the class constructor
-#' `new_daedalus_vaccination()`.
+#' `new_daedalus_vaccination()`. Defaults to `NULL` and is optional if `name`
+#' is a pre-canned strategy in which case `uptake_limit` is taken from
+#' pre-canned scenario data.
 #'
 #' @param country A `<daedalus_country>` object or a 2- or 3-character string
 #' that can be coerced to a `<daedalus_country>` (e.g. `"GBR"` for the United
@@ -80,12 +87,12 @@ uptake_percent_to_number <- function(uptake_limit, country) {
 #' of vaccination in preventing infection. A value of 0 indicates that
 #' vaccinated individuals are as susceptible to infection as unvaccinated ones,
 #' while 100 would indicate completely non-leaky vaccination that completely
-#' protects against infection.
+#' protects against infection. Defaults to 50%.
 #'
 #' @param waning_period A single number representing the number of days over
 #' which the average individual wanes out of the vaccinated stratum to the
 #' unvaccinated stratum. Only individuals in the susceptible and recovered
-#' compartments can wane out of being vaccinated.
+#' compartments can wane out of being vaccinated. Defaults to 180 days.
 #'
 #' @param x An object to be tested or printed as a `<daedalus_vaccination>`.
 #'
@@ -103,9 +110,14 @@ uptake_percent_to_number <- function(uptake_limit, country) {
 #' # for no advance vaccine investment in the UK
 #' daedalus_vaccination("none", "GBR")
 #'
-#' # modifying parameters during initialisation
+#' # modifying parameters for pre-defined strategies during initialisation
 #' # set daily vaccination rate to 1.5% of population
 #' daedalus_vaccination("low", "GBR", rate = 1.5)
+#'
+#' # a fully customised strategy
+#' daedalus_vaccination(
+#'   "custom", "GBR", start_time = 100, rate = 1.5, uptake_limit = 70
+#' )
 daedalus_vaccination <- function(
   name,
   country,
@@ -117,21 +129,36 @@ daedalus_vaccination <- function(
 ) {
   # input checking -- currently we do not allow flexibility in
   # naming vaccine scenarios
-  name <- rlang::arg_match(name, daedalus.data::vaccination_scenario_names)
+  # name <- rlang::arg_match(name, daedalus.data::vaccination_scenario_names)
+  is_precanned <- checkmate::test_subset(
+    name,
+    daedalus.data::vaccination_scenario_names
+  )
+  nulls_ok <- FALSE
+  if (is_precanned) {
+    params <- daedalus.data::vaccination_scenario_data[[name]]
+    nulls_ok <- is_precanned
+  }
 
-  checkmate::assert_integerish(start_time, lower = 0, null.ok = TRUE)
+  checkmate::assert_integerish(start_time, lower = 0, null.ok = nulls_ok)
 
   # allow conversion of an uptake limit from a percentage to an absolute number
   country <- daedalus_country(country)
 
   checkmate::assert_number(
     rate,
-    null.ok = TRUE,
+    null.ok = nulls_ok,
     finite = TRUE,
     lower = 0,
     upper = 10 # arbitrary upper-limit on daily vaccination rate
   )
-  checkmate::assert_number(efficacy, lower = 0, upper = 100, null.ok = TRUE)
+  checkmate::assert_number(
+    uptake_limit,
+    lower = 0,
+    upper = 100,
+    null.ok = nulls_ok
+  )
+  checkmate::assert_number(efficacy, lower = 0, upper = 100, null.ok = nulls_ok)
 
   # filter out NULLs for optional parameters
   user_params <- list(
@@ -143,8 +170,11 @@ daedalus_vaccination <- function(
   )
   user_params <- Filter(Negate(is.null), user_params)
 
-  params <- daedalus.data::vaccination_scenario_data[[name]]
-  params[names(user_params)] <- user_params
+  if (is_precanned) {
+    params[names(user_params)] <- user_params
+  } else {
+    params <- user_params
+  }
 
   x <- new_daedalus_vaccination(
     params,
