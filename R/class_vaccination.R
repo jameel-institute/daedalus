@@ -129,7 +129,6 @@ daedalus_vaccination <- function(
 ) {
   # input checking -- currently we do not allow flexibility in
   # naming vaccine scenarios
-  # name <- rlang::arg_match(name, daedalus.data::vaccination_scenario_names)
   is_precanned <- checkmate::test_subset(
     name,
     daedalus.data::vaccination_scenario_names
