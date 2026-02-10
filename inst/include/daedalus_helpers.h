@@ -148,23 +148,23 @@ inline const double get_leading_eigenvalue(const Eigen::MatrixXd &m) {
 inline const Eigen::ArrayXd get_comp_age(
     const daedalus::types::TensorAry<double> &state,
     const size_t &idx_compartment) {
-  daedalus::types::TensorVec<double> t_x_comp =
+  // Sum across vaccination strata to get per-group totals
+  const daedalus::types::TensorVec<double> t_x_comp =
       state.chip(idx_compartment, daedalus::constants::i_COMPS)
           .sum(Eigen::array<Eigen::Index, 1>{1});
 
-  Eigen::ArrayXd comp(t_x_comp.dimension(0));
-  Eigen::ArrayXd comp_age(daedalus::constants::DDL_N_AGE_GROUPS);
+  // Map tensor data directly to avoid allocation and element-wise copying
+  const Eigen::Map<const Eigen::ArrayXd> comp(t_x_comp.data(),
+                                              t_x_comp.dimension(0));
 
-  for (size_t i = 0; i < t_x_comp.size(); i++) {
-    comp(i) = t_x_comp(i);
-  }
+  // Sum economic sector groups into working-age group
   const double tail_sum =
       comp.tail(daedalus::constants::DDL_N_ECON_GROUPS).sum();
 
-  comp_age(0) = comp(0);
-  comp_age(1) = comp(1);
-  comp_age(2) = comp(2) + tail_sum;
-  comp_age(3) = comp(3);
+  // Build result: age groups 0, 1, 3 directly; age group 2 includes econ
+  // sectors
+  Eigen::ArrayXd comp_age(daedalus::constants::DDL_N_AGE_GROUPS);
+  comp_age << comp(0), comp(1), comp(2) + tail_sum, comp(3);
 
   return comp_age;
 }
