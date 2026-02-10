@@ -48,6 +48,10 @@ using TensorVec = daedalus::types::TensorVec<double>;
 using TensorMat = daedalus::types::TensorMat<double>;
 using TensorAry = daedalus::types::TensorAry<double>;
 
+// Dimension array types for slice/reshape operations
+using dim_array_1 = Eigen::array<Eigen::Index, 1>;
+using dim_array_2 = Eigen::array<Eigen::Index, 2>;
+
 // [[dust2::class(daedalus_ode)]]
 // [[dust2::time_type(mixed)]]
 // [[dust2::parameter(beta, constant = TRUE)]]
@@ -106,6 +110,12 @@ class daedalus_ode {
 
     // event objects
     daedalus::events::response npi, vaccination, hosp_cap_exceeded;
+
+    // precomputed slice/reshape dimensions
+    const dim_array_1 dim_sum_vax;
+    const dim_array_2 dim_reshape_strata, slice_workers_offset,
+        slice_workers_extent, slice_workers_extent_vax, slice_age_offset,
+        slice_age_extent;
   };
 
   /// @brief Intermediate data.
@@ -317,6 +327,20 @@ class daedalus_ode {
     daedalus::events::response hosp_cap_exceeded =
         daedalus::inputs::read_response(pars, "hosp_overflow");
 
+    // PRECOMPUTED SLICE/RESHAPE DIMENSIONS
+    const dim_array_1 dim_sum_vax = {1};
+    const dim_array_2 dim_reshape_strata = {static_cast<Eigen::Index>(n_strata),
+                                            1};
+    const dim_array_2 slice_workers_offset = {
+        static_cast<Eigen::Index>(n_age_groups), 0};
+    const dim_array_2 slice_workers_extent = {
+        static_cast<Eigen::Index>(n_econ_groups), 1};
+    const dim_array_2 slice_workers_extent_vax = {
+        static_cast<Eigen::Index>(n_econ_groups), N_VAX_STRATA};
+    const dim_array_2 slice_age_offset = {0, 0};
+    const dim_array_2 slice_age_extent = {
+        static_cast<Eigen::Index>(n_age_groups), 1};
+
     // clang-format off
     return shared_state{
         beta, sigma, p_sigma, epsilon, rho,
@@ -329,7 +353,10 @@ class daedalus_ode {
         openness,
         behav_enum, behav_fn,
         i_ipr, i_npi_flag, i_vax_flag, i_behav_flag, i_hosp_overflow_flag,
-        npi, vaccination, hosp_cap_exceeded
+        npi, vaccination, hosp_cap_exceeded,
+        dim_sum_vax, dim_reshape_strata,
+        slice_workers_offset, slice_workers_extent, slice_workers_extent_vax,
+        slice_age_offset, slice_age_extent
     };
     // clang-format on
   }
@@ -423,8 +450,8 @@ class daedalus_ode {
     // need rowsums for FOI
     internal.t_infectious =
         (t_x.chip(iIs, i_COMPS) + (t_x.chip(iIa, i_COMPS) * shared.epsilon))
-            .sum(Eigen::array<Eigen::Index, 1>{1})
-            .reshape(Eigen::array<Eigen::Index, 2>{n_strata, 1});
+            .sum(shared.dim_sum_vax)
+            .reshape(shared.dim_reshape_strata);
 
     internal.t_comm_inf_contacts =
         shared.cm.contract(internal.t_infectious, product_dims)
@@ -435,9 +462,8 @@ class daedalus_ode {
     // calculate C * I_w and C * I_cons for a n_econ_groups-length array
     internal.t_work_inf_contacts =
         shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, 1)
-        internal.t_infectious.slice(
-            Eigen::array<Eigen::Index, 2>{n_strata - n_econ_groups, 0},
-            Eigen::array<Eigen::Index, 2>{n_econ_groups, 1});
+        internal.t_infectious.slice(shared.slice_workers_offset,
+                                    shared.slice_workers_extent);
 
     const size_t id_npi_regime = state[shared.i_npi_flag];
 
@@ -446,8 +472,7 @@ class daedalus_ode {
                           shared.openness[id_npi_regime];
 
     internal.t_comm_inf_age = internal.t_infectious.slice(
-        Eigen::array<Eigen::Index, 2>{0, 0},
-        Eigen::array<Eigen::Index, 2>{n_age_groups, 1});
+        shared.slice_age_offset, shared.slice_age_extent);
 
     internal.t_cw_inf_contacts =
         shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
@@ -459,10 +484,9 @@ class daedalus_ode {
     internal.sToE =
         t_x.chip(iS, i_COMPS) * internal.t_foi_comm;  // dims (n_strata, 2)
 
-    internal.susc_workers =
-        t_x.chip(iS, i_COMPS)
-            .slice(Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
-                   Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA});
+    internal.susc_workers = t_x.chip(iS, i_COMPS)
+                                .slice(shared.slice_workers_offset,
+                                       shared.slice_workers_extent_vax);
 
     internal.p_susc =
         daedalus::helpers::get_comp_age(t_x, daedalus::constants::iS) /
@@ -472,9 +496,8 @@ class daedalus_ode {
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
     // NOTE: broadcasting for element-wise tensor mult
-    internal.sToE.slice(
-        Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
-        Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA}) +=
+    internal.sToE.slice(shared.slice_workers_offset,
+                        shared.slice_workers_extent_vax) +=
         (internal.susc_workers * (internal.t_foi_work.broadcast(bcast) +
                                   internal.t_foi_cw.broadcast(bcast)));
 
