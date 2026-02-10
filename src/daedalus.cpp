@@ -128,6 +128,8 @@ class daedalus_ode {
         isToHd, hrToR, hdToD, rToS;
     // for Rt calculations
     Eigen::ArrayXd p_susc;
+    // power iteration vector for eigenvalue calculation (warm-started)
+    Eigen::VectorXd eigenvec;
   };
 
   static internal_state build_internal(const shared_state &shared) {
@@ -153,6 +155,10 @@ class daedalus_ode {
     Eigen::ArrayXd p_susc(shared.n_age_groups);
     p_susc.setConstant(1.0);
 
+    // Initialize eigenvector for power iteration with uniform values
+    Eigen::VectorXd eigenvec(shared.n_age_groups);
+    eigenvec.setConstant(1.0 / std::sqrt(static_cast<double>(shared.n_age_groups)));
+
     // clang-format off
     return internal_state{
       t_infectious, t_comm_inf_contacts, t_foi_comm, alt_new_infections,
@@ -160,7 +166,8 @@ class daedalus_ode {
       t_work_inf_contacts, t_foi_work, t_cw_inf_contacts, t_foi_cw,
       susc_workers,
       sToE, eToIs, eToIa, isToR, iaToR, isToHr, isToHd, hrToR, hdToD, rToS,
-      p_susc
+      p_susc,
+      eigenvec
     };
     // clang-format on
   }
@@ -584,11 +591,12 @@ class daedalus_ode {
     // cppcheck-suppress-end constParameterReference
     // NOLINTEND
 
-    // calculate and log Rt
+    // calculate and log Rt using power iteration with warm-started eigenvector
     const Eigen::MatrixXd ngm_p_susc =
         shared.ngm.array().colwise() * internal.p_susc;
 
-    double rt = daedalus::helpers::get_leading_eigenvalue(ngm_p_susc);
+    double rt = daedalus::helpers::get_leading_eigenvalue(ngm_p_susc,
+                                                          internal.eigenvec);
     state_next[shared.i_ipr] = rt;
 
     const bool is_epidemic_growing = rt > 1.0;

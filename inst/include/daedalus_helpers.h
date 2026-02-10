@@ -125,20 +125,23 @@ inline double scale_nu(
   return scaled_nu;
 }
 
-/// @brief Get the largest real eigenvalue of a matrix.
+/// @brief Get the largest eigenvalue of a matrix using power iteration.
+/// More efficient than full eigenvalue decomposition when only the leading
+/// eigenvalue is needed. Uses warm-starting from previous iteration vector.
 /// @param m A matrix.
-/// @return The leading eigenvalue.
-inline const double get_leading_eigenvalue(const Eigen::MatrixXd &m) {
-  Eigen::VectorXcd eigvals = m.eigenvalues();
-
-  double max_eigval = 0.0;  // could be lower
-  for (size_t i = 0; i < eigvals.size(); i++) {
-    if (eigvals[i].imag() == 0 && eigvals[i].real() > max_eigval) {
-      max_eigval = eigvals[i].real();
-    }
+/// @param v Iteration vector, modified in place for warm-starting next call.
+/// @param n_iter Number of power iterations (default 10).
+/// @return The leading eigenvalue (by magnitude).
+inline double get_leading_eigenvalue(const Eigen::MatrixXd &m,
+                                     Eigen::VectorXd &v,
+                                     const int n_iter = 10) {
+  // Power iteration: repeatedly multiply by matrix and normalize
+  for (int i = 0; i < n_iter; ++i) {
+    v = m * v;
+    v.normalize();
   }
-
-  return max_eigval;
+  // Rayleigh quotient gives the eigenvalue
+  return v.dot(m * v);
 }
 
 /// @brief Count the number of individuals in a compartment by age.
