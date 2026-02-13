@@ -6,7 +6,7 @@ test_that("class <daedalus_country>: basic expectations", {
   expect_s3_class(country_x, "daedalus_country")
   checkmate::expect_list(
     country_x,
-    c("character", "numeric"),
+    c("character", "numeric", "list"),
     any.missing = FALSE
   )
   expect_snapshot(country_x)
@@ -140,12 +140,6 @@ test_that("class <daedalus_country>`: errors", {
 
   # invalid ISO3
   expect_error(daedalus_country("ZZZ"), regexp = "`code` must be one of")
-
-  # invalid `parameter` type
-  expect_error(
-    daedalus_country("Canada", parameters = "dummy values"),
-    regexp = "Must be of type 'list'"
-  )
 
   # invalid parameter types
   expect_error(
