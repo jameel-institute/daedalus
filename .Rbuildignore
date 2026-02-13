@@ -26,6 +26,7 @@
 ^CITATION\.cff$
 ^codecov\.yml$
 ^scratch*
+^profiling*
 ^data-raw$
 ^doc$
 ^Meta$

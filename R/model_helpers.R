@@ -37,7 +37,7 @@ make_conmat_large <- function(country, scaling = c("demography", "none")) {
 
   cm_nrow <- n_strata
   cm <- matrix(NA_real_, cm_nrow, cm_nrow)
-  cm[i_AGE_GROUPS, i_AGE_GROUPS] <- country$contact_matrix
+  cm[i_AGE_GROUPS, i_AGE_GROUPS] <- country$contact_matrix[[1L]]
   cm[i_ECON_SECTORS, i_AGE_GROUPS] <- matrix(
     cm[i_WORKING_AGE, i_AGE_GROUPS],
     N_ECON_SECTORS,
@@ -69,7 +69,7 @@ make_consumer_contacts <- function(country) {
 #' @name prepare_contacts
 make_full_contacts <- function(country) {
   # add workforce weighted workplace contacts to the age-based contact matrix
-  cm <- country$contact_matrix
+  cm <- country$contact_matrix[[1L]]
   cm[i_WORKING_AGE, i_WORKING_AGE] <- cm[i_WORKING_AGE, i_WORKING_AGE] +
     stats::weighted.mean(country$contacts_workplace, country$workers)
   cm[i_WORKING_AGE, ] <- cm[i_WORKING_AGE, ] +

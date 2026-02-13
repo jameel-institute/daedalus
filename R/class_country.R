@@ -77,11 +77,7 @@ new_daedalus_country <- function(name, parameters) {
 #' @export
 daedalus_country <- function(
   country,
-  parameters = list(
-    contact_matrix = NULL,
-    contacts_workplace = NULL,
-    contacts_consumer_worker = NULL
-  ),
+  contact_matrix = NULL,
   group_working_age = NULL
 ) {
   # quick return as is if class is provided
@@ -92,87 +88,42 @@ daedalus_country <- function(
   # input checking
   name <- country_name_from_arg(country)
   # check list but allow missing and NULL
-  checkmate::assert_list(parameters, c("numeric", "matrix", "NULL"))
-  # NOTE: not allowed to change demography, worker distribution, or
-  # contacts between economic sectors (modelled as zero)
-  allowed_params <- c(
-    "contact_matrix",
-    "contacts_workplace",
-    "contacts_consumer_worker"
-  )
-  has_good_names <- checkmate::test_subset(
-    names(parameters),
-    allowed_params,
-    empty.ok = TRUE
-  )
-  if (!has_good_names) {
+  is_good_cm <- checkmate::test_list(
+    contact_matrix,
+    "matrix",
+    null.ok = TRUE
+  ) ||
+    checkmate::test_matrix(contact_matrix, mode = "numeric")
+
+  if (!is_good_cm) {
     cli::cli_abort(
-      "Found unexpected values in `parameters`; the only allowed list
-      elements are: {.str {allowed_params}}"
+      "Got {.code contact_matrix} as a {.cls {class(contact_matrix)}} \\
+      but expected one of {.cls matrix}, {.cls list} or {.code NULL}."
     )
   }
 
   # check user-passed parameters
-  is_good_contact_matrix <- checkmate::test_matrix(
-    parameters$contact_matrix,
-    "numeric",
-    any.missing = FALSE,
-    ncols = N_AGE_GROUPS,
-    nrows = N_AGE_GROUPS,
-    null.ok = TRUE
-  ) &&
-    checkmate::test_numeric(
-      parameters$contact_matrix,
-      lower = 0,
-      finite = TRUE,
-      null.ok = TRUE
-    )
-
-  is_good_contacts_workplace <- checkmate::test_numeric(
-    parameters$contacts_workplace,
-    lower = 0,
-    finite = TRUE,
-    any.missing = FALSE,
-    len = N_ECON_SECTORS,
-    null.ok = TRUE
-  )
-
-  is_good_contacts_cons_worker <- checkmate::test_matrix(
-    parameters$contacts_consumer_worker,
-    "numeric",
-    any.missing = FALSE,
-    nrows = N_ECON_SECTORS,
-    ncols = N_AGE_GROUPS,
-    null.ok = TRUE
-  ) &&
-    checkmate::test_numeric(
-      parameters$contacts_consumer_worker,
-      lower = 0,
-      finite = TRUE,
-      null.ok = TRUE
-    )
-
-  if (!is_good_contact_matrix) {
-    cli::cli_abort(c(
-      "Expected `parameters$contact_matrix` to be a 4x4 numeric matrix with
-         positive, finite values.",
-      i = "The number of rows and colums is the number of age groups."
-    ))
-  }
-  if (!is_good_contacts_workplace) {
-    cli::cli_abort(c(
-      "Expected `parameters$contacts_workplace` to be a 45-element numeric
-        vector with positive, finite values.",
-      i = "The number of elements is the number of economic sectors."
-    ))
-  }
-  if (!is_good_contacts_cons_worker) {
-    cli::cli_abort(c(
-      "Expected `parameters$contacts_consumer_worker` to be a 45x4 numeric
-        matrix with positive, finite values.",
-      i = "The number of rows is the number of economic sectors and the number
-        of columns is the number of age groups."
-    ))
+  if (!is.null(contact_matrix) || !is_nulls_list(contact_matrix)) {
+    # TODO: add new checks on CM, which may be a single matrix or a list of Ms
+    # is_good_contact_matrix <- checkmate::test_matrix(
+    #   contact_matrix,
+    #   "numeric",
+    #   any.missing = FALSE,
+    #   ncols = N_AGE_GROUPS,
+    #   nrows = N_AGE_GROUPS
+    # ) &&
+    #   checkmate::test_numeric(
+    #     contact_matrix,
+    #     lower = 0,
+    #     finite = TRUE
+    #   )
+    # if (!is_good_contact_matrix) {
+    #   cli::cli_abort(c(
+    #     "Expected `contact_matrix` to be a 4x4 numeric matrix with
+    #        positive, finite values.",
+    #     i = "The number of rows and colums is the number of age groups."
+    #   ))
+    # }
   }
 
   # substitute defaults with non-NULL elements of parameters
@@ -205,6 +156,16 @@ daedalus_country <- function(
     )
   }
 
+  # assign contact matrix if not NULL
+  # TODO: add check for list of NULLs passed
+  if (!is.null(contact_matrix)) {
+    params$contact_matrix <- contact_matrix
+  } else {
+    params$contact_matrix <- list(
+      total = params$contact_matrix
+    )
+  }
+
   params <- c(
     params,
     list(
@@ -221,8 +182,6 @@ daedalus_country <- function(
       group_working_age = group_working_age
     )
   )
-  parameters <- Filter(parameters, f = function(x) !is.null(x))
-  params[names(parameters)] <- parameters
 
   # add total number of groups
   params["n_strata"] <- length(params$demography) + length(params$workers)
@@ -303,14 +262,14 @@ validate_daedalus_country <- function(x) {
         lower = 0,
         any.missing = FALSE, len = N_ECON_SECTORS, finite = TRUE
       ),
-    "Country `contact_matrix` must be a 4x4 numeric matrix of positive values" =
-      checkmate::test_matrix(
-        x$contact_matrix, "numeric",
-        any.missing = FALSE, ncols = N_AGE_GROUPS, nrows = N_AGE_GROUPS
-      ) && checkmate::test_numeric(
-        x$contact_matrix,
-        lower = 0, finite = TRUE
-      ),
+    # "Country `contact_matrix` must be a 4x4 numeric matrix of positive values" =
+    #   checkmate::test_matrix(
+    #     x$contact_matrix, "numeric",
+    #     any.missing = FALSE, ncols = N_AGE_GROUPS, nrows = N_AGE_GROUPS
+    #   ) && checkmate::test_numeric(
+    #     x$contact_matrix,
+    #     lower = 0, finite = TRUE
+    #   ),
     "Country `contacts_workplace` must be a 45-length positive numeric vector" =
       checkmate::test_numeric(
         x$contacts_workplace,
@@ -436,7 +395,12 @@ get_data.daedalus_country <- function(x, to_get, ...) {
     ))
   }
 
-  x[[to_get]]
+  # NOTE: temporary to allow passing multiple settings
+  if (to_get == "contact_matrix") {
+    first(x[[to_get]])
+  } else {
+    x[[to_get]]
+  }
 }
 
 #' @name set_data
@@ -511,4 +475,11 @@ validate_country_input <- function(x) {
   } else {
     daedalus_country(x)
   }
+}
+
+#' @param x A list to be tested
+#'
+#' @keywords internal
+is_nulls_list <- function(x) {
+  checkmate::test_list(x, types = "NULL")
 }
