@@ -97,8 +97,12 @@ daedalus_country <- function(
 
   if (!is_good_cm) {
     cli::cli_abort(
-      "Got {.code contact_matrix} as a {.cls {class(contact_matrix)}} \\
-      but expected one of {.cls matrix}, {.cls list} or {.code NULL}."
+      c(
+        "Got {.code contact_matrix} as a {.cls {class(contact_matrix)}} \\
+        but expected one of {.cls matrix}, {.cls list} of `matrix` or \\
+        {.code NULL}.",
+        i = "If `contact_matrix` is a list, check the list contents classes."
+      )
     )
   }
 
@@ -380,8 +384,17 @@ format.daedalus_country <- function(x, ...) {
 }
 
 #' @name get_data
+#'
+#' @param setting Optional string for a contact setting. Defaults to
+#' the first provided contact matrix if multiple are present.
+#'
 #' @export
-get_data.daedalus_country <- function(x, to_get, ...) {
+get_data.daedalus_country <- function(
+  x,
+  to_get,
+  setting = c("default", "all"),
+  ...
+) {
   chkDots(...)
   validate_daedalus_country(x)
 
@@ -397,40 +410,23 @@ get_data.daedalus_country <- function(x, to_get, ...) {
 
   # NOTE: temporary to allow passing multiple settings
   if (to_get == "contact_matrix") {
-    first(x[[to_get]])
+    y <- x[[to_get]]
+
+    # NOTE: this is hacky because arg_match does not auto-pick the first
+    # element of a vector as the arg value when options are passed
+    # explicitly. I want to be able to show the special options in docs,
+    # but also allow other options
+    setting <- first(setting)
+    setting <- rlang::arg_match(
+      setting,
+      c(setting, names(y))
+    )
+
+    switch(setting, default = first(y), all = y, y[[setting]])
   } else {
     x[[to_get]]
   }
 }
-
-#' @name set_data
-#' @export
-set_data.daedalus_country <- function(x, ...) {
-  to_set <- rlang::list2(...)
-  checkmate::assert_list(to_set, "numeric", any.missing = FALSE)
-  allowed_params <- c(
-    "contact_matrix",
-    "contacts_workplace",
-    "contacts_consumer_worker"
-  )
-
-  is_good_subs <- checkmate::test_subset(names(to_set), allowed_params)
-  if (!is_good_subs) {
-    cli::cli_abort(c(
-      "Found a disallowed parameter substitution in `set_data()`.",
-      i = "Only the following country parameters can be set using
-        `set_data()`: {.str {allowed_params}}. To set other parameters
-        use standard assignment with `$<-` or `[[<-`."
-    ))
-  }
-
-  x[names(to_set)] <- to_set
-
-  validate_daedalus_country(x)
-
-  x
-}
-
 
 #' Prepare country parameters for model
 #'
@@ -440,7 +436,7 @@ prepare_parameters.daedalus_country <- function(x, ...) {
   chkDots(...)
   validate_daedalus_country(x)
 
-  cm <- make_conmat_large(x)
+  cm <- make_conmat_large(x)[,, 1L]
   cm_work <- make_work_contacts(x)
   cm_cons_work <- make_consumer_contacts(x)
   hospital_capacity <- get_data(x, "hospital_capacity")
