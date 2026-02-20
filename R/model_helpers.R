@@ -14,10 +14,11 @@
 #' @keywords internal
 #' @return
 #'
-#' 1. `make_conmat_large()` returns a 49x49 contact matrix scaled by the size of
-#' demography and economic sector groups, while splitting up community contacts
-#' from working age individuals to other age groups, among the different in
-#' proportion to workers in those sectors.
+#' 1. `make_conmat_large()` returns an array of 49x49xN contact matrices
+#' scaled by the size of demography and economic sector groups, while splitting
+#' up community contacts from working age individuals to other age groups, among
+#' the different age groups in proportion to workers in those sectors.
+#' Each index along the third dimension represents a contact setting.
 #'
 #' 2. `make_work_contacts()` returns a 45-element vector (for the number of
 #' economic sectors) scaled by the number of workers per sector.
@@ -35,24 +36,36 @@ make_conmat_large <- function(country, scaling = c("demography", "none")) {
   p_wk_age_demog <- wk_age_demog / sum(wk_age_demog)
   idx_wk_age <- c(i_WORKING_AGE, i_ECON_SECTORS)
 
-  cm_nrow <- n_strata
-  cm <- matrix(NA_real_, cm_nrow, cm_nrow)
-  cm[i_AGE_GROUPS, i_AGE_GROUPS] <- country$contact_matrix[[1L]]
-  cm[i_ECON_SECTORS, i_AGE_GROUPS] <- matrix(
-    cm[i_WORKING_AGE, i_AGE_GROUPS],
-    N_ECON_SECTORS,
-    N_AGE_GROUPS,
-    byrow = TRUE
-  )
-  cm[, idx_wk_age] <- outer(cm[, i_WORKING_AGE], p_wk_age_demog)
+  cm_provided <- get_data(country, "contact_matrix", "all")
 
   # handle demography vector for correct scaling
   demog[i_WORKING_AGE] <- total_wk_age - total_workers
   demog <- c(demog, workers)
 
-  # scale contacts for C/N, in FOI calculation β(SI/N)*C if required
   scaling <- rlang::arg_match(scaling)
-  switch(scaling, demography = cm %*% diag(1 / demog), none = cm)
+
+  cms <- Map(
+    function(x) {
+      cm <- matrix(NA_real_, n_strata, n_strata)
+      cm[i_AGE_GROUPS, i_AGE_GROUPS] <- x
+      cm[i_ECON_SECTORS, i_AGE_GROUPS] <- matrix(
+        cm[i_WORKING_AGE, i_AGE_GROUPS],
+        N_ECON_SECTORS,
+        N_AGE_GROUPS,
+        byrow = TRUE
+      )
+      cm[, idx_wk_age] <- outer(cm[, i_WORKING_AGE], p_wk_age_demog)
+
+      # scale contacts for C/N, in FOI calculation β(SI/N)*C if required
+      switch(scaling, demography = cm %*% diag(1 / demog), none = cm)
+    },
+    cm_provided
+  )
+
+  array(
+    unlist(cms),
+    c(n_strata, n_strata, length(cms))
+  )
 }
 
 #' @name prepare_contacts
