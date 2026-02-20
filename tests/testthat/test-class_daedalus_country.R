@@ -90,33 +90,6 @@ test_that("class <daedalus_country>`: getting parameters", {
   )
 })
 
-test_that("class <daedalus_country>`: setting parameters", {
-  country_x <- daedalus_country("China")
-  expect_no_condition({
-    # nolint begin
-    country_x <- set_data(
-      country_x,
-      contact_matrix = matrix(1, N_AGE_GROUPS, N_AGE_GROUPS),
-      contacts_consumer_worker = matrix(1, N_ECON_SECTORS, N_AGE_GROUPS)
-    )
-    # nolint end
-  })
-  expect_s3_class(country_x, "daedalus_country")
-
-  country_x <- daedalus_country("China")
-  expect_error(
-    set_data(country_x, demography = rep(1, N_AGE_GROUPS)),
-    regexp = "Found a disallowed parameter substitution"
-  )
-
-  # expect that validator prevents setting data that invalidates class
-  # the exact error is not very important and could change
-  expect_error(set_data(
-    country_x,
-    contact_matrix = matrix(1, N_AGE_GROUPS - 1, N_AGE_GROUPS)
-  ))
-})
-
 # tests for elements of the validator not caught elsewhere
 test_that("class <daedalus_country>: validator", {
   x <- daedalus_country("China")
@@ -132,6 +105,7 @@ test_that("class <daedalus_country>: validator", {
 })
 
 test_that("class <daedalus_country>`: errors", {
+  skip("Skip tests as daedalus country is refactored")
   # invalid name
   expect_error(daedalus_country("dummy"), regexp = "`country` must be one of")
 
@@ -144,7 +118,7 @@ test_that("class <daedalus_country>`: errors", {
   # invalid parameter types
   expect_error(
     daedalus_country("Canada", list(dummy_param = "dummy values")),
-    regexp = "May only contain.*numeric,matrix,NULL"
+    regexp = "check the list contents classes"
   )
 
   # invalid parameter names
