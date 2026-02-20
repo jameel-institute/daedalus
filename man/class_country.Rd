@@ -7,12 +7,7 @@
 \alias{print.daedalus_country}
 \title{Represent countries and territories for DAEDALUS}
 \usage{
-daedalus_country(
-  country,
-  parameters = list(contact_matrix = NULL, contacts_workplace = NULL,
-    contacts_consumer_worker = NULL),
-  group_working_age = NULL
-)
+daedalus_country(country, contact_matrix = NULL, group_working_age = NULL)
 
 is_daedalus_country(x)
 
@@ -23,11 +18,6 @@ is_daedalus_country(x)
 ISO3 code; must be from among \link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso2c} or
 \link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso3c} or \link[daedalus.data:country_names_codes]{daedalus.data::country_names}.}
 
-\item{parameters}{An optional named list of country parameters that are
-allowed to be modified. Currently, users may only pass their own contact
-matrix, workplace contacts, and consumer-worker contact matrix. If these are
-not passed, default values are accessed from stored package data.}
-
 \item{group_working_age}{An optional value for the age-group that is
 considered to be the working-age group. Defaults to \code{3}, which is taken from
 an internal constant.}
@@ -35,6 +25,11 @@ an internal constant.}
 \item{x}{An object of the \verb{<daedalus_country>} class.}
 
 \item{...}{Other parameters passed to \code{\link[=print]{print()}}.}
+
+\item{parameters}{An optional named list of country parameters that are
+allowed to be modified. Currently, users may only pass their own contact
+matrix, workplace contacts, and consumer-worker contact matrix. If these are
+not passed, default values are accessed from stored package data.}
 }
 \value{
 \itemize{
