@@ -10,7 +10,7 @@
 \alias{get_data.daedalus_vaccination}
 \title{Get parameters from DAEDALUS classes}
 \usage{
-\method{get_data}{daedalus_country}(x, to_get, ...)
+\method{get_data}{daedalus_country}(x, to_get, setting = c("default", "all"), ...)
 
 \method{get_data}{daedalus_infection}(x, to_get, ...)
 
@@ -28,6 +28,9 @@ get_data(x, ...)
 \verb{<daedalus_output>}, and \verb{<daedalus_vaccination>} class.}
 
 \item{to_get}{A string giving the name of the element of \code{x} to return.}
+
+\item{setting}{Optional string for a contact setting. Defaults to
+the first provided contact matrix if multiple are present.}
 
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Other arguments to class
 methods. Class methods do not currently support any other arguments.}
