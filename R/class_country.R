@@ -412,14 +412,12 @@ get_data.daedalus_country <- function(
   if (to_get == "contact_matrix") {
     y <- x[[to_get]]
 
-    # NOTE: this is hacky because arg_match does not auto-pick the first
-    # element of a vector as the arg value when options are passed
-    # explicitly. I want to be able to show the special options in docs,
-    # but also allow other options
     setting <- first(setting)
+
+    allowed_settings <- c("default", "all", names(y))
     setting <- rlang::arg_match(
       setting,
-      c(setting, names(y))
+      allowed_settings
     )
 
     switch(setting, default = first(y), all = y, y[[setting]])
@@ -436,7 +434,7 @@ prepare_parameters.daedalus_country <- function(x, ...) {
   chkDots(...)
   validate_daedalus_country(x)
 
-  cm <- make_conmat_large(x)[,, 1L]
+  cm <- make_conmat_large(x)
   cm_work <- make_work_contacts(x)
   cm_cons_work <- make_consumer_contacts(x)
   hospital_capacity <- get_data(x, "hospital_capacity")
@@ -448,6 +446,7 @@ prepare_parameters.daedalus_country <- function(x, ...) {
     cm = cm,
     cm_cons_work = cm_cons_work,
     cm_work = cm_work,
+    n_settings = length(x$contact_matrix), # should be a function?
     n_age_groups = n_age_groups,
     n_econ_groups = n_econ_groups,
     popsize = sum(get_data(x, "demography")),
