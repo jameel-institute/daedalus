@@ -70,6 +70,7 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(n_econ_groups, constant = TRUE, type = "int")]]
 // [[dust2::parameter(popsize, constant = TRUE, type = "int")]]
 // [[dust2::parameter(cm, constant = TRUE)]]
+// [[dust2::parameter(n_settings, constant = TRUE)]]
 // [[dust2::parameter(cm_work, constant = TRUE)]]
 // [[dust2::parameter(cm_cons_work, constant = TRUE)]]
 // [[dust2::parameter(demography, constant = TRUE)]]
@@ -92,7 +93,9 @@ class daedalus_ode {
     const real_type nu, psi;
 
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
-    const TensorMat cm, cm_cons_work, cm_work;
+    const TensorAry cm;
+    const size_t n_settings;
+    const TensorMat cm_cons_work, cm_work;
     Eigen::MatrixXd ngm;
     Eigen::ArrayXd demography;
     const TensorMat susc;
@@ -240,10 +243,12 @@ class daedalus_ode {
     TensorMat hfr = hfr_temp.broadcast(bcast);
 
     // CONTACT PARAMETERS (MATRICES)
-    // contact matrix
-    const std::vector<size_t> vec_cm_dims(2, n_strata);  // for square matrix
-    const dust2::array::dimensions<2> cm_dims(vec_cm_dims.begin());
-    TensorMat cm(n_strata, n_strata);
+    // contact matrix --- now a Tensor for contact settings
+    const size_t n_settings = dust2::r::read_size(pars, "n_settings", 1);
+    const std::vector<size_t> vec_cm_dims = {n_strata, n_strata,
+                                             n_settings};  // for square matrix
+    const dust2::array::dimensions<3> cm_dims(vec_cm_dims.begin());
+    TensorAry cm(n_strata, n_strata, n_settings);
     dust2::r::read_real_array(pars, cm_dims, cm.data(), "cm", true);
 
     // contacts from consumers to workers
@@ -326,7 +331,7 @@ class daedalus_ode {
         eta, hfr,
         nu, psi,
         n_strata, n_age_groups, n_econ_groups, popsize,
-        cm, cm_cw, cm_work, ngm, demography,
+        cm, n_settings, cm_cw, cm_work, ngm, demography,
         susc,
         openness,
         behav_enum, behav_fn,
@@ -376,9 +381,9 @@ class daedalus_ode {
                   internal_state &internal,  // NOLINT
                   real_type *state_deriv) {
     // TODO(pratik): prefer to not use these
-    const int n_strata = shared.n_strata;
-    const int n_econ_groups = shared.n_econ_groups;
-    const int n_age_groups = shared.n_age_groups;
+    const size_t n_strata = shared.n_strata;
+    const size_t n_econ_groups = shared.n_econ_groups;
+    const size_t n_age_groups = shared.n_age_groups;
 
     // map to Eigen Tensor
     Eigen::TensorMap<const TensorAry> t_x(
@@ -428,9 +433,22 @@ class daedalus_ode {
             .sum(Eigen::array<Eigen::Index, 1>{1})
             .reshape(Eigen::array<Eigen::Index, 2>{n_strata, 1});
 
+    /// scale contacts in different settings, and sum for total contacts
+    // this is placeholder code
+    // TODO (pratik): improve efficiency, consider a TensorMap or something
+    TensorVec scaling_factor(shared.n_settings);
+    scaling_factor.setConstant(1.0);
+
+    TensorAry cm_temp = shared.cm;
+    for (size_t i = 0; i < shared.n_settings; i++) {
+      cm_temp.chip(i, 2) *= cm_temp.chip(i, 2).constant(scaling_factor(i));
+    }
+    // sum over settings
+    TensorMat cm_total = cm_temp.sum(Eigen::array<int, 1>({2}));
+
+    /// get total contacts from infectious to other groups
     internal.t_comm_inf_contacts =
-        shared.cm.contract(internal.t_infectious, product_dims)
-            .broadcast(bcast);
+        cm_total.contract(internal.t_infectious, product_dims).broadcast(bcast);
 
     internal.t_foi_comm = beta_tmp * internal.t_comm_inf_contacts;
 
