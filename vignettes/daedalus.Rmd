@@ -41,10 +41,7 @@ daedalus_country("Canada")
 # make a <daedalus_country> representing Canada
 # and modify contact patterns
 country_canada <- daedalus_country(
-  "Canada",
-  parameters = list(
-    contact_matrix = matrix(5, 4, 4) # uniform contacts across age groups
-  )
+  "Canada"
 )
 
 # print to examine; only some essential information is shown

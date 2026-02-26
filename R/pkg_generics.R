@@ -68,9 +68,6 @@ get_data <- function(x, ...) {
 #' country_A <- daedalus_country("United Kingdom")
 #' country_A
 #'
-#' country_A <- set_data(country_A, contact_matrix = matrix(1, 4, 4))
-#' country_A
-#'
 #' disease_x <- daedalus_infection("sars_cov_1")
 #' disease_x <- set_data(disease_x, r0 = 3.0)
 #' disease_x
