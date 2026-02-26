@@ -52,17 +52,8 @@ x <- daedalus_country("Canada")
 
 x
 
-daedalus_country(
-  "United Kingdom",
-  parameters = list(contact_matrix = matrix(1, 4, 4))
-)
-
 # check whether `x` is a <country> object
 is_daedalus_country(x)
-
-# assign class members
-# using set_data()
-set_data(x, contact_matrix = matrix(99, 4, 4))
 
 # using assignment operators
 x$contact_matrix <- matrix(99, 4, 4)
