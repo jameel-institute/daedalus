@@ -433,7 +433,7 @@ class daedalus_ode {
 
     /// scale contacts in different settings, and sum for total contacts
     // this is placeholder code
-    // TODO (pratik): improve efficiency, consider a TensorMap or something
+    // TODO(pratik): improve efficiency, consider a TensorMap or dust2 internals
     TensorVec scaling_factor(shared.n_settings);
     scaling_factor.setConstant(1.0);
 
