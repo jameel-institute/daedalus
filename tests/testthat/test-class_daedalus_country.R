@@ -105,7 +105,6 @@ test_that("class <daedalus_country>: validator", {
 })
 
 test_that("class <daedalus_country>`: errors", {
-  skip("Skip tests as daedalus country is refactored")
   # invalid name
   expect_error(daedalus_country("dummy"), regexp = "`country` must be one of")
 
@@ -118,83 +117,35 @@ test_that("class <daedalus_country>`: errors", {
   # invalid parameter types
   expect_error(
     daedalus_country("Canada", list(dummy_param = "dummy values")),
-    regexp = "check the list contents classes"
+    regexp = "(has elements of classes)*(character)"
   )
 
   # invalid parameter names
   expect_error(
     daedalus_country("Canada", list(dummy_param = matrix(1))),
-    regexp = "Found unexpected values in `parameters`"
+    regexp = "Check number of rows and columns are both"
   )
 
   # invalid parameter dims or values: contact matrix
   expect_error(
-    daedalus_country("Canada", list(contact_matrix = matrix(1))),
-    regexp = "Expected.*numeric matrix"
-  )
-  expect_error(
     daedalus_country("Canada", list(contact_matrix = matrix("1"))),
-    regexp = "Expected.*numeric matrix"
+    regexp = "has matrix elements that are not numeric"
   )
   expect_error(
     daedalus_country(
       "Canada",
-      list(contact_matrix = matrix(-1, 4, 4)) # right dims, negatives
+      contact_matrix = matrix(-1, 4, 4) # right dims, negatives
     ),
-    regexp = "Expected.*numeric matrix"
+    regexp = "have negative or infinite values"
   )
   expect_error(
     daedalus_country(
       "Canada",
-      list(contact_matrix = matrix(NA_real_, 4, 4)) # right dims, NAs
+      contact_matrix = matrix(NA_real_, 4, 4) # right dims, NAs
     ),
-    regexp = "Expected.*numeric matrix"
+    regexp = "(matrix elements)*(missing)"
   )
 
-  # invalid parameter dims or values: contacts workplace
-  expect_error(
-    daedalus_country(
-      "Canada",
-      list(contacts_workplace = rep(1, N_ECON_SECTORS - 1)) # wrong dims
-    ),
-    regexp = "Expected.*45-element numeric vector"
-  )
-  expect_error(
-    daedalus_country(
-      "Canada",
-      list(contacts_workplace = rep(-1, N_ECON_SECTORS)) # negatives
-    ),
-    regexp = "Expected.*numeric vector.*positive"
-  )
-  expect_error(
-    daedalus_country(
-      "Canada",
-      list(contacts_workplace = rep(NA_real_, N_ECON_SECTORS)) # NAs
-    ),
-    regexp = "Expected.*numeric vector.*positive"
-  )
-
-  # invalid parameter dims or values: contacts consumer-to-worker
-  expect_error(
-    daedalus_country("Canada", list(contacts_consumer_worker = matrix(1))),
-    regexp = "Expected.*45x4 numeric matrix"
-  )
-  expect_error(
-    daedalus_country("Canada", list(contacts_consumer_worker = matrix("1"))),
-    regexp = "Expected.*numeric matrix"
-  )
-  expect_error(
-    daedalus_country(
-      "Canada",
-      list(contacts_consumer_worker = matrix(-1, 4, 4))
-    ),
-    regexp = "Expected.*numeric matrix.*positive.*values"
-  )
-  expect_error(
-    daedalus_country(
-      "Canada",
-      list(contacts_consumer_worker = matrix(NA_real_, 4, 4)) # NAs
-    ),
-    regexp = "Expected.*numeric matrix"
-  )
+  # NOTE: tests on outer constructor checking other contact data
+  # have been removed
 })

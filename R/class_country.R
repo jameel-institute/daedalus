@@ -61,8 +61,8 @@ new_daedalus_country <- function(name, parameters) {
 #' # check whether `x` is a <country> object
 #' is_daedalus_country(x)
 #'
-#' # using assignment operators
-#' x$contact_matrix <- matrix(99, 4, 4)
+#' # using assignment operators; must be assigned as a list
+#' x$contact_matrix <- list(total = matrix(99, 4, 4))
 #' x
 #'
 #' @export
@@ -79,47 +79,8 @@ daedalus_country <- function(
   # input checking
   name <- country_name_from_arg(country)
   # check list but allow missing and NULL
-  is_good_cm <- checkmate::test_list(
-    contact_matrix,
-    "matrix",
-    null.ok = TRUE
-  ) ||
-    checkmate::test_matrix(contact_matrix, mode = "numeric")
 
-  if (!is_good_cm) {
-    cli::cli_abort(
-      c(
-        "Got {.code contact_matrix} as a {.cls {class(contact_matrix)}} \\
-        but expected one of {.cls matrix}, {.cls list} of `matrix` or \\
-        {.code NULL}.",
-        i = "If `contact_matrix` is a list, check the list contents classes."
-      )
-    )
-  }
-
-  # check user-passed parameters
-  if (!is.null(contact_matrix) || !is_nulls_list(contact_matrix)) {
-    # TODO: add new checks on CM, which may be a single matrix or a list of Ms
-    # is_good_contact_matrix <- checkmate::test_matrix(
-    #   contact_matrix,
-    #   "numeric",
-    #   any.missing = FALSE,
-    #   ncols = N_AGE_GROUPS,
-    #   nrows = N_AGE_GROUPS
-    # ) &&
-    #   checkmate::test_numeric(
-    #     contact_matrix,
-    #     lower = 0,
-    #     finite = TRUE
-    #   )
-    # if (!is_good_contact_matrix) {
-    #   cli::cli_abort(c(
-    #     "Expected `contact_matrix` to be a 4x4 numeric matrix with
-    #        positive, finite values.",
-    #     i = "The number of rows and colums is the number of age groups."
-    #   ))
-    # }
-  }
+  contact_matrix <- validate_contact_matrix(contact_matrix, name)
 
   # substitute defaults with non-NULL elements of parameters
   params <- daedalus.data::country_data[[name]]
@@ -152,14 +113,7 @@ daedalus_country <- function(
   }
 
   # assign contact matrix if not NULL
-  # TODO: add check for list of NULLs passed
-  if (!is.null(contact_matrix)) {
-    params$contact_matrix <- contact_matrix
-  } else {
-    params$contact_matrix <- list(
-      total = params$contact_matrix
-    )
-  }
+  params$contact_matrix <- contact_matrix
 
   params <- c(
     params,
@@ -257,14 +211,20 @@ validate_daedalus_country <- function(x) {
         lower = 0,
         any.missing = FALSE, len = N_ECON_SECTORS, finite = TRUE
       ),
-    # "Country `contact_matrix` must be a 4x4 numeric matrix of positive values" =
-    #   checkmate::test_matrix(
-    #     x$contact_matrix, "numeric",
-    #     any.missing = FALSE, ncols = N_AGE_GROUPS, nrows = N_AGE_GROUPS
-    #   ) && checkmate::test_numeric(
-    #     x$contact_matrix,
-    #     lower = 0, finite = TRUE
-    #   ),
+    "Country `contact_matrix` must be a list of 4x4 numeric positive matrix" =
+      checkmate::test_list(
+        x$contact_matrix, "matrix", FALSE, min.len = 1
+      ) && all(
+          vapply(x$contact_matrix, function(cm) {
+            checkmate::test_matrix(
+              cm, "numeric",
+              any.missing = FALSE, ncols = N_AGE_GROUPS, nrows = N_AGE_GROUPS
+            ) && checkmate::test_numeric(
+              cm,
+              lower = 0, finite = TRUE
+            )
+          }, FUN.VALUE = logical(1))
+        ),
     "Country `contacts_workplace` must be a 45-length positive numeric vector" =
       checkmate::test_numeric(
         x$contacts_workplace,
@@ -352,17 +312,25 @@ print.daedalus_country <- function(x, ...) {
 #'
 #' @return Invisibly returns the `<daedalus_country>` object `x`.
 #' Called for printing side-effects.
+#'
 #' @keywords internal
 #' @noRd
 format.daedalus_country <- function(x, ...) {
   chkDots(...)
+
+  n_settings <- length(x$contact_matrix)
+  settings <- names(x$contact_matrix)
+  default_setting <- if (n_settings > 1) first(settings) else "total" # nolint
 
   # NOTE: rough implementations, better scaling e.g. to millions could be added
   cli::cli_text("{.cls {class(x)}}")
   cli::cli_bullets(c(
     "*" = "Name: {cli::col_red(x$name)}",
     "*" = "Demography: {cli::cli_vec(x$demography)}",
-    "*" = "Community contact matrix:"
+    "*" = "Default contact matrix:",
+    "*" = "↳setting name: {.str {default_setting}}; found \\
+    {cli::no(n_settings-1)} more setting{?/s}{cli::qty(n_settings)}\\
+    {?/: }{.str {settings[-1L]}}"
   ))
   # No good way to print using {cli}
   print(get_data(x, "contact_matrix"))
@@ -470,4 +438,114 @@ validate_country_input <- function(x) {
 #' @keywords internal
 is_nulls_list <- function(x) {
   checkmate::test_list(x, types = "NULL")
+}
+
+#' Validate contact matrix
+#'
+#' @param x An object to be validated as a contact matrix or list of matrices.
+#'
+#' @param name A country name
+#'
+#' @return If `x` is a list of numeric matrices, or a numeric matrix
+#' meeting expectations for Daedalus contact matrices, or `NULL`, returns a
+#' list of contact matrices. If a single matrix was passed, returns a
+#' single-element list with the name `"total"`.
+#'
+#' If `x` is `NULL`, returns the country default contact matrix from
+#' \pkg{daedalus.data} as a single-element list.
+#'
+#' Returns errors if expectations fail.
+#'
+#' @keywords internal
+validate_contact_matrix <- function(x, name) {
+  if (is.list(x)) {
+    element_classes <- unique(unlist(lapply(x, class))) # nolint
+
+    is_good <- checkmate::test_list(
+      x,
+      "matrix",
+      null.ok = TRUE
+    )
+
+    if (!is_good) {
+      cli::cli_abort(
+        "Expected {.code contact_matrix} as a {.cls list} of \\
+        matrices, but it has elements of classes: {.cls {element_classes}}."
+      )
+    }
+
+    # check matrices passed
+    is_good <- all(vapply(
+      x,
+      function(y) {
+        checkmate::test_matrix(
+          y,
+          "numeric",
+          any.missing = FALSE,
+          ncols = N_AGE_GROUPS,
+          nrows = N_AGE_GROUPS
+        ) &&
+          checkmate::test_numeric(
+            y,
+            lower = 0,
+            finite = TRUE
+          )
+      },
+      FUN.VALUE = logical(1L)
+    ))
+
+    if (!is_good) {
+      cli::cli_abort(
+        c(
+          "Got {.code contact_matrix}} as a {.cls list}, but it has \\
+          matrix elements that are not numeric, or which have negative or \\
+          infinite values, or are missing. \\
+          Expected only numeric matrices with positive finite values.",
+          i = "Check number of rows and columns are both {.emph {N_AGE_GROUPS}}"
+        )
+      )
+    }
+
+    x # return x
+  } else if (is.matrix(x)) {
+    # check matrices passed are acceptable
+    # NOTE: hardcoded to require N_AGE_GROUPS - may need to be changed
+    is_good <- all(
+      checkmate::test_matrix(
+        x,
+        "numeric",
+        any.missing = FALSE,
+        ncols = N_AGE_GROUPS,
+        nrows = N_AGE_GROUPS
+      ) &&
+        checkmate::test_numeric(
+          x,
+          lower = 0,
+          finite = TRUE
+        )
+    )
+
+    if (!is_good) {
+      cli::cli_abort(
+        c(
+          "Got {.code contact_matrix}} as a {.cls matrix}, but it has \\
+          matrix elements that are not numeric, or which have negative or \\
+          infinite values, or are missing.\\
+          Expected only numeric matrices with positive finite values.",
+          i = "Check number of rows and columns are both {.emph {N_AGE_GROUPS}}"
+        )
+      )
+    }
+
+    list(total = x) # return x as list
+  } else if (is.null(x)) {
+    list(
+      total = daedalus.data::country_data[[name]][["contact_matrix"]]
+    )
+  } else {
+    cli::cli_abort(
+      "Expected {.code contact_matrix} to be a list, matrix, or NULL, but \\
+      got an object of class {.cls {class(x)}}."
+    )
+  }
 }

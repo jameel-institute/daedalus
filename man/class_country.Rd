@@ -55,8 +55,8 @@ x
 # check whether `x` is a <country> object
 is_daedalus_country(x)
 
-# using assignment operators
-x$contact_matrix <- matrix(99, 4, 4)
+# using assignment operators; must be assigned as a list
+x$contact_matrix <- list(total = matrix(99, 4, 4))
 x
 
 }
