@@ -336,7 +336,7 @@ dummy_behaviour <- function() {
 #' @name prepare_parameters
 #'
 #' @keywords internal
-prepare_parameters.daedalus_behaviour <- function(x) {
+prepare_parameters.daedalus_behaviour <- function(x, ...) {
   validate_daedalus_behaviour(x)
 
   behav_enum <- switch(

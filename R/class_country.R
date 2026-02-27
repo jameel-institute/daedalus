@@ -34,10 +34,10 @@ new_daedalus_country <- function(name, parameters) {
 #' ISO3 code; must be from among [daedalus.data::country_codes_iso2c] or
 #' [daedalus.data::country_codes_iso3c] or [daedalus.data::country_names].
 #'
-#' @param parameters An optional named list of country parameters that are
-#' allowed to be modified. Currently, users may only pass their own contact
-#' matrix, workplace contacts, and consumer-worker contact matrix. If these are
-#' not passed, default values are accessed from stored package data.
+#' @param contact_matrix An optional named list of numeric matrices,
+#' representing age-specific contact matrices in different contexts or settings.
+#' Defaults to `NULL`, which selects the country-specific contact matrix
+#' provided in [daedalus.data::country_data].
 #'
 #' @param group_working_age An optional value for the age-group that is
 #' considered to be the working-age group. Defaults to `3`, which is taken from
@@ -62,7 +62,7 @@ new_daedalus_country <- function(name, parameters) {
 #' is_daedalus_country(x)
 #'
 #' # using assignment operators; must be assigned as a list
-#' x$contact_matrix <- list(total = matrix(99, 4, 4))
+#' x$contact_matrix <- list(home = matrix(99, 4, 4), school = matrix(1, 4, 4))
 #' x
 #'
 #' @export
@@ -328,7 +328,7 @@ format.daedalus_country <- function(x, ...) {
     "*" = "Name: {cli::col_red(x$name)}",
     "*" = "Demography: {cli::cli_vec(x$demography)}",
     "*" = "Default contact matrix:",
-    "*" = "↳setting name: {.str {default_setting}}; found \\
+    "*" = "* setting name: {.str {default_setting}}; found \\
     {cli::no(n_settings-1)} more setting{?/s}{cli::qty(n_settings)}\\
     {?/: }{.str {settings[-1L]}}"
   ))
