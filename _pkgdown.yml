@@ -16,6 +16,7 @@ articles:
   - timed_response
   - pandemic_costs
   - infection_parameter_uncertainty
+  - multiple_contact_settings
 - title: "Model details: Calculating pandemic costs"
   navbar: "Model details: Calculating pandemic costs"
   contents:

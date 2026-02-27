@@ -1,3 +1,20 @@
+# daedalus 0.3.5
+
+This patch version adds the ability pass multiple contact matrices associated with a `<daedalus_country>`, as a list argument to `daedalus_country(name, contact_matrix = list(...))`.
+
+The `dust2` system shared state and internals have been updated for this functionality.
+Some initial scaffolding for scaling each setting separately is in place on the C++ side.
+
+The new functionality is documented in the vignette `multiple_contact_settings.Rmd`.
+
+## Breaking changes
+
+The ability to pass additional parameters to a country object during construction are removed, and these modifications should be made after the object is created using `$<-` as with any list.
+
+## Other changes
+
+The `set_data.daedalus_country()` method has been removed.
+
 # daedalus 0.3.4
 
 This patch version allows users to define custom names for `<daedalus_vaccination>` scenarios. `daedalus_vaccination()` treats all optional parameters as compulsory if a custom name is passed.
