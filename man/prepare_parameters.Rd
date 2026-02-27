@@ -9,7 +9,7 @@
 \alias{prepare_parameters.daedalus_vaccination}
 \title{Prepare infection parameters for model}
 \usage{
-\method{prepare_parameters}{daedalus_behaviour}(x)
+\method{prepare_parameters}{daedalus_behaviour}(x, ...)
 
 \method{prepare_parameters}{daedalus_country}(x, ...)
 
