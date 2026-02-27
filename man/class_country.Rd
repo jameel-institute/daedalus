@@ -18,6 +18,11 @@ is_daedalus_country(x)
 ISO3 code; must be from among \link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso2c} or
 \link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso3c} or \link[daedalus.data:country_names_codes]{daedalus.data::country_names}.}
 
+\item{contact_matrix}{An optional named list of numeric matrices,
+representing age-specific contact matrices in different contexts or settings.
+Defaults to \code{NULL}, which selects the country-specific contact matrix
+provided in \link[daedalus.data:country_data]{daedalus.data::country_data}.}
+
 \item{group_working_age}{An optional value for the age-group that is
 considered to be the working-age group. Defaults to \code{3}, which is taken from
 an internal constant.}
@@ -25,11 +30,6 @@ an internal constant.}
 \item{x}{An object of the \verb{<daedalus_country>} class.}
 
 \item{...}{Other parameters passed to \code{\link[=print]{print()}}.}
-
-\item{parameters}{An optional named list of country parameters that are
-allowed to be modified. Currently, users may only pass their own contact
-matrix, workplace contacts, and consumer-worker contact matrix. If these are
-not passed, default values are accessed from stored package data.}
 }
 \value{
 \itemize{
@@ -56,7 +56,7 @@ x
 is_daedalus_country(x)
 
 # using assignment operators; must be assigned as a list
-x$contact_matrix <- list(total = matrix(99, 4, 4))
+x$contact_matrix <- list(home = matrix(99, 4, 4), school = matrix(1, 4, 4))
 x
 
 }

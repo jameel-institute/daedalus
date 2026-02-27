@@ -379,9 +379,9 @@ class daedalus_ode {
                   internal_state &internal,  // NOLINT
                   real_type *state_deriv) {
     // TODO(pratik): prefer to not use these
-    const size_t n_strata = shared.n_strata;
-    const size_t n_econ_groups = shared.n_econ_groups;
-    const size_t n_age_groups = shared.n_age_groups;
+    const int n_strata = shared.n_strata;
+    const int n_econ_groups = shared.n_econ_groups;
+    const int n_age_groups = shared.n_age_groups;
 
     // map to Eigen Tensor
     Eigen::TensorMap<const TensorAry> t_x(
