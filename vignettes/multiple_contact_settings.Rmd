@@ -1,0 +1,103 @@
+---
+title: "Modelling multiple contact settings"
+bibliography: resources/references.json
+link-citations: true
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Modelling multiple contact settings}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette shows how to pass community contact matrices disaggregated into multiple settings to the Daedalus model.
+
+The idea is --- in future --- to be able to apply closures or any arbitrary scaling to each setting separately, rather than uniformly scaling contacts across settings.
+An example of setting-specific scaling is scaling school contacts for school-age children, while leaving contacts in other settings intact.
+
+**Note that** While the scaffolding for such scaling functionality is in place on the C++ side, this functionality is still being developed on the R side.
+
+## Basic example using POLYMOD
+
+This example using POLYMOD data [@mossong2008] shows how to assign contacts from two different settings to a `<daedalus_country>` object.
+
+Once this assignment is done, helper functions such as `prepare_parameters()` take care of expanding and scaling the contact matrices when the country object is passed to `daedalus()`.
+
+**Note that** running `daedalus("XYZ", ...)` cannot be used to model multiple settings, and the `country` argument must be a `<daedalus_country>` if multiple settings are needed.
+
+```{r setup}
+# load package
+library(daedalus)
+library(socialmixr) # for POLYMOD data
+```
+
+By default a country has a single setting, the 'total' community contacts.
+This is displayed in the country object when printed to screen.
+
+```{r default_country}
+daedalus_country("GBR")
+```
+
+We can get POLYMOD data [@mossong2008] for the U.K. from the [R package _socialmixr_](https://cran.r-project.org/package=socialmixr).
+Here in this basic example, we consider only two settings, 'home' and 'school'.
+
+```{r get_polymod}
+# load polymod data and get home and school contacts
+data(polymod)
+
+# get matrices with Daedalus age bins
+cm_uk_home <- contact_matrix(
+  polymod,
+  "GB",
+  age_limits = c(0, 5, 18, 65),
+  filter = list(cnt_home = 1)
+)$matrix
+
+cm_uk_school <- contact_matrix(
+  polymod,
+  "GB",
+  age_limits = c(0, 5, 18, 65),
+  filter = list(cnt_school = 1)
+)$matrix
+```
+
+Create a new country object, passing the new settings to the `contact_matrix` argument as a named list.
+Having names helps when examining the object later.
+
+```{r multi_setting}
+x <- daedalus_country(
+  "GB",
+  contact_matrix = list(
+    home = cm_uk_home,
+    school = cm_uk_school
+  )
+)
+
+# print x to see output
+x
+```
+
+Pass the created country to [daedalus()] as usual to run the epi-econ model taking into account contacts in each setting.
+
+```{r run_daedalus}
+daedalus(x, "sars_cov_1", time_end = 100)
+```
+
+## Future developments
+
+A number of developments to this feature are being considered.
+These include:
+
+1. Disaggregating workplace contacts into settings, so that scaling can be applied by setting rather than by economic sector, as this is much easier to work with from a policy perspective (e.g. closing pubs _versus_ scaling hospitality contacts by some amount to represent pub closures).
+
+2. Applying age-specific setting scaling, to represent different policy recommendations or outcomes by age in different settings.
+
+3. Applying different behavioural modifiers to each setting to simulate endogenous risk-perception related modification in contacts across settings.
+
+## References
