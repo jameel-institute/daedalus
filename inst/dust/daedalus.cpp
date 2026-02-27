@@ -42,6 +42,8 @@ const int N_COMPARTMENTS = daedalus::constants::N_COMPARTMENTS;
 // broadcasting and contraction dims
 const daedalus::types::bcast_dim_type bcast = daedalus::dims::dim_bcast_vax;
 const daedalus::types::prod_dim_type product_dims = daedalus::dims::dim_product;
+const daedalus::types::prod_dim_type vec_tensor_dims =
+    daedalus::dims::vec_tensor_dims;
 
 // Tensor types for local use
 using TensorVec = daedalus::types::TensorVec<double>;
@@ -119,6 +121,10 @@ class daedalus_ode {
         isToHd, hrToR, hdToD, rToS;
     // for Rt calculations
     Eigen::ArrayXd p_susc;
+
+    // related to contact matrix settings
+    TensorMat cm_temp;
+    TensorVec scaling_factor;
   };
 
   static internal_state build_internal(const shared_state &shared) {
@@ -144,6 +150,14 @@ class daedalus_ode {
     Eigen::ArrayXd p_susc(shared.n_age_groups);
     p_susc.setConstant(1.0);
 
+    // summed contact matrix after scaling by setting-specific factor
+    TensorMat cm_temp(shared.n_strata, shared.n_strata);
+    cm_temp.setConstant(1.0);  // should this be zero for safety?
+
+    // contact matrix scaling factor by setting
+    TensorVec scaling_factor(shared.n_settings);
+    scaling_factor.setConstant(1.0);
+
     // clang-format off
     return internal_state{
       t_infectious, t_comm_inf_contacts, t_foi_comm, alt_new_infections,
@@ -151,7 +165,9 @@ class daedalus_ode {
       t_work_inf_contacts, t_foi_work, t_cw_inf_contacts, t_foi_cw,
       susc_workers,
       sToE, eToIs, eToIa, isToR, iaToR, isToHr, isToHd, hrToR, hdToD, rToS,
-      p_susc
+      p_susc,
+      cm_temp,
+      scaling_factor
     };
     // clang-format on
   }
@@ -246,7 +262,9 @@ class daedalus_ode {
     const std::vector<size_t> vec_cm_dims = {n_strata, n_strata,
                                              n_settings};  // for square matrix
     const dust2::array::dimensions<3> cm_dims(vec_cm_dims.begin());
-    TensorAry cm(n_strata, n_strata, n_settings);
+    TensorAry cm(static_cast<Eigen::Index>(n_strata),
+                 static_cast<Eigen::Index>(n_strata),
+                 static_cast<Eigen::Index>(n_settings));
     dust2::r::read_real_array(pars, cm_dims, cm.data(), "cm", true);
 
     // contacts from consumers to workers
@@ -432,21 +450,14 @@ class daedalus_ode {
             .reshape(Eigen::array<Eigen::Index, 2>{n_strata, 1});
 
     /// scale contacts in different settings, and sum for total contacts
-    // this is placeholder code
-    // TODO(pratik): improve efficiency, consider a TensorMap or dust2 internals
-    TensorVec scaling_factor(shared.n_settings);
-    scaling_factor.setConstant(1.0);
-
-    TensorAry cm_temp = shared.cm;
-    for (size_t i = 0; i < shared.n_settings; i++) {
-      cm_temp.chip(i, 2) *= cm_temp.chip(i, 2).constant(scaling_factor(i));
-    }
-    // sum over settings
-    TensorMat cm_total = cm_temp.sum(Eigen::array<int, 1>({2}));
+    // internal.scaling_factor is a placeholder
+    internal.cm_temp =
+        shared.cm.contract(internal.scaling_factor, vec_tensor_dims);
 
     /// get total contacts from infectious to other groups
     internal.t_comm_inf_contacts =
-        cm_total.contract(internal.t_infectious, product_dims).broadcast(bcast);
+        internal.cm_temp.contract(internal.t_infectious, product_dims)
+            .broadcast(bcast);
 
     internal.t_foi_comm = beta_tmp * internal.t_comm_inf_contacts;
 
