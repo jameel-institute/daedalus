@@ -1,3 +1,7 @@
+# daedalus 0.3.6
+
+Minor technical edits to use `Eigen` lazy evaluation instead of `dust2` `internal` feature.
+
 # daedalus 0.3.5
 
 This patch version adds the ability pass multiple contact matrices associated with a `<daedalus_country>`, as a list argument to `daedalus_country(name, contact_matrix = list(...))`.
