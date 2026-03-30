@@ -115,44 +115,22 @@ class daedalus_ode {
 
   /// @brief Intermediate data.
   struct internal_state {
-    TensorMat t_infectious, t_comm_inf_contacts, t_foi_comm, alt_new_infections,
-        t_comm_inf_age, t_work_inf_contacts, t_foi_work, t_cw_inf_contacts,
-        t_foi_cw, susc_workers, sToE, eToIs, eToIa, isToR, iaToR, isToHr,
-        isToHd, hrToR, hdToD, rToS;
+    TensorMat sToE;
+
     // for Rt calculations
     Eigen::ArrayXd p_susc;
 
     // related to contact matrix settings
-    TensorMat cm_temp;
     TensorVec scaling_factor;
   };
 
   static internal_state build_internal(const shared_state &shared) {
-    // transition states
-    TensorMat mat2d(shared.n_strata, N_VAX_STRATA);
-    mat2d.setZero();
-    TensorMat sToE = mat2d, eToIs = mat2d, eToIa = mat2d, isToR = mat2d,
-              iaToR = mat2d, isToH = mat2d, isToHd = mat2d, isToHr = mat2d,
-              hrToR = mat2d, hdToD = mat2d, rToS = mat2d, t_infectious = mat2d,
-              t_comm_inf_contacts = mat2d, t_foi_comm = mat2d,
-              alt_new_infections = mat2d;
-
-    // infection related
-    TensorMat mat2d_econ(shared.n_econ_groups, N_VAX_STRATA);
-    mat2d_econ.setZero();
-    TensorMat t_work_inf_contacts = mat2d_econ, t_foi_work = mat2d_econ,
-              t_cw_inf_contacts = mat2d_econ, t_foi_cw = mat2d_econ,
-              susc_workers = mat2d_econ;
-
-    TensorMat t_comm_inf_age(shared.n_age_groups, N_VAX_STRATA);
-    t_comm_inf_age.setZero();
+    // transition state for new infections, cannot use auto Eigen lazy eval
+    TensorMat sToE(shared.n_strata, N_VAX_STRATA);
+    sToE.setZero();
 
     Eigen::ArrayXd p_susc(shared.n_age_groups);
     p_susc.setConstant(1.0);
-
-    // summed contact matrix after scaling by setting-specific factor
-    TensorMat cm_temp(shared.n_strata, shared.n_strata);
-    cm_temp.setConstant(1.0);  // should this be zero for safety?
 
     // contact matrix scaling factor by setting
     TensorVec scaling_factor(shared.n_settings);
@@ -160,14 +138,7 @@ class daedalus_ode {
 
     // clang-format off
     return internal_state{
-      t_infectious, t_comm_inf_contacts, t_foi_comm, alt_new_infections,
-      t_comm_inf_age,
-      t_work_inf_contacts, t_foi_work, t_cw_inf_contacts, t_foi_cw,
-      susc_workers,
-      sToE, eToIs, eToIa, isToR, iaToR, isToHr, isToHd, hrToR, hdToD, rToS,
-      p_susc,
-      cm_temp,
-      scaling_factor
+      sToE, p_susc, scaling_factor
     };
     // clang-format on
   }
@@ -407,6 +378,8 @@ class daedalus_ode {
     Eigen::TensorMap<TensorAry> t_dx(state_deriv, n_strata,
                                      daedalus::constants::N_COMPARTMENTS,
                                      N_VAX_STRATA);
+    t_dx.setConstant(0.0);
+
     Eigen::TensorMap<Eigen::Tensor<double, 1>> t_new_vax(
         state_deriv +
             (n_strata * daedalus::constants::N_COMPARTMENTS * N_VAX_STRATA),
@@ -423,11 +396,10 @@ class daedalus_ode {
                                          state[shared.i_hosp_overflow_flag]);
 
     // calculate new deaths and new hospitalisations
-    internal.hdToD =
-        shared.gamma_H_death * t_x.chip(iHd, i_COMPS);  // new deaths
+    auto hdToD = shared.gamma_H_death * t_x.chip(iHd, i_COMPS);  // new deaths
 
     /// BEHAVIOUR SCALING OF TRANSMISSION
-    Eigen::Tensor<double, 0> new_deaths = internal.hdToD.sum();
+    Eigen::Tensor<double, 0> new_deaths = hdToD.sum();
     const double d_new_deaths = new_deaths(0);
 
     double behav_modifier = 1.0;
@@ -444,55 +416,53 @@ class daedalus_ode {
     // Susceptible (unvaccinated) to exposed
     // sToE comprises three parts - community, workplace, consumer-worker
     // need rowsums for FOI
-    internal.t_infectious =
+    auto t_infectious =
         (t_x.chip(iIs, i_COMPS) + (t_x.chip(iIa, i_COMPS) * shared.epsilon))
             .sum(Eigen::array<Eigen::Index, 1>{1})
             .reshape(Eigen::array<Eigen::Index, 2>{n_strata, 1});
 
     /// scale contacts in different settings, and sum for total contacts
     // internal.scaling_factor is a placeholder
-    internal.cm_temp =
-        shared.cm.contract(internal.scaling_factor, vec_tensor_dims);
+    auto cm_temp = shared.cm.contract(internal.scaling_factor, vec_tensor_dims);
 
     /// get total contacts from infectious to other groups
-    internal.t_comm_inf_contacts =
-        internal.cm_temp.contract(internal.t_infectious, product_dims)
-            .broadcast(bcast);
+    auto t_comm_inf_contacts =
+        cm_temp.contract(t_infectious, product_dims).broadcast(bcast);
 
-    internal.t_foi_comm = beta_tmp * internal.t_comm_inf_contacts;
+    auto t_foi_comm = beta_tmp * t_comm_inf_contacts;
 
     // calculate C * I_w and C * I_cons for a n_econ_groups-length array
-    internal.t_work_inf_contacts =
+    auto t_work_inf_contacts =
         shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, 1)
-        internal.t_infectious.slice(
+        t_infectious.slice(
             Eigen::array<Eigen::Index, 2>{n_strata - n_econ_groups, 0},
             Eigen::array<Eigen::Index, 2>{n_econ_groups, 1});
 
     const size_t id_npi_regime = state[shared.i_npi_flag];
+    auto openness_squared =
+        shared.openness[id_npi_regime] * shared.openness[id_npi_regime];
 
-    internal.t_foi_work = beta_tmp * internal.t_work_inf_contacts *
-                          shared.openness[id_npi_regime] *
-                          shared.openness[id_npi_regime];
+    auto t_foi_work = beta_tmp * t_work_inf_contacts * openness_squared;
 
-    internal.t_comm_inf_age = internal.t_infectious.slice(
-        Eigen::array<Eigen::Index, 2>{0, 0},
-        Eigen::array<Eigen::Index, 2>{n_age_groups, 1});
+    auto t_comm_inf_age =
+        t_infectious.slice(Eigen::array<Eigen::Index, 2>{0, 0},
+                           Eigen::array<Eigen::Index, 2>{n_age_groups, 1});
 
-    internal.t_cw_inf_contacts =
-        shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
+    auto t_cw_inf_contacts =
+        shared.cm_cons_work.contract(t_comm_inf_age, product_dims);
 
-    internal.t_foi_cw =
-        beta_tmp * shared.openness[id_npi_regime] * internal.t_cw_inf_contacts;
+    auto t_foi_cw =
+        beta_tmp * shared.openness[id_npi_regime] * t_cw_inf_contacts;
 
     // initial calculation of new infections in the community
-    internal.sToE =
-        t_x.chip(iS, i_COMPS) * internal.t_foi_comm;  // dims (n_strata, 2)
+    internal.sToE = t_x.chip(iS, i_COMPS) * t_foi_comm;  // dims (n_strata, 2)
 
-    internal.susc_workers =
+    auto susc_workers =
         t_x.chip(iS, i_COMPS)
             .slice(Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
                    Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA});
 
+    // used in update, do not change to auto
     internal.p_susc =
         daedalus::helpers::get_comp_age(t_x, daedalus::constants::iS) /
         (shared.demography -
@@ -501,46 +471,41 @@ class daedalus_ode {
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
     // NOTE: broadcasting for element-wise tensor mult
+    auto foi_total = t_foi_work.broadcast(bcast) + t_foi_cw.broadcast(bcast);
     internal.sToE.slice(
         Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
         Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA}) +=
-        (internal.susc_workers * (internal.t_foi_work.broadcast(bcast) +
-                                  internal.t_foi_cw.broadcast(bcast)));
+        susc_workers * foi_total;
 
     // element-wise mult with susceptibility matrix to reduce number of
     // vaccinated infected S => E
-    internal.sToE = internal.sToE * shared.susc;
+    internal.sToE *= shared.susc;
 
-    internal.eToIs = shared.sigma * shared.p_sigma * t_x.chip(iE, i_COMPS);
-    internal.eToIa =
-        shared.sigma * (1.0 - shared.p_sigma) * t_x.chip(iE, i_COMPS);
+    auto eToIs = shared.sigma * shared.p_sigma * t_x.chip(iE, i_COMPS);
+    auto eToIa = shared.sigma * (1.0 - shared.p_sigma) * t_x.chip(iE, i_COMPS);
 
-    internal.isToR = shared.gamma_Is * t_x.chip(iIs, i_COMPS);
-    internal.iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
+    auto isToR = shared.gamma_Is * t_x.chip(iIs, i_COMPS);
+    auto iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
 
-    internal.isToHd =
+    auto isToHd =
         shared.eta * t_x.chip(iIs, i_COMPS) * shared.hfr * hfr_modifier;
-    internal.isToHr = shared.eta * t_x.chip(iIs, i_COMPS) - internal.isToHd;
-    internal.hrToR = shared.gamma_H_recovery * t_x.chip(iHr, i_COMPS);
+    auto isToHr = shared.eta * t_x.chip(iIs, i_COMPS) - isToHd;
+    auto hrToR = shared.gamma_H_recovery * t_x.chip(iHr, i_COMPS);
 
-    internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
+    auto rToS = shared.rho * t_x.chip(iR, i_COMPS);
 
     // update next step
-    t_dx.chip(iS, i_COMPS) = -internal.sToE + internal.rToS;
-    t_dx.chip(iE, i_COMPS) = internal.sToE - internal.eToIs - internal.eToIa;
-    t_dx.chip(iIs, i_COMPS) =
-        internal.eToIs - internal.isToR - internal.isToHr - internal.isToHd;
-    t_dx.chip(iIa, i_COMPS) = internal.eToIa - internal.iaToR;
-    t_dx.chip(iHr, i_COMPS) = internal.isToHr - internal.hrToR;
-    t_dx.chip(iHd, i_COMPS) = internal.isToHd - internal.hdToD;
-    t_dx.chip(iR, i_COMPS) =
-        internal.isToR + internal.iaToR + internal.hrToR - internal.rToS;
+    t_dx.chip(iS, i_COMPS) += -internal.sToE + rToS;
+    t_dx.chip(iE, i_COMPS) += internal.sToE - eToIs - eToIa;
+    t_dx.chip(iIs, i_COMPS) += eToIs - isToR - isToHr - isToHd;
+    t_dx.chip(iIa, i_COMPS) += eToIa - iaToR;
+    t_dx.chip(iHr, i_COMPS) += isToHr - hrToR;
+    t_dx.chip(iHd, i_COMPS) += isToHd - hdToD;
+    t_dx.chip(iR, i_COMPS) += isToR + iaToR + hrToR - rToS;
 
-    t_dx.chip(iD, i_COMPS) = internal.hdToD;
-    t_dx.chip(idE, i_COMPS) = internal.sToE;
-    t_dx.chip(idH, i_COMPS) = internal.isToHr + internal.isToHd;
-
-    // update next step of new compartments here
+    t_dx.chip(iD, i_COMPS) += hdToD;
+    t_dx.chip(idE, i_COMPS) += internal.sToE;
+    t_dx.chip(idH, i_COMPS) += isToHr + isToHd;
 
     // vaccination related changes
     // calculate vaccination rate
