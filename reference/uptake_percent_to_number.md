@@ -16,7 +16,9 @@ uptake_percent_to_number(uptake_limit, country)
   population that can be vaccinated. When this limit is reached,
   vaccination ends. Passed to the `value_state_off` argument in
   [`new_daedalus_response()`](https://jameel-institute.github.io/daedalus/reference/class_response.md)
-  via the class constructor `new_daedalus_vaccination()`.
+  via the class constructor `new_daedalus_vaccination()`. Defaults to
+  `NULL` and is optional if `name` is a pre-canned strategy in which
+  case `uptake_limit` is taken from pre-canned scenario data.
 
 - country:
 

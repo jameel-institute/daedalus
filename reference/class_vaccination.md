@@ -30,11 +30,15 @@ print(x, ...)
 
 - name:
 
-  A vaccination investment scenario name from among
-  [daedalus.data::vaccination_scenario_names](https://jameel-institute.github.io/daedalus.data/reference/vaccine_scenarios.html).
-  Selecting an epidemic automatically pulls in vaccination parameters
-  associated with the epidemic; these are stored as packaged data in
+  A vaccination investment scenario name as a string. Passing a name
+  from among
+  [daedalus.data::vaccination_scenario_names](https://jameel-institute.github.io/daedalus.data/reference/vaccine_scenarios.html)
+  leads to any optional parameters (see below) being drawn from
+  pre-canned scenarios. These are stored as packaged data in
   [`daedalus.data::vaccination_scenario_data`](https://jameel-institute.github.io/daedalus.data/reference/vaccine_scenarios.html).
+
+  Passing a name that is not among pre-canned scenarios causes all
+  following parameters to become compulsory and non-optional.
 
 - country:
 
@@ -45,9 +49,10 @@ print(x, ...)
 - start_time:
 
   The number of days after the start of the epidemic that vaccination
-  begins. Must be a single number. Defaults to `NULL` and the start time
-  is taken from the vaccination scenarios specified by `name`. Passed to
-  the `time_on` argument in
+  begins. Must be a single number. Defaults to `NULL` and is optional if
+  `name` is a pre-canned strategy. If so, the start time is taken from
+  the vaccination scenarios specified by `name`. Passed to the `time_on`
+  argument in
   [`new_daedalus_response()`](https://jameel-institute.github.io/daedalus/reference/class_response.md)
   via the class constructor `new_daedalus_vaccination()`.
 
@@ -57,6 +62,8 @@ print(x, ...)
   be vaccinated each day. This is converted into a proportion
   automatically within
   [`daedalus()`](https://jameel-institute.github.io/daedalus/reference/daedalus.md).
+  Defaults to `NULL` and is optional if `name` is a pre-canned strategy;
+  if so `rate` is taken from pre-canned scenario data.
 
 - uptake_limit:
 
@@ -64,7 +71,9 @@ print(x, ...)
   population that can be vaccinated. When this limit is reached,
   vaccination ends. Passed to the `value_state_off` argument in
   [`new_daedalus_response()`](https://jameel-institute.github.io/daedalus/reference/class_response.md)
-  via the class constructor `new_daedalus_vaccination()`.
+  via the class constructor `new_daedalus_vaccination()`. Defaults to
+  `NULL` and is optional if `name` is a pre-canned strategy in which
+  case `uptake_limit` is taken from pre-canned scenario data.
 
 - efficacy:
 
@@ -72,14 +81,14 @@ print(x, ...)
   vaccination in preventing infection. A value of 0 indicates that
   vaccinated individuals are as susceptible to infection as unvaccinated
   ones, while 100 would indicate completely non-leaky vaccination that
-  completely protects against infection.
+  completely protects against infection. Defaults to 50%.
 
 - waning_period:
 
   A single number representing the number of days over which the average
   individual wanes out of the vaccinated stratum to the unvaccinated
   stratum. Only individuals in the susceptible and recovered
-  compartments can wane out of being vaccinated.
+  compartments can wane out of being vaccinated. Defaults to 180 days.
 
 - x:
 
@@ -110,7 +119,7 @@ daedalus_vaccination("none", "GBR")
 #> • Efficacy (%): 50
 #> • Waning period (mean, days): 180
 
-# modifying parameters during initialisation
+# modifying parameters for pre-defined strategies during initialisation
 # set daily vaccination rate to 1.5% of population
 daedalus_vaccination("low", "GBR", rate = 1.5)
 #> <daedalus_vaccination/daedalus_response>
@@ -118,6 +127,18 @@ daedalus_vaccination("low", "GBR", rate = 1.5)
 #> • Start time (days): 300
 #> • Rate (% per day): 1.5
 #> • Uptake limit (%): 50
+#> • Efficacy (%): 50
+#> • Waning period (mean, days): 180
+
+# a fully customised strategy
+daedalus_vaccination(
+  "custom", "GBR", start_time = 100, rate = 1.5, uptake_limit = 70
+)
+#> <daedalus_vaccination/daedalus_response>
+#> Vaccine investment scenario: custom
+#> • Start time (days): 100
+#> • Rate (% per day): 1.5
+#> • Uptake limit (%): 70
 #> • Efficacy (%): 50
 #> • Waning period (mean, days): 180
 ```
