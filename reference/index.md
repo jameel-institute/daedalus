@@ -177,6 +177,8 @@ Functions used internally.
   : Initial values for model flags
 - [`assert_class_fields()`](https://jameel-institute.github.io/daedalus/reference/input_checks.md)
   : Check that a class has expected names
+- [`is_nulls_list()`](https://jameel-institute.github.io/daedalus/reference/is_nulls_list.md)
+  : Check for a list of NULLs
 - [`make_initial_state()`](https://jameel-institute.github.io/daedalus/reference/make_initial_state.md)
   : Generate a default initial state for DAEDALUS
 - [`make_susc_matrix()`](https://jameel-institute.github.io/daedalus/reference/make_susc_matrix.md)
@@ -209,6 +211,8 @@ Functions used internally.
   : Convert an uptake limit from a percentage to a number
 - [`validate_behaviour_input()`](https://jameel-institute.github.io/daedalus/reference/validate_behaviour_input.md)
   : Internal helper function to prepare parameters
+- [`validate_contact_matrix()`](https://jameel-institute.github.io/daedalus/reference/validate_contact_matrix.md)
+  : Validate contact matrix
 - [`validate_country_input()`](https://jameel-institute.github.io/daedalus/reference/validate_country_input.md)
   : Validate country input
 - [`validate_infection_input()`](https://jameel-institute.github.io/daedalus/reference/validate_infection_input.md)

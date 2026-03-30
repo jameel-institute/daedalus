@@ -28,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,6 +51,7 @@
     <li><a class="dropdown-item" href="../articles/timed_response.html">Modelling time-limited economic closures</a></li>
     <li><a class="dropdown-item" href="../articles/pandemic_costs.html">Evaluating the costs of pandemic scenarios</a></li>
     <li><a class="dropdown-item" href="../articles/infection_parameter_uncertainty.html">Modelling outcomes under uncertainty in infection parameters</a></li>
+    <li><a class="dropdown-item" href="../articles/multiple_contact_settings.html">Modelling multiple contact settings</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
@@ -121,7 +122,8 @@ easily.</p>
 <span><span class="co">#&gt; <span style="color: #0000BB;">&lt;daedalus_country&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">Canada</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Demography: 1993132, 5949109, 22966942, and 6832974</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Community contact matrix:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Default contact matrix:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> * setting name: "total"; found no more settings</span></span>
 <span><span class="co">#&gt;             0-4      5-19    20-64       65+</span></span>
 <span><span class="co">#&gt; 0-4   1.9157895 1.5235823 5.014414 0.3169637</span></span>
 <span><span class="co">#&gt; 5-19  0.5104463 8.7459756 6.322175 0.7948344</span></span>
@@ -133,10 +135,7 @@ easily.</p>
 <span><span class="co"># make a &lt;daedalus_country&gt; representing Canada</span></span>
 <span><span class="co"># and modify contact patterns</span></span>
 <span><span class="va">country_canada</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/class_country.html">daedalus_country</a></span><span class="op">(</span></span>
-<span>  <span class="st">"Canada"</span>,</span>
-<span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    contact_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span> <span class="co"># uniform contacts across age groups</span></span>
-<span>  <span class="op">)</span></span>
+<span>  <span class="st">"Canada"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># print to examine; only some essential information is shown</span></span>
@@ -144,12 +143,13 @@ easily.</p>
 <span><span class="co">#&gt; <span style="color: #0000BB;">&lt;daedalus_country&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">Canada</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Demography: 1993132, 5949109, 22966942, and 6832974</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Community contact matrix:</span></span>
-<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
-<span><span class="co">#&gt; [1,]    5    5    5    5</span></span>
-<span><span class="co">#&gt; [2,]    5    5    5    5</span></span>
-<span><span class="co">#&gt; [3,]    5    5    5    5</span></span>
-<span><span class="co">#&gt; [4,]    5    5    5    5</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Default contact matrix:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> * setting name: "total"; found no more settings</span></span>
+<span><span class="co">#&gt;             0-4      5-19    20-64       65+</span></span>
+<span><span class="co">#&gt; 0-4   1.9157895 1.5235823 5.014414 0.3169637</span></span>
+<span><span class="co">#&gt; 5-19  0.5104463 8.7459756 6.322175 0.7948344</span></span>
+<span><span class="co">#&gt; 20-64 0.4351641 1.6376280 7.821398 1.0350292</span></span>
+<span><span class="co">#&gt; 65+   0.1187166 0.7488765 3.639207 1.5142917</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> GNI (PPP $): <span style="color: #0000BB;">46050</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Hospital capacity: <span style="color: #00BB00;">7989</span></span></span></code></pre></div>
 <p>The package provides data from <span class="citation">Walker et al.

@@ -30,10 +30,12 @@ make_full_contacts(country)
 
 ## Value
 
-1.  `make_conmat_large()` returns a 49x49 contact matrix scaled by the
-    size of demography and economic sector groups, while splitting up
-    community contacts from working age individuals to other age groups,
-    among the different in proportion to workers in those sectors.
+1.  `make_conmat_large()` returns an array of 49x49xN contact matrices
+    scaled by the size of demography and economic sector groups, while
+    splitting up community contacts from working age individuals to
+    other age groups, among the different age groups in proportion to
+    workers in those sectors. Each index along the third dimension
+    represents a contact setting.
 
 2.  `make_work_contacts()` returns a 45-element vector (for the number
     of economic sectors) scaled by the number of workers per sector.

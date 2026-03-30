@@ -162,10 +162,11 @@ output
 #> • Vaccination: no vaccination
 #> • Behaviour: no behaviour
 
-# country passed as <daedalus_country> with some characteristics modified
+# country passed as <daedalus_country> with a new 'total' contact matrix
+conmat_new <- get_data(daedalus_country("Canada"), "contact_matrix")
 country_x <- daedalus_country(
   "Canada",
-  parameters = list(contact_matrix = matrix(5, 4, 4)) # uniform contacts
+  contact_matrix = list(total = conmat_new * 2.0) # simulate new data
 )
 output <- daedalus(country_x, "influenza_1918")
 

@@ -15,6 +15,8 @@
   scenarios](https://jameel-institute.github.io/daedalus/articles/pandemic_costs.md):
 - [Modelling outcomes under uncertainty in infection
   parameters](https://jameel-institute.github.io/daedalus/articles/infection_parameter_uncertainty.md):
+- [Modelling multiple contact
+  settings](https://jameel-institute.github.io/daedalus/articles/multiple_contact_settings.md):
 
 ### Model details: Calculating pandemic costs
 

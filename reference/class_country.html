@@ -21,7 +21,7 @@ characteristics for the DAEDALUS model."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,7 @@ characteristics for the DAEDALUS model."></head><body>
     <li><a class="dropdown-item" href="../articles/timed_response.html">Modelling time-limited economic closures</a></li>
     <li><a class="dropdown-item" href="../articles/pandemic_costs.html">Evaluating the costs of pandemic scenarios</a></li>
     <li><a class="dropdown-item" href="../articles/infection_parameter_uncertainty.html">Modelling outcomes under uncertainty in infection parameters</a></li>
+    <li><a class="dropdown-item" href="../articles/multiple_contact_settings.html">Modelling multiple contact settings</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
@@ -80,12 +81,7 @@ characteristics for the DAEDALUS model.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus_country</span><span class="op">(</span></span>
-<span>  <span class="va">country</span>,</span>
-<span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>contact_matrix <span class="op">=</span> <span class="cn">NULL</span>, contacts_workplace <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    contacts_consumer_worker <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>,</span>
-<span>  group_working_age <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">daedalus_country</span><span class="op">(</span><span class="va">country</span>, contact_matrix <span class="op">=</span> <span class="cn">NULL</span>, group_working_age <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">is_daedalus_country</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
@@ -103,11 +99,11 @@ ISO3 code; must be from among <a href="https://jameel-institute.github.io/daedal
 <a href="https://jameel-institute.github.io/daedalus.data/reference/country_names_codes.html">daedalus.data::country_codes_iso3c</a> or <a href="https://jameel-institute.github.io/daedalus.data/reference/country_names_codes.html">daedalus.data::country_names</a>.</p></dd>
 
 
-<dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
-<dd><p>An optional named list of country parameters that are
-allowed to be modified. Currently, users may only pass their own contact
-matrix, workplace contacts, and consumer-worker contact matrix. If these are
-not passed, default values are accessed from stored package data.</p></dd>
+<dt id="arg-contact-matrix">contact_matrix<a class="anchor" aria-label="anchor" href="#arg-contact-matrix"></a></dt>
+<dd><p>An optional named list of numeric matrices,
+representing age-specific contact matrices in different contexts or settings.
+Defaults to <code>NULL</code>, which selects the country-specific contact matrix
+provided in <a href="https://jameel-institute.github.io/daedalus.data/reference/country_data.html">daedalus.data::country_data</a>.</p></dd>
 
 
 <dt id="arg-group-working-age">group_working_age<a class="anchor" aria-label="anchor" href="#arg-group-working-age"></a></dt>
@@ -142,7 +138,8 @@ object <code>x</code>. Called for printing side-effects.</p></li>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;daedalus_country&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">Canada</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Demography: 1993132, 5949109, 22966942, and 6832974</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Community contact matrix:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Default contact matrix:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> * setting name: "total"; found no more settings</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             0-4      5-19    20-64       65+</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0-4   1.9157895 1.5235823 5.014414 0.3169637</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5-19  0.5104463 8.7459756 6.322175 0.7948344</span>
@@ -151,48 +148,18 @@ object <code>x</code>. Called for printing side-effects.</p></li>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> GNI (PPP $): <span style="color: #0000BB;">46050</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Hospital capacity: <span style="color: #00BB00;">7989</span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">daedalus_country</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">"United Kingdom"</span>,</span></span>
-<span class="r-in"><span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>contact_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;daedalus_country&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">United Kingdom</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Demography: 3924490, 11762039, 39536463, and 12663012</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Community contact matrix:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    1    1    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    1    1    1    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    1    1    1    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]    1    1    1    1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> GNI (PPP $): <span style="color: #0000BB;">45870</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Hospital capacity: <span style="color: #00BB00;">26219</span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># check whether `x` is a &lt;country&gt; object</span></span></span>
 <span class="r-in"><span><span class="fu">is_daedalus_country</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># assign class members</span></span></span>
-<span class="r-in"><span><span class="co"># using set_data()</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="set_data.html">set_data</a></span><span class="op">(</span><span class="va">x</span>, contact_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">99</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;daedalus_country&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">Canada</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Demography: 1993132, 5949109, 22966942, and 6832974</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Community contact matrix:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   99   99   99   99</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   99   99   99   99</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   99   99   99   99</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]   99   99   99   99</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> GNI (PPP $): <span style="color: #0000BB;">46050</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Hospital capacity: <span style="color: #00BB00;">7989</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># using assignment operators</span></span></span>
-<span class="r-in"><span><span class="va">x</span><span class="op">$</span><span class="va">contact_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">99</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># using assignment operators; must be assigned as a list</span></span></span>
+<span class="r-in"><span><span class="va">x</span><span class="op">$</span><span class="va">contact_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>home <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">99</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span>, school <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">x</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;daedalus_country&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">Canada</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Demography: 1993132, 5949109, 22966942, and 6832974</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Community contact matrix:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Default contact matrix:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> * setting name: "home"; found 1 more setting: "school"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   99   99   99   99</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   99   99   99   99</span>

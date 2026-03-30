@@ -6,7 +6,7 @@ Generic and methods for S3 classes for safely getting class parameters.
 
 ``` r
 # S3 method for class 'daedalus_country'
-get_data(x, to_get, ...)
+get_data(x, to_get, setting = c("default", "all"), ...)
 
 # S3 method for class 'daedalus_infection'
 get_data(x, to_get, ...)
@@ -34,6 +34,11 @@ get_data(x, ...)
 - to_get:
 
   A string giving the name of the element of `x` to return.
+
+- setting:
+
+  Optional string for a contact setting. Defaults to the first provided
+  contact matrix if multiple are present.
 
 - ...:
 

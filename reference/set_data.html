@@ -19,7 +19,7 @@ this way."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,7 @@ this way."></head><body>
     <li><a class="dropdown-item" href="../articles/timed_response.html">Modelling time-limited economic closures</a></li>
     <li><a class="dropdown-item" href="../articles/pandemic_costs.html">Evaluating the costs of pandemic scenarios</a></li>
     <li><a class="dropdown-item" href="../articles/infection_parameter_uncertainty.html">Modelling outcomes under uncertainty in infection parameters</a></li>
+    <li><a class="dropdown-item" href="../articles/multiple_contact_settings.html">Modelling multiple contact settings</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
@@ -64,7 +65,7 @@ this way."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Set parameters in DAEDALUS classes</h1>
-      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/R/class_country.R" class="external-link"><code>R/class_country.R</code></a>, <a href="https://github.com/jameel-institute/daedalus/blob/main/R/class_infection.R" class="external-link"><code>R/class_infection.R</code></a>, <a href="https://github.com/jameel-institute/daedalus/blob/main/R/class_vaccination.R" class="external-link"><code>R/class_vaccination.R</code></a>, and 1 more</small>
+      <small class="dont-index">Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/R/class_infection.R" class="external-link"><code>R/class_infection.R</code></a>, <a href="https://github.com/jameel-institute/daedalus/blob/main/R/class_vaccination.R" class="external-link"><code>R/class_vaccination.R</code></a>, <a href="https://github.com/jameel-institute/daedalus/blob/main/R/pkg_generics.R" class="external-link"><code>R/pkg_generics.R</code></a></small>
       <div class="d-none name"><code>set_data.Rd</code></div>
     </div>
 
@@ -77,10 +78,7 @@ this way.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'daedalus_country'</span></span>
-<span><span class="fu">set_data</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'daedalus_infection'</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'daedalus_infection'</span></span>
 <span><span class="fu">set_data</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'daedalus_vaccination'</span></span>
@@ -118,26 +116,13 @@ parameters to be changed, with their new values. The only values allowed for
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;daedalus_country&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">United Kingdom</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Demography: 3924490, 11762039, 39536463, and 12663012</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Community contact matrix:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Default contact matrix:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> * setting name: "total"; found no more settings</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             0-4      5-19    20-64       65+</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0-4   1.9157895 1.5379290 4.704999 0.2863619</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5-19  0.5131412 8.7339228 5.874591 0.7418483</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 20-64 0.4670302 1.7476822 7.830182 1.0685802</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 65+   0.1180517 0.7548304 3.531487 1.5212437</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> GNI (PPP $): <span style="color: #0000BB;">45870</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Hospital capacity: <span style="color: #00BB00;">26219</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">country_A</span> <span class="op">&lt;-</span> <span class="fu">set_data</span><span class="op">(</span><span class="va">country_A</span>, contact_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">country_A</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;daedalus_country&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">United Kingdom</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Demography: 3924490, 11762039, 39536463, and 12663012</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Community contact matrix:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    1    1    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    1    1    1    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    1    1    1    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]    1    1    1    1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> GNI (PPP $): <span style="color: #0000BB;">45870</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Hospital capacity: <span style="color: #00BB00;">26219</span></span>
 <span class="r-in"><span></span></span>

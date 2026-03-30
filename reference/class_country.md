@@ -10,12 +10,7 @@ characteristics for the DAEDALUS model.
 ## Usage
 
 ``` r
-daedalus_country(
-  country,
-  parameters = list(contact_matrix = NULL, contacts_workplace = NULL,
-    contacts_consumer_worker = NULL),
-  group_working_age = NULL
-)
+daedalus_country(country, contact_matrix = NULL, group_working_age = NULL)
 
 is_daedalus_country(x)
 
@@ -35,12 +30,12 @@ print(x, ...)
   or
   [daedalus.data::country_names](https://jameel-institute.github.io/daedalus.data/reference/country_names_codes.html).
 
-- parameters:
+- contact_matrix:
 
-  An optional named list of country parameters that are allowed to be
-  modified. Currently, users may only pass their own contact matrix,
-  workplace contacts, and consumer-worker contact matrix. If these are
-  not passed, default values are accessed from stored package data.
+  An optional named list of numeric matrices, representing age-specific
+  contact matrices in different contexts or settings. Defaults to
+  `NULL`, which selects the country-specific contact matrix provided in
+  [daedalus.data::country_data](https://jameel-institute.github.io/daedalus.data/reference/country_data.html).
 
 - group_working_age:
 
@@ -77,7 +72,8 @@ x
 #> <daedalus_country>
 #> • Name: Canada
 #> • Demography: 1993132, 5949109, 22966942, and 6832974
-#> • Community contact matrix:
+#> • Default contact matrix:
+#> • * setting name: "total"; found no more settings
 #>             0-4      5-19    20-64       65+
 #> 0-4   1.9157895 1.5235823 5.014414 0.3169637
 #> 5-19  0.5104463 8.7459756 6.322175 0.7948344
@@ -86,48 +82,18 @@ x
 #> • GNI (PPP $): 46050
 #> • Hospital capacity: 7989
 
-daedalus_country(
-  "United Kingdom",
-  parameters = list(contact_matrix = matrix(1, 4, 4))
-)
-#> <daedalus_country>
-#> • Name: United Kingdom
-#> • Demography: 3924490, 11762039, 39536463, and 12663012
-#> • Community contact matrix:
-#>      [,1] [,2] [,3] [,4]
-#> [1,]    1    1    1    1
-#> [2,]    1    1    1    1
-#> [3,]    1    1    1    1
-#> [4,]    1    1    1    1
-#> • GNI (PPP $): 45870
-#> • Hospital capacity: 26219
-
 # check whether `x` is a <country> object
 is_daedalus_country(x)
 #> [1] TRUE
 
-# assign class members
-# using set_data()
-set_data(x, contact_matrix = matrix(99, 4, 4))
-#> <daedalus_country>
-#> • Name: Canada
-#> • Demography: 1993132, 5949109, 22966942, and 6832974
-#> • Community contact matrix:
-#>      [,1] [,2] [,3] [,4]
-#> [1,]   99   99   99   99
-#> [2,]   99   99   99   99
-#> [3,]   99   99   99   99
-#> [4,]   99   99   99   99
-#> • GNI (PPP $): 46050
-#> • Hospital capacity: 7989
-
-# using assignment operators
-x$contact_matrix <- matrix(99, 4, 4)
+# using assignment operators; must be assigned as a list
+x$contact_matrix <- list(home = matrix(99, 4, 4), school = matrix(1, 4, 4))
 x
 #> <daedalus_country>
 #> • Name: Canada
 #> • Demography: 1993132, 5949109, 22966942, and 6832974
-#> • Community contact matrix:
+#> • Default contact matrix:
+#> • * setting name: "home"; found 1 more setting: "school"
 #>      [,1] [,2] [,3] [,4]
 #> [1,]   99   99   99   99
 #> [2,]   99   99   99   99

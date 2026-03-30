@@ -8,9 +8,6 @@ this way.
 ## Usage
 
 ``` r
-# S3 method for class 'daedalus_country'
-set_data(x, ...)
-
 # S3 method for class 'daedalus_infection'
 set_data(x, ...)
 
@@ -48,26 +45,13 @@ country_A
 #> <daedalus_country>
 #> • Name: United Kingdom
 #> • Demography: 3924490, 11762039, 39536463, and 12663012
-#> • Community contact matrix:
+#> • Default contact matrix:
+#> • * setting name: "total"; found no more settings
 #>             0-4      5-19    20-64       65+
 #> 0-4   1.9157895 1.5379290 4.704999 0.2863619
 #> 5-19  0.5131412 8.7339228 5.874591 0.7418483
 #> 20-64 0.4670302 1.7476822 7.830182 1.0685802
 #> 65+   0.1180517 0.7548304 3.531487 1.5212437
-#> • GNI (PPP $): 45870
-#> • Hospital capacity: 26219
-
-country_A <- set_data(country_A, contact_matrix = matrix(1, 4, 4))
-country_A
-#> <daedalus_country>
-#> • Name: United Kingdom
-#> • Demography: 3924490, 11762039, 39536463, and 12663012
-#> • Community contact matrix:
-#>      [,1] [,2] [,3] [,4]
-#> [1,]    1    1    1    1
-#> [2,]    1    1    1    1
-#> [3,]    1    1    1    1
-#> [4,]    1    1    1    1
 #> • GNI (PPP $): 45870
 #> • Hospital capacity: 26219
 

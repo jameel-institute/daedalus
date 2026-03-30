@@ -33,7 +33,8 @@ daedalus_country("Canada")
 #> <daedalus_country>
 #> • Name: Canada
 #> • Demography: 1993132, 5949109, 22966942, and 6832974
-#> • Community contact matrix:
+#> • Default contact matrix:
+#> • * setting name: "total"; found no more settings
 #>             0-4      5-19    20-64       65+
 #> 0-4   1.9157895 1.5235823 5.014414 0.3169637
 #> 5-19  0.5104463 8.7459756 6.322175 0.7948344
@@ -45,10 +46,7 @@ daedalus_country("Canada")
 # make a <daedalus_country> representing Canada
 # and modify contact patterns
 country_canada <- daedalus_country(
-  "Canada",
-  parameters = list(
-    contact_matrix = matrix(5, 4, 4) # uniform contacts across age groups
-  )
+  "Canada"
 )
 
 # print to examine; only some essential information is shown
@@ -56,12 +54,13 @@ country_canada
 #> <daedalus_country>
 #> • Name: Canada
 #> • Demography: 1993132, 5949109, 22966942, and 6832974
-#> • Community contact matrix:
-#>      [,1] [,2] [,3] [,4]
-#> [1,]    5    5    5    5
-#> [2,]    5    5    5    5
-#> [3,]    5    5    5    5
-#> [4,]    5    5    5    5
+#> • Default contact matrix:
+#> • * setting name: "total"; found no more settings
+#>             0-4      5-19    20-64       65+
+#> 0-4   1.9157895 1.5235823 5.014414 0.3169637
+#> 5-19  0.5104463 8.7459756 6.322175 0.7948344
+#> 20-64 0.4351641 1.6376280 7.821398 1.0350292
+#> 65+   0.1187166 0.7488765 3.639207 1.5142917
 #> • GNI (PPP $): 46050
 #> • Hospital capacity: 7989
 ```

@@ -7,10 +7,11 @@ articles:
   info_edu_value: info_edu_value.html
   info_life_value: info_life_value.html
   info_model_description: info_model_description.html
+  multiple_contact_settings: multiple_contact_settings.html
   pandemic_costs: pandemic_costs.html
   thresholded_response: thresholded_response.html
   timed_response: timed_response.html
-last_built: 2026-03-30T09:48Z
+last_built: 2026-03-30T10:11Z
 urls:
   reference: https://jameel-institute.github.io/daedalus/reference
   article: https://jameel-institute.github.io/daedalus/articles

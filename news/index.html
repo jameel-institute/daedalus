@@ -13,7 +13,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,7 @@
     <li><a class="dropdown-item" href="../articles/timed_response.html">Modelling time-limited economic closures</a></li>
     <li><a class="dropdown-item" href="../articles/pandemic_costs.html">Evaluating the costs of pandemic scenarios</a></li>
     <li><a class="dropdown-item" href="../articles/infection_parameter_uncertainty.html">Modelling outcomes under uncertainty in infection parameters</a></li>
+    <li><a class="dropdown-item" href="../articles/multiple_contact_settings.html">Modelling multiple contact settings</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
@@ -61,6 +62,20 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.5" id="daedalus-035">daedalus 0.3.5<a class="anchor" aria-label="anchor" href="#daedalus-035"></a></h2>
+<p>This patch version adds the ability pass multiple contact matrices associated with a <code>&lt;daedalus_country&gt;</code>, as a list argument to <code>daedalus_country(name, contact_matrix = list(...))</code>.</p>
+<p>The <code>dust2</code> system shared state and internals have been updated for this functionality. Some initial scaffolding for scaling each setting separately is in place on the C++ side.</p>
+<p>The new functionality is documented in the vignette <code>multiple_contact_settings.Rmd</code>.</p>
+<div class="section level3">
+<h3 id="breaking-changes-0-3-5">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-3-5"></a></h3>
+<p>The ability to pass additional parameters to a country object during construction are removed, and these modifications should be made after the object is created using <code>$&lt;-</code> as with any list.</p>
+</div>
+<div class="section level3">
+<h3 id="other-changes-0-3-5">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-3-5"></a></h3>
+<p>The <code>set_data.daedalus_country()</code> method has been removed.</p>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.4" id="daedalus-034">daedalus 0.3.4<a class="anchor" aria-label="anchor" href="#daedalus-034"></a></h2>
 <p>This patch version allows users to define custom names for <code>&lt;daedalus_vaccination&gt;</code> scenarios. <code><a href="../reference/class_vaccination.html">daedalus_vaccination()</a></code> treats all optional parameters as compulsory if a custom name is passed.</p>

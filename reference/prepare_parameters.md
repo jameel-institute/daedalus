@@ -7,7 +7,7 @@ classes.
 
 ``` r
 # S3 method for class 'daedalus_behaviour'
-prepare_parameters(x)
+prepare_parameters(x, ...)
 
 # S3 method for class 'daedalus_country'
 prepare_parameters(x, ...)

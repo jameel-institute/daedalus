@@ -13,7 +13,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,7 @@
     <li><a class="dropdown-item" href="../articles/timed_response.html">Modelling time-limited economic closures</a></li>
     <li><a class="dropdown-item" href="../articles/pandemic_costs.html">Evaluating the costs of pandemic scenarios</a></li>
     <li><a class="dropdown-item" href="../articles/infection_parameter_uncertainty.html">Modelling outcomes under uncertainty in infection parameters</a></li>
+    <li><a class="dropdown-item" href="../articles/multiple_contact_settings.html">Modelling multiple contact settings</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Model details: Calculating pandemic costs</h6></li>
     <li><a class="dropdown-item" href="../articles/info_life_value.html">Value of life-years lost</a></li>
@@ -218,10 +219,11 @@ the chosen vaccination strategy (as <code>1 - efficacy</code>).</p></li>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Vaccination: <span style="color: #BB00BB;">no vaccination</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Behaviour: <span style="color: #BB00BB;">no behaviour</span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># country passed as &lt;daedalus_country&gt; with some characteristics modified</span></span></span>
+<span class="r-in"><span><span class="co"># country passed as &lt;daedalus_country&gt; with a new 'total' contact matrix</span></span></span>
+<span class="r-in"><span><span class="va">conmat_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_data.html">get_data</a></span><span class="op">(</span><span class="fu"><a href="class_country.html">daedalus_country</a></span><span class="op">(</span><span class="st">"Canada"</span><span class="op">)</span>, <span class="st">"contact_matrix"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">country_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="class_country.html">daedalus_country</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="st">"Canada"</span>,</span></span>
-<span class="r-in"><span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>contact_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span> <span class="co"># uniform contacts</span></span></span>
+<span class="r-in"><span>  contact_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>total <span class="op">=</span> <span class="va">conmat_new</span> <span class="op">*</span> <span class="fl">2.0</span><span class="op">)</span> <span class="co"># simulate new data</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">daedalus</span><span class="op">(</span><span class="va">country_x</span>, <span class="st">"influenza_1918"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
