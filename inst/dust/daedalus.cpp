@@ -427,7 +427,7 @@ class daedalus_ode {
 
     /// get total contacts from infectious to other groups
     auto t_comm_inf_contacts =
-        cm_temp.contract(t_infectious, product_dims).broadcast(bcast);
+        cm_temp.contract(t_infectious, product_dims).eval().broadcast(bcast);
 
     auto t_foi_comm = beta_tmp * t_comm_inf_contacts;
 
@@ -471,7 +471,7 @@ class daedalus_ode {
     // add workplace infections within sectors as
     // (S_w * (C_w * I_w and C_cons_wo * I_cons))
     // NOTE: broadcasting for element-wise tensor mult
-    auto foi_total = t_foi_work.broadcast(bcast) + t_foi_cw.broadcast(bcast);
+    auto foi_total = (t_foi_work + t_foi_cw).broadcast(bcast);
     internal.sToE.slice(
         Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
         Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA}) +=

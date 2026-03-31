@@ -15,7 +15,7 @@
 #' daedalus_timed_npi(
 #'   start_time = c(10, 20, 30),
 #'   end_time = c(15, 25, 40),
-#'   openness = list( 
+#'   openness = list(
 #'     rep(1, 45),
 #'     rep(0.5, 45),
 #'     rep(0.2, 45)
