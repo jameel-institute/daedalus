@@ -62,21 +62,55 @@ make_conmat_large <- function(country, scaling = c("demography", "none")) {
     cm_provided
   )
 
-  array(
+  cm_settings = array(
     unlist(cms),
     c(n_strata, n_strata, length(cms))
+  )
+
+  cm_work = matrix(0.0, n_strata, n_strata)
+  diag(cm_work) = c(
+    rep(0.0, N_AGE_GROUPS),
+    make_work_contacts(country, "demography")
+  )
+  
+  cm_work[i_ECON_SECTORS, i_AGE_GROUPS] = 
+    cm_work[i_ECON_SECTORS, i_AGE_GROUPS] +
+    make_consumer_contacts(country, "demography")
+
+  abind::abind(
+    cm_settings,
+    cm_work
   )
 }
 
 #' @name prepare_contacts
-make_work_contacts <- function(country) {
-  country$contacts_workplace / country$workers
+make_work_contacts <- function(country, scaling = c("demography", "none")) {
+  cw = get_data(country, "contacts_workplace")
+
+  if (scaling == "demography") {
+    workers = get_data(country, "workers")
+    cw / workers
+  } else if (scaling == "none") {
+    cw
+  } else {
+    cli::cli_abort("Got unexpected option for `scaling`")
+  }
 }
 
 #' @name prepare_contacts
-make_consumer_contacts <- function(country) {
+make_consumer_contacts <- function(country, 
+  scaling = c("demography", "none")) {
   # col-wise divison by demography
-  country$contacts_consumer_worker %*% diag(1 / country$demography)
+  ccw = get_data(country, "contacts_consumer_worker")
+
+  if (scaling == "demography") {
+    demog = get_data(country, "demography")
+    ccw %*% diag(1 / demog)
+  } else if (scaling == "none") {
+    ccw
+  } else {
+    cli::cli_abort("Got unexpected option for `scaling`")
+  }
 }
 
 #' @name prepare_contacts

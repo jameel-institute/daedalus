@@ -85,7 +85,7 @@ daedalus_country <- function(
   # substitute defaults with non-NULL elements of parameters
   params <- daedalus.data::country_data[[name]]
   # add one worker to each sector to avoid division by zero
-  params$workers <- params$workers + 1
+  params$workers <- params$workers + 1.0
 
   # add value of statistical life (VSL)
   life_expectancy <- daedalus.data::life_expectancy[[name]]
@@ -122,9 +122,6 @@ daedalus_country <- function(
         "contacts_workplace"
       ]],
       contacts_consumer_worker = contacts_consumer_worker,
-      contacts_between_sectors = daedalus.data::economic_contacts[[
-        "contacts_between_sectors"
-      ]],
       vsl = vsl,
       gni = gni,
       life_expectancy = life_expectancy,
@@ -164,7 +161,6 @@ validate_daedalus_country <- function(x) {
     "contact_matrix",
     "contacts_workplace",
     "contacts_consumer_worker",
-    "contacts_between_sectors",
     "workers",
     "gva",
     "vsl",
@@ -239,21 +235,6 @@ validate_daedalus_country <- function(x) {
         x$contacts_consumer_worker,
         lower = 0, finite = TRUE
       ),
-    "Country `contacts_between_sectors` must be a 45x45 numeric matrix" =
-      checkmate::test_matrix(
-        x$contacts_between_sectors, "numeric",
-        any.missing = FALSE, nrows = N_ECON_SECTORS, ncols = N_ECON_SECTORS
-      ) && checkmate::test_numeric(
-        x$contacts_between_sectors,
-        lower = 0, finite = TRUE
-      ),
-    "Country `contacts_between_sectors` must have zero diagonal" =
-      checkmate::test_matrix(
-        x$contacts_between_sectors, "numeric",
-        any.missing = FALSE, nrows = N_ECON_SECTORS, ncols = N_ECON_SECTORS
-      ) && checkmate::test_subset(
-        x$contacts_between_sectors, 0
-      ),
     "Country `vsl` must be a 4-element vector of positive values" =
       checkmate::test_numeric(
         x$vsl,
@@ -318,8 +299,8 @@ print.daedalus_country <- function(x, ...) {
 format.daedalus_country <- function(x, ...) {
   chkDots(...)
 
-  n_settings <- length(x$contact_matrix)
-  settings <- names(x$contact_matrix)
+  n_settings <- length(x$contact_matrix) + 1 # add one for workplace
+  settings <- c(names(x$contact_matrix), "workplace")
   default_setting <- if (n_settings > 1) first(settings) else "total" # nolint
 
   # NOTE: rough implementations, better scaling e.g. to millions could be added
@@ -394,8 +375,8 @@ prepare_parameters.daedalus_country <- function(x, ...) {
   validate_daedalus_country(x)
 
   cm <- make_conmat_large(x)
-  cm_work <- make_work_contacts(x)
-  cm_cons_work <- make_consumer_contacts(x)
+  # cm_work <- make_work_contacts(x)
+  # cm_cons_work <- make_consumer_contacts(x)
   hospital_capacity <- get_data(x, "hospital_capacity")
 
   n_age_groups <- length(get_data(x, "demography"))
@@ -403,9 +384,9 @@ prepare_parameters.daedalus_country <- function(x, ...) {
 
   list(
     cm = cm,
-    cm_cons_work = cm_cons_work,
-    cm_work = cm_work,
-    n_settings = length(x$contact_matrix), # should be a function?
+    # cm_cons_work = cm_cons_work,
+    # cm_work = cm_work,
+    n_settings = length(x$contact_matrix) + 1, # should be a function?
     n_age_groups = n_age_groups,
     n_econ_groups = n_econ_groups,
     popsize = sum(get_data(x, "demography")),
@@ -539,4 +520,10 @@ validate_contact_matrix <- function(x, name) {
       got an object of class {.cls {class(x)}}."
     )
   }
+}
+
+count_settings = function(country) {
+  stopifnot(class(country) == "daedalus_country")
+
+  length(country$contact_matrix) + 1
 }

@@ -31,6 +31,7 @@ BugReports: https://github.com/jameel-institute/daedalus/issues
 Depends: 
     R (>= 3.5)
 Imports: 
+    abind,
     checkmate,
     cli,
     daedalus.data (>= 0.0.3),
