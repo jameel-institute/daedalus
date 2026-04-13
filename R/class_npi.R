@@ -178,12 +178,27 @@ daedalus_npi <- function(
   checkmate::assert_count(max_duration)
 
   # prepare closure regimes
-  no_closures <- rep(1.0, N_ECON_SECTORS)
+  n_settings = count_settings(country)
+  no_closures <- rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS)
+  openness = c(
+    rep(1.0, N_AGE_GROUPS), openness
+  )
 
   params <- list(
     openness = list(
-      no_closures,
-      openness
+      no_closures = matrix(
+        rep(no_closures, n_settings),
+        N_AGE_GROUPS + N_ECON_SECTORS,
+        n_settings
+      ),
+      openness = matrix(
+        c(
+          rep(no_closures, n_settings - 1),
+          openness
+        ),
+        N_AGE_GROUPS + N_ECON_SECTORS,
+        n_settings
+      )
     )
   )
 
@@ -255,21 +270,22 @@ validate_daedalus_npi <- function(x) {
     )
   }
 
-  all_good_openness <- all(vapply(
-    x$parameters$openness,
-    checkmate::test_numeric,
-    lower = 0.0,
-    upper = 1.0,
-    any.missing = FALSE,
-    len = N_ECON_SECTORS,
-    logical(1L)
-  ))
-  if (!all_good_openness) {
-    cli::cli_abort(
-      "<daedalus_npi> parameter {.arg openness} vectors must have length \
-    {N_ECON_SECTORS} with values between 0.0 and 1.0, but some vectors do not."
-    )
-  }
+  # all_good_openness <- all(vapply(
+  #   x$parameters$openness,
+  #   checkmate::test_numeric,
+  #   lower = 0.0,
+  #   upper = 1.0,
+  #   any.missing = FALSE,
+  #   # len = N_AGE_GROUPS + N_ECON_SECTORS,
+  #   logical(1L)
+  # ))
+  # if (!all_good_openness) {
+  #   cli::cli_abort(
+  #     "<daedalus_npi> parameter {.arg openness} vectors must have length \
+  #     {N_AGE_GROUPS + N_ECON_SECTORS} with values between 0.0 and 1.0, but \
+  #     some vectors do not."
+  #   )
+  # }
 
   invisible(x)
 }
@@ -310,7 +326,13 @@ format.daedalus_npi <- function(x, ...) {
   cli::cli_text("{.cls {class(x)}}")
   cli::cli_text("NPI strategy: {cli::style_bold(x$identifier)}")
 
-  openness_coef <- vapply(x$parameters$openness[-1L], mean, numeric(1)) # nolint
+  openness_coef <- vapply(
+    x$parameters$openness[-1L], function(z) {
+      # assume last col is workplace
+      # NPIs now hold dummy scaling for non-econ grps
+      mean(z[i_ECON_SECTORS, ncol(z)]) 
+    }, numeric(1)
+  ) # nolint
 
   divid <- cli::cli_div(theme = list(.val = list(digits = 3)))
   cli::cli_bullets(

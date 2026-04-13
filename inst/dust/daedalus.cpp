@@ -72,14 +72,12 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(popsize, constant = TRUE, type = "int")]]
 // [[dust2::parameter(cm, constant = TRUE)]]
 // [[dust2::parameter(n_settings, constant = TRUE)]]
-// [[dust2::parameter(cm_work, constant = TRUE)]]
-// [[dust2::parameter(cm_cons_work, constant = TRUE)]]
 // [[dust2::parameter(demography, constant = TRUE)]]
 // [[dust2::parameter(openness, constant = TRUE)]]
 // [[dust2::parameter(behav_enum, constant = TRUE)]]
 // [[dust2::parameter(behav_params, constant = TRUE)]]
 class daedalus_ode {
- public:
+public:
   daedalus_ode() = delete;
 
   using real_type = double;
@@ -96,7 +94,7 @@ class daedalus_ode {
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
     const TensorAry cm;
     const size_t n_settings;
-    const TensorMat cm_cons_work, cm_work;
+    // const TensorMat cm_cons_work, cm_work;
     Eigen::MatrixXd ngm;
     Eigen::ArrayXd demography;
     const TensorMat susc;
@@ -124,7 +122,7 @@ class daedalus_ode {
     Eigen::ArrayXd p_susc;
 
     // related to contact matrix settings
-    TensorMat cm_temp;
+    TensorAry cm_temp;
     TensorVec scaling_factor;
   };
 
@@ -152,8 +150,8 @@ class daedalus_ode {
     p_susc.setConstant(1.0);
 
     // summed contact matrix after scaling by setting-specific factor
-    TensorMat cm_temp(shared.n_strata, shared.n_strata);
-    cm_temp.setConstant(1.0);  // should this be zero for safety?
+    TensorAry cm_temp(shared.n_strata, shared.n_strata, shared.n_settings);
+    cm_temp.setConstant(1.0); // should this be zero for safety?
 
     // contact matrix scaling factor by setting
     TensorVec scaling_factor(shared.n_settings);
@@ -219,7 +217,7 @@ class daedalus_ode {
   }
 
   static size_t size_special() {
-    return 8;  // flags and start times
+    return 8; // flags and start times
   }
 
   /// @brief Initialise shared parameters.
@@ -261,24 +259,25 @@ class daedalus_ode {
     // contact matrix --- now a Tensor for contact settings
     const size_t n_settings = dust2::r::read_size(pars, "n_settings", 1);
     const std::vector<size_t> vec_cm_dims = {n_strata, n_strata,
-                                             n_settings};  // for square matrix
+                                             n_settings}; // for square matrix
     const dust2::array::dimensions<3> cm_dims(vec_cm_dims.begin());
     TensorAry cm(static_cast<Eigen::Index>(n_strata),
                  static_cast<Eigen::Index>(n_strata),
                  static_cast<Eigen::Index>(n_settings));
     dust2::r::read_real_array(pars, cm_dims, cm.data(), "cm", true);
 
-    // contacts from consumers to workers
-    const std::vector<size_t> vec_cm_cw_dims = {n_econ_groups, n_age_groups};
-    const dust2::array::dimensions<2> cm_cw_dims(vec_cm_cw_dims.begin());
-    TensorMat cm_cw(n_econ_groups, n_age_groups);
-    dust2::r::read_real_array(pars, cm_cw_dims, cm_cw.data(), "cm_cons_work",
-                              true);
+    // // contacts from consumers to workers
+    // const std::vector<size_t> vec_cm_cw_dims = {n_econ_groups, n_age_groups};
+    // const dust2::array::dimensions<2> cm_cw_dims(vec_cm_cw_dims.begin());
+    // TensorMat cm_cw(n_econ_groups, n_age_groups);
+    // dust2::r::read_real_array(pars, cm_cw_dims, cm_cw.data(), "cm_cons_work",
+    //                           true);
 
-    // within-sector contacts
-    TensorMat cm_work(n_econ_groups, 1);
-    dust2::r::read_real_vector(pars, n_econ_groups, cm_work.data(), "cm_work",
-                               true);
+    // // within-sector contacts
+    // TensorMat cm_work(n_econ_groups, 1);
+    // dust2::r::read_real_vector(pars, n_econ_groups, cm_work.data(),
+    // "cm_work",
+    //                            true);
 
     // NEXT-GENERATION-MATRIX
     // pass the initial NGM
@@ -348,7 +347,7 @@ class daedalus_ode {
         eta, hfr,
         nu, psi,
         n_strata, n_age_groups, n_econ_groups, popsize,
-        cm, n_settings, cm_cw, cm_work, ngm, demography,
+        cm, n_settings, ngm, demography,
         susc,
         openness,
         behav_enum, behav_fn,
@@ -384,7 +383,7 @@ class daedalus_ode {
   static void initial(real_type time, const shared_state &shared,
                       const internal_state &internal,
                       const rng_state_type &rng_state, real_type *state_next) {
-    state_next[0] = 0.0;  // dummy state, see `R/daedalus.R` for state setting
+    state_next[0] = 0.0; // dummy state, see `R/daedalus.R` for state setting
   }
 
   /// @brief RHS of the ODE model.
@@ -395,7 +394,7 @@ class daedalus_ode {
   /// @param state_deriv State change or dX.
   static void rhs(real_type time, const real_type *state,
                   const shared_state &shared,
-                  internal_state &internal,  // NOLINT
+                  internal_state &internal, // NOLINT
                   real_type *state_deriv) {
     // TODO(pratik): prefer to not use these
     const int n_strata = shared.n_strata;
@@ -425,7 +424,7 @@ class daedalus_ode {
 
     // calculate new deaths and new hospitalisations
     internal.hdToD =
-        shared.gamma_H_death * t_x.chip(iHd, i_COMPS);  // new deaths
+        shared.gamma_H_death * t_x.chip(iHd, i_COMPS); // new deaths
 
     /// BEHAVIOUR SCALING OF TRANSMISSION
     Eigen::Tensor<double, 0> new_deaths = internal.hdToD.sum();
@@ -449,11 +448,13 @@ class daedalus_ode {
         (t_x.chip(iIs, i_COMPS) + (t_x.chip(iIa, i_COMPS) * shared.epsilon))
             .sum(Eigen::array<Eigen::Index, 1>{1})
             .reshape(Eigen::array<Eigen::Index, 2>{n_strata, 1});
-
-    /// scale contacts in different settings, and sum for total contacts
-    // internal.scaling_factor is a placeholder
-    internal.cm_temp =
-        shared.cm.contract(internal.scaling_factor, vec_tensor_dims);
+    
+    const size_t id_npi_regime = state[shared.i_npi_flag];
+    
+    /// scale contacts in different settings
+    // TODO: check if squared scaling is okay for consumer-worker contacts!!!
+    internal.cm_temp = daedalus::helpers::scale_cm(internal.cm_temp, 
+        shared.openness[id_npi_regime]);
 
     /// get total contacts from infectious to other groups
     internal.t_comm_inf_contacts =
@@ -462,51 +463,51 @@ class daedalus_ode {
 
     internal.t_foi_comm = beta_tmp * internal.t_comm_inf_contacts;
 
-    // calculate C * I_w and C * I_cons for a n_econ_groups-length array
-    internal.t_work_inf_contacts =
-        shared.cm_work *  // this is a 2D tensor with dims (n_econ_grps, 1)
-        internal.t_infectious.slice(
-            Eigen::array<Eigen::Index, 2>{n_strata - n_econ_groups, 0},
-            Eigen::array<Eigen::Index, 2>{n_econ_groups, 1});
+    // // calculate C * I_w and C * I_cons for a n_econ_groups-length array
+    // internal.t_work_inf_contacts =
+    //     shared.cm_work * // this is a 2D tensor with dims (n_econ_grps, 1)
+    //     internal.t_infectious.slice(
+    //         Eigen::array<Eigen::Index, 2>{n_strata - n_econ_groups, 0},
+    //         Eigen::array<Eigen::Index, 2>{n_econ_groups, 1});
 
-    const size_t id_npi_regime = static_cast<size_t>(state[shared.i_npi_flag]);
+    
 
-    internal.t_foi_work = beta_tmp * internal.t_work_inf_contacts *
-                          shared.openness[id_npi_regime] *
-                          shared.openness[id_npi_regime];
+    // internal.t_foi_work = beta_tmp * internal.t_work_inf_contacts *
+    //                       shared.openness[id_npi_regime] *
+    //                       shared.openness[id_npi_regime];
 
-    internal.t_comm_inf_age = internal.t_infectious.slice(
-        Eigen::array<Eigen::Index, 2>{0, 0},
-        Eigen::array<Eigen::Index, 2>{n_age_groups, 1});
+    // internal.t_comm_inf_age = internal.t_infectious.slice(
+    //     Eigen::array<Eigen::Index, 2>{0, 0},
+    //     Eigen::array<Eigen::Index, 2>{n_age_groups, 1});
 
-    internal.t_cw_inf_contacts =
-        shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
+    // internal.t_cw_inf_contacts =
+    //     shared.cm_cons_work.contract(internal.t_comm_inf_age, product_dims);
 
-    internal.t_foi_cw =
-        beta_tmp * shared.openness[id_npi_regime] * internal.t_cw_inf_contacts;
+    // internal.t_foi_cw =
+    //     beta_tmp * shared.openness[id_npi_regime] * internal.t_cw_inf_contacts;
 
     // initial calculation of new infections in the community
     internal.sToE =
-        t_x.chip(iS, i_COMPS) * internal.t_foi_comm;  // dims (n_strata, 2)
+        t_x.chip(iS, i_COMPS) * internal.t_foi_comm; // dims (n_strata, 2)
 
-    internal.susc_workers =
-        t_x.chip(iS, i_COMPS)
-            .slice(Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
-                   Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA});
+    // internal.susc_workers =
+    //     t_x.chip(iS, i_COMPS)
+    //         .slice(Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
+    //                Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA});
 
     internal.p_susc =
         daedalus::helpers::get_comp_age(t_x, daedalus::constants::iS) /
         (shared.demography -
          daedalus::helpers::get_comp_age(t_x, daedalus::constants::iD));
 
-    // add workplace infections within sectors as
-    // (S_w * (C_w * I_w and C_cons_wo * I_cons))
-    // NOTE: broadcasting for element-wise tensor mult
-    internal.sToE.slice(
-        Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
-        Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA}) +=
-        (internal.susc_workers * (internal.t_foi_work.broadcast(bcast) +
-                                  internal.t_foi_cw.broadcast(bcast)));
+    // // add workplace infections within sectors as
+    // // (S_w * (C_w * I_w and C_cons_wo * I_cons))
+    // // NOTE: broadcasting for element-wise tensor mult
+    // internal.sToE.slice(
+    //     Eigen::array<Eigen::Index, 2>{n_age_groups, 0},
+    //     Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA}) +=
+    //     (internal.susc_workers * (internal.t_foi_work.broadcast(bcast) +
+    //                               internal.t_foi_cw.broadcast(bcast)));
 
     // element-wise mult with susceptibility matrix to reduce number of
     // vaccinated infected S => E
@@ -580,7 +581,7 @@ class daedalus_ode {
   /// @return Probably an array of zeros.
   static auto zero_every(const shared_state &shared) {
     return dust2::zero_every_type<real_type>{
-        {1, {shared.i_ipr}}};  // zero IPR value
+        {1, {shared.i_ipr}}}; // zero IPR value
   }
 
   // NOLINTBEGIN

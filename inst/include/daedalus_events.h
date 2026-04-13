@@ -462,7 +462,8 @@ inline const std::vector<TensorMat> response::get_openness_coefs() {
   // NOTE: crude - clean up?
   for (size_t i = 0; i < n_regimes; i++) {
     cpp11::doubles tmp_param = openness[i];
-    TensorMat tmp_openness(daedalus::constants::DDL_N_ECON_GROUPS, 1);
+    TensorMat tmp_openness(daedalus::constants::DDL_N_TOTAL_GROUPS, 
+      daedalus::constants::DDL_N_CON_SETTINGS);
     std::copy(tmp_param.begin(), tmp_param.end(), tmp_openness.data());
 
     openness_coefs[i] = tmp_openness;

@@ -168,6 +168,32 @@ inline const Eigen::ArrayXd get_comp_age(
 
   return comp_age;
 }
+
+/// @brief Colwise mult of 3D tensor layers with matrix cols
+/// @param cm A rank 3 tensor with the same number of rows and cols as rows in
+/// scaling.
+/// @param scaling A rank 2 tensor M with as many cols as layers in cm.
+/// @return A rank 3 tensor of the dims of T, and which serves as a replacement
+/// for T in calculations.
+inline daedalus::types::TensorAry<double> scale_cm(
+    const daedalus::types::TensorAry<double> &cm,
+    const daedalus::types::TensorMat<double> &scaling,
+    const size_t n_settings = 2) {
+  daedalus::types::TensorAry<double> result = cm;
+
+  size_t N = cm.dimension(0);
+
+  for (size_t setting = 0; setting < n_settings; setting++) {
+    for (size_t row = 0; row < N; row++) {
+      for (size_t col = 0; col < N; col++) {
+        result(row, col, setting) *=
+            (scaling(col, setting) * scaling(col, setting));  // squared scaling
+      }
+    }
+  }
+
+  return result;
+}
 }  // namespace helpers
 
 }  // namespace daedalus
