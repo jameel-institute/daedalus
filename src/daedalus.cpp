@@ -73,6 +73,7 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(n_econ_groups, constant = TRUE, type = "int")]]
 // [[dust2::parameter(popsize, constant = TRUE, type = "int")]]
 // [[dust2::parameter(cm, constant = TRUE)]]
+// [[dust2::parameter(ngm, constant = TRUE)]]
 // [[dust2::parameter(n_settings, constant = TRUE)]]
 // [[dust2::parameter(demography, constant = TRUE)]]
 // [[dust2::parameter(openness, constant = TRUE)]]
@@ -148,7 +149,7 @@ public:
     TensorMat t_comm_inf_age(shared.n_age_groups, N_VAX_STRATA);
     t_comm_inf_age.setZero();
 
-    Eigen::ArrayXd p_susc(shared.n_age_groups);
+    Eigen::ArrayXd p_susc(shared.n_strata);
     p_susc.setConstant(1.0);
 
     // summed contact matrix after scaling by setting-specific factor
@@ -259,9 +260,9 @@ public:
 
     // CONTACT PARAMETERS (MATRICES)
     // contact matrix --- now a Tensor for contact settings
-    const size_t n_settings = dust2::r::read_size(pars, "n_settings", 1);
+    const size_t n_settings = dust2::r::read_size(pars, "n_settings", 2);
     const std::vector<size_t> vec_cm_dims = {n_strata, n_strata,
-                                             n_settings}; // for square matrix
+                                             n_settings}; // for 3D tensor
     const dust2::array::dimensions<3> cm_dims(vec_cm_dims.begin());
     TensorAry cm(static_cast<Eigen::Index>(n_strata),
                  static_cast<Eigen::Index>(n_strata),
@@ -283,15 +284,15 @@ public:
 
     // NEXT-GENERATION-MATRIX
     // pass the initial NGM
-    const std::vector<size_t> vec_ngm_dims(2, n_age_groups);
+    const std::vector<size_t> vec_ngm_dims(2, n_strata);
     const dust2::array::dimensions<2> ngm_dims(vec_ngm_dims.begin());
-    Eigen::MatrixXd ngm(n_age_groups, n_age_groups);
+    Eigen::MatrixXd ngm(n_strata, n_strata);
     dust2::r::read_real_array(pars, ngm_dims, ngm.data(), "ngm", true);
 
     // DEMOGRAPHY
-    Eigen::ArrayXd demography(n_age_groups);
+    Eigen::ArrayXd demography(n_strata);
     demography.setConstant(1.0);
-    dust2::r::read_real_vector(pars, n_age_groups, demography.data(),
+    dust2::r::read_real_vector(pars, n_strata, demography.data(),
                                "demography", true);
 
     // VACCINATION PARAMETERS
@@ -398,6 +399,7 @@ public:
                   const shared_state &shared,
                   internal_state &internal, // NOLINT
                   real_type *state_deriv) {
+    
     // TODO(pratik): prefer to not use these
     const int n_strata = shared.n_strata;
     const int n_econ_groups = shared.n_econ_groups;
@@ -455,12 +457,15 @@ public:
     
     /// scale contacts in different settings
     // TODO: check if squared scaling is okay for consumer-worker contacts!!!
-    internal.cm_temp = daedalus::helpers::scale_cm(internal.cm_temp, 
-        shared.openness[id_npi_regime]);
+    auto cm_temp = daedalus::helpers::scale_cm(shared.cm, 
+        shared.openness[id_npi_regime], shared.n_settings);
+
+    auto cm_sum = cm_temp.chip(0, 2); // TODO: not really sum, using first layer
+    // .sum(Eigen::array<Eigen::Index, 1>{2}); // sum over dim 2
 
     /// get total contacts from infectious to other groups
     internal.t_comm_inf_contacts =
-        internal.cm_temp.contract(internal.t_infectious, product_dims)
+        cm_sum.contract(internal.t_infectious, product_dims)
             .broadcast(bcast);
 
     internal.t_foi_comm = beta_tmp * internal.t_comm_inf_contacts;
@@ -498,9 +503,9 @@ public:
     //                Eigen::array<Eigen::Index, 2>{n_econ_groups, N_VAX_STRATA});
 
     internal.p_susc =
-        daedalus::helpers::get_comp_age(t_x, daedalus::constants::iS) /
+        daedalus::helpers::get_comp(t_x, daedalus::constants::iS) /
         (shared.demography -
-         daedalus::helpers::get_comp_age(t_x, daedalus::constants::iD));
+         daedalus::helpers::get_comp(t_x, daedalus::constants::iD));
 
     // // add workplace infections within sectors as
     // // (S_w * (C_w * I_w and C_cons_wo * I_cons))
