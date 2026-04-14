@@ -382,6 +382,12 @@ prepare_parameters.daedalus_country <- function(x, ...) {
   n_age_groups <- length(get_data(x, "demography"))
   n_econ_groups <- length(get_data(x, "workers"))
 
+  # get stratum counts
+  workers = get_data(x, "workers")
+  demography = get_data(x, "demography")
+  demography[i_WORKING_AGE] = demography[i_WORKING_AGE] - sum(workers)
+  demography = c(demography, workers)
+
   list(
     cm = cm,
     # cm_cons_work = cm_cons_work,
@@ -391,7 +397,7 @@ prepare_parameters.daedalus_country <- function(x, ...) {
     n_econ_groups = n_econ_groups,
     popsize = sum(get_data(x, "demography")),
     hospital_capacity = hospital_capacity,
-    demography = get_data(x, "demography")
+    demography = demography
   )
 }
 

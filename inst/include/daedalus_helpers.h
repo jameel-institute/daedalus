@@ -169,16 +169,33 @@ inline const Eigen::ArrayXd get_comp_age(
   return comp_age;
 }
 
+
+inline const Eigen::ArrayXd get_comp(
+  const daedalus::types::TensorAry<double> &state,
+  const size_t &idx_compartment) {
+  daedalus::types::TensorVec<double> t_x_comp =
+      state.chip(idx_compartment, daedalus::constants::i_COMPS)
+          .sum(Eigen::array<Eigen::Index, 1>{1});
+
+  Eigen::ArrayXd comp(t_x_comp.dimension(0));
+  for (size_t i = 0; i < t_x_comp.size(); i++) {
+    comp(i) = t_x_comp(i);
+  }
+
+  return comp;
+}
+
 /// @brief Colwise mult of 3D tensor layers with matrix cols
 /// @param cm A rank 3 tensor with the same number of rows and cols as rows in
 /// scaling.
 /// @param scaling A rank 2 tensor M with as many cols as layers in cm.
+/// @param n_settings Number of settings (layers in cm and columns in scaling).
 /// @return A rank 3 tensor of the dims of T, and which serves as a replacement
 /// for T in calculations.
 inline daedalus::types::TensorAry<double> scale_cm(
     const daedalus::types::TensorAry<double> &cm,
     const daedalus::types::TensorMat<double> &scaling,
-    const size_t n_settings = 2) {
+    const size_t n_settings) {
   daedalus::types::TensorAry<double> result = cm;
 
   size_t N = cm.dimension(0);
