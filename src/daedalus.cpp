@@ -101,7 +101,6 @@ class daedalus_ode {
     Eigen::MatrixXd ngm;
     Eigen::ArrayXd demography;
     const TensorMat susc;
-    const std::vector<TensorMat> openness;
     const std::vector<TensorMat> cm_regimes;
 
     // behavioural module active
@@ -347,8 +346,7 @@ class daedalus_ode {
         nu, psi,
         n_strata, n_age_groups, n_econ_groups, popsize,
         cm, n_settings, ngm, demography,
-        susc,
-        openness, cm_regimes,
+        susc, cm_regimes,
         behav_enum, behav_fn,
         i_ipr, i_npi_flag, i_vax_flag, i_behav_flag, i_hosp_overflow_flag,
         npi, vaccination, hosp_cap_exceeded
@@ -450,20 +448,9 @@ class daedalus_ode {
 
     const int id_npi_regime = state[shared.i_npi_flag];
 
-    // TODO: THIS IS VERY SLOW AND NEEDS TO BE FIXED!!
-    /// scale contacts in different settings
-    // TODO: check if squared scaling is okay for consumer-worker contacts!!!
-    // daedalus::helpers::scale_cm(internal.cm_temp, shared.cm,
-    //                             shared.openness[id_npi_regime],
-    //                             shared.n_settings);
-
-    auto cm_sum = id_npi_regime > 0 ? 
-        shared.cm.sum(Eigen::array<Eigen::Index, 1>{2}) : 
-        shared.cm_regimes[id_npi_regime];
-
     /// get total contacts from infectious to other groups
     internal.t_comm_inf_contacts =
-        cm_sum.contract(internal.t_infectious, product_dims)
+        shared.cm_regimes[id_npi_regime].contract(internal.t_infectious, product_dims)
             .eval()
             .broadcast(bcast);
 
