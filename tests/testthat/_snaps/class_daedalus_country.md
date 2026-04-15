@@ -7,7 +7,7 @@
       * Name: Canada
       * Demography: 1993132, 5949109, 22966942, and 6832974
       * Default contact matrix:
-      * * setting name: "total"; found no more settings
+      * * setting name: "total"; found 1 more setting: "workplace"
     Output
                   0-4      5-19    20-64       65+
       0-4   1.9157895 1.5235823 5.014414 0.3169637

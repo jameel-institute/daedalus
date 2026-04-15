@@ -54,15 +54,16 @@ Passing the name as a string automatically accesses the default parameters
 of an infection. Create and pass a \verb{<daedalus_infection>} to tweak infection
 parameters using \code{\link[=daedalus_infection]{daedalus_infection()}}.}
 
-\item{openness}{For \code{daedalus_npi()}, an optional numeric vector giving the openness of each
-economic sector in the model when the NPI is in effect.
+\item{openness}{For \code{daedalus_npi()}, an optional numeric matrix giving the openness of each
+setting in the model when the NPI is in effect.
 
-For \code{daedalus_timed_npi()}, a list of numeric vectors giving the openness
+For \code{daedalus_timed_npi()}, a list of numeric matrices giving the openness
 coefficients for each interval specified by corresponding elements of
 \code{start_time} and \code{end_time}.
 
-Expected to have a length of \code{N_ECON_SECTORS} (currently 45), with all values
-are in the range \eqn{[0, 1]},}
+Expected to have a minimum size of \code{N_ECON_SECTORS + N_AGE_GROUPS}
+(currently 98), corresponding to two settings with 49 strata per setting,
+with all values are in the range \eqn{[0, 1]},}
 
 \item{start_time}{For \code{daedalus_npi()}, a single number giving the number of days after the
 start of the model that the NPI response begins. Defaults to 30.
@@ -129,13 +130,24 @@ daedalus_npi(
 )
 
 # time-limited NPI with multiple phases
+phase_1 <- cbind(
+  rep(1, 49),
+  rep(0.5, 49)
+)
+phase_2 <- cbind(
+  rep(1, 49),
+  rep(0.3, 49)
+)
+phase_3 <- cbind(
+  rep(1, 49),
+  rep(0.8, 49)
+)
+
 daedalus_timed_npi(
   start_time = c(10, 20, 30),
   end_time = c(15, 25, 40),
   openness = list(
-    rep(1, 45),
-    rep(0.5, 45),
-    rep(0.2, 45)
+    phase_1, phase_2, phase_3
   ),
   country = "GBR"
 )
