@@ -28,7 +28,16 @@ check:
 check_all:
 	${RSCRIPT} -e "rcmdcheck::rcmdcheck(args = c('--as-cran', '--no-manual'))"
 
+# Linting targets
+format-lint: format-lint-r format-lint-cpp
+
+format-lint-r:
+	@./scripts/format-lint-r.sh
+
+format-lint-cpp:
+	@./scripts/format-lint-cpp.sh
+
 clean:
 	rm -f src/*.o src/*.so src/*.gcda src/*.gcno src/*.gcov
 
-.PHONY: clean all test document install
+.PHONY: clean all test document install format-lint format-lint-r format-lint-cpp
