@@ -62,18 +62,18 @@ make_conmat_large <- function(country, scaling = c("demography", "none")) {
     cm_provided
   )
 
-  cm_settings = array(
+  cm_settings <- array(
     unlist(cms),
     c(n_strata, n_strata, length(cms))
   )
 
-  cm_work = matrix(0.0, n_strata, n_strata)
-  diag(cm_work) = c(
+  cm_work <- matrix(0.0, n_strata, n_strata)
+  diag(cm_work) <- c(
     rep(0.0, N_AGE_GROUPS),
     make_work_contacts(country, "demography")
   )
-  
-  cm_work[i_ECON_SECTORS, i_AGE_GROUPS] = 
+
+  cm_work[i_ECON_SECTORS, i_AGE_GROUPS] <-
     cm_work[i_ECON_SECTORS, i_AGE_GROUPS] +
     make_consumer_contacts(country, "demography")
 
@@ -85,10 +85,10 @@ make_conmat_large <- function(country, scaling = c("demography", "none")) {
 
 #' @name prepare_contacts
 make_work_contacts <- function(country, scaling = c("demography", "none")) {
-  cw = get_data(country, "contacts_workplace")
+  cw <- get_data(country, "contacts_workplace")
 
   if (scaling == "demography") {
-    workers = get_data(country, "workers")
+    workers <- get_data(country, "workers")
     cw / workers
   } else if (scaling == "none") {
     cw
@@ -98,36 +98,18 @@ make_work_contacts <- function(country, scaling = c("demography", "none")) {
 }
 
 #' @name prepare_contacts
-make_consumer_contacts <- function(country, 
-  scaling = c("demography", "none")) {
+make_consumer_contacts <- function(country, scaling = c("demography", "none")) {
   # col-wise divison by demography
-  ccw = get_data(country, "contacts_consumer_worker")
+  ccw <- get_data(country, "contacts_consumer_worker")
 
   if (scaling == "demography") {
-    demog = get_data(country, "demography")
+    demog <- get_data(country, "demography")
     ccw %*% diag(1 / demog)
   } else if (scaling == "none") {
     ccw
   } else {
     cli::cli_abort("Got unexpected option for `scaling`")
   }
-}
-
-#' @name prepare_contacts
-make_full_contacts <- function(country) {
-  # add workforce weighted workplace contacts to the age-based contact matrix
-  cm <- country$contact_matrix[[1L]]
-  cm[i_WORKING_AGE, i_WORKING_AGE] <- cm[i_WORKING_AGE, i_WORKING_AGE] +
-    stats::weighted.mean(country$contacts_workplace, country$workers)
-  cm[i_WORKING_AGE, ] <- cm[i_WORKING_AGE, ] +
-    apply(
-      country$contacts_consumer_worker,
-      2,
-      stats::weighted.mean,
-      country$workers
-    )
-
-  cm
 }
 
 #' @title Generate a default initial state for DAEDALUS

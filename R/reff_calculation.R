@@ -101,7 +101,7 @@ get_ngm <- function(country, infection, p_susc = NULL) {
   }
   cm_scaled <- cm * p_susc # could be placed at the end
 
-  beta <- get_beta2(infection, country)
+  beta <- get_beta(infection, country)
   sigma <- infection$sigma
   p_sigma <- infection$p_sigma
   epsilon <- infection$epsilon

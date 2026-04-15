@@ -216,9 +216,8 @@ inline daedalus::types::TensorAry<double> scale_cm(
 inline std::vector<daedalus::types::TensorMat<double>> get_cm_regimes(
     const daedalus::types::TensorAry<double> &cm,
     const std::vector<daedalus::types::TensorMat<double>> &vec_openness) {
-  
   const int n_regimes = vec_openness.size();
-  
+
   std::vector<daedalus::types::TensorMat<double>> cm_regimes(n_regimes);
 
   for (size_t i = 0; i < n_regimes; i++) {

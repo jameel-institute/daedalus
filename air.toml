@@ -1,2 +1,11 @@
 [format]
+line-width = 80
+indent-width = 2
+indent-style = "space"
+line-ending = "auto"
+persistent-line-breaks = true
 exclude = ["dust.R", "cpp11.R"]
+default-exclude = true
+skip = ["fcase"]
+table = []
+default-table = true

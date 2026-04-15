@@ -116,7 +116,8 @@ uptake_percent_to_number <- function(uptake_limit, country) {
 #'
 #' # a fully customised strategy
 #' daedalus_vaccination(
-#'   "custom", "GBR", start_time = 100, rate = 1.5, uptake_limit = 70
+#'   "custom", "GBR",
+#'   start_time = 100, rate = 1.5, uptake_limit = 70
 #' )
 daedalus_vaccination <- function(
   name,

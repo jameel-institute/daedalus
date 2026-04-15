@@ -448,7 +448,8 @@ class daedalus_ode {
 
     /// get total contacts from infectious to other groups
     internal.t_comm_inf_contacts =
-        shared.cm_regimes[id_npi_regime].contract(internal.t_infectious, product_dims)
+        shared.cm_regimes[id_npi_regime]
+            .contract(internal.t_infectious, product_dims)
             .eval()
             .broadcast(bcast);
 
