@@ -178,10 +178,11 @@ daedalus_npi <- function(
   checkmate::assert_count(max_duration)
 
   # prepare closure regimes
-  n_settings = count_settings(country)
+  n_settings <- count_settings(country)
   no_closures <- rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS)
-  openness = c(
-    rep(1.0, N_AGE_GROUPS), openness
+  openness <- c(
+    rep(1.0, N_AGE_GROUPS),
+    openness
   )
 
   params <- list(
@@ -258,7 +259,7 @@ validate_daedalus_npi <- function(x) {
   }
 
   # check openness
-  is_good_openness <- checkmate::test_list(
+  is_good_openness = checkmate::test_list(
     x$parameters$openness,
     "numeric",
     min.len = 2L
@@ -326,13 +327,17 @@ format.daedalus_npi <- function(x, ...) {
   cli::cli_text("{.cls {class(x)}}")
   cli::cli_text("NPI strategy: {cli::style_bold(x$identifier)}")
 
+  # nolint start usage in print method not picked up
   openness_coef <- vapply(
-    x$parameters$openness[-1L], function(z) {
+    x$parameters$openness[-1L],
+    function(z) {
       # assume last col is workplace
       # NPIs now hold dummy scaling for non-econ grps
-      mean(z[i_ECON_SECTORS, ncol(z)]) 
-    }, numeric(1)
-  ) # nolint
+      mean(z[i_ECON_SECTORS, ncol(z)])
+    },
+    numeric(1)
+  )
+  # nolint end
 
   divid <- cli::cli_div(theme = list(.val = list(digits = 3)))
   cli::cli_bullets(

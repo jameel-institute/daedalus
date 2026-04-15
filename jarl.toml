@@ -1,0 +1,5 @@
+[lint]
+fix-roxygen = true
+
+[lint.assignment]
+operator = "<-"

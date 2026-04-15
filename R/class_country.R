@@ -209,18 +209,19 @@ validate_daedalus_country <- function(x) {
       ),
     "Country `contact_matrix` must be a list of 4x4 numeric positive matrix" =
       checkmate::test_list(
-        x$contact_matrix, "matrix", FALSE, min.len = 1
+        x$contact_matrix, "matrix", FALSE,
+        min.len = 1
       ) && all(
-          vapply(x$contact_matrix, function(cm) {
-            checkmate::test_matrix(
-              cm, "numeric",
-              any.missing = FALSE, ncols = N_AGE_GROUPS, nrows = N_AGE_GROUPS
-            ) && checkmate::test_numeric(
-              cm,
-              lower = 0, finite = TRUE
-            )
-          }, FUN.VALUE = logical(1))
-        ),
+        vapply(x$contact_matrix, function(cm) {
+          checkmate::test_matrix(
+            cm, "numeric",
+            any.missing = FALSE, ncols = N_AGE_GROUPS, nrows = N_AGE_GROUPS
+          ) && checkmate::test_numeric(
+            cm,
+            lower = 0, finite = TRUE
+          )
+        }, FUN.VALUE = logical(1))
+      ),
     "Country `contacts_workplace` must be a 45-length positive numeric vector" =
       checkmate::test_numeric(
         x$contacts_workplace,
@@ -375,23 +376,19 @@ prepare_parameters.daedalus_country <- function(x, ...) {
   validate_daedalus_country(x)
 
   cm <- make_conmat_large(x)
-  # cm_work <- make_work_contacts(x)
-  # cm_cons_work <- make_consumer_contacts(x)
   hospital_capacity <- get_data(x, "hospital_capacity")
 
   n_age_groups <- length(get_data(x, "demography"))
   n_econ_groups <- length(get_data(x, "workers"))
 
   # get stratum counts
-  workers = get_data(x, "workers")
-  demography = get_data(x, "demography")
-  demography[i_WORKING_AGE] = demography[i_WORKING_AGE] - sum(workers)
-  demography = c(demography, workers)
+  workers <- get_data(x, "workers")
+  demography <- get_data(x, "demography")
+  demography[i_WORKING_AGE] <- demography[i_WORKING_AGE] - sum(workers)
+  demography <- c(demography, workers)
 
   list(
     cm = cm,
-    # cm_cons_work = cm_cons_work,
-    # cm_work = cm_work,
     n_settings = length(x$contact_matrix) + 1, # should be a function?
     n_age_groups = n_age_groups,
     n_econ_groups = n_econ_groups,
@@ -528,8 +525,11 @@ validate_contact_matrix <- function(x, name) {
   }
 }
 
-count_settings = function(country) {
-  stopifnot(class(country) == "daedalus_country")
+#' Count contact settings
+#'
+#' @keywords internal
+count_settings <- function(country) {
+  stopifnot(is_daedalus_country(country))
 
   length(country$contact_matrix) + 1
 }
