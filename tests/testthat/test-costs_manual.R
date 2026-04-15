@@ -107,12 +107,19 @@ test_that("Daedalus costs for data.frame with timed NPI", {
   cty <- "CAN"
   infection <- "influenza_1918"
 
+  op_coef_1 <- cbind(
+    rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS),
+    c(rep(1.0, N_AGE_GROUPS), rep(0.5, N_ECON_SECTORS))
+  )
+  op_coef_2 <- op_coef_1
+  op_coef_2[op_coef_2 == 0.5] <- 0.3
+
   npi <- daedalus_timed_npi(
     start_time = c(10, 60),
     end_time = c(40, 80),
     openness = list(
-      rep(0.5, 45),
-      rep(0.3, 45)
+      op_coef_1,
+      op_coef_2
     ),
     cty
   )

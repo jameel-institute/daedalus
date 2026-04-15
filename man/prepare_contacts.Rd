@@ -5,16 +5,13 @@
 \alias{make_conmat_large}
 \alias{make_work_contacts}
 \alias{make_consumer_contacts}
-\alias{make_full_contacts}
 \title{Make large contact matrix for Cpp model.}
 \usage{
 make_conmat_large(country, scaling = c("demography", "none"))
 
-make_work_contacts(country)
+make_work_contacts(country, scaling = c("demography", "none"))
 
-make_consumer_contacts(country)
-
-make_full_contacts(country)
+make_consumer_contacts(country, scaling = c("demography", "none"))
 }
 \arguments{
 \item{country}{A \verb{<daedalus_country>}.}

@@ -93,6 +93,7 @@ daedalus_vaccination("low", "GBR", rate = 1.5)
 
 # a fully customised strategy
 daedalus_vaccination(
-  "custom", "GBR", start_time = 100, rate = 1.5, uptake_limit = 70
+  "custom", "GBR",
+  start_time = 100, rate = 1.5, uptake_limit = 70
 )
 }

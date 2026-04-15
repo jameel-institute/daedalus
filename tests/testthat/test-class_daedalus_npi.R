@@ -26,11 +26,15 @@ test_that("class <daedalus_npi>: basic expectations", {
     get_data(npi, "openness")
   )
 
+  openness <- cbind(
+    rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS),
+    c(rep(1.0, N_AGE_GROUPS), rep(0.5, N_ECON_SECTORS))
+  )
   npi <- daedalus_npi(
     NA,
     cty,
     infection,
-    rep(0.5, 45)
+    openness
   )
   expect_no_condition(
     daedalus(cty, infection, npi)
@@ -59,7 +63,13 @@ test_that("class <daedalus_npi>: class validation", {
 test_that("class <daedalus_npi>: sequential time-limited NPIs", {
   cty <- "GBR"
   infection <- "influenza_1918"
-  openness <- daedalus.data::closure_strategy_data[["school_closures"]]
+  openness <- cbind(
+    rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS),
+    c(
+      rep(1.0, N_AGE_GROUPS),
+      daedalus.data::closure_strategy_data[["school_closures"]]
+    )
+  )
   npi <- daedalus_timed_npi(
     start_time = c(30, 90),
     end_time = c(50, 120),
@@ -114,11 +124,15 @@ test_that("daedalus: time-launched response duration is correct", {
   # for responses created using daedalus_timed_npi
   start_time <- 10
   end_time <- 40
+  openness <- cbind(
+    rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS),
+    c(rep(1.0, N_AGE_GROUPS), rep(0.5, N_ECON_SECTORS))
+  )
   npi <- daedalus_timed_npi(
     start_time = start_time,
     end_time = end_time,
     openness = list(
-      rep(0.5, 45)
+      openness
     ),
     "GBR"
   )
@@ -244,11 +258,16 @@ test_that("class <daedalus_npi>: throws expected errors", {
     "check class assignment"
   )
 
-  x <- daedalus_npi(NA, "THA", "sars_cov_1", rep(0.1, 45))
-  x$parameters$openness <- list(rep(1, 45), rep(2, 45))
+  openness <- cbind(
+    rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS),
+    c(rep(1.0, N_AGE_GROUPS), rep(0.1, N_ECON_SECTORS))
+  )
+
+  x <- daedalus_npi(NA, "THA", "sars_cov_1", openness)
+  x$parameters$openness[[2L]] <- x$parameters$openness[[2L]] * 2
   expect_error(
     validate_daedalus_npi(x),
-    "vectors must have length 45 with values between 0.0 and 1.0"
+    "matrices must have size 98 with values between 0.0 and 1.0"
   )
 
   x <- list(parameters = list(openness = rep(1, 45), dummy = NA))
@@ -270,7 +289,10 @@ test_that("class <daedalus_npi>: throws expected errors", {
   )
 
   # errors on timed-npi construction
-  openness_good <- rep(0.2, N_ECON_SECTORS)
+  openness_good <- cbind(
+    rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS),
+    c(rep(1.0, N_AGE_GROUPS), rep(0.2, N_ECON_SECTORS))
+  )
   openness_bad <- openness_good * -1
   expect_error(
     daedalus_timed_npi(
@@ -342,7 +364,7 @@ test_that("class <daedalus_npi>: throws expected errors", {
       ),
       "GBR"
     ),
-    "`openness` vectors must have length 45 with values between 0.0 and 1.0"
+    "matrices must have size 98 with values between 0.0 and 1.0"
   )
 })
 

@@ -14,11 +14,15 @@ test_that("daedalus can handle multiple infection objects", {
     )
   )
 
+  openness <- cbind(
+    rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS),
+    c(rep(1.0, N_AGE_GROUPS), rep(0.8, N_ECON_SECTORS))
+  )
   expect_no_condition(
     daedalus_multi_infection(
       "GBR",
       infection,
-      rep(0.8, N_ECON_SECTORS),
+      openness,
       time_end = 100
     )
   )

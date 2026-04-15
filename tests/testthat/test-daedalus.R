@@ -167,21 +167,29 @@ test_that("daedalus: Runs for all country x infection x response", {
 })
 
 test_that("daedalus: Runs with custom openness values", {
+  openness <- cbind(
+    rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS),
+    c(rep(1.0, N_AGE_GROUPS), rep(0.5, N_ECON_SECTORS))
+  )
   expect_no_condition(
     daedalus(
       "GBR",
       "sars_cov_1",
-      response_strategy = rep(0.5, N_ECON_SECTORS),
+      response_strategy = openness,
       time_end = 100
     )
+  )
+  openness <- cbind(
+    rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS - 1),
+    c(rep(1.0, N_AGE_GROUPS), rep(0.5, N_ECON_SECTORS - 1))
   )
   expect_error(
     daedalus(
       "GBR",
       "sars_cov_1",
-      response_strategy = rep(0.5, N_ECON_SECTORS - 1)
+      response_strategy = openness
     ),
-    "(<daedalus_npi> parameter)*(openness)*(must be a numeric of length 45)"
+    "(<daedalus_npi> parameter)*(openness)*(numeric matrix of size 98)"
   )
   expect_error(
     daedalus(
@@ -413,7 +421,7 @@ test_that("daedalus: Errors and messages", {
       "sars_cov_1",
       as.numeric(1:50)
     ),
-    "must be a numeric of length 45"
+    "Got an unexpected value of class"
   )
   expect_error(
     daedalus(

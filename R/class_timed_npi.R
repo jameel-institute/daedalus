@@ -12,13 +12,24 @@
 #' @examples
 #'
 #' # time-limited NPI with multiple phases
+#' phase_1 <- cbind(
+#'   rep(1, 49),
+#'   rep(0.5, 49)
+#' )
+#' phase_2 <- cbind(
+#'   rep(1, 49),
+#'   rep(0.3, 49)
+#' )
+#' phase_3 <- cbind(
+#'   rep(1, 49),
+#'   rep(0.8, 49)
+#' )
+#'
 #' daedalus_timed_npi(
 #'   start_time = c(10, 20, 30),
 #'   end_time = c(15, 25, 40),
 #'   openness = list(
-#'     rep(1, 45),
-#'     rep(0.5, 45),
-#'     rep(0.2, 45)
+#'     phase_1, phase_2, phase_3
 #'   ),
 #'   country = "GBR"
 #' )
@@ -91,23 +102,39 @@ daedalus_timed_npi <- function(
     )
   }
 
-  checkmate::assert_list(
+  n_settings <- count_settings(country)
+
+  all_good_openness <- all(vapply(
     openness,
-    "numeric",
-    FALSE,
-    len = length(start_time)
-  )
+    test_openness,
+    settings = n_settings,
+    logical(1L)
+  ))
+
+  if (!all_good_openness) {
+    cli::cli_abort(
+      "<daedalus_timed_npi> parameter {.arg openness} matrices must have size \
+      {n_settings * (N_AGE_GROUPS + N_ECON_SECTORS)} with values \
+      between 0.0 and 1.0, but some matrices do not."
+    )
+  }
 
   # add default or initial regime to openness list
-  initial_openness <- rep(1.0, N_ECON_SECTORS)
+
+  no_closures <- rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS)
+  no_closures <- matrix(
+    rep(no_closures, n_settings),
+    N_AGE_GROUPS + N_ECON_SECTORS,
+    n_settings
+  )
   openness <- c(
-    list(initial_openness),
+    list(no_closures),
     openness
   )
 
   x <- new_daedalus_npi(
     "timed_npi",
-    list(openness = openness),
+    list(n_settings = n_settings, openness = openness),
     identifier = "custom_timed",
     id_flag = get_flag_index("npi_flag", country),
     time_on = start_time,

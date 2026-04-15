@@ -57,15 +57,16 @@ new_daedalus_npi <- function(name, parameters, ...) {
 #' `openness`.
 #'
 #' @param openness
-#' For `daedalus_npi()`, an optional numeric vector giving the openness of each
-#' economic sector in the model when the NPI is in effect.
+#' For `daedalus_npi()`, an optional numeric matrix giving the openness of each
+#' setting in the model when the NPI is in effect.
 #'
-#' For `daedalus_timed_npi()`, a list of numeric vectors giving the openness
+#' For `daedalus_timed_npi()`, a list of numeric matrices giving the openness
 #' coefficients for each interval specified by corresponding elements of
 #' `start_time` and `end_time`.
 #'
-#' Expected to have a length of `N_ECON_SECTORS` (currently 45), with all values
-#' are in the range \eqn{[0, 1]},
+#' Expected to have a minimum size of `N_ECON_SECTORS + N_AGE_GROUPS`
+#' (currently 98), corresponding to two settings with 49 strata per setting,
+#' with all values are in the range \eqn{[0, 1]},
 #'
 #' @param start_time
 #' For `daedalus_npi()`, a single number giving the number of days after the
@@ -128,21 +129,23 @@ daedalus_npi <- function(
   max_duration = 365
 ) {
   # input checking
+  country <- validate_country_input(country)
+  infection <- validate_infection_input(infection)
+
+  n_settings <- count_settings(country)
   if (is.na(name)) {
     identifier <- "custom"
     # check openness
-    is_good_openness <- checkmate::test_numeric(
+    is_good_openness <- test_openness(
       openness,
-      lower = 0.0,
-      upper = 1.0,
-      any.missing = FALSE,
-      len = N_ECON_SECTORS
+      n_settings
     )
 
     if (!is_good_openness) {
       cli::cli_abort(
-        "<daedalus_npi> parameter {.str openness} must be a numeric of length \
-        {N_ECON_SECTORS}, with values between 0.0 and 1.0."
+        "<daedalus_npi> parameter {.str openness} must be a numeric matrix of \
+        size {n_settings * (N_ECON_SECTORS + N_AGE_GROUPS)}, with values \
+        between 0.0 and 1.0."
       )
     }
   } else {
@@ -158,11 +161,21 @@ daedalus_npi <- function(
       )
     }
 
+    no_closures <- rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS)
     openness <- daedalus.data::closure_strategy_data[[name]]
+    openness <- c(
+      rep(1.0, N_AGE_GROUPS),
+      openness
+    )
+    openness <- matrix(
+      c(
+        rep(no_closures, n_settings - 1),
+        openness
+      ),
+      N_AGE_GROUPS + N_ECON_SECTORS,
+      n_settings
+    )
   }
-
-  country <- validate_country_input(country)
-  infection <- validate_infection_input(infection)
 
   # do not allow NPIs to begin at time = 0
   checkmate::assert_count(start_time, positive = TRUE)
@@ -178,28 +191,18 @@ daedalus_npi <- function(
   checkmate::assert_count(max_duration)
 
   # prepare closure regimes
-  n_settings <- count_settings(country)
   no_closures <- rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS)
-  openness <- c(
-    rep(1.0, N_AGE_GROUPS),
-    openness
+  no_closures <- matrix(
+    rep(no_closures, n_settings),
+    N_AGE_GROUPS + N_ECON_SECTORS,
+    n_settings
   )
 
   params <- list(
+    n_settings = n_settings,
     openness = list(
-      no_closures = matrix(
-        rep(no_closures, n_settings),
-        N_AGE_GROUPS + N_ECON_SECTORS,
-        n_settings
-      ),
-      openness = matrix(
-        c(
-          rep(no_closures, n_settings - 1),
-          openness
-        ),
-        N_AGE_GROUPS + N_ECON_SECTORS,
-        n_settings
-      )
+      no_closures = no_closures,
+      openness = openness
     )
   )
 
@@ -246,7 +249,7 @@ validate_daedalus_npi <- function(x) {
   }
 
   # check class members
-  expected_fields <- "openness"
+  expected_fields <- c("n_settings", "openness")
   has_fields <- checkmate::test_names(
     attr(x$parameters, "names"),
     permutation.of = expected_fields
@@ -259,7 +262,7 @@ validate_daedalus_npi <- function(x) {
   }
 
   # check openness
-  is_good_openness = checkmate::test_list(
+  is_good_openness <- checkmate::test_list(
     x$parameters$openness,
     "numeric",
     min.len = 2L
@@ -267,28 +270,39 @@ validate_daedalus_npi <- function(x) {
   if (!is_good_openness) {
     cli::cli_abort(
       "<daedalus_npi> parameter {.str openness} must be a list of numeric \
-      vectors, with at least two elements, but it is not."
+      matrices, with at least two elements, but it is not."
     )
   }
 
-  # all_good_openness <- all(vapply(
-  #   x$parameters$openness,
-  #   checkmate::test_numeric,
-  #   lower = 0.0,
-  #   upper = 1.0,
-  #   any.missing = FALSE,
-  #   # len = N_AGE_GROUPS + N_ECON_SECTORS,
-  #   logical(1L)
-  # ))
-  # if (!all_good_openness) {
-  #   cli::cli_abort(
-  #     "<daedalus_npi> parameter {.arg openness} vectors must have length \
-  #     {N_AGE_GROUPS + N_ECON_SECTORS} with values between 0.0 and 1.0, but \
-  #     some vectors do not."
-  #   )
-  # }
+  all_good_openness <- all(vapply(
+    x$parameters$openness,
+    test_openness,
+    settings = x$parameters$n_settings,
+    logical(1L)
+  ))
+  if (!all_good_openness) {
+    cli::cli_abort(
+      "<daedalus_npi> parameter {.arg openness} matrices must have size \
+      {x$parameters$n_settings * (N_AGE_GROUPS + N_ECON_SECTORS)} with values \
+      between 0.0 and 1.0, but some matrices do not."
+    )
+  }
 
   invisible(x)
+}
+
+#' Check openness matrix
+#'
+#' @keywords internal
+test_openness <- function(x, settings) {
+  expected_len <- settings * (N_AGE_GROUPS + N_ECON_SECTORS)
+  checkmate::test_numeric(
+    x,
+    lower = 0.0,
+    upper = 1.0,
+    any.missing = FALSE,
+    len = expected_len
+  )
 }
 
 #' Check if an object is a `<daedalus_npi>`
@@ -329,12 +343,8 @@ format.daedalus_npi <- function(x, ...) {
 
   # nolint start usage in print method not picked up
   openness_coef <- vapply(
-    x$parameters$openness[-1L],
-    function(z) {
-      # assume last col is workplace
-      # NPIs now hold dummy scaling for non-econ grps
-      mean(z[i_ECON_SECTORS, ncol(z)])
-    },
+    get_data(x, "openness"),
+    mean,
     numeric(1)
   )
   # nolint end
@@ -363,9 +373,10 @@ format.daedalus_npi <- function(x, ...) {
 dummy_npi <- function(country) {
   # a dummy npi with openness set to 1 and times set to NA
   params <- list(
+    n_settings = 2,
     openness = list(
-      rep(1.0, N_ECON_SECTORS),
-      rep(1.0, N_ECON_SECTORS)
+      matrix(1.0, N_AGE_GROUPS + N_ECON_SECTORS, 2),
+      matrix(1.0, N_AGE_GROUPS + N_ECON_SECTORS, 2)
     )
   )
   x <- new_daedalus_npi(
@@ -400,14 +411,14 @@ validate_npi_input <- function(
 ) {
   is_good_class <- checkmate::test_multi_class(
     x,
-    c("daedalus_npi", "character", "numeric"),
+    c("daedalus_npi", "character", "matrix"),
     null.ok = TRUE
   )
   if (!is_good_class) {
     cli::cli_abort(
       "daedalus: Got an unexpected value of class {.cls {class(x)}} \
       for `response_strategy`; it may only be `NULL`, `<daedalus_npi>`, a \
-      numeric vector or a string giving the name of a pre-defined NPI strategy."
+      numeric matrix or a string giving the name of a pre-defined NPI strategy."
     )
   }
 
@@ -463,7 +474,14 @@ get_data.daedalus_npi <- function(x, to_get, ...) {
   }
 
   if (to_get == "openness") {
-    x$parameters[[to_get]][-1] # do not return null openness ie. when not active
+    # do not return null openness ie. when not active
+    # return only openness relevant to economic sectors
+    lapply(
+      x$parameters[[to_get]][-1],
+      function(z) {
+        as.vector(z[i_ECON_SECTORS, x$parameters$n_settings])
+      }
+    )
   } else {
     x$parameters[[to_get]]
   }
