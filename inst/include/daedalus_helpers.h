@@ -169,10 +169,9 @@ inline const Eigen::ArrayXd get_comp_age(
   return comp_age;
 }
 
-
 inline const Eigen::ArrayXd get_comp(
-  const daedalus::types::TensorAry<double> &state,
-  const size_t &idx_compartment) {
+    const daedalus::types::TensorAry<double> &state,
+    const size_t &idx_compartment) {
   daedalus::types::TensorVec<double> t_x_comp =
       state.chip(idx_compartment, daedalus::constants::i_COMPS)
           .sum(Eigen::array<Eigen::Index, 1>{1});
@@ -210,6 +209,24 @@ inline daedalus::types::TensorAry<double> scale_cm(
   }
 
   return result;
+}
+
+/// @brief
+///
+inline std::vector<daedalus::types::TensorMat<double>> get_cm_regimes(
+    const daedalus::types::TensorAry<double> &cm,
+    const std::vector<daedalus::types::TensorMat<double>> &vec_openness) {
+  
+  const int n_regimes = vec_openness.size();
+  
+  std::vector<daedalus::types::TensorMat<double>> cm_regimes(n_regimes);
+
+  for (size_t i = 0; i < n_regimes; i++) {
+    cm_regimes[i] =
+        scale_cm(cm, vec_openness[i], 2).sum(Eigen::array<Eigen::Index, 1>{2});
+  }
+
+  return cm_regimes;
 }
 }  // namespace helpers
 
