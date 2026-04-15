@@ -8,60 +8,8 @@
 #' \eqn{\beta}.
 #' @keywords internal
 get_beta <- function(infection, country) {
-  cm <- make_full_contacts(country)
-  n_demog <- N_AGE_GROUPS
-
-  r0 <- infection$r0
-  sigma <- infection$sigma
-  p_sigma <- infection$p_sigma
-  epsilon <- infection$epsilon
-  gamma_Ia <- infection$gamma_Ia
-  gamma_Is <- infection$gamma_Is
-
-  sig1 <- sigma * (1 - p_sigma)
-  sig2 <- sigma * p_sigma
-
-  foi_a <- epsilon * cm
-  foi_s <- cm
-
-  # get the F matrix for the NGM with small domain
-  # which relates only to the state at infection E
-  f_mat <- cbind(
-    matrix(0.0, n_demog, n_demog),
-    foi_a,
-    foi_s
-  )
-
-  vvec <- c(
-    rep(sigma, n_demog),
-    rep(gamma_Ia, n_demog),
-    rep(gamma_Is, n_demog)
-  )
-  # this assumes equal duration infectious to recovery and hospitalisation
-  # is this also assuming isToH never contribute to FoI?
-
-  v_mat <- diag(vvec)
-
-  v_mat[seq(n_demog) + n_demog, seq(n_demog)] <- diag(
-    rep(-sig1, n_demog)
-  )
-  v_mat[seq(n_demog) + n_demog * 2, seq(n_demog)] <- diag(
-    rep(-sig2, n_demog)
-  )
-
-  v_inv <- solve(v_mat)
-
-  ngm <- f_mat %*% v_inv[, seq(n_demog)]
-
-  R0a <- max(Re(eigen(ngm)$values))
-
-  beta <- r0 / R0a
-  beta
-}
-
-get_beta2 <- function(infection, country) {
   cm <- make_conmat_large(country, "none")
-  cm = apply(cm, c(1,2), sum)
+  cm <- apply(cm, c(1, 2), sum)
   n_demog <- N_AGE_GROUPS + N_ECON_SECTORS
 
   r0 <- infection$r0
@@ -145,7 +93,7 @@ get_beta2 <- function(infection, country) {
 get_ngm <- function(country, infection, p_susc = NULL) {
   # internal fn with no input checks
   cm <- make_conmat_large(country, "none")
-  cm = apply(cm, c(1, 2), sum)
+  cm <- apply(cm, c(1, 2), sum)
 
   n_demog <- N_AGE_GROUPS + N_ECON_SECTORS
   if (is.null(p_susc)) {
