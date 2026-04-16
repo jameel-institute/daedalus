@@ -202,8 +202,8 @@ inline daedalus::types::TensorAry<double> scale_cm(
   for (size_t setting = 0; setting < n_settings; setting++) {
     for (size_t row = 0; row < N; row++) {
       for (size_t col = 0; col < N; col++) {
-        result(row, col, setting) *=
-            (scaling(col, setting) * scaling(col, setting));  // squared scaling
+        result(row, col, setting) *= scaling(col, setting);
+        result(col, row, setting) *= scaling(col, setting);
       }
     }
   }
