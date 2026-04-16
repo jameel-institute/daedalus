@@ -55,6 +55,7 @@ using TensorAry = daedalus::types::TensorAry<double>;
 
 // [[dust2::class(daedalus_ode)]]
 // [[dust2::time_type(mixed)]]
+// [[dust2::parameter(r0, constant = TRUE)]]
 // [[dust2::parameter(beta, constant = TRUE)]]
 // [[dust2::parameter(sigma, constant = TRUE)]]
 // [[dust2::parameter(p_sigma, constant = TRUE)]]
@@ -88,7 +89,7 @@ class daedalus_ode {
   /// @brief Shared parameters and values. All const as not expected to update.
   struct shared_state {
     // NOTE: n_strata unknown at compile time
-    const real_type beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is,
+    const real_type r0, beta, sigma, p_sigma, epsilon, rho, gamma_Ia, gamma_Is,
         gamma_H_recovery, gamma_H_death;
     const TensorMat eta, hfr;
 
@@ -242,6 +243,7 @@ class daedalus_ode {
     const size_t popsize = dust2::r::read_size(pars, "popsize", 0.0);
 
     // EPI PARAMETERS
+    const real_type r0 = dust2::r::read_real(pars, "r0", 0.0);
     const real_type beta = dust2::r::read_real(pars, "beta", 0.0);
     const real_type sigma = dust2::r::read_real(pars, "sigma", 0.0);
     const real_type p_sigma = dust2::r::read_real(pars, "p_sigma", 0.0);
@@ -341,7 +343,7 @@ class daedalus_ode {
 
     // clang-format off
     return shared_state{
-        beta, sigma, p_sigma, epsilon, rho,
+        r0, beta, sigma, p_sigma, epsilon, rho,
         gamma_Ia, gamma_Is, gamma_H_recovery, gamma_H_death,
         eta, hfr,
         nu, psi,
@@ -548,9 +550,7 @@ class daedalus_ode {
     // cppcheck-suppress-end constParameterReference
 
     // calculate and log Rt
-    internal.ngm_p_susc = shared.ngm.array().colwise() * internal.p_susc;
-
-    double rt = daedalus::helpers::get_leading_eigenvalue(internal.ngm_p_susc);
+    double rt = shared.r0 * internal.p_susc.mean();
     state_next[shared.i_ipr] = rt;
 
     const bool is_epidemic_growing = rt > 1.0;
