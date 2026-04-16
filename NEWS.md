@@ -1,3 +1,19 @@
+# daedalus 0.3.7
+
+This patch version overhauls aspects of the NPI and contacts system.
+
+- All contacts including workplace contacts are represented in a single array (R) or rank 3 Eigen tensor (C++).
+
+- NPI effects on contact matrices are pre-calculated and stored in `shared_state` and accessed in the ODE RHS rather than being calculated on the fly.
+
+- ODE RHS calculations combine FOI calculations into a single step as workplace transmission is rolled into overall transmission.
+
+- All `<daedalus_country>` objects have a minimum of 2 settings, "community" or "total" and "workplace".
+
+- Class `<daedalus_npi>` constructor now expects a numeric matrix for all custom openness coefficients, with rows representing all age-economic strata, and columns representing scaling in each setting.
+
+- Tests and documentation has been updated to reflect changes to NPI and contact mechanisms.
+
 # daedalus 0.3.6
 
 This patch version fixes an issue with the event generation functionality where state-dependent triggers (`state_test`) were reading the same root-type (increasing) for both on- and off-triggers. This has been fixed in `/inst/include/daedalus_events.h` along with a hygiene fix.
