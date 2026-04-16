@@ -36,5 +36,6 @@
 ^touchstone$
 ^format-R.sh$
 ^air.toml$
+^jarl.toml$
 ^\.vscode$
 ^.*\.png$
