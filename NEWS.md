@@ -12,6 +12,8 @@ This patch version overhauls aspects of the NPI and contacts system.
 
 - Class `<daedalus_npi>` constructor now expects a numeric matrix for all custom openness coefficients, with rows representing all age-economic strata, and columns representing scaling in each setting.
 
+- **Effective R calculation** now uses proportion of susceptible and $R_0$ over NGM eigenvalue calculation for speed.
+
 - Tests and documentation has been updated to reflect changes to NPI and contact mechanisms.
 
 # daedalus 0.3.6
