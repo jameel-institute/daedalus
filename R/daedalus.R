@@ -405,7 +405,6 @@ daedalus <- function(
     list(
       beta = get_beta(infection, country),
       susc = susc,
-      ngm = get_ngm(country, infection),
       # all three below needed for npi-linked behaviour response
       # temporary as these can be vecs, see future PRs
       vaccination = vaccination,

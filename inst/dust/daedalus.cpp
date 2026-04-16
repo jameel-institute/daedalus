@@ -72,7 +72,6 @@ using TensorAry = daedalus::types::TensorAry<double>;
 // [[dust2::parameter(n_econ_groups, constant = TRUE, type = "int")]]
 // [[dust2::parameter(popsize, constant = TRUE, type = "int")]]
 // [[dust2::parameter(cm, constant = TRUE)]]
-// [[dust2::parameter(ngm, constant = TRUE)]]
 // [[dust2::parameter(n_settings, constant = TRUE)]]
 // [[dust2::parameter(demography, constant = TRUE)]]
 // [[dust2::parameter(openness, constant = TRUE)]]
@@ -96,7 +95,6 @@ class daedalus_ode {
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
     const TensorAry cm;
     const size_t n_settings;
-    Eigen::MatrixXd ngm;
     Eigen::ArrayXd demography;
     const TensorMat susc;
     const std::vector<TensorMat> cm_regimes;
@@ -120,7 +118,6 @@ class daedalus_ode {
         t_foi_cw, susc_workers, sToE, eToIs, eToIa, isToR, iaToR, isToHr,
         isToHd, hrToR, hdToD, rToS;
     // for Rt calculations
-    Eigen::MatrixXd ngm_p_susc;
     Eigen::ArrayXd p_susc;
 
     // related to contact matrix settings
@@ -148,9 +145,6 @@ class daedalus_ode {
     TensorMat t_comm_inf_age(shared.n_age_groups, N_VAX_STRATA);
     t_comm_inf_age.setZero();
 
-    Eigen::MatrixXd ngm_p_susc(shared.n_strata, shared.n_strata);
-    ngm_p_susc.setConstant(1.0);
-
     Eigen::ArrayXd p_susc(shared.n_strata);
     p_susc.setConstant(1.0);
 
@@ -171,7 +165,7 @@ class daedalus_ode {
       t_work_inf_contacts, t_foi_work, t_cw_inf_contacts, t_foi_cw,
       susc_workers,
       sToE, eToIs, eToIa, isToR, iaToR, isToHr, isToHd, hrToR, hdToD, rToS,
-      ngm_p_susc, p_susc,
+      p_susc,
       cm_temp,
       scaling_factor
     };
@@ -274,13 +268,6 @@ class daedalus_ode {
                  static_cast<Eigen::Index>(n_settings));
     dust2::r::read_real_array(pars, cm_dims, cm.data(), "cm", true);
 
-    // NEXT-GENERATION-MATRIX
-    // pass the initial NGM
-    const std::vector<size_t> vec_ngm_dims(2, n_strata);
-    const dust2::array::dimensions<2> ngm_dims(vec_ngm_dims.begin());
-    Eigen::MatrixXd ngm(n_strata, n_strata);
-    dust2::r::read_real_array(pars, ngm_dims, ngm.data(), "ngm", true);
-
     // DEMOGRAPHY
     Eigen::ArrayXd demography(n_strata);
     demography.setConstant(1.0);
@@ -346,7 +333,7 @@ class daedalus_ode {
         eta, hfr,
         nu, psi,
         n_strata, n_age_groups, n_econ_groups, popsize,
-        cm, n_settings, ngm, demography,
+        cm, n_settings, demography,
         susc, cm_regimes,
         behav_enum, behav_fn,
         i_ipr, i_npi_flag, i_vax_flag, i_behav_flag, i_hosp_overflow_flag,
