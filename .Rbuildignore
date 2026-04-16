@@ -39,3 +39,4 @@
 ^jarl.toml$
 ^\.vscode$
 ^.*\.png$
+^plans$
