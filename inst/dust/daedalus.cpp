@@ -154,7 +154,9 @@ class daedalus_ode {
     p_susc.setConstant(1.0);
 
     // summed contact matrix after scaling by setting-specific factor
-    TensorAry cm_temp(shared.n_strata, shared.n_strata, shared.n_settings);
+    TensorAry cm_temp(static_cast<Eigen::Index>(shared.n_strata),
+                      static_cast<Eigen::Index>(shared.n_strata),
+                      static_cast<Eigen::Index>(shared.n_settings));
     cm_temp = shared.cm;
 
     // contact matrix scaling factor by setting
