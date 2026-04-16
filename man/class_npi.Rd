@@ -126,7 +126,7 @@ daedalus_npi("school_closures", "GBR", "sars_cov_1")
 daedalus_npi(
   NA,
   "GBR", "sars_cov_1",
-  openness = rep(0.1, 45)
+  openness = cbind(rep(1, 49), rep(0.1, 49))
 )
 
 # time-limited NPI with multiple phases

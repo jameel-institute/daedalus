@@ -18,10 +18,22 @@ knitr::opts_chunk$set(
 
 This vignette shows how to pass community contact matrices disaggregated into multiple settings to the Daedalus model.
 
-The idea is --- in future --- to be able to apply closures or any arbitrary scaling to each setting separately, rather than uniformly scaling contacts across settings.
+Daedalus allows users to apply closures or any arbitrary scaling to each setting separately, rather than uniformly scaling contacts across settings.
 An example of setting-specific scaling is scaling school contacts for school-age children, while leaving contacts in other settings intact.
 
-**Note that** While the scaffolding for such scaling functionality is in place on the C++ side, this functionality is still being developed on the R side.
+## Default contact settings
+
+Daedalus countries have two contact settings by default as of version 0.3.6:
+
+1. Community or 'total': This is the set of age-specific contacts that take place in the community, outside the workplace. In daedalus < v0.3.5, this would have been the element referred to as `x$contact_matrix`;
+
+2. Workplace: This is a matrix giving the contacts within workplaces (so between workers in an economic sector; forming the diagonal of the matrix), and from non-working consumers to workers in each economic sector (considers only contacts from consumers to workers and not vice versa).
+
+These are displayed in the country object when printed to screen.
+
+```{r default_country}
+daedalus_country("GBR")
+```
 
 ## Basic example using POLYMOD
 
@@ -35,13 +47,6 @@ Once this assignment is done, helper functions such as `prepare_parameters()` ta
 # load package
 library(daedalus)
 library(socialmixr) # for POLYMOD data
-```
-
-By default a country has a single setting, the 'total' community contacts.
-This is displayed in the country object when printed to screen.
-
-```{r default_country}
-daedalus_country("GBR")
 ```
 
 We can get POLYMOD data [@mossong2008] for the U.K. from the [R package _socialmixr_](https://cran.r-project.org/package=socialmixr).
@@ -89,15 +94,48 @@ Pass the created country to [daedalus()] as usual to run the epi-econ model taki
 daedalus(x, "sars_cov_1", time_end = 100)
 ```
 
+## Passing setting-specific contact scaling
+
+Users can pass setting-specific contact scaling by using the `<daedalus_npi>` class.
+
+Scaling must take the form of an $M \times N$ matrix, where $M$ is the number of age and economic strata (49 for Daedalus), and $N$ is the number of settings.
+For a default `<daedalus_country>`, this would be a $49 \times 2$ matrix, due to the two contact settings, 'community' and 'workplace'.
+
+The example below shows a matrix that does not scale community contacts, and which scales all workplace contacts to 30% of the total.
+The underlying model will scale the within-sector contacts by the square of the scaling coefficient (representing scaling of both incoming and outgoing contacts), while the consumer-to-worker contacts will be scaled by the coefficient alone, as we are not simulating a reduction in the number of consumers visiting workplaces.
+
+```{r scaling_settings}
+openness <- cbind(
+  rep(1, 49), # no scaling on community
+  c(rep(1, 4), rep(0.3, 45)) # scale 45 economic strata
+)
+```
+
+The following construction is simpler because it assumes the same scaling for age-specific contacts in workplaces as for worker contacts, and would not cause issues as age-specific workplace contacts are 0.
+Nonetheless, we advise using the construction above as it makes the intention more explicit.
+
+```{r scaling_settings_2}
+openness <- cbind(
+  rep(1, 49), # no scaling on community
+  rep(0.3, 49) # scale all 49 age-and-economic strata
+)
+```
+
+Create a `<daedalus_npi>`, passing the constructed matrix `openness`, and use it with `daedalus()` as needed.
+
+```{r custom_npi}
+# a 90-day timed NPI operating on GB; note timed_npi needs a list of openness
+daedalus_timed_npi(30, 90, list(openness), "GB")
+```
+
+Openness values for pre-defined NPIs are also stored in this way.
+
+```{r predef_npis}
+daedalus_npi("elimination", "GB", "sars_cov_1")$parameters$openness$openness
+```
+
 ## Future developments
 
-A number of developments to this feature are being considered.
-These include:
-
-1. Disaggregating workplace contacts into settings, so that scaling can be applied by setting rather than by economic sector, as this is much easier to work with from a policy perspective (e.g. closing pubs _versus_ scaling hospitality contacts by some amount to represent pub closures).
-
-2. Applying age-specific setting scaling, to represent different policy recommendations or outcomes by age in different settings.
-
-3. Applying different behavioural modifiers to each setting to simulate endogenous risk-perception related modification in contacts across settings.
+This functionality is still in development, and features being considered include applying different behavioural modifiers to each setting to simulate endogenous risk-perception related modification in contacts across settings.
 
 ## References
