@@ -95,7 +95,6 @@ class daedalus_ode {
     const size_t n_strata, n_age_groups, n_econ_groups, popsize;
     const TensorAry cm;
     const size_t n_settings;
-    // const TensorMat cm_cons_work, cm_work;
     Eigen::MatrixXd ngm;
     Eigen::ArrayXd demography;
     const TensorMat susc;
@@ -391,10 +390,7 @@ class daedalus_ode {
                   const shared_state &shared,
                   internal_state &internal,  // NOLINT
                   real_type *state_deriv) {
-    // TODO(pratik): prefer to not use these
     const int n_strata = shared.n_strata;
-    const int n_econ_groups = shared.n_econ_groups;
-    const int n_age_groups = shared.n_age_groups;
 
     // map to Eigen Tensor
     Eigen::TensorMap<const TensorAry> t_x(
@@ -539,19 +535,16 @@ class daedalus_ode {
         {1, {shared.i_ipr}}};  // zero IPR value
   }
 
-  // NOLINTBEGIN
   // cppcheck-suppress-begin constParameterReference
   static void update(real_type time, real_type dt, const real_type *state,
-                     const shared_state &shared, internal_state &internal,
-                     rng_state_type &rng_state, real_type *state_next) {
+                     const shared_state &shared, const internal_state &internal,
+                     const rng_state_type &rng_state, real_type *state_next) {
     // cppcheck-suppress-end constParameterReference
-    // NOLINTEND
 
     // calculate and log Rt
     internal.ngm_p_susc = shared.ngm.array().colwise() * internal.p_susc;
 
-    double rt =
-        99.9;  // daedalus::helpers::get_leading_eigenvalue(internal.ngm_p_susc);
+    double rt = daedalus::helpers::get_leading_eigenvalue(internal.ngm_p_susc);
     state_next[shared.i_ipr] = rt;
 
     const bool is_epidemic_growing = rt > 1.0;
