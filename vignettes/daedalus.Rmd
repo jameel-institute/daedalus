@@ -104,7 +104,7 @@ The vaccine investment scenarios is automatically assumed to be "none".
 
 ```{r run_model}
 # simulate a Covid-19 wild type outbreak in Canada; using default parameters
-data <- daedalus("Canada", "sars_cov_2_pre_alpha")
+out <- daedalus("Canada", "sars_cov_2_pre_alpha")
 ```
 
 The model runs for 300 timesteps by default; timesteps should be interpreted as days since model parameters are in terms of days.
@@ -112,7 +112,7 @@ The model runs for 300 timesteps by default; timesteps should be interpreted as 
 Plot the data to view the epidemic curve.
 
 ```{r plot_epidemic}
-data <- get_data(data)
+data <- get_data(out)
 ggplot(
   data[data$compartment == "infect_symp" & data$age_group == "20-64" &
     data$vaccine_group == "unvaccinated", ]
@@ -125,6 +125,19 @@ ggplot(
     ),
     show.legend = FALSE
   )
+```
+
+Users can also access and plot the $R_\text{eff}$ logged at each timestep.
+
+```{r plot_reff}
+r_eff <- get_data(out, "rt_data")
+ggplot() +
+  geom_line(
+    aes(seq_along(r_eff) - 1, r_eff)
+  ) +
+    labs(
+      x = "Time (days)", y = "Effective reproduction number"
+    )
 ```
 
 ## References
