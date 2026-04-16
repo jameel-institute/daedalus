@@ -538,9 +538,11 @@ class daedalus_ode {
   }
 
   // cppcheck-suppress-begin constParameterReference
+  // NOLINTBEGIN
   static void update(real_type time, real_type dt, const real_type *state,
-                     const shared_state &shared, const internal_state &internal,
-                     const rng_state_type &rng_state, real_type *state_next) {
+                     const shared_state &shared, internal_state &internal,
+                     rng_state_type &rng_state, real_type *state_next) {
+    // NOLINTEND
     // cppcheck-suppress-end constParameterReference
 
     // calculate and log Rt
