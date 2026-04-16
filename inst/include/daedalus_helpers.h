@@ -199,9 +199,10 @@ inline daedalus::types::TensorAry<double> scale_cm(
 
   size_t N = cm.dimension(0);
 
-  for (size_t setting = 0; setting < n_settings; setting++) {
-    for (size_t row = 0; row < N; row++) {
-      for (size_t col = 0; col < N; col++) {
+  for (Eigen::Index setting = 0;
+       setting < static_cast<Eigen::Index>(n_settings); setting++) {
+    for (Eigen::Index row = 0; row < N; row++) {
+      for (Eigen::Index col = 0; col < N; col++) {
         result(row, col, setting) *= scaling(col, setting);
         result(col, row, setting) *= scaling(col, setting);
       }
@@ -211,8 +212,13 @@ inline daedalus::types::TensorAry<double> scale_cm(
   return result;
 }
 
-/// @brief
-///
+/// @brief Get vector of contact matrices to be used in NPI regimes
+/// @param cm A rank 3 tensor representing contacts in multiple settings
+/// @param vec_openness A vector of rank 2 tensors (matrices) representing
+/// scaling of each layer of `cm`. Must have as many rows as `cm` and as many
+/// cols as the third dimension of `cm`. If `cm` is (M, M, K), must be (M, K).
+/// @return A vector rank 2 tensors of dims (M, M) representing conmats scaled
+/// by NPI coefficients.
 inline std::vector<daedalus::types::TensorMat<double>> get_cm_regimes(
     const daedalus::types::TensorAry<double> &cm,
     const std::vector<daedalus::types::TensorMat<double>> &vec_openness) {
