@@ -21,6 +21,12 @@ This vignette shows how to pass community contact matrices disaggregated into mu
 Daedalus allows users to apply closures or any arbitrary scaling to each setting separately, rather than uniformly scaling contacts across settings.
 An example of setting-specific scaling is scaling school contacts for school-age children, while leaving contacts in other settings intact.
 
+```{r setup}
+# load package
+library(daedalus)
+library(socialmixr) # for POLYMOD data
+```
+
 ## Default contact settings
 
 Daedalus countries have two contact settings by default as of version 0.3.6:
@@ -42,12 +48,6 @@ This example using POLYMOD data [@mossong2008] shows how to assign contacts from
 Once this assignment is done, helper functions such as `prepare_parameters()` take care of expanding and scaling the contact matrices when the country object is passed to `daedalus()`.
 
 **Note that** running `daedalus("XYZ", ...)` cannot be used to model multiple settings, and the `country` argument must be a `<daedalus_country>` if multiple settings are needed.
-
-```{r setup}
-# load package
-library(daedalus)
-library(socialmixr) # for POLYMOD data
-```
 
 We can get POLYMOD data [@mossong2008] for the U.K. from the [R package _socialmixr_](https://cran.r-project.org/package=socialmixr).
 Here in this basic example, we consider only two settings, 'home' and 'school'.
