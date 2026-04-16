@@ -117,7 +117,7 @@ new_daedalus_npi <- function(name, parameters, ...) {
 #' daedalus_npi(
 #'   NA,
 #'   "GBR", "sars_cov_1",
-#'   openness = rep(0.1, 45)
+#'   openness = cbind(rep(1, 49), rep(0.1, 49))
 #' )
 daedalus_npi <- function(
   name,

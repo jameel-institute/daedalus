@@ -91,7 +91,7 @@ Creating a time-limited NPI with a single active duration using `daedalus_npi()`
 
 - Passing `NA` as the `name` rather than one of the pre-canned NPI strategies found in `daedalus.data::closure_strategy_data`, and
 
-- Passing a vector of the same length as the number of economic sectors (currently 45) to the `openness` argument.
+- Passing a numeric $M \times N$ matrix, with $M = $ number of age-and-economic strata (49), and $N = $ number of contact settings (2 by default) to the `openness` argument.
 
 A country and infection are still required as before.
 
@@ -102,7 +102,10 @@ Passing a bespoke NPI to [daedalus()] leads to the resulting `<daedalus_output>`
 **See the next section** for how to specify time-limited NPIs that are active over multiple intervals.
 
 ```{r timed-npi-bespoke}
-openness <- rep(0.3, 45)
+openness <- cbind(
+  rep(1, 49),
+  rep(0.3, 49)
+)
 
 npi <- daedalus_npi(
   NA, "GBR", "sars_cov_1",
@@ -149,6 +152,16 @@ The example below show ramping responses up and down by switching from school cl
 ```{r timed-sequential-npi}
 school_closures <- daedalus.data::closure_strategy_data[["school_closures"]]
 elimination <- daedalus.data::closure_strategy_data[["elimination"]]
+
+school_closures <- cbind(
+  rep(1, 49),
+  c(rep(1, 4), school_closures)
+)
+
+elimination <- cbind(
+  rep(1, 49),
+  c(rep(1, 4), elimination)
+)
 
 # start at day 30, 60, 90, 30 days each
 npi <- daedalus_timed_npi(
