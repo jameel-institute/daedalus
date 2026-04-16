@@ -24,7 +24,7 @@ fi
 # Linting with cppcheck
 if command -v cppcheck &> /dev/null; then
     echo "Checking C++ code with Cppcheck..."
-    cppcheck --std=c++14 --enable=performance,portability,warning,style --inline-suppr --error-exitcode=1 inst/dust/
+    cppcheck --std=c++14 --enable=performance,portability,warning,style --inline-suppr --error-exitcode=1 inst/dust
     cppcheck --std=c++14 --language=c++ --enable=performance,portability,warning,style --inline-suppr --error-exitcode=1 inst/include/*.h
     echo "✓ Cppcheck check complete"
 else
