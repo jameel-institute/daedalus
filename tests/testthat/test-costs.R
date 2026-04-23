@@ -99,7 +99,7 @@ test_that("Costs: scenario expectations", {
       # closure costs must be at least one day of reduced GVA
       # NOTE: using last() here to approximate a more comprehensive calculation
       # in `R/costs.R`
-      expected_cost_closures <- output$country_parameters$gva *
+      expected_cost_closures <- output$country$gva *
         (1 - last(output$response_data$openness)) *
         sum(output$response_data$npi_info$npi_durations)
 

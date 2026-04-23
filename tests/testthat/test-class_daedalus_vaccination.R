@@ -129,6 +129,16 @@ test_that("Vaccination events launch and end as expected", {
     expected_vaccinations,
     tolerance = 1e-6
   )
+
+  # check that vaccination flag is turned off at the correct time
+  vax_data <- get_new_vaccinations(output)
+  last_vax_manual <- vax_data$time[max(which(vax_data$new_vaccinations > 0))]
+  last_vax_auto <- max(which(as.logical(output$ode_soln$vax_flag)))
+
+  expect_identical(
+    last_vax_auto,
+    last_vax_manual
+  )
 })
 
 test_that("class <daedalus_vaccination>: errors", {

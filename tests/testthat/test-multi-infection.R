@@ -51,7 +51,7 @@ test_that("daedalus can handle multiple infection objects", {
   checkmate::expect_list(output, "daedalus_output")
 
   expect_identical(
-    vapply(output, function(x) x$infection_parameters$name, character(1)),
+    vapply(output, function(x) x$infection$name, character(1)),
     daedalus.data::epidemic_names
   )
 

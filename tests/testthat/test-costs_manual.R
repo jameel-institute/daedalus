@@ -13,13 +13,13 @@ test_that("Daedalus costs method for data.frame", {
   comp_infected <- "infect_symp"
   comp_dead <- "dead"
 
-  daily_gva <- output$country_parameters$gva
-  workforce <- output$country_parameters$workers
-  vsl_by_age <- output$country_parameters$vsl
-  life_expectancy <- output$country_parameters$life_expectancy
+  daily_gva <- output$country$gva
+  workforce <- output$country$workers
+  vsl_by_age <- output$country$vsl
+  life_expectancy <- output$country$life_expectancy
 
-  value_school_year <- get_value_school_year(output$country_parameters$gni)
-  n_students <- output$country_parameters$demography[i_SCHOOL_AGE]
+  value_school_year <- get_value_school_year(output$country$gni)
+  n_students <- output$country$demography[i_SCHOOL_AGE]
 
   edu_effectiveness_remote <- EDU_EFFECTIVENESS_REMOTE
 
@@ -65,13 +65,13 @@ test_that("Daedalus costs for data.frame with reactive NPI", {
   comp_infected <- "infect_symp"
   comp_dead <- "dead"
 
-  daily_gva <- output$country_parameters$gva
-  workforce <- output$country_parameters$workers
-  vsl_by_age <- output$country_parameters$vsl
-  life_expectancy <- output$country_parameters$life_expectancy
+  daily_gva <- output$country$gva
+  workforce <- output$country$workers
+  vsl_by_age <- output$country$vsl
+  life_expectancy <- output$country$life_expectancy
 
-  value_school_year <- get_value_school_year(output$country_parameters$gni)
-  n_students <- output$country_parameters$demography[i_SCHOOL_AGE]
+  value_school_year <- get_value_school_year(output$country$gni)
+  n_students <- output$country$demography[i_SCHOOL_AGE]
   names(n_students) <- NULL
 
   edu_effectiveness_remote <- EDU_EFFECTIVENESS_REMOTE
@@ -128,13 +128,13 @@ test_that("Daedalus costs for data.frame with timed NPI", {
   comp_infected <- "infect_symp"
   comp_dead <- "dead"
 
-  daily_gva <- output$country_parameters$gva
-  workforce <- output$country_parameters$workers
-  vsl_by_age <- output$country_parameters$vsl
-  life_expectancy <- output$country_parameters$life_expectancy
+  daily_gva <- output$country$gva
+  workforce <- output$country$workers
+  vsl_by_age <- output$country$vsl
+  life_expectancy <- output$country$life_expectancy
 
-  value_school_year <- get_value_school_year(output$country_parameters$gni)
-  n_students <- output$country_parameters$demography[i_SCHOOL_AGE]
+  value_school_year <- get_value_school_year(output$country$gni)
+  n_students <- output$country$demography[i_SCHOOL_AGE]
   names(n_students) <- NULL
 
   edu_effectiveness_remote <- EDU_EFFECTIVENESS_REMOTE
@@ -255,8 +255,8 @@ test_that("Daedalus costs methods: errors and messages", {
   )
 
   # econ parameters
-  workforce <- output$country_parameters$workers
-  daily_gva <- output$country_parameters$gva
+  workforce <- output$country$workers
+  daily_gva <- output$country$gva
 
   expect_error(
     get_costs(
@@ -368,7 +368,7 @@ test_that("Daedalus costs methods: errors and messages", {
 
   # check VSL errors
   productivity_loss_infection <- 1.0
-  vsl_by_age <- output$country_parameters$vsl
+  vsl_by_age <- output$country$vsl
   expect_error(
     get_costs(
       data,
@@ -426,7 +426,7 @@ test_that("Daedalus costs methods: errors and messages", {
   )
 
   # life expectancy
-  life_expectancy <- output$country_parameters$life_expectancy
+  life_expectancy <- output$country$life_expectancy
 
   expect_error(
     get_costs(
@@ -489,7 +489,7 @@ test_that("Daedalus costs methods: errors and messages", {
   )
 
   # value school year
-  value_school_year <- get_value_school_year(output$country_parameters$gni)
+  value_school_year <- get_value_school_year(output$country$gni)
 
   expect_error(
     get_costs(
@@ -540,7 +540,7 @@ test_that("Daedalus costs methods: errors and messages", {
   )
 
   # students
-  n_students <- output$country_parameters$demography[i_SCHOOL_AGE]
+  n_students <- output$country$demography[i_SCHOOL_AGE]
 
   expect_error(
     get_costs(

@@ -16,6 +16,30 @@ test_that("Hospital capacity: basic expectations", {
   }))
 })
 
+test_that(("Hospital capacity: flag and trigger mechanism"), {
+  time_end <- 300
+  cty <- daedalus_country("GB")
+  out <- daedalus(cty, "sars_cov_2_pre_alpha", time_end = 300)
+  hosp_flag_auto <- as.logical(out$ode_soln$hosp_overflow_flag)
+
+  hosp_flag_manual <- colSums(
+    out$ode_soln$hospitalised_recov +
+      out$ode_soln$hospitalised_death
+  ) >
+    cty$hospital_capacity
+
+  expect_identical(
+    hosp_flag_auto,
+    hosp_flag_manual
+  )
+
+  # check event is registered
+  checkmate::expect_names(
+    out$ode_events[[1]]$name,
+    must.include = sprintf("hosp_cap_exceeded_state_%s", c("on", "off"))
+  )
+})
+
 # check that increasing hospital capacity leads to later closure
 test_that("Closures: hospital capacity and closure time", {
   # hospital capacity saved in country class
@@ -61,11 +85,10 @@ test_that("Closures: hospital capacity and closure time", {
 
 test_that("Deaths increase when hospital capacity is exceeded", {
   cty <- daedalus_country("GBR")
-  cty$hospital_capacity <- 1e2
-  output <- daedalus(cty, "sars_cov_1", time_end = 300)
+  output <- daedalus(cty, "sars_cov_2_delta", time_end = 100)
 
-  cty$hospital_capacity <- 1e5 # max possible
-  output2 <- daedalus(cty, "sars_cov_1", time_end = 300)
+  cty$hospital_capacity <- cty$hospital_capacity * 2
+  output2 <- daedalus(cty, "sars_cov_2_delta", time_end = 100)
 
   deaths <- get_epidemic_summary(output, "deaths")
   deaths2 <- get_epidemic_summary(output2, "deaths")
