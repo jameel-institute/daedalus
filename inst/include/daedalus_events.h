@@ -237,7 +237,7 @@ class response {
         if (is_flag_on(current_flag)) {
           return 1.0;  // handle case where flag is already on, return false
         } else {
-          const double sum_state = std::accumulate(y, y + time_pos, 0);
+          const double sum_state = std::accumulate(y, y + time_pos, 0.0);
           return sum_state - value;
         }
       };
@@ -258,7 +258,7 @@ class response {
           if (current_dur < min_dur) {
             return 1.0;
           } else {
-            const double sum_state = std::accumulate(y, y + time_pos, 0);
+            const double sum_state = std::accumulate(y, y + time_pos, 0.0);
             return sum_state - value;
           }
         }
@@ -393,8 +393,8 @@ class response {
     if (!ISNA(state_off)) {
       const std::string name_ev_state_off = name + "_state_off";
       const dust2::ode::root_type root_type_off =
-          root_state_on > 0 ? dust2::ode::root_type::increase
-                            : dust2::ode::root_type::decrease;
+          root_state_off > 0 ? dust2::ode::root_type::increase
+                             : dust2::ode::root_type::decrease;
 
       // same as above
       std::vector<size_t> tmp_i_state_off = i_state_off;
