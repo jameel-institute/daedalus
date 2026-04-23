@@ -35,7 +35,7 @@ test_that(("Hospital capacity: flag and trigger mechanism"), {
 
   # check event is registered
   checkmate::expect_names(
-    out$ode_events[[1]]$name,
+    out$ode_events$name,
     must.include = sprintf("hosp_cap_exceeded_state_%s", c("on", "off"))
   )
 })
