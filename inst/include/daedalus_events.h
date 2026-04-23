@@ -237,7 +237,8 @@ class response {
         if (is_flag_on(current_flag)) {
           return 1.0;  // handle case where flag is already on, return false
         } else {
-          const double sum_state = std::accumulate(y, y + time_pos, 0.0);
+          const double sum_state =
+              std::round(std::accumulate(y, y + time_pos, 0.0));
           return sum_state - value;
         }
       };
@@ -258,7 +259,8 @@ class response {
           if (current_dur < min_dur) {
             return 1.0;
           } else {
-            const double sum_state = std::accumulate(y, y + time_pos, 0.0);
+            const double sum_state =
+                std::round(std::accumulate(y, y + time_pos, 0.0));
             return sum_state - value;
           }
         }
