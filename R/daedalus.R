@@ -426,21 +426,18 @@ daedalus <- function(
     n_groups = 1
   )
 
-  timesteps <- seq(0, time_end)
-  output_data <- prepare_output(output$data, country, timesteps)
-  rt_data <- output$data[["ipr"]]
   event_info <- get_daedalus_response_times(output)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
   output <- list(
+    ode_soln = output[["data"]],
+    ode_events = output[["events"]][[1L]], # returns list by default
     total_time = time_end,
-    model_data = output_data,
-    rt_data = rt_data,
-    country_parameters = unclass(country),
-    infection_parameters = unclass(infection), # infection is list
-    vaccination_parameters = unclass(vaccination),
-    behaviour_parameters = unclass(behaviour),
+    country = country,
+    infection = infection,
+    vaccination = vaccination,
+    behaviour = behaviour,
     response_data = list(
       response_strategy = response_identifier,
       openness = get_data(npi, "openness"),

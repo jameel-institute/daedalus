@@ -134,44 +134,66 @@ daedalus_multi_infection <- function(
     n_param_sets
   )
 
-  timesteps <- seq(0, time_end)
-  output_data <- prepare_output(output$data, country, timesteps)
-  rt_data_list <- asplit(output[["data"]][["ipr"]], 1L) # MARGIN = 1 for rows
+  output_data_list <- split_multi_soln(output)
 
   # NOTE: needs to be compatible with `<daedalus_output>`
   # or equivalent from `{daedalus.compare}`
   stopifnot(
     "Length of outputs and infections is not the same" = n_param_sets ==
-      length(output_data)
+      length(output_data_list)
   )
 
   event_info <- get_daedalus_multi_response_times(output, n_param_sets)
 
-  # return list of daedalus_output
   Map(
-    output_data,
+    output_data_list,
+    output[["events"]],
     infection,
     event_info[["npi_data"]],
     event_info[["vaccination_data"]],
-    rt_data_list,
-    f = function(x, y, z, zz, rt) {
+    f = function(x, y, z, zz, zzz) {
       o <- list(
+        ode_soln = x,
+        ode_events = y,
         total_time = time_end,
-        model_data = x,
-        rt_data = rt,
-        country_parameters = unclass(country),
-        infection_parameters = unclass(y),
-        vaccination_parameters = unclass(vaccination),
-        behaviour_parameters = unclass(behaviour),
+        country = country,
+        infection = z,
+        vaccination = vaccination,
+        behaviour = behaviour,
         response_data = list(
           response_strategy = response_identifier,
           openness = get_data(npi[[1]], "openness"), # from first NPI
-          npi_info = z,
-          vaccination_info = zz
+          npi_info = zz,
+          vaccination_info = zzz
         )
       )
 
       as_daedalus_output(o)
     }
   )
+}
+
+#' Split a dust2 solution with multiple groups
+#'
+#' @description
+#' Creates a list of solutions similar to output from a single group run.
+#'
+#' @param x A grouped dust2 output.
+#'
+#' @keywords internal
+split_multi_soln <- function(x) {
+  ode_data <- x[["data"]]
+  comp_names <- names(ode_data)
+
+  data_list <- lapply(ode_data, function(le) {
+    max_dim <- length(dim(le))
+    asplit(le, max_dim - 1)
+  })
+
+  data_list <- data.table::transpose(data_list)
+
+  lapply(data_list, function(le) {
+    names(le) <- comp_names
+    le
+  })
 }

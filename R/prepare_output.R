@@ -68,9 +68,10 @@ out_list_to_df <- function(output, new_vaccinations, timesteps, labels) {
 #' @name prepare_output
 #' @rdname prepare_output
 #'
-#' @description Convert DAEDALUS data into a long-format `<data.frame>`.
+#' @description Convert DAEDALUS ODE solution data into a long-format
+#' `<data.frame>`.
 #'
-#' @param output Output from [daedalus_internal()], expected to be a list.
+#' @param output Output from `daedalus_internal()`.
 #'
 #' @param country A `<daedalus_country>` object from which to get data on the
 #' number of demographic, economic, and vaccine groups.
@@ -94,12 +95,6 @@ out_list_to_df <- function(output, new_vaccinations, timesteps, labels) {
 prepare_output <- function(output, country, timesteps) {
   # internal function: no input checking
   n_times <- length(timesteps)
-
-  # find groups if any; this is only needed for daedalus_multi_infection
-  n_groups <- 1
-  if (length(dim(first(output))) == 3L) {
-    n_groups <- dim(first(output))[[2]]
-  }
 
   # remove flags and new vaccinations data
   NEW_VACCINATIONS_NAME <- "new_vax"
@@ -166,36 +161,10 @@ prepare_output <- function(output, country, timesteps) {
     compartment_labels = compartment_labels
   )
 
-  if (n_groups > 1) {
-    data_list <- lapply(output, asplit, 2)
-    data_list <- data.table::transpose(data_list)
-
-    new_vaccinations <- asplit(new_vaccinations, 2)
-
-    data <- Map(
-      f = function(x, y) {
-        out_list_to_df(x, y, timesteps = timesteps, labels = labels)
-      },
-      data_list,
-      new_vaccinations
-    )
-    data <- Map(
-      f = function(x, i) {
-        x$param_set <- i
-        x
-      },
-      data,
-      seq_along(data)
-    )
-  } else {
-    data <- out_list_to_df(
-      output,
-      new_vaccinations,
-      timesteps,
-      labels
-    )
-  }
-
-  # either a data.frame or a list of data.frames
-  data
+  out_list_to_df(
+    output,
+    new_vaccinations,
+    timesteps,
+    labels
+  )
 }
