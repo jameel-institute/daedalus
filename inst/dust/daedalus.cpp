@@ -11,6 +11,7 @@
 #include <Eigen/Eigenvalues>
 #include <unsupported/Eigen/CXX11/Tensor>
 
+#include <algorithm>
 #include <cmath>
 #include <iterator>
 #include <numeric>
@@ -518,9 +519,12 @@ class daedalus_ode {
     internal.isToR = shared.gamma_Is * t_x.chip(iIs, i_COMPS);
     internal.iaToR = shared.gamma_Ia * t_x.chip(iIa, i_COMPS);
 
-    internal.isToHd =
-        shared.eta * t_x.chip(iIs, i_COMPS) * shared.hfr * hfr_modifier;
-    internal.isToHr = shared.eta * t_x.chip(iIs, i_COMPS) - internal.isToHd;
+    TensorMat hfr_now = shared.hfr * hfr_modifier;
+    hfr_now = hfr_now.unaryExpr([](double x) { return std::min(x, 1.0); });
+
+    internal.isToHd = shared.eta * t_x.chip(iIs, i_COMPS) * hfr_now;
+    internal.isToHr =
+        shared.eta * (1.0 - hfr_now) * t_x.chip(iIs, i_COMPS) - internal.isToHd;
     internal.hrToR = shared.gamma_H_recovery * t_x.chip(iHr, i_COMPS);
 
     internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);

@@ -3,6 +3,7 @@
 
 #include "daedalus_types.h"
 #include <cpp11/R.hpp>
+#define RCPP_NO_R_HEADERS_CHECK
 #include <Rcpp.h>
 using namespace Rcpp;
 #include "cpp11/declarations.hpp"
