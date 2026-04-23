@@ -198,13 +198,13 @@ comp_non_working <- c(
 comp_infected <- "infect_symp"
 comp_dead <- "dead"
 
-daily_gva <- output$country_parameters$gva
-workforce <- output$country_parameters$workers
-vsl_by_age <- output$country_parameters$vsl
-life_expectancy <- output$country_parameters$life_expectancy
+daily_gva <- output$country$gva
+workforce <- output$country$workers
+vsl_by_age <- output$country$vsl
+life_expectancy <- output$country$life_expectancy
 
 value_school_year <- 1e6 # 1 million dollars
-n_students <- output$country_parameters$demography[3L]
+n_students <- output$country$demography[3L]
 
 edu_effectiveness_remote <- 0.33
 
