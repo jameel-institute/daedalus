@@ -27,7 +27,9 @@ get_data(x, ...)
 \verb{<daedalus_country>}, \verb{<daedalus_infection>}, \verb{<daedalus_npi>},
 \verb{<daedalus_output>}, and \verb{<daedalus_vaccination>} class.}
 
-\item{to_get}{A string giving the name of the element of \code{x} to return.}
+\item{to_get}{A string giving the name of the element of \code{x} to return. For
+\verb{<daedalus_output>} the additional internal data for \eqn{R_\text{eff}} can
+be accessed by passing \code{"rt_data"}.}
 
 \item{setting}{Optional string for a contact setting. Defaults to
 the first provided contact matrix if multiple are present.}

@@ -22,7 +22,10 @@ is_daedalus_output(x)
 \item{...}{Not used; added for compatibility with the generic.}
 }
 \value{
-An object of the \verb{<daedalus_output>} class.
+An object of the \verb{<daedalus_output>} class. Holds the raw ODE solution and
+ODE events logs in \pkg{dust2} forma), as well as \code{country}, \code{infection},
+\code{vaccination}, and \code{behaviour} classes representing input arguments to
+\code{\link[=daedalus]{daedalus()}}.
 
 Invisibly returns \code{x}; called primarily for its side effects of
 erroring when the object does not satisfy the \verb{<daedalus_output>} class
@@ -34,10 +37,6 @@ None; called for its printing side effects.
 }
 \description{
 Create and work with \verb{<daedalus_output>} objects
-
-Validate a potential \verb{<daedalus_output>} class object
-
-Check if an object is of the \verb{<daedalus_output>} class
 
 Print \verb{<daedalus_output>} class objects
 }

@@ -431,15 +431,6 @@ validate_country_input <- function(x) {
   }
 }
 
-#' Check for a list of NULLs
-#'
-#' @param x A list to be tested
-#'
-#' @keywords internal
-is_nulls_list <- function(x) {
-  checkmate::test_list(x, types = "NULL")
-}
-
 #' Validate contact matrix
 #'
 #' @param x An object to be validated as a contact matrix or list of matrices.

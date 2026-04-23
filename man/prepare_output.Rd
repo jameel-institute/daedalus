@@ -7,7 +7,7 @@
 prepare_output(output, country, timesteps)
 }
 \arguments{
-\item{output}{Output from \code{\link[=daedalus_internal]{daedalus_internal()}}, expected to be a list.}
+\item{output}{Output from \code{daedalus_internal()}.}
 
 \item{country}{A \verb{<daedalus_country>} object from which to get data on the
 number of demographic, economic, and vaccine groups.}
@@ -21,7 +21,8 @@ age-group specific value of the number of individuals in each economic sector
 and epidemiological compartment in each timestep.
 }
 \description{
-Convert DAEDALUS data into a long-format \verb{<data.frame>}.
+Convert DAEDALUS ODE solution data into a long-format
+\verb{<data.frame>}.
 }
 \details{
 There are 45 economic sectors, given by \code{N_ECON_SECTORS}, with the first

@@ -193,6 +193,7 @@ daedalus_npi <- function(
   )
 
   # NOTE: npis start on hospital capacity, but this can be extended
+  # NOTE: reactive ending on R_eff is handled in /inst/dust/daedalus.cpp
   x <- new_daedalus_npi(
     "reactive_npi",
     params,
@@ -204,7 +205,7 @@ daedalus_npi <- function(
     id_state_on = id_state_hosp,
     id_state_off = get_state_indices("ipr", country),
     value_state_on = get_data(country, "hospital_capacity"),
-    value_state_off = get_data(infection, "gamma_Is"),
+    value_state_off = NA_real_,
     id_time_log = get_flag_index("npi_start_time", country)
   )
 
