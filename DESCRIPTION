@@ -1,6 +1,6 @@
 Package: daedalus
 Title: Model Health, Social, and Economic Costs of a Pandemic
-Version: 0.3.5
+Version: 0.3.6
 Authors@R: c(
     person("Pratik", "Gupte", , "p.gupte24@imperial.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5294-7819")),
@@ -72,4 +72,4 @@ Encoding: UTF-8
 Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
