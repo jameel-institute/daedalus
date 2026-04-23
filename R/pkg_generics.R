@@ -10,7 +10,9 @@
 #' `<daedalus_country>`, `<daedalus_infection>`, `<daedalus_npi>`,
 #' `<daedalus_output>`, and `<daedalus_vaccination>` class.
 #'
-#' @param to_get A string giving the name of the element of `x` to return.
+#' @param to_get A string giving the name of the element of `x` to return. For
+#' `<daedalus_output>` the additional internal data for \eqn{R_\text{eff}} can
+#' be accessed by passing `"rt_data"`.
 #'
 #' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Other arguments to class
 #' methods. Class methods do not currently support any other arguments.

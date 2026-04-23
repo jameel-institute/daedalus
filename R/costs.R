@@ -32,7 +32,7 @@ get_costs.daedalus_output <- function(
     upper = 1
   )
 
-  gva <- x$country_parameters$gva
+  gva <- x$country$gva
   openness <- x$response_data$openness
   # NOTE: we assume that only the operational openness(-es) is/are returned.
   # all NPIs carry information on the openness when they are inactive (1.0),
@@ -43,10 +43,10 @@ get_costs.daedalus_output <- function(
   # value of a school year, school day (vsd), and N students
   # convert vsd to be in million dollars
   # NOTE: assuming all in school, need data for in-school proportion
-  vsy <- get_value_school_year(x$country_parameters$gni)
+  vsy <- get_value_school_year(x$country$gni)
   vsd <- vsy / 365
   vsd <- vsd / 1e6 # for uniformity with daily GVA
-  n_students <- x$country_parameters$demography[i_SCHOOL_AGE]
+  n_students <- x$country$demography[i_SCHOOL_AGE]
   names(n_students) <- NULL # prevent name propagating downstream
 
   # absences due to infection, hospitalisation, death
@@ -76,7 +76,7 @@ get_costs.daedalus_output <- function(
     list(worker_prod_loss$time, worker_prod_loss$econ_sector),
     sum
   )
-  workforce <- x$country_parameters$workers
+  workforce <- x$country$workers
 
   # calculate daily GVA loss due to illness-related absencees;
   # scale GVA loss by openness when closures are active
@@ -94,10 +94,10 @@ get_costs.daedalus_output <- function(
     levels = unique(total_deaths$age_group)
   )
   total_deaths <- tapply(total_deaths$value, total_deaths$age_group, sum)
-  life_years_lost <- x$country_parameters$life_expectancy * total_deaths
+  life_years_lost <- x$country$life_expectancy * total_deaths
 
   # NOTE: in million $s
-  life_value_lost <- x$country_parameters$vsl * total_deaths / 1e6
+  life_value_lost <- x$country$vsl * total_deaths / 1e6
 
   npi_duration <- sum(x$response_data$npi_info$npi_durations)
 
@@ -105,7 +105,7 @@ get_costs.daedalus_output <- function(
   if (all(is.na(npi_duration))) {
     economic_cost_closures <- 0
     education_cost_closures <- 0
-    sector_cost_closures <- rep(0, length(x$country_parameters$workers))
+    sector_cost_closures <- rep(0, length(x$country$workers))
   } else {
     # NOTE: in state-dep NPIs, multiple closure intervals map to same
     # openness config. in time-dep NPIs, the mapping is x-to-x. We do not expect
@@ -287,13 +287,13 @@ get_costs.daedalus_output <- function(
 #' comp_infected <- "infect_symp"
 #' comp_dead <- "dead"
 #'
-#' daily_gva <- output$country_parameters$gva
-#' workforce <- output$country_parameters$workers
-#' vsl_by_age <- output$country_parameters$vsl
-#' life_expectancy <- output$country_parameters$life_expectancy
+#' daily_gva <- output$country$gva
+#' workforce <- output$country$workers
+#' vsl_by_age <- output$country$vsl
+#' life_expectancy <- output$country$life_expectancy
 #'
 #' value_school_year <- 1e6 # 1 million dollars
-#' n_students <- output$country_parameters$demography[3L]
+#' n_students <- output$country$demography[3L]
 #'
 #' edu_effectiveness_remote <- 0.33
 #'
@@ -863,7 +863,7 @@ get_fiscal_costs <- function(
   )
 
   # daily gva
-  gva <- x$country_parameters$gva
+  gva <- x$country$gva
   openness <- last(x$response_data$openness)
 
   model_data <- get_data(x)
@@ -893,7 +893,7 @@ get_fiscal_costs <- function(
     list(worker_prod_loss$time, worker_prod_loss$econ_sector),
     sum
   )
-  workforce <- x$country_parameters$workers
+  workforce <- x$country$workers
 
   # calculate labour available after absences and closures
   # during closures, the effective number of workers is the product of
@@ -910,7 +910,7 @@ get_fiscal_costs <- function(
 
     # cost of getting NPIs to work: price_npi * number of alive individuals *
     # some uptake param
-    npi_support <- sum(x$country_parameters$demography) -
+    npi_support <- sum(x$country$demography) -
       get_incidence(x, "deaths")$value * uptake_npi * price_npi
     npi_support[-npi_periods] <- 0.0
     npi_support <- npi_support / 1e6 # convert to millions USD PPP
