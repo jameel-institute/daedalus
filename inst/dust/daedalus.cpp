@@ -524,7 +524,7 @@ class daedalus_ode {
 
     internal.isToHd = shared.eta * t_x.chip(iIs, i_COMPS) * hfr_now;
     internal.isToHr =
-        shared.eta * (1.0 - hfr_now) * t_x.chip(iIs, i_COMPS) - internal.isToHd;
+        shared.eta * (1.0 - hfr_now) * t_x.chip(iIs, i_COMPS);
     internal.hrToR = shared.gamma_H_recovery * t_x.chip(iHr, i_COMPS);
 
     internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
