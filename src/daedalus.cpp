@@ -27,20 +27,20 @@
 // [[Rcpp::depends(RcppEigen)]]
 
 // hardcoded as key to model structure
-const size_t iS = daedalus::constants::iS, iE = daedalus::constants::iE,
-             iIs = daedalus::constants::iIs, iIa = daedalus::constants::iIa,
-             iHr = daedalus::constants::iHr, iHd = daedalus::constants::iHd,
-             iR = daedalus::constants::iR, iD = daedalus::constants::iD,
-             idE = daedalus::constants::idE, idH = daedalus::constants::idH;
+constexpr size_t iS = daedalus::constants::iS, iE = daedalus::constants::iE,
+                 iIs = daedalus::constants::iIs, iIa = daedalus::constants::iIa,
+                 iHr = daedalus::constants::iHr, iHd = daedalus::constants::iHd,
+                 iR = daedalus::constants::iR, iD = daedalus::constants::iD,
+                 idE = daedalus::constants::idE, idH = daedalus::constants::idH;
 // declare new Hd and Hr compartments here
 
 // groups = rows, compartments = cols, vax strata = layers
-const size_t i_GRPS = daedalus::constants::i_GRPS,
-             i_COMPS = daedalus::constants::i_COMPS,
-             i_VAX_GRPS = daedalus::constants::i_VAX_GRPS;
+constexpr size_t i_GRPS = daedalus::constants::i_GRPS,
+                 i_COMPS = daedalus::constants::i_COMPS,
+                 i_VAX_GRPS = daedalus::constants::i_VAX_GRPS;
 
-const int N_VAX_STRATA = daedalus::constants::N_VAX_STRATA;
-const int N_COMPARTMENTS = daedalus::constants::N_COMPARTMENTS;
+constexpr int N_VAX_STRATA = daedalus::constants::N_VAX_STRATA;
+constexpr int N_COMPARTMENTS = daedalus::constants::N_COMPARTMENTS;
 
 // broadcasting and contraction dims
 const daedalus::types::bcast_dim_type bcast = daedalus::dims::dim_bcast_vax;
@@ -471,7 +471,7 @@ class daedalus_ode {
             Eigen::array<Eigen::Index, 2>{n_strata - n_econ_groups, 0},
             Eigen::array<Eigen::Index, 2>{n_econ_groups, 1});
 
-    const size_t id_npi_regime = state[shared.i_npi_flag];
+    const size_t id_npi_regime = static_cast<size_t>(state[shared.i_npi_flag]);
 
     internal.t_foi_work = beta_tmp * internal.t_work_inf_contacts *
                           shared.openness[id_npi_regime] *
@@ -525,8 +525,7 @@ class daedalus_ode {
     hfr_now = hfr_now.unaryExpr([](double x) { return std::min(x, 1.0); });
 
     internal.isToHd = shared.eta * t_x.chip(iIs, i_COMPS) * hfr_now;
-    internal.isToHr =
-        shared.eta * (1.0 - hfr_now) * t_x.chip(iIs, i_COMPS);
+    internal.isToHr = shared.eta * (1.0 - hfr_now) * t_x.chip(iIs, i_COMPS);
     internal.hrToR = shared.gamma_H_recovery * t_x.chip(iHr, i_COMPS);
 
     internal.rToS = shared.rho * t_x.chip(iR, i_COMPS);
