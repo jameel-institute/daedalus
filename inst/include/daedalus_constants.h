@@ -46,7 +46,7 @@ constexpr size_t i_rel_SD_START_TIME = 7;
 constexpr size_t i_rel_hosp_overflow_START_TIME = 8;
 
 // magic numbers
-constexpr double d_mort_multiplier = 1.6;
+constexpr double d_mort_multiplier = 5.0;
 
 }  // namespace constants
 
