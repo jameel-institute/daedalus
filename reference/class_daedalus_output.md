@@ -2,10 +2,6 @@
 
 Create and work with `<daedalus_output>` objects
 
-Validate a potential `<daedalus_output>` class object
-
-Check if an object is of the `<daedalus_output>` class
-
 Print `<daedalus_output>` class objects
 
 ## Usage
@@ -33,7 +29,10 @@ print(x, ...)
 
 ## Value
 
-An object of the `<daedalus_output>` class.
+An object of the `<daedalus_output>` class. Holds the raw ODE solution
+and ODE events logs in dust2 forma), as well as `country`, `infection`,
+`vaccination`, and `behaviour` classes representing input arguments to
+[`daedalus()`](https://jameel-institute.github.io/daedalus/reference/daedalus.md).
 
 Invisibly returns `x`; called primarily for its side effects of erroring
 when the object does not satisfy the `<daedalus_output>` class

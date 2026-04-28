@@ -1,5 +1,41 @@
 # Changelog
 
+## daedalus 0.3.6
+
+This patch version fixes an issue with the event generation
+functionality where state-dependent triggers (`state_test`) were reading
+the same root-type (increasing) for both on- and off-triggers. This has
+been fixed in `/inst/include/daedalus_events.h` along with a hygiene
+fix.
+
+Infection parameter `hfr` is treated more explicitly as a proportion of
+hospitalised individuals who will die; \\I_s \rightarrow H_r\\ is
+calculated as \\\eta I_s \times (1.0 - \text{HFR})\\. \\Is \rightarrow
+H_d\\ remains unchanged. \\\text{HFR}\\ is calculated as
+\\\text{min}(\omega_e \text{HFR}\_i, 1.0)\\ to prevent values \> 1.0
+when the excess-mortality modifier \\\omega_e\\ is applied.
+
+### Breaking changes
+
+There are potentially breaking changes to the `<daedalus_output>` class
+which now provides the raw ODE solution and events data from
+[`daedalus_internal()`](https://jameel-institute.github.io/daedalus/reference/daedalus_internal.md)
+(indirectly from `dust2`) as `ode_soln` and `ode_events`. Class elements
+previously named `*_parameters` and provided as an unclassed list are
+now provided as classed types and named `*` (e.g. `"country"` provided
+as `<daedalus_country>`).
+
+### Other changes
+
+- Helper function
+  [`prepare_output()`](https://jameel-institute.github.io/daedalus/reference/prepare_output.md)
+  has been pruned to only work on single-group ODE solutions. The new
+  helper function
+  [`split_multi_soln()`](https://jameel-institute.github.io/daedalus/reference/split_multi_soln.md)
+  handles grouped ODE solutions for use in a `<daedalus_output>` object.
+
+- Updates to tests and documentation.
+
 ## daedalus 0.3.5
 
 This patch version adds the ability pass multiple contact matrices

@@ -33,7 +33,9 @@ get_data(x, ...)
 
 - to_get:
 
-  A string giving the name of the element of `x` to return.
+  A string giving the name of the element of `x` to return. For
+  `<daedalus_output>` the additional internal data for \\R\_\text{eff}\\
+  can be accessed by passing `"rt_data"`.
 
 - setting:
 

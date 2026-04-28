@@ -7,6 +7,11 @@ scenarios.
 ``` r
 library(daedalus)
 library(data.table)
+#> 
+#> Attaching package: 'data.table'
+#> The following object is masked from 'package:base':
+#> 
+#>     %notin%
 library(ggplot2)
 ```
 

@@ -177,8 +177,6 @@ Functions used internally.
   : Initial values for model flags
 - [`assert_class_fields()`](https://jameel-institute.github.io/daedalus/reference/input_checks.md)
   : Check that a class has expected names
-- [`is_nulls_list()`](https://jameel-institute.github.io/daedalus/reference/is_nulls_list.md)
-  : Check for a list of NULLs
 - [`make_initial_state()`](https://jameel-institute.github.io/daedalus/reference/make_initial_state.md)
   : Generate a default initial state for DAEDALUS
 - [`make_susc_matrix()`](https://jameel-institute.github.io/daedalus/reference/make_susc_matrix.md)
@@ -200,6 +198,8 @@ Functions used internally.
   : Process event data
 - [`get_ngm()`](https://jameel-institute.github.io/daedalus/reference/reff_calculation.md)
   : Calculate the effective R
+- [`split_multi_soln()`](https://jameel-institute.github.io/daedalus/reference/split_multi_soln.md)
+  : Split a dust2 solution with multiple groups
 - [`drop_null()`](https://jameel-institute.github.io/daedalus/reference/tools.md)
   [`first()`](https://jameel-institute.github.io/daedalus/reference/tools.md)
   [`last()`](https://jameel-institute.github.io/daedalus/reference/tools.md)

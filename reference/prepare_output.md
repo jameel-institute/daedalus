@@ -1,6 +1,6 @@
 # Prepare DAEDALUS data
 
-Convert DAEDALUS data into a long-format `<data.frame>`.
+Convert DAEDALUS ODE solution data into a long-format `<data.frame>`.
 
 ## Usage
 
@@ -13,8 +13,7 @@ prepare_output(output, country, timesteps)
 - output:
 
   Output from
-  [`daedalus_internal()`](https://jameel-institute.github.io/daedalus/reference/daedalus_internal.md),
-  expected to be a list.
+  [`daedalus_internal()`](https://jameel-institute.github.io/daedalus/reference/daedalus_internal.md).
 
 - country:
 

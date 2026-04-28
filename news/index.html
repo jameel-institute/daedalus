@@ -13,7 +13,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,6 +62,20 @@
       <small>Source: <a href="https://github.com/jameel-institute/daedalus/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.6" id="daedalus-036">daedalus 0.3.6<a class="anchor" aria-label="anchor" href="#daedalus-036"></a></h2>
+<p>This patch version fixes an issue with the event generation functionality where state-dependent triggers (<code>state_test</code>) were reading the same root-type (increasing) for both on- and off-triggers. This has been fixed in <code>/inst/include/daedalus_events.h</code> along with a hygiene fix.</p>
+<p>Infection parameter <code>hfr</code> is treated more explicitly as a proportion of hospitalised individuals who will die; <span class="math inline">\(I_s \rightarrow H_r\)</span> is calculated as <span class="math inline">\(\eta I_s \times (1.0 - \text{HFR})\)</span>. <span class="math inline">\(Is \rightarrow H_d\)</span> remains unchanged. <span class="math inline">\(\text{HFR}\)</span> is calculated as <span class="math inline">\(\text{min}(\omega_e \text{HFR}_i, 1.0)\)</span> to prevent values &gt; 1.0 when the excess-mortality modifier <span class="math inline">\(\omega_e\)</span> is applied.</p>
+<div class="section level3">
+<h3 id="breaking-changes-0-3-6">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-3-6"></a></h3>
+<p>There are potentially breaking changes to the <code>&lt;daedalus_output&gt;</code> class which now provides the raw ODE solution and events data from <code><a href="../reference/daedalus_internal.html">daedalus_internal()</a></code> (indirectly from <code>dust2</code>) as <code>ode_soln</code> and <code>ode_events</code>. Class elements previously named <code>*_parameters</code> and provided as an unclassed list are now provided as classed types and named <code>*</code> (e.g. <code>"country"</code> provided as <code>&lt;daedalus_country&gt;</code>).</p>
+</div>
+<div class="section level3">
+<h3 id="other-changes-0-3-6">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-3-6"></a></h3>
+<ul><li><p>Helper function <code><a href="../reference/prepare_output.html">prepare_output()</a></code> has been pruned to only work on single-group ODE solutions. The new helper function <code><a href="../reference/split_multi_soln.html">split_multi_soln()</a></code> handles grouped ODE solutions for use in a <code>&lt;daedalus_output&gt;</code> object.</p></li>
+<li><p>Updates to tests and documentation.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.5" id="daedalus-035">daedalus 0.3.5<a class="anchor" aria-label="anchor" href="#daedalus-035"></a></h2>
 <p>This patch version adds the ability pass multiple contact matrices associated with a <code>&lt;daedalus_country&gt;</code>, as a list argument to <code>daedalus_country(name, contact_matrix = list(...))</code>.</p>
