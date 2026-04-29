@@ -302,7 +302,7 @@ format.daedalus_country <- function(x, ...) {
 
   n_settings <- length(x$contact_matrix) + 1 # add one for workplace
   settings <- c(names(x$contact_matrix), "workplace")
-  default_setting <- if (n_settings > 1) first(settings) else "total" # nolint
+  default_setting <- if (n_settings > 2) first(settings) else "community" # nolint
 
   # NOTE: rough implementations, better scaling e.g. to millions could be added
   cli::cli_text("{.cls {class(x)}}")
@@ -512,10 +512,10 @@ validate_contact_matrix <- function(x, name) {
       )
     }
 
-    list(total = x) # return x as list
+    list(community = x) # return x as list
   } else if (is.null(x)) {
     list(
-      total = daedalus.data::country_data[[name]][["contact_matrix"]]
+      community = daedalus.data::country_data[[name]][["contact_matrix"]]
     )
   } else {
     cli::cli_abort(
