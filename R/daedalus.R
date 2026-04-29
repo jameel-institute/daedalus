@@ -214,8 +214,9 @@ daedalus_internal <- function(
 #' parameters using [daedalus_infection()].
 #'
 #' @param response_strategy A string for the name of response strategy followed,
-#' a numeric of length 45 (number of economic sectors), or a `<daedalus_npi>`
-#' object. Defaults to "none".
+#' a numeric of length 45 (number of economic sectors), a matrix with dimensions
+#' 49 x N where N is the number of contacts settings, or a `<daedalus_npi>`
+#' object. Defaults to `NULL`, which simulates an unmitigated epidemic.
 #' While the response strategy is active, economic contacts are scaled using the
 #' package data object `daedalus.data::closure_strategy_data`.
 #'
