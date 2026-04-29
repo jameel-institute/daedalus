@@ -49,6 +49,13 @@ daedalus_timed_npi <- function(
     finite = TRUE,
     len = length(start_time)
   )
+  checkmate::assert_list(
+    openness,
+    c("matrix", "numeric")
+  )
+  n_settings <- count_settings(country)
+  openness <- lapply(openness, validate_openness, n_settings)
+
   Map(
     start_time,
     end_time,
@@ -102,31 +109,7 @@ daedalus_timed_npi <- function(
     )
   }
 
-  n_settings <- count_settings(country)
-
-  all_good_openness <- all(vapply(
-    openness,
-    test_openness,
-    settings = n_settings,
-    logical(1L)
-  ))
-
-  if (!all_good_openness) {
-    cli::cli_abort(
-      "<daedalus_timed_npi> parameter {.arg openness} matrices must have size \
-      {n_settings * (N_AGE_GROUPS + N_ECON_SECTORS)} with values \
-      between 0.0 and 1.0, but some matrices do not."
-    )
-  }
-
-  # add default or initial regime to openness list
-
-  no_closures <- rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS)
-  no_closures <- matrix(
-    rep(no_closures, n_settings),
-    N_AGE_GROUPS + N_ECON_SECTORS,
-    n_settings
-  )
+  no_closures <- make_full_openness(n_settings)
   openness <- c(
     list(no_closures),
     openness
