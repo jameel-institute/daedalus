@@ -122,7 +122,6 @@ class daedalus_ode {
 
     // related to contact matrix settings
     TensorAry cm_temp;
-    TensorVec scaling_factor;
   };
 
   static internal_state build_internal(const shared_state &shared) {
@@ -154,10 +153,6 @@ class daedalus_ode {
                       static_cast<Eigen::Index>(shared.n_settings));
     cm_temp = shared.cm;
 
-    // contact matrix scaling factor by setting
-    TensorVec scaling_factor(shared.n_settings);
-    scaling_factor.setConstant(1.0);
-
     // clang-format off
     return internal_state{
       t_infectious, t_comm_inf_contacts, t_foi_comm, alt_new_infections,
@@ -166,8 +161,7 @@ class daedalus_ode {
       susc_workers,
       sToE, eToIs, eToIa, isToR, iaToR, isToHr, isToHd, hrToR, hdToD, rToS,
       p_susc,
-      cm_temp,
-      scaling_factor
+      cm_temp
     };
     // clang-format on
   }
@@ -259,7 +253,7 @@ class daedalus_ode {
 
     // CONTACT PARAMETERS (MATRICES)
     // contact matrix --- now a Tensor for contact settings
-    const size_t n_settings = dust2::r::read_size(pars, "n_settings", 2);
+    const size_t n_settings = dust2::r::read_size(pars, "n_settings");
     const std::vector<size_t> vec_cm_dims = {n_strata, n_strata,
                                              n_settings};  // for 3D tensor
     const dust2::array::dimensions<3> cm_dims(vec_cm_dims.begin());
@@ -314,11 +308,11 @@ class daedalus_ode {
         daedalus::inputs::read_response(pars, "npi");
 
     /// ** Get openness regimes from NPIs ** ///
-    std::vector<TensorMat> openness = npi.get_openness_coefs();
+    std::vector<TensorMat> openness = npi.get_openness_coefs(n_settings);
 
     /// Get cm regimes from openness regimes
     std::vector<TensorMat> cm_regimes =
-        daedalus::helpers::get_cm_regimes(cm, openness);
+        daedalus::helpers::get_cm_regimes(cm, openness, n_settings);
 
     daedalus::events::response vaccination =
         daedalus::inputs::read_response(pars, "vaccination");
@@ -431,7 +425,8 @@ class daedalus_ode {
             .sum(Eigen::array<Eigen::Index, 1>{1})
             .reshape(Eigen::array<Eigen::Index, 2>{n_strata, 1});
 
-    const int id_npi_regime = state[shared.i_npi_flag];
+    const size_t id_npi_regime =
+        static_cast<size_t>(std::max(state[shared.i_npi_flag], 0.0));
 
     /// get total contacts from infectious to other groups
     internal.t_comm_inf_contacts =

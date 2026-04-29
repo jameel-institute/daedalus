@@ -106,7 +106,7 @@ class response {
   const size_t i_time_start;
   const double min_dur;
 
-  const std::vector<TensorMat> get_openness_coefs();
+  const std::vector<TensorMat> get_openness_coefs(const size_t n_settings);
 
   /// @brief Constructor for a response.
   /// @param name A string for the name, used to generate event names.
@@ -451,9 +451,12 @@ inline dust2::ode::events_type<double> get_combined_events(
 /// tensors suitable for use in the ODE RHS. Only really works with
 /// `daedalus::events::response` objects that represent NPIs, and not with
 /// objects representing vaccinations or other events for now.
+/// @param n_settings Number of social contacts settings. Needed to allow
+/// multiple settings.
 /// @return A vector of coefficient Tensors with the index representing the
 /// openness regime.
-inline const std::vector<TensorMat> response::get_openness_coefs() {
+inline const std::vector<TensorMat> response::get_openness_coefs(
+    const size_t n_settings) {
   const cpp11::list openness(parameters["openness"]);
   const size_t n_regimes = openness.size();
 
@@ -462,8 +465,7 @@ inline const std::vector<TensorMat> response::get_openness_coefs() {
   // NOTE: crude - clean up?
   for (size_t i = 0; i < n_regimes; i++) {
     cpp11::doubles tmp_param = openness[i];
-    TensorMat tmp_openness(daedalus::constants::DDL_N_TOTAL_GROUPS,
-                           daedalus::constants::DDL_N_CON_SETTINGS);
+    TensorMat tmp_openness(daedalus::constants::DDL_N_TOTAL_GROUPS, n_settings);
     std::copy(tmp_param.begin(), tmp_param.end(), tmp_openness.data());
 
     openness_coefs[i] = tmp_openness;
