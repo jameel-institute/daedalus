@@ -167,9 +167,21 @@ test_that("daedalus: Runs for all country x infection x response", {
 })
 
 test_that("daedalus: Runs with custom openness values", {
+  # runs with workplace scaling vector
+  openness <- rep(0.5, N_ECON_SECTORS)
+  expect_no_condition(
+    daedalus(
+      "GBR",
+      "sars_cov_1",
+      response_strategy = openness,
+      time_end = 100
+    )
+  )
+
+  # runs with full settings scaling matrix
   openness <- cbind(
     rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS),
-    c(rep(1.0, N_AGE_GROUPS), rep(0.5, N_ECON_SECTORS))
+    c(rep(0.5, N_AGE_GROUPS), rep(0.5, N_ECON_SECTORS))
   )
   expect_no_condition(
     daedalus(
@@ -179,6 +191,7 @@ test_that("daedalus: Runs with custom openness values", {
       time_end = 100
     )
   )
+
   openness <- cbind(
     rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS - 1),
     c(rep(1.0, N_AGE_GROUPS), rep(0.5, N_ECON_SECTORS - 1))
@@ -189,7 +202,7 @@ test_that("daedalus: Runs with custom openness values", {
       "sars_cov_1",
       response_strategy = openness
     ),
-    "(<daedalus_npi> parameter)*(openness)*(numeric matrix of size 98)"
+    "(<daedalus_npi> parameter)*(openness)*(numeric matrix of dims)"
   )
   expect_error(
     daedalus(
@@ -421,7 +434,7 @@ test_that("daedalus: Errors and messages", {
       "sars_cov_1",
       as.numeric(1:50)
     ),
-    "Got an unexpected value of class"
+    "(must be a numeric matrix)*(or a numeric vector)"
   )
   expect_error(
     daedalus(

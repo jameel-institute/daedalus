@@ -186,8 +186,9 @@ test_that("class <daedalus_npi>: state-dependent event launch correctly", {
     time_end = 600
   )
 
+  # check only first as reactive NPI may launch multiple times
   expect_lt(
-    output$response_data$npi_info$npi_times_start,
+    first(output$response_data$npi_info$npi_times_start),
     response_time
   )
 })
@@ -240,7 +241,7 @@ test_that("class <daedalus_npi>: throws expected errors", {
       "sars_cov_1",
       rep(2, 45)
     ),
-    "values between 0.0 and 1.0"
+    "(values)*(between 0.0 and 1.0)"
   )
 
   expect_error(

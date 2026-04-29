@@ -66,8 +66,8 @@
     Code
       get_epidemic_summary(daedalus("GB", "sars_cov_1", "elimination", time_end = 600))
     Output
-           value                measure
-      1  6596284           total_deaths
-      2 54806278          epidemic_size
-      3  6792845 total_hospitalisations
+            value                measure
+      1  867145.3           total_deaths
+      2 9342768.4          epidemic_size
+      3  989262.9 total_hospitalisations
 

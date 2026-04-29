@@ -121,6 +121,13 @@ openness <- cbind(
 )
 ```
 
+A third alternative is to take advantage of the default behaviour of the `<daedalus_npi>` class constructor, which is to assume that the scaling of community contacts is the simple mean of the scaling of workplace contacts, and pass a single 45-element workplace contacts scaling vector.
+This also applies to [daedalus_timed_npi()].
+
+```{r scaling_settings_3}
+openness <- rep(0.3, 45) # for 45 economic sectors
+```
+
 Create a `<daedalus_npi>`, passing the constructed matrix `openness`, and use it with `daedalus()` as needed.
 
 ```{r custom_npi}
@@ -130,8 +137,14 @@ daedalus_timed_npi(30, 90, list(openness), "GB")
 
 Openness values for pre-defined NPIs are also stored in this way.
 
+**Note that** pre-defined NPIs include community contacts scaling by default, as shown in the code snippet below.
+The scaling of community contacts is approximately 0.71, which is the mean of the scaling of workplace contacts shown below.
+
 ```{r predef_npis}
-daedalus_npi("elimination", "GB", "sars_cov_1")$parameters$openness$openness
+x <- daedalus_npi("elimination", "GB", "sars_cov_1")
+x
+
+x$parameters$openness$openness
 ```
 
 ## Future developments

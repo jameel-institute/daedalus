@@ -133,21 +133,10 @@ daedalus_npi <- function(
   infection <- validate_infection_input(infection)
 
   n_settings <- count_settings(country)
+
   if (is.na(name)) {
     identifier <- "custom"
-    # check openness
-    is_good_openness <- test_openness(
-      openness,
-      n_settings
-    )
-
-    if (!is_good_openness) {
-      cli::cli_abort(
-        "<daedalus_npi> parameter {.str openness} must be a numeric matrix of \
-        size {n_settings * (N_ECON_SECTORS + N_AGE_GROUPS)}, with values \
-        between 0.0 and 1.0."
-      )
-    }
+    openness <- validate_openness(openness, n_settings) # see fn below
   } else {
     # prevent users from passing both a predefined strategy and custom openness
     name <- rlang::arg_match(name, daedalus.data::closure_strategy_names)
@@ -161,20 +150,8 @@ daedalus_npi <- function(
       )
     }
 
-    no_closures <- rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS)
     openness <- daedalus.data::closure_strategy_data[[name]]
-    openness <- c(
-      rep(1.0, N_AGE_GROUPS),
-      openness
-    )
-    openness <- matrix(
-      c(
-        rep(no_closures, n_settings - 1),
-        openness
-      ),
-      N_AGE_GROUPS + N_ECON_SECTORS,
-      n_settings
-    )
+    openness <- validate_openness(openness, n_settings)
   }
 
   # do not allow NPIs to begin at time = 0
@@ -191,12 +168,7 @@ daedalus_npi <- function(
   checkmate::assert_count(max_duration)
 
   # prepare closure regimes
-  no_closures <- rep(1.0, N_AGE_GROUPS + N_ECON_SECTORS)
-  no_closures <- matrix(
-    rep(no_closures, n_settings),
-    N_AGE_GROUPS + N_ECON_SECTORS,
-    n_settings
-  )
+  no_closures <- make_full_openness(n_settings)
 
   params <- list(
     n_settings = n_settings,
@@ -293,8 +265,68 @@ validate_daedalus_npi <- function(x) {
 
 #' Check openness matrix
 #'
+#' @param x A numeric vector or matrix to be validated as an accepted way of
+#' specifying contacts scaling.
+#'
+#' @param settings A number for the number of settings
+#'
+#' @return A numeric matrix of dimensions 49 x settings. Throws errors if `x`
+#' does not conform to expectations.
+#'
+#' @keywords internal
+validate_openness <- function(x, settings) {
+  is_good_matrix <- checkmate::test_matrix(
+    x,
+    "numeric",
+    nrows = N_AGE_GROUPS + N_ECON_SECTORS,
+    ncols = settings
+  ) &&
+    checkmate::test_numeric(
+      x,
+      lower = 0.0,
+      upper = 1.0,
+      any.missing = FALSE
+    )
+
+  is_good_vec <- checkmate::test_numeric(
+    x,
+    len = N_ECON_SECTORS,
+    lower = 0.0,
+    upper = 1.0
+  )
+
+  if (!(is_good_matrix || is_good_vec)) {
+    cli::cli_abort(
+      "<daedalus_npi> parameter {.str openness} must be a numeric matrix of \
+        dims {(N_ECON_SECTORS + N_AGE_GROUPS)} x {settings}, or a numeric \
+        vector of length {N_ECON_SECTORS}, and all values must be between \\
+        0.0 and 1.0."
+    )
+  }
+
+  if (is.vector(x)) {
+    community_scaling <- make_community_scaling(x)
+    workplace_scaling <- make_workplace_scaling(x)
+    matrix(
+      c(
+        rep(community_scaling, settings - 1),
+        workplace_scaling
+      ),
+      N_AGE_GROUPS + N_ECON_SECTORS,
+      settings
+    )
+  } else {
+    x
+  }
+}
+
+#' Test if openness is passed correctly
+#'
+#' @inheritParams validate_openness
+#'
 #' @keywords internal
 test_openness <- function(x, settings) {
+  # used internally in class validator functions and does not check for dims
   expected_len <- settings * (N_AGE_GROUPS + N_ECON_SECTORS)
   checkmate::test_numeric(
     x,
@@ -364,6 +396,17 @@ format.daedalus_npi <- function(x, ...) {
   invisible(x)
 }
 
+#' Make a dummy openness matrix for dummy NPIs
+#'
+#' @param settings The number of contact settings. Defaults to 2.
+#'
+#' @return A matrix of 1.0s with dims 49 x `settings`.
+#'
+#' @keywords internal
+make_full_openness <- function(settings = 2) {
+  matrix(1.0, N_AGE_GROUPS + N_ECON_SECTORS, settings)
+}
+
 #' Dummy NPI
 #'
 #' @return A `<daedalus_npi>` object intended to have no effect; openness is
@@ -372,11 +415,13 @@ format.daedalus_npi <- function(x, ...) {
 #' @keywords internal
 dummy_npi <- function(country) {
   # a dummy npi with openness set to 1 and times set to NA
+  n_settings <- count_settings(country)
   params <- list(
-    n_settings = 2,
+    n_settings = n_settings,
+    # openness is a two element list to satisfy class validator
     openness = list(
-      matrix(1.0, N_AGE_GROUPS + N_ECON_SECTORS, 2),
-      matrix(1.0, N_AGE_GROUPS + N_ECON_SECTORS, 2)
+      make_full_openness(n_settings),
+      make_full_openness(n_settings)
     )
   )
   x <- new_daedalus_npi(
@@ -411,7 +456,7 @@ validate_npi_input <- function(
 ) {
   is_good_class <- checkmate::test_multi_class(
     x,
-    c("daedalus_npi", "character", "matrix"),
+    c("daedalus_npi", "character", "matrix", "numeric"),
     null.ok = TRUE
   )
   if (!is_good_class) {
@@ -485,4 +530,41 @@ get_data.daedalus_npi <- function(x, to_get, ...) {
   } else {
     x$parameters[[to_get]]
   }
+}
+
+#' Prepare community contacts scaling from workplace scaling
+#'
+#' @description
+#' Helper function to determine the (uniform) community contacts scaling,
+#' based on the scaling of workplace contacts. Higher mean workplace contacts
+#' scaling leads to higher community contacts scaling. Workplace contacts
+#' scaling mean is not weighted by worker counts.
+#'
+#' @param x A numeric vector of workplace contacts scaling, with each element
+#' in the range \eqn{[0, 1]}. Expected to be length 45 (N_ECON_SECTORS), but
+#' this is not checked.
+#'
+#' @return A numeric vector of length 49 (N_AGE_GROUPS + N_ECON_SECTORS).
+#'
+#' @keywords internal
+make_community_scaling <- function(x) {
+  rep(mean(x), N_ECON_SECTORS + N_AGE_GROUPS)
+}
+
+#' Prepare workplace setting scaling
+#'
+#' @description
+#' Helper function to append a no-scaling vector of 1.0s to the front of a
+#' workplace contacts scaling vector.
+#'
+#' @param x A numeric vector of workplace contacts scaling, with each element
+#' in the range \eqn{[0, 1]}. Expected to be length 45 (N_ECON_SECTORS), but
+#' this is not checked.
+#'
+#' @return A numeric vector of length 49 (N_AGE_GROUPS + N_ECON_SECTORS); this
+#' should be c(1, 1, 1, 1, x).
+#'
+#' @keywords internal
+make_workplace_scaling <- function(x) {
+  c(rep(1.0, N_AGE_GROUPS), x)
 }
