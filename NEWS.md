@@ -12,9 +12,13 @@ This patch version overhauls aspects of the NPI and contacts system.
 
 - Class `<daedalus_npi>` constructor now expects a numeric matrix for all custom openness coefficients, with rows representing all age-economic strata, and columns representing scaling in each setting.
 
+## Other changes
+
 - **Effective R calculation** now uses proportion of susceptible and $R_0$ over NGM eigenvalue calculation for speed.
 
 - Tests and documentation has been updated to reflect changes to NPI and contact mechanisms.
+
+- Added scripts to the Make system to format and lint code.
 
 # daedalus 0.3.6
 
@@ -23,10 +27,16 @@ This patch version fixes an issue with the event generation functionality where 
 Infection parameter `hfr` is treated more explicitly as a proportion of hospitalised individuals who will die; $I_s \rightarrow H_r$ is calculated as $\eta I_s \times (1.0 - \text{HFR})$. $Is \rightarrow H_d$ remains unchanged.
 $\text{HFR}$ is calculated as $\text{min}(\omega_e \text{HFR}_i, 1.0)$ to prevent values > 1.0 when the excess-mortality modifier $\omega_e$ is applied.
 
+The excess mortality modifier $\omega_e$ has been increased from 1.6 to 5.0 in `/inst/include/daedalus_constants.h`.
+
+There is an array access warning on Windows builds which has not been pinned down and is logged as [issue #158](https://github.com/jameel-institute/daedalus/issues/158).
+
 ## Breaking changes
 
 There are potentially breaking changes to the `<daedalus_output>` class which now provides the raw ODE solution and events data from `daedalus_internal()` (indirectly from `dust2`) as `ode_soln` and `ode_events`.
 Class elements previously named `*_parameters` and provided as an unclassed list are now provided as classed types and named `*` (e.g. `"country"` provided as `<daedalus_country>`).
+
+The increase in the excess mortality scaling factor will lead to higher death counts and epidemic costs in most scenarios where hospital capacity is exceeded.
 
 ## Other changes
 
