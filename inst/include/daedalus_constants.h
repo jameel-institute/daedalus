@@ -21,7 +21,6 @@ constexpr int i_VAX_STRATUM = 1;  // C++ index, second layer in a tensor
 constexpr int DDL_N_AGE_GROUPS = 4;
 constexpr int DDL_N_ECON_GROUPS = 45;
 constexpr int DDL_N_TOTAL_GROUPS = DDL_N_AGE_GROUPS + DDL_N_ECON_GROUPS;
-constexpr int DDL_N_CON_SETTINGS = 2;
 
 constexpr int iS = 0, iE = 1, iIs = 2, iIa = 3, iHr = 4, iHd = 5, iR = 6,
               iD = 7, idE = 8, idH = 9;

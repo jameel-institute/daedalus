@@ -221,14 +221,17 @@ inline daedalus::types::TensorAry<double> scale_cm(
 /// by NPI coefficients.
 inline std::vector<daedalus::types::TensorMat<double>> get_cm_regimes(
     const daedalus::types::TensorAry<double> &cm,
-    const std::vector<daedalus::types::TensorMat<double>> &vec_openness) {
+    const std::vector<daedalus::types::TensorMat<double>> &vec_openness,
+    const size_t n_settings) {
   const int n_regimes = vec_openness.size();
 
   std::vector<daedalus::types::TensorMat<double>> cm_regimes(n_regimes);
 
+  const int index_settings = 2;
+
   for (size_t i = 0; i < n_regimes; i++) {
-    cm_regimes[i] =
-        scale_cm(cm, vec_openness[i], 2).sum(Eigen::array<Eigen::Index, 1>{2});
+    cm_regimes[i] = scale_cm(cm, vec_openness[i], n_settings)
+                        .sum(Eigen::array<Eigen::Index, 1>{index_settings});
   }
 
   return cm_regimes;
