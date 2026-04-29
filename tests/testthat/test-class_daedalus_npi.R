@@ -365,7 +365,7 @@ test_that("class <daedalus_npi>: throws expected errors", {
       ),
       "GBR"
     ),
-    "matrices must have size 98 with values between 0.0 and 1.0"
+    "(must be a numeric matrix)*(numeric vector)"
   )
 })
 

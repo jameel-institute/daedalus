@@ -2,21 +2,29 @@
 
 This patch version overhauls aspects of the NPI and contacts system.
 
+## Breaking changes
+
 - All contacts including workplace contacts are represented in a single array (R) or rank 3 Eigen tensor (C++).
 
 - NPI effects on contact matrices are pre-calculated and stored in `shared_state` and accessed in the ODE RHS rather than being calculated on the fly.
 
 - ODE RHS calculations combine FOI calculations into a single step as workplace transmission is rolled into overall transmission.
 
-- All `<daedalus_country>` objects have a minimum of 2 settings, "community" or "total" and "workplace".
+- All `<daedalus_country>` objects have a minimum of 2 settings, "community" and "workplace".
 
-- Class `<daedalus_npi>` constructor now expects a numeric matrix for all custom openness coefficients, with rows representing all age-economic strata, and columns representing scaling in each setting.
+- **Community contacts are now scaled by default when an NPI is passed**, which substantially reduces the epidemic size, hospitalisations, and deaths. The default scaling of community contacts is the mean of the workplace scaling specified. See the vignette `vignettes/multiple_contact_settings.Rmd` for more information.
+
+- Class `<daedalus_npi>` constructor also allows a numeric matrix for custom openness coefficients for all age-economic-setting combinations. Community contacts can be scaled per user-specified values, overriding the default behaviour.
+
+- Removed header constant for number of contact settings, this is taken from `<daedalus_country>` when passed to `daedalus()`.
 
 ## Other changes
 
 - **Effective R calculation** now uses proportion of susceptible and $R_0$ over NGM eigenvalue calculation for speed.
 
 - Tests and documentation has been updated to reflect changes to NPI and contact mechanisms.
+
+- Added tests to check that `daedalus()` works with multiple contact settings.
 
 - Added scripts to the Make system to format and lint code.
 

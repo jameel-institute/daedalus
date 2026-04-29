@@ -38,8 +38,9 @@ of an infection. Create and pass a \verb{<daedalus_infection>} to tweak infectio
 parameters using \code{\link[=daedalus_infection]{daedalus_infection()}}.}
 
 \item{response_strategy}{A string for the name of response strategy followed,
-a numeric of length 45 (number of economic sectors), or a \verb{<daedalus_npi>}
-object. Defaults to "none".
+a numeric of length 45 (number of economic sectors), a matrix with dimensions
+49 x N where N is the number of contacts settings, or a \verb{<daedalus_npi>}
+object. Defaults to \code{NULL}, which simulates an unmitigated epidemic.
 While the response strategy is active, economic contacts are scaled using the
 package data object \code{daedalus.data::closure_strategy_data}.}
 
