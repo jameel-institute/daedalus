@@ -49,9 +49,11 @@ daedalus_multi_infection(
 - response_strategy:
 
   A string for the name of response strategy followed, a numeric of
-  length 45 (number of economic sectors), or a `<daedalus_npi>` object.
-  Defaults to "none". While the response strategy is active, economic
-  contacts are scaled using the package data object
+  length 45 (number of economic sectors), a matrix with dimensions 49 x
+  N where N is the number of contacts settings, or a `<daedalus_npi>`
+  object. Defaults to `NULL`, which simulates an unmitigated epidemic.
+  While the response strategy is active, economic contacts are scaled
+  using the package data object
   [`daedalus.data::closure_strategy_data`](https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html).
 
 - vaccine_investment:

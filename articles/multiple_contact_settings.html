@@ -28,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,14 +97,47 @@
     
 <p>This vignette shows how to pass community contact matrices
 disaggregated into multiple settings to the Daedalus model.</p>
-<p>The idea is — in future — to be able to apply closures or any
-arbitrary scaling to each setting separately, rather than uniformly
-scaling contacts across settings. An example of setting-specific scaling
-is scaling school contacts for school-age children, while leaving
-contacts in other settings intact.</p>
-<p><strong>Note that</strong> While the scaffolding for such scaling
-functionality is in place on the C++ side, this functionality is still
-being developed on the R side.</p>
+<p>Daedalus allows users to apply closures or any arbitrary scaling to
+each setting separately, rather than uniformly scaling contacts across
+settings. An example of setting-specific scaling is scaling school
+contacts for school-age children, while leaving contacts in other
+settings intact.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># load package</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jameel-institute/daedalus" class="external-link">daedalus</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/epiforecasts/socialmixr" class="external-link">socialmixr</a></span><span class="op">)</span> <span class="co"># for POLYMOD data</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="default-contact-settings">Default contact settings<a class="anchor" aria-label="anchor" href="#default-contact-settings"></a>
+</h2>
+<p>Daedalus countries have two contact settings by default as of version
+0.3.6:</p>
+<ol style="list-style-type: decimal">
+<li><p>Community or ‘total’: This is the set of age-specific contacts
+that take place in the community, outside the workplace. In daedalus
+&lt; v0.3.5, this would have been the element referred to as
+<code>x$contact_matrix</code>;</p></li>
+<li><p>Workplace: This is a matrix giving the contacts within workplaces
+(so between workers in an economic sector; forming the diagonal of the
+matrix), and from non-working consumers to workers in each economic
+sector (considers only contacts from consumers to workers and not vice
+versa).</p></li>
+</ol>
+<p>These are displayed in the country object when printed to screen.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/class_country.html">daedalus_country</a></span><span class="op">(</span><span class="st">"GBR"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">&lt;daedalus_country&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">United Kingdom</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Demography: 3924490, 11762039, 39536463, and 12663012</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Default contact matrix:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> * setting name: "community"; found 1 more setting: "workplace"</span></span>
+<span><span class="co">#&gt;             0-4      5-19    20-64       65+</span></span>
+<span><span class="co">#&gt; 0-4   1.9157895 1.5379290 4.704999 0.2863619</span></span>
+<span><span class="co">#&gt; 5-19  0.5131412 8.7339228 5.874591 0.7418483</span></span>
+<span><span class="co">#&gt; 20-64 0.4670302 1.7476822 7.830182 1.0685802</span></span>
+<span><span class="co">#&gt; 65+   0.1180517 0.7548304 3.531487 1.5212437</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> GNI (PPP $): <span style="color: #0000BB;">45870</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Hospital capacity: <span style="color: #00BB00;">26219</span></span></span></code></pre></div>
+</div>
 <div class="section level2">
 <h2 id="basic-example-using-polymod">Basic example using POLYMOD<a class="anchor" aria-label="anchor" href="#basic-example-using-polymod"></a>
 </h2>
@@ -119,27 +152,6 @@ contact matrices when the country object is passed to
 cannot be used to model multiple settings, and the <code>country</code>
 argument must be a <code>&lt;daedalus_country&gt;</code> if multiple
 settings are needed.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># load package</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jameel-institute/daedalus" class="external-link">daedalus</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/epiforecasts/socialmixr" class="external-link">socialmixr</a></span><span class="op">)</span> <span class="co"># for POLYMOD data</span></span></code></pre></div>
-<p>By default a country has a single setting, the ‘total’ community
-contacts. This is displayed in the country object when printed to
-screen.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/class_country.html">daedalus_country</a></span><span class="op">(</span><span class="st">"GBR"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">&lt;daedalus_country&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">United Kingdom</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Demography: 3924490, 11762039, 39536463, and 12663012</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Default contact matrix:</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> * setting name: "total"; found no more settings</span></span>
-<span><span class="co">#&gt;             0-4      5-19    20-64       65+</span></span>
-<span><span class="co">#&gt; 0-4   1.9157895 1.5379290 4.704999 0.2863619</span></span>
-<span><span class="co">#&gt; 5-19  0.5131412 8.7339228 5.874591 0.7418483</span></span>
-<span><span class="co">#&gt; 20-64 0.4670302 1.7476822 7.830182 1.0685802</span></span>
-<span><span class="co">#&gt; 65+   0.1180517 0.7548304 3.531487 1.5212437</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> GNI (PPP $): <span style="color: #0000BB;">45870</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Hospital capacity: <span style="color: #00BB00;">26219</span></span></span></code></pre></div>
 <p>We can get POLYMOD data <span class="citation">(<a href="#ref-mossong2008">Mossong et al. 2008</a>)</span> for the U.K.
 from the <a href="https://cran.r-project.org/package=socialmixr" class="external-link">R
 package <em>socialmixr</em></a>. Here in this basic example, we consider
@@ -180,13 +192,13 @@ when examining the object later.</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">United Kingdom</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Demography: 3924490, 11762039, 39536463, and 12663012</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Default contact matrix:</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> * setting name: "home"; found 1 more setting: "school"</span></span>
-<span><span class="co">#&gt;          contact.age.group</span></span>
-<span><span class="co">#&gt; age.group     [0,5)    [5,18)  [18,65)       65+</span></span>
-<span><span class="co">#&gt;   [0,5)   0.4842105 1.0631579 2.694737 0.1157895</span></span>
-<span><span class="co">#&gt;   [5,18)  0.3011152 1.7397770 2.516729 0.1449814</span></span>
-<span><span class="co">#&gt;   [18,65) 0.2656514 0.9323181 2.218274 0.2081218</span></span>
-<span><span class="co">#&gt;   65+     0.1250000 0.7142857 1.660714 0.7142857</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> * setting name: "home"; found 2 more settings: "school" and "workplace"</span></span>
+<span><span class="co">#&gt;           contact.age.group</span></span>
+<span><span class="co">#&gt; age.group      [0,5)    [5,18)  [18,65)  [65,Inf)</span></span>
+<span><span class="co">#&gt;   [0,5)    0.4842105 1.0631579 2.694737 0.1157895</span></span>
+<span><span class="co">#&gt;   [5,18)   0.3011152 1.7397770 2.516729 0.1449814</span></span>
+<span><span class="co">#&gt;   [18,65)  0.2656514 0.9323181 2.218274 0.2081218</span></span>
+<span><span class="co">#&gt;   [65,Inf) 0.1250000 0.7142857 1.660714 0.7142857</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> GNI (PPP $): <span style="color: #0000BB;">45870</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Hospital capacity: <span style="color: #00BB00;">26219</span></span></span></code></pre></div>
 <p>Pass the created country to [daedalus()] as usual to run the epi-econ
@@ -201,31 +213,138 @@ model taking into account contacts in each setting.</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Behaviour: <span style="color: #BB00BB;">no behaviour</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="passing-setting-specific-contact-scaling">Passing setting-specific contact scaling<a class="anchor" aria-label="anchor" href="#passing-setting-specific-contact-scaling"></a>
+</h2>
+<p>Users can pass setting-specific contact scaling by using the
+<code>&lt;daedalus_npi&gt;</code> class.</p>
+<p>Scaling must take the form of an <span class="math inline">\(M \times
+N\)</span> matrix, where <span class="math inline">\(M\)</span> is the
+number of age and economic strata (49 for Daedalus), and <span class="math inline">\(N\)</span> is the number of settings. For a
+default <code>&lt;daedalus_country&gt;</code>, this would be a <span class="math inline">\(49 \times 2\)</span> matrix, due to the two
+contact settings, ‘community’ and ‘workplace’.</p>
+<p>The example below shows a matrix that does not scale community
+contacts, and which scales all workplace contacts to 30% of the total.
+The underlying model will scale the within-sector contacts by the square
+of the scaling coefficient (representing scaling of both incoming and
+outgoing contacts), while the consumer-to-worker contacts will be scaled
+by the coefficient alone, as we are not simulating a reduction in the
+number of consumers visiting workplaces.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">openness</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">49</span><span class="op">)</span>, <span class="co"># no scaling on community</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">45</span><span class="op">)</span><span class="op">)</span> <span class="co"># scale 45 economic strata</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The following construction is simpler because it assumes the same
+scaling for age-specific contacts in workplaces as for worker contacts,
+and would not cause issues as age-specific workplace contacts are 0.
+Nonetheless, we advise using the construction above as it makes the
+intention more explicit.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">openness</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">49</span><span class="op">)</span>, <span class="co"># no scaling on community</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">49</span><span class="op">)</span> <span class="co"># scale all 49 age-and-economic strata</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>A third alternative is to take advantage of the default behaviour of
+the <code>&lt;daedalus_npi&gt;</code> class constructor, which is to
+assume that the scaling of community contacts is the simple mean of the
+scaling of workplace contacts, and pass a single 45-element workplace
+contacts scaling vector. This also applies to
+[daedalus_timed_npi()].</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">openness</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">45</span><span class="op">)</span> <span class="co"># for 45 economic sectors</span></span></code></pre></div>
+<p>Create a <code>&lt;daedalus_npi&gt;</code>, passing the constructed
+matrix <code>openness</code>, and use it with <code><a href="../reference/daedalus.html">daedalus()</a></code> as
+needed.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># a 90-day timed NPI operating on GB; note timed_npi needs a list of openness</span></span>
+<span><span class="fu"><a href="../reference/class_npi.html">daedalus_timed_npi</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">90</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">openness</span><span class="op">)</span>, <span class="st">"GB"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">&lt;daedalus_npi/daedalus_response&gt;</span></span></span>
+<span><span class="co">#&gt; NPI strategy: <span style="font-weight: bold;">custom_timed</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Start time (days): <span style="color: #0000BB;">30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> End time (days): <span style="color: #0000BB;">90</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Openness (mean prop.): <span style="color: #0000BB;">0.3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Maximum duration (days): <span style="color: #0000BB;">NA</span></span></span></code></pre></div>
+<p>Openness values for pre-defined NPIs are also stored in this way.</p>
+<p><strong>Note that</strong> pre-defined NPIs include community
+contacts scaling by default, as shown in the code snippet below. The
+scaling of community contacts is approximately 0.71, which is the mean
+of the scaling of workplace contacts shown below.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/class_npi.html">daedalus_npi</a></span><span class="op">(</span><span class="st">"elimination"</span>, <span class="st">"GB"</span>, <span class="st">"sars_cov_1"</span><span class="op">)</span></span>
+<span><span class="va">x</span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">&lt;daedalus_npi/daedalus_response&gt;</span></span></span>
+<span><span class="co">#&gt; NPI strategy: <span style="font-weight: bold;">elimination</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Start time (days): <span style="color: #0000BB;">30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> End time (days): <span style="color: #0000BB;">NA</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Openness (mean prop.): <span style="color: #0000BB;">0.713</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Maximum duration (days): <span style="color: #0000BB;">365</span></span></span>
+<span></span>
+<span><span class="va">x</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">openness</span><span class="op">$</span><span class="va">openness</span></span>
+<span><span class="co">#&gt;            [,1] [,2]</span></span>
+<span><span class="co">#&gt;  [1,] 0.7128889 1.00</span></span>
+<span><span class="co">#&gt;  [2,] 0.7128889 1.00</span></span>
+<span><span class="co">#&gt;  [3,] 0.7128889 1.00</span></span>
+<span><span class="co">#&gt;  [4,] 0.7128889 1.00</span></span>
+<span><span class="co">#&gt;  [5,] 0.7128889 0.86</span></span>
+<span><span class="co">#&gt;  [6,] 0.7128889 0.86</span></span>
+<span><span class="co">#&gt;  [7,] 0.7128889 0.90</span></span>
+<span><span class="co">#&gt;  [8,] 0.7128889 0.90</span></span>
+<span><span class="co">#&gt;  [9,] 0.7128889 0.90</span></span>
+<span><span class="co">#&gt; [10,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [11,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [12,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [13,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [14,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [15,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [16,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [17,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [18,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [19,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [20,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [21,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [22,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [23,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [24,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [25,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [26,] 0.7128889 0.70</span></span>
+<span><span class="co">#&gt; [27,] 0.7128889 0.89</span></span>
+<span><span class="co">#&gt; [28,] 0.7128889 0.92</span></span>
+<span><span class="co">#&gt; [29,] 0.7128889 0.56</span></span>
+<span><span class="co">#&gt; [30,] 0.7128889 0.64</span></span>
+<span><span class="co">#&gt; [31,] 0.7128889 0.63</span></span>
+<span><span class="co">#&gt; [32,] 0.7128889 0.63</span></span>
+<span><span class="co">#&gt; [33,] 0.7128889 0.63</span></span>
+<span><span class="co">#&gt; [34,] 0.7128889 0.63</span></span>
+<span><span class="co">#&gt; [35,] 0.7128889 0.63</span></span>
+<span><span class="co">#&gt; [36,] 0.7128889 0.10</span></span>
+<span><span class="co">#&gt; [37,] 0.7128889 0.88</span></span>
+<span><span class="co">#&gt; [38,] 0.7128889 0.88</span></span>
+<span><span class="co">#&gt; [39,] 0.7128889 0.88</span></span>
+<span><span class="co">#&gt; [40,] 0.7128889 0.94</span></span>
+<span><span class="co">#&gt; [41,] 0.7128889 0.98</span></span>
+<span><span class="co">#&gt; [42,] 0.7128889 0.85</span></span>
+<span><span class="co">#&gt; [43,] 0.7128889 0.66</span></span>
+<span><span class="co">#&gt; [44,] 0.7128889 1.00</span></span>
+<span><span class="co">#&gt; [45,] 0.7128889 0.10</span></span>
+<span><span class="co">#&gt; [46,] 0.7128889 0.75</span></span>
+<span><span class="co">#&gt; [47,] 0.7128889 0.55</span></span>
+<span><span class="co">#&gt; [48,] 0.7128889 0.54</span></span>
+<span><span class="co">#&gt; [49,] 0.7128889 0.49</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="future-developments">Future developments<a class="anchor" aria-label="anchor" href="#future-developments"></a>
 </h2>
-<p>A number of developments to this feature are being considered. These
-include:</p>
-<ol style="list-style-type: decimal">
-<li><p>Disaggregating workplace contacts into settings, so that scaling
-can be applied by setting rather than by economic sector, as this is
-much easier to work with from a policy perspective (e.g. closing pubs
-<em>versus</em> scaling hospitality contacts by some amount to represent
-pub closures).</p></li>
-<li><p>Applying age-specific setting scaling, to represent different
-policy recommendations or outcomes by age in different
-settings.</p></li>
-<li><p>Applying different behavioural modifiers to each setting to
-simulate endogenous risk-perception related modification in contacts
-across settings.</p></li>
-</ol>
+<p>This functionality is still in development, and features being
+considered include applying different behavioural modifiers to each
+setting to simulate endogenous risk-perception related modification in
+contacts across settings.</p>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-mossong2008" class="csl-entry">
-Mossong, Joël, Niel Hens, Mark Jit, Philippe Beutels, Kari Auranen,
-Rafael Mikolajczyk, Marco Massari, et al. 2008. <span>“Social Contacts
+Mossong, Joël, Niel Hens, Mark Jit, et al. 2008. <span>“Social Contacts
 and Mixing Patterns Relevant to the Spread of Infectious
 Diseases.”</span> <em>PLOS Medicine</em> 5 (3): e74. <a href="https://doi.org/10.1371/journal.pmed.0050074" class="external-link">https://doi.org/10.1371/journal.pmed.0050074</a>.
 </div>

@@ -73,7 +73,7 @@ x
 #> • Name: Canada
 #> • Demography: 1993132, 5949109, 22966942, and 6832974
 #> • Default contact matrix:
-#> • * setting name: "total"; found no more settings
+#> • * setting name: "community"; found 1 more setting: "workplace"
 #>             0-4      5-19    20-64       65+
 #> 0-4   1.9157895 1.5235823 5.014414 0.3169637
 #> 5-19  0.5104463 8.7459756 6.322175 0.7948344
@@ -93,7 +93,7 @@ x
 #> • Name: Canada
 #> • Demography: 1993132, 5949109, 22966942, and 6832974
 #> • Default contact matrix:
-#> • * setting name: "home"; found 1 more setting: "school"
+#> • * setting name: "home"; found 2 more settings: "school" and "workplace"
 #>      [,1] [,2] [,3] [,4]
 #> [1,]   99   99   99   99
 #> [2,]   99   99   99   99

@@ -7,11 +7,9 @@ Make large contact matrix for Cpp model.
 ``` r
 make_conmat_large(country, scaling = c("demography", "none"))
 
-make_work_contacts(country)
+make_work_contacts(country, scaling = c("demography", "none"))
 
-make_consumer_contacts(country)
-
-make_full_contacts(country)
+make_consumer_contacts(country, scaling = c("demography", "none"))
 ```
 
 ## Arguments

@@ -22,6 +22,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/class_npi.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/class_response.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/class_vaccination.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/count_settings.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/country_name_from_arg.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus-package.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/daedalus.html</loc></url>
@@ -45,8 +46,11 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/index.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/initial_flags.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/input_checks.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/make_community_scaling.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/make_full_openness.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/make_initial_state.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/make_susc_matrix.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/make_workplace_scaling.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/model_constants.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/new_daedalus_hosp_overflow.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/out_list_to_df.html</loc></url>
@@ -58,6 +62,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/set_data.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/split_multi_soln.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/summary_constants.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/test_openness.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/tools.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/uptake_percent_to_number.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/validate_behaviour_input.html</loc></url>
@@ -65,6 +70,7 @@
 <url><loc>https://jameel-institute.github.io/daedalus/reference/validate_country_input.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/validate_infection_input.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/validate_npi_input.html</loc></url>
+<url><loc>https://jameel-institute.github.io/daedalus/reference/validate_openness.html</loc></url>
 <url><loc>https://jameel-institute.github.io/daedalus/reference/validate_vaccination_input.html</loc></url>
 </urlset>
 

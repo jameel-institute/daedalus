@@ -28,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,7 +123,7 @@ easily.</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">Canada</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Demography: 1993132, 5949109, 22966942, and 6832974</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Default contact matrix:</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> * setting name: "total"; found no more settings</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> * setting name: "community"; found 1 more setting: "workplace"</span></span>
 <span><span class="co">#&gt;             0-4      5-19    20-64       65+</span></span>
 <span><span class="co">#&gt; 0-4   1.9157895 1.5235823 5.014414 0.3169637</span></span>
 <span><span class="co">#&gt; 5-19  0.5104463 8.7459756 6.322175 0.7948344</span></span>
@@ -144,7 +144,7 @@ easily.</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Name: <span style="color: #BB0000;">Canada</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Demography: 1993132, 5949109, 22966942, and 6832974</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> Default contact matrix:</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> * setting name: "total"; found no more settings</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> * setting name: "community"; found 1 more setting: "workplace"</span></span>
 <span><span class="co">#&gt;             0-4      5-19    20-64       65+</span></span>
 <span><span class="co">#&gt; 0-4   1.9157895 1.5235823 5.014414 0.3169637</span></span>
 <span><span class="co">#&gt; 5-19  0.5104463 8.7459756 6.322175 0.7948344</span></span>
@@ -258,12 +258,12 @@ calculate the numerical uptake limit for each scenario.</p>
 investment scenarios is automatically assumed to be “none”.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># simulate a Covid-19 wild type outbreak in Canada; using default parameters</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daedalus.html">daedalus</a></span><span class="op">(</span><span class="st">"Canada"</span>, <span class="st">"sars_cov_2_pre_alpha"</span><span class="op">)</span></span></code></pre></div>
 <p>The model runs for 300 timesteps by default; timesteps should be
 interpreted as days since model parameters are in terms of days.</p>
 <p>Plot the data to view the epidemic curve.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data.html">get_data</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data.html">get_data</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">compartment</span> <span class="op">==</span> <span class="st">"infect_symp"</span> <span class="op">&amp;</span> <span class="va">data</span><span class="op">$</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"20-64"</span> <span class="op">&amp;</span></span>
 <span>    <span class="va">data</span><span class="op">$</span><span class="va">vaccine_group</span> <span class="op">==</span> <span class="st">"unvaccinated"</span>, <span class="op">]</span></span>
@@ -277,29 +277,37 @@ interpreted as days since model parameters are in terms of days.</p>
 <span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="daedalus_files/figure-html/plot_epidemic-1.png" class="r-plt" alt="" width="768"></p>
+<p>Users can also access and plot the <span class="math inline">\(R_\text{eff}\)</span> logged at each timestep.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">r_eff</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data.html">get_data</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"rt_data"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">r_eff</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>, <span class="va">r_eff</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>      x <span class="op">=</span> <span class="st">"Time (days)"</span>, y <span class="op">=</span> <span class="st">"Effective reproduction number"</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
+<p><img src="daedalus_files/figure-html/plot_reff-1.png" class="r-plt" alt="" width="768"></p>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-haw2022" class="csl-entry">
-Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo
-Pianella, Robert Johnson, Sumali Bajaj, et al. 2022. <span>“Optimizing
-Social and Economic Activity While Containing SARS-CoV-2 Transmission
-Using DAEDALUS.”</span> <em>Nature Computational Science</em> 2 (4):
-223–33. <a href="https://doi.org/10.1038/s43588-022-00233-0" class="external-link">https://doi.org/10.1038/s43588-022-00233-0</a>.
+Haw, David J., Giovanni Forchini, Patrick Doohan, et al. 2022.
+<span>“Optimizing Social and Economic Activity While Containing
+SARS-CoV-2 Transmission Using DAEDALUS.”</span> <em>Nature Computational
+Science</em> 2 (4): 223–33. <a href="https://doi.org/10.1038/s43588-022-00233-0" class="external-link">https://doi.org/10.1038/s43588-022-00233-0</a>.
 </div>
 <div id="ref-jarvis2024" class="csl-entry">
-Jarvis, Christopher I., Pietro Coletti, Jantien A. Backer, James D.
-Munday, Christel Faes, Philippe Beutels, Christian L. Althaus, et al.
-2024. <span>“Social Contact Patterns Following the COVID-19 Pandemic: A
+Jarvis, Christopher I., Pietro Coletti, Jantien A. Backer, et al. 2024.
+<span>“Social Contact Patterns Following the COVID-19 Pandemic: A
 Snapshot of Post-Pandemic Behaviour from the CoMix Study.”</span>
 <em>Epidemics</em> 48 (September): 100778. <a href="https://doi.org/10.1016/j.epidem.2024.100778" class="external-link">https://doi.org/10.1016/j.epidem.2024.100778</a>.
 </div>
 <div id="ref-walker2020" class="csl-entry">
-Walker, Patrick G. T., Charles Whittaker, Oliver J. Watson, Marc
-Baguelin, Peter Winskill, Arran Hamlet, Bimandra A. Djafaara, et al.
-2020. <span>“The Impact of COVID-19 and Strategies for Mitigation and
+Walker, Patrick G. T., Charles Whittaker, Oliver J. Watson, et al. 2020.
+<span>“The Impact of COVID-19 and Strategies for Mitigation and
 Suppression in Low- and Middle-Income Countries.”</span>
 <em>Science</em> 369 (6502): 413–22. <a href="https://doi.org/10.1126/science.abc0035" class="external-link">https://doi.org/10.1126/science.abc0035</a>.
 </div>

@@ -129,19 +129,19 @@ variant, SARS-CoV-2 Delta and SARS-CoV-2 Omicron BA.1) with
 pathogen-specific transition (see [this table on pathogen
 parameters](#pathogendata)).
 
-| **Parameter**              | **Definition**                                                              |
-|:---------------------------|:----------------------------------------------------------------------------|
-| \\\Lambda\_{i,j} (t)\\     | Force of infection by age-sector and vaccination class                      |
-| \\\sigma\\                 | Rate of progression from exposed to infectious                              |
-| \\p\_\text{symp}\\         | Proportion of exposed individuals becoming symptomatic                      |
-| \\\eta^i\\                 | Probability of hospitalisation by age, conditional on symptomatic infection |
-| \\\gamma\_{Ia}\\           | Recovery rate for asymptomatic infections                                   |
-| \\\gamma\_{Is}\\           | Recovery rate for symptomatic infections                                    |
-| \\\gamma\_{Hr}\\           | Recovery rate for hospitalised individuals                                  |
-| \\\gamma\_{Hd}\\           | Death rate for hospitalised individuals                                     |
-| \\\rho\\                   | Rate of waning immunity (recovered to susceptible)                          |
-| \\\zeta\_{eff\_{j=0}}(t)\\ | Vaccination rate                                                            |
-| \\\zeta\_{j=1}\\           | Vaccine protection waning rate                                              |
+| **Parameter** | **Definition** |
+|:---|:---|
+| \\\Lambda\_{i,j} (t)\\ | Force of infection by age-sector and vaccination class |
+| \\\sigma\\ | Rate of progression from exposed to infectious |
+| \\p\_\text{symp}\\ | Proportion of exposed individuals becoming symptomatic |
+| \\\eta^i\\ | Probability of hospitalisation by age, conditional on symptomatic infection |
+| \\\gamma\_{Ia}\\ | Recovery rate for asymptomatic infections |
+| \\\gamma\_{Is}\\ | Recovery rate for symptomatic infections |
+| \\\gamma\_{Hr}\\ | Recovery rate for hospitalised individuals |
+| \\\gamma\_{Hd}\\ | Death rate for hospitalised individuals |
+| \\\rho\\ | Rate of waning immunity (recovered to susceptible) |
+| \\\zeta\_{eff\_{j=0}}(t)\\ | Vaccination rate |
+| \\\zeta\_{j=1}\\ | Vaccine protection waning rate |
 
 Table: Definition of model transition parameters.
 
@@ -222,28 +222,28 @@ length 49, encompassing all age-sector classes.
 
 #### Disease transition rates
 
-| **Parameter**                                                                               | **Symbol**            | **Influenza 2009** | **Influenza 1957** | **Influenza 1918** | **Covid Omicron** | **Covid Delta** | **Covid Wild-type** |
-|:--------------------------------------------------------------------------------------------|:----------------------|:-------------------|:-------------------|:-------------------|:------------------|:----------------|:--------------------|
-| Basic reproduction number                                                                   | \\R_0\\               | 1.58               | 1.80               | 2.50               | 5.94              | 5.08            | 2.87                |
-| Probability symptomatic                                                                     | \\p\_{\text{sympt}}\\ | 0.669              | 0.669              | 0.669              | 0.592             | 0.595           | 0.595               |
-| Relative infectiousness (asymptomatic:symptomatic)                                          | \\\epsilon\\          | 0.58               | 0.58               | 0.58               | 0.58              | 0.58            | 0.58                |
-| Latent period (days)                                                                        | \\1/\sigma\\          | 1.1                | 1.1                | 1.1                | 4                 | 4               | 4.6                 |
-| Infectious period asymptomatic (days)                                                       | \\1/\gamma\_{Ia}\\    | 2.5                | 2.5                | 2.5                | 2.1               | 2.1             | 2.1                 |
-| Infectious period symptomatic (days)                                                        | \\1/\gamma\_{Is}\\    | 2.5                | 2.5                | 2.5                | 4                 | 4               | 4                   |
-| Infection-induced immune period (days)                                                      | \\1/\rho\\            | 365                | 365                | 365                | 365               | 365             | 365                 |
-| Length of hospital stay leading to recovery (days)                                          | \\1/\gamma\_{Hr}\\    | 5                  | 5                  | 5                  | 5.5               | 7.6             | 12                  |
-| Length of hospital stay leading to death (days)                                             | \\1/\gamma\_{Hd}\\    | 5                  | 5                  | 5                  | 5.5               | 7.6             | 12                  |
-| **Age specific parameters**\*                                                               |                       |                    |                    |                    |                   |                 |                     |
-| Hospitalisation rate given symptomatic infection (\\\text{days}^{-1}\\)                     | \\1/\eta^i\\          |                    |                    |                    |                   |                 |                     |
-| 0-4 years                                                                                   |                       | 358.7              | 1851.9             | 13.7               | 73006.1           | 80405.4         | 148750.0            |
-| 5-19 years                                                                                  |                       | 359.5              | 158.7              | 15.6               | 133.7             | 25.4            | 47                  |
-| 20-64 years                                                                                 |                       | 912.4              | 1851.9             | 50.4               | 5900.4            | 4638.8          | 8581.7              |
-| 65+ years                                                                                   |                       | 161.7              | 9.3                | 6.6                | 35.8              | 8.1             | 15                  |
-| Hospital fatality ratio conditional on symptomatic infection leading to hospitalisation (%) | \\\text{HFR}^i\\      |                    |                    |                    |                   |                 |                     |
-| 0-4 years                                                                                   |                       | 25.3               | 13.5               | 8                  | 1.0               | 1.0             | 1.0                 |
-| 5-19 years                                                                                  |                       | 16.0               | 13.5               | 8                  | 14.9              | 12.4            | 12.4                |
-| 20-64 years                                                                                 |                       | 24.2               | 13.5               | 8                  | 5.2               | 5.3             | 5.3                 |
-| 65+ years                                                                                   |                       | 1.6                | 13.5               | 8                  | 3.2               | 3.5             | 3.5                 |
+| **Parameter** | **Symbol** | **Influenza 2009** | **Influenza 1957** | **Influenza 1918** | **Covid Omicron** | **Covid Delta** | **Covid Wild-type** |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+| Basic reproduction number | \\R_0\\ | 1.58 | 1.80 | 2.50 | 5.94 | 5.08 | 2.87 |
+| Probability symptomatic | \\p\_{\text{sympt}}\\ | 0.669 | 0.669 | 0.669 | 0.592 | 0.595 | 0.595 |
+| Relative infectiousness (asymptomatic:symptomatic) | \\\epsilon\\ | 0.58 | 0.58 | 0.58 | 0.58 | 0.58 | 0.58 |
+| Latent period (days) | \\1/\sigma\\ | 1.1 | 1.1 | 1.1 | 4 | 4 | 4.6 |
+| Infectious period asymptomatic (days) | \\1/\gamma\_{Ia}\\ | 2.5 | 2.5 | 2.5 | 2.1 | 2.1 | 2.1 |
+| Infectious period symptomatic (days) | \\1/\gamma\_{Is}\\ | 2.5 | 2.5 | 2.5 | 4 | 4 | 4 |
+| Infection-induced immune period (days) | \\1/\rho\\ | 365 | 365 | 365 | 365 | 365 | 365 |
+| Length of hospital stay leading to recovery (days) | \\1/\gamma\_{Hr}\\ | 5 | 5 | 5 | 5.5 | 7.6 | 12 |
+| Length of hospital stay leading to death (days) | \\1/\gamma\_{Hd}\\ | 5 | 5 | 5 | 5.5 | 7.6 | 12 |
+| **Age specific parameters**\* |  |  |  |  |  |  |  |
+| Hospitalisation rate given symptomatic infection (\\\text{days}^{-1}\\) | \\1/\eta^i\\ |  |  |  |  |  |  |
+| 0-4 years |  | 358.7 | 1851.9 | 13.7 | 73006.1 | 80405.4 | 148750.0 |
+| 5-19 years |  | 359.5 | 158.7 | 15.6 | 133.7 | 25.4 | 47 |
+| 20-64 years |  | 912.4 | 1851.9 | 50.4 | 5900.4 | 4638.8 | 8581.7 |
+| 65+ years |  | 161.7 | 9.3 | 6.6 | 35.8 | 8.1 | 15 |
+| Hospital fatality ratio conditional on symptomatic infection leading to hospitalisation (%) | \\\text{HFR}^i\\ |  |  |  |  |  |  |
+| 0-4 years |  | 25.3 | 13.5 | 8 | 1.0 | 1.0 | 1.0 |
+| 5-19 years |  | 16.0 | 13.5 | 8 | 14.9 | 12.4 | 12.4 |
+| 20-64 years |  | 24.2 | 13.5 | 8 | 5.2 | 5.3 | 5.3 |
+| 65+ years |  | 1.6 | 13.5 | 8 | 3.2 | 3.5 | 3.5 |
 
 Table: Pathogen parameters. A different pathogen profile can be created
 by the user by generating a list object specifying these parameter
@@ -261,11 +261,11 @@ Vaccination is implemented as a series of default pre-determined vaccine
 investment scenarios, which can be modified as necessary by the user.
 
 | **Advance vaccine investment** | **Start time (days)** | **Rate (% per day)** | **Uptake limit (%)** | **Efficacy\* (%)** | **Waning period (mean, days)** |
-|:-------------------------------|:----------------------|:---------------------|:---------------------|:-------------------|:-------------------------------|
-| None                           | 365                   | 0.14                 | 40                   | 50                 | 270                            |
-| Low                            | 300                   | 0.29                 | 50                   | 50                 | 270                            |
-| Medium                         | 200                   | 0.43                 | 60                   | 50                 | 270                            |
-| High                           | 100                   | 0.5                  | 80                   | 50                 | 270                            |
+|:---|:---|:---|:---|:---|:---|
+| None | 365 | 0.14 | 40 | 50 | 270 |
+| Low | 300 | 0.29 | 50 | 50 | 270 |
+| Medium | 200 | 0.43 | 60 | 50 | 270 |
+| High | 100 | 0.5 | 80 | 50 | 270 |
 
 Table: Vaccination parameters. These pre-specified parameters can be
 modified by the user and/or additional strategies can be added by
@@ -353,21 +353,16 @@ and the GDP loss compared to the maximum is
 
 ## References
 
-Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo
-Pianella, Robert Johnson, Sumali Bajaj, et al. 2022. “Optimizing Social
-and Economic Activity While Containing SARS-CoV-2 Transmission Using
-DAEDALUS.” *Nature Computational Science* 2 (4): 223–33.
-<https://doi.org/10.1038/s43588-022-00233-0>.
+Haw, David J., Giovanni Forchini, Patrick Doohan, et al. 2022.
+“Optimizing Social and Economic Activity While Containing SARS-CoV-2
+Transmission Using DAEDALUS.” *Nature Computational Science* 2 (4):
+223–33. <https://doi.org/10.1038/s43588-022-00233-0>.
 
-Johnson, Rob, Martha Carnalla, Ana Basto-Abreu, David Haw, Christian
-Morgenstern, Patrick Doohan, Giovanni Forchini, Katharina D. Hauck, and
-Tonatiuh Barrientos-Gutiérrez. 2024. “Promoting healthy populations as a
-pandemic preparedness strategy: a simulation study from Mexico.” *The
-Lancet Regional Health – Americas* 30 (February).
-<https://doi.org/10.1016/j.lana.2024.100682>.
+Johnson, Rob, Martha Carnalla, Ana Basto-Abreu, et al. 2024. “Promoting
+healthy populations as a pandemic preparedness strategy: a simulation
+study from Mexico.” *The Lancet Regional Health – Americas* 30
+(February). <https://doi.org/10.1016/j.lana.2024.100682>.
 
-Johnson, Rob, Bimandra Djaafara, David Haw, Patrick Doohan, Giovanni
-Forchini, Matteo Pianella, Neil Ferguson, Peter C. Smith, and Katharina
-D. Hauck. 2023. “The Societal Value of SARS-CoV-2 Booster Vaccination in
-Indonesia.” *Vaccine* 41 (11): 1885–91.
-<https://doi.org/10.1016/j.vaccine.2023.01.068>.
+Johnson, Rob, Bimandra Djaafara, David Haw, et al. 2023. “The Societal
+Value of SARS-CoV-2 Booster Vaccination in Indonesia.” *Vaccine* 41
+(11): 1885–91. <https://doi.org/10.1016/j.vaccine.2023.01.068>.

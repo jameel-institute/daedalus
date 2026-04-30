@@ -86,6 +86,7 @@ also automatically accessed and included when a `<daedalus_country>`
 object is created, under the name `vsl`.
 
 ``` r
+
 # load library for examples
 library(daedalus)
 
@@ -125,8 +126,7 @@ Disease Study 2019 (GBD 2019) Life Tables 1950-2019.” Institute for
 Health Metrics and Evaluation (IHME).
 <https://doi.org/10.6069/1PF5-1M37>.
 
-Robinson, Lisa A., James K. Hammitt, Michele Cecchini, Kalipso
-Chalkidou, Karl Claxton, Maureen Cropper, Patrick Hoang-Vu Eozenou, et
-al. 2019. “Reference Case Guidelines for Benefit-Cost Analysis in Global
-Health and Development.” SSRN Scholarly Paper. Rochester, NY: Social
-Science Research Network. <https://doi.org/10.2139/ssrn.4015886>.
+Robinson, Lisa A., James K. Hammitt, Michele Cecchini, et al. 2019.
+“Reference Case Guidelines for Benefit-Cost Analysis in Global Health
+and Development.” SSRN Scholarly Paper No. 4015886. Social Science
+Research Network, May 1. <https://doi.org/10.2139/ssrn.4015886>.

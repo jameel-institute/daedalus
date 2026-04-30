@@ -1,6 +1,7 @@
 # Modelling time-limited economic closures
 
 ``` r
+
 library(daedalus)
 ```
 
@@ -25,6 +26,7 @@ maximum duration are optional.
 The different use cases for each argument are explained below.
 
 ``` r
+
 # not run
 daedalus_npi(
   name, country, infection,
@@ -92,6 +94,7 @@ For instance, to specify school closures for the U.K. that are active
 between days 30 and 90 after a pandemic use this code.
 
 ``` r
+
 npi <- daedalus_npi(
   "school_closures", "GBR", "sars_cov_1",
   start_time = 30, end_time = 90
@@ -130,8 +133,9 @@ requires:
   [`daedalus.data::closure_strategy_data`](https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html),
   and
 
-- Passing a vector of the same length as the number of economic sectors
-  (currently 45) to the `openness` argument.
+- Passing a numeric \\M \times N\\ matrix, with \$M = \$ number of
+  age-and-economic strata (49), and \$N = \$ number of contact settings
+  (2 by default) to the `openness` argument.
 
 A country and infection are still required as before.
 
@@ -146,7 +150,11 @@ Passing a bespoke NPI to \[daedalus()\] leads to the resulting
 active over multiple intervals.
 
 ``` r
-openness <- rep(0.3, 45)
+
+openness <- cbind(
+  rep(1, 49),
+  rep(0.3, 49)
+)
 
 npi <- daedalus_npi(
   NA, "GBR", "sars_cov_1",
@@ -223,8 +231,19 @@ The example below show ramping responses up and down by switching from
 school closures to an elimination strategy and back again.
 
 ``` r
+
 school_closures <- daedalus.data::closure_strategy_data[["school_closures"]]
 elimination <- daedalus.data::closure_strategy_data[["elimination"]]
+
+school_closures <- cbind(
+  rep(1, 49),
+  c(rep(1, 4), school_closures)
+)
+
+elimination <- cbind(
+  rep(1, 49),
+  c(rep(1, 4), elimination)
+)
 
 # start at day 30, 60, 90, 30 days each
 npi <- daedalus_timed_npi(

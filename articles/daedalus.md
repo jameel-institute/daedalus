@@ -4,6 +4,7 @@ This vignette shows how to get started with the DAEDALUS model adapted
 from Haw et al. ([2022](#ref-haw2022)) in R.
 
 ``` r
+
 # load the package
 library(daedalus)
 library(ggplot2)
@@ -28,13 +29,14 @@ The class also allows users to collect country data in one place more
 easily.
 
 ``` r
+
 # get default values for Canada (chosen for its short name)
 daedalus_country("Canada")
 #> <daedalus_country>
 #> • Name: Canada
 #> • Demography: 1993132, 5949109, 22966942, and 6832974
 #> • Default contact matrix:
-#> • * setting name: "total"; found no more settings
+#> • * setting name: "community"; found 1 more setting: "workplace"
 #>             0-4      5-19    20-64       65+
 #> 0-4   1.9157895 1.5235823 5.014414 0.3169637
 #> 5-19  0.5104463 8.7459756 6.322175 0.7948344
@@ -55,7 +57,7 @@ country_canada
 #> • Name: Canada
 #> • Demography: 1993132, 5949109, 22966942, and 6832974
 #> • Default contact matrix:
-#> • * setting name: "total"; found no more settings
+#> • * setting name: "community"; found 1 more setting: "workplace"
 #>             0-4      5-19    20-64       65+
 #> 0-4   1.9157895 1.5235823 5.014414 0.3169637
 #> 5-19  0.5104463 8.7459756 6.322175 0.7948344
@@ -82,6 +84,7 @@ as
 [`daedalus.data::epidemic_names`](https://jameel-institute.github.io/daedalus.data/reference/epidemic_data.html).
 
 ``` r
+
 daedalus.data::epidemic_names
 #> [1] "sars_cov_1"           "influenza_2009"       "influenza_1957"      
 #> [4] "influenza_1918"       "sars_cov_2_pre_alpha" "sars_cov_2_omicron"  
@@ -93,6 +96,7 @@ Users can pass the epidemic names directly to
 to use the default infection parameters.
 
 ``` r
+
 # not run
 output <- daedalus("Canada", "influenza_1918")
 ```
@@ -105,6 +109,7 @@ when creating the `<infection>` class object. The `infection()` class
 helper function has more details on which parameters are included.
 
 ``` r
+
 # SARS-1 (2004) but with an R0 of 2.3
 daedalus_infection("sars_cov_1", r0 = 2.3)
 #> <daedalus_infection>
@@ -160,6 +165,7 @@ to use the default parameters for each scenario, or as a
 `daedalus_vaccination(name, country)` to modify vaccination parameters.
 
 ``` r
+
 # the default vaccine investment scenario for the UK
 daedalus_vaccination("none", "GBR")
 #> <daedalus_vaccination/daedalus_response>
@@ -181,8 +187,9 @@ Run the model by passing the `country` and `infection` arguments to
 The vaccine investment scenarios is automatically assumed to be “none”.
 
 ``` r
+
 # simulate a Covid-19 wild type outbreak in Canada; using default parameters
-data <- daedalus("Canada", "sars_cov_2_pre_alpha")
+out <- daedalus("Canada", "sars_cov_2_pre_alpha")
 ```
 
 The model runs for 300 timesteps by default; timesteps should be
@@ -191,7 +198,8 @@ interpreted as days since model parameters are in terms of days.
 Plot the data to view the epidemic curve.
 
 ``` r
-data <- get_data(data)
+
+data <- get_data(out)
 ggplot(
   data[data$compartment == "infect_symp" & data$age_group == "20-64" &
     data$vaccine_group == "unvaccinated", ]
@@ -208,22 +216,36 @@ ggplot(
 
 ![](daedalus_files/figure-html/plot_epidemic-1.png)
 
+Users can also access and plot the \\R\_\text{eff}\\ logged at each
+timestep.
+
+``` r
+
+r_eff <- get_data(out, "rt_data")
+ggplot() +
+  geom_line(
+    aes(seq_along(r_eff) - 1, r_eff)
+  ) +
+    labs(
+      x = "Time (days)", y = "Effective reproduction number"
+    )
+```
+
+![](daedalus_files/figure-html/plot_reff-1.png)
+
 ## References
 
-Haw, David J., Giovanni Forchini, Patrick Doohan, Paula Christen, Matteo
-Pianella, Robert Johnson, Sumali Bajaj, et al. 2022. “Optimizing Social
-and Economic Activity While Containing SARS-CoV-2 Transmission Using
-DAEDALUS.” *Nature Computational Science* 2 (4): 223–33.
-<https://doi.org/10.1038/s43588-022-00233-0>.
+Haw, David J., Giovanni Forchini, Patrick Doohan, et al. 2022.
+“Optimizing Social and Economic Activity While Containing SARS-CoV-2
+Transmission Using DAEDALUS.” *Nature Computational Science* 2 (4):
+223–33. <https://doi.org/10.1038/s43588-022-00233-0>.
 
-Jarvis, Christopher I., Pietro Coletti, Jantien A. Backer, James D.
-Munday, Christel Faes, Philippe Beutels, Christian L. Althaus, et al.
-2024. “Social Contact Patterns Following the COVID-19 Pandemic: A
-Snapshot of Post-Pandemic Behaviour from the CoMix Study.” *Epidemics*
-48 (September): 100778. <https://doi.org/10.1016/j.epidem.2024.100778>.
+Jarvis, Christopher I., Pietro Coletti, Jantien A. Backer, et al. 2024.
+“Social Contact Patterns Following the COVID-19 Pandemic: A Snapshot of
+Post-Pandemic Behaviour from the CoMix Study.” *Epidemics* 48
+(September): 100778. <https://doi.org/10.1016/j.epidem.2024.100778>.
 
-Walker, Patrick G. T., Charles Whittaker, Oliver J. Watson, Marc
-Baguelin, Peter Winskill, Arran Hamlet, Bimandra A. Djafaara, et al.
-2020. “The Impact of COVID-19 and Strategies for Mitigation and
-Suppression in Low- and Middle-Income Countries.” *Science* 369 (6502):
-413–22. <https://doi.org/10.1126/science.abc0035>.
+Walker, Patrick G. T., Charles Whittaker, Oliver J. Watson, et al. 2020.
+“The Impact of COVID-19 and Strategies for Mitigation and Suppression in
+Low- and Middle-Income Countries.” *Science* 369 (6502): 413–22.
+<https://doi.org/10.1126/science.abc0035>.

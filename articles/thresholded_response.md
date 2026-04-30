@@ -1,6 +1,7 @@
 # Modelling threshold-dependent economic closures
 
 ``` r
+
 library(daedalus)
 library(data.table)
 #> 
@@ -18,6 +19,7 @@ response activated when total hospitalisations reach 1000 or after 30
 days, whichever is sooner.
 
 ``` r
+
 canada <- daedalus_country("CAN")
 canada$hospital_capacity <- response_threshold
 
@@ -34,6 +36,7 @@ data_baseline$scenario <- "no_response"
 ```
 
 ``` r
+
 # run the model with a heavy elimination intervention
 data_intervention <- daedalus(
   canada,
@@ -63,10 +66,12 @@ Plot the total hospital occupancy for both scenarios to view the effect
 of interventions.
 
 ``` r
+
 data <- rbindlist(list(data_baseline, data_intervention))
 ```
 
 ``` r
+
 # sum over age and econ strata as total is more relevant
 data <- data[
   compartment %like% "hospitalised", .(value = sum(value)),

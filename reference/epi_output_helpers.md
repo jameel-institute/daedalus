@@ -83,18 +83,18 @@ get_epidemic_summary(
   groups = "age_group"
 )
 #>    age_group       value                measure
-#> 1        0-4    37839.95           total_deaths
-#> 2       5-19   661729.16           total_deaths
-#> 3      20-64   786336.90           total_deaths
-#> 4        65+   647168.87           total_deaths
-#> 5        0-4   664904.91          epidemic_size
-#> 6       5-19  3121753.84          epidemic_size
-#> 7      20-64 13832927.42          epidemic_size
-#> 8        65+  1521060.22          epidemic_size
-#> 9        0-4    38254.80 total_hospitalisations
-#> 10      5-19   669149.83 total_hospitalisations
-#> 11     20-64   795855.98 total_hospitalisations
-#> 12       65+   654205.70 total_hospitalisations
+#> 1        0-4    75647.62           total_deaths
+#> 2       5-19  1143409.25           total_deaths
+#> 3      20-64  1291895.30           total_deaths
+#> 4        65+  1369148.76           total_deaths
+#> 5        0-4  1451572.73          epidemic_size
+#> 6       5-19  5840351.78          epidemic_size
+#> 7      20-64 25142970.11          epidemic_size
+#> 8        65+  3458086.79          epidemic_size
+#> 9        0-4    80712.81 total_hospitalisations
+#> 10      5-19  1216688.98 total_hospitalisations
+#> 11     20-64  1393901.44 total_hospitalisations
+#> 12       65+  1451882.99 total_hospitalisations
 
 # get daily vaccinations
 daily_vaccinations <- get_new_vaccinations(data)

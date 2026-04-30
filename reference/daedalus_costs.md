@@ -220,7 +220,7 @@ quality adjustment is applied.
 o <- daedalus("CAN", "sars_cov_1", time_end = 100)
 get_costs(o, "domain")
 #>     economic    education   life_value   life_years 
-#>   0.71370354   0.06463232  36.94926465 802.37273941 
+#>    192.25051     17.32626  15420.87810 334872.48862 
 
 # for a data.frame of epi compartment timeseries, as from any epi model
 output <- daedalus("Canada", "influenza_1918", time_end = 100)
@@ -263,5 +263,5 @@ get_costs(
   summarise_as = "domain"
 )
 #>     economic    education   life_value   life_years 
-#> 239704139047  21246144137      2209410     47978495 
+#> 310937196409  26375815295      2660480     57773721 
 ```

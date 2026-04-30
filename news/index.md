@@ -1,5 +1,54 @@
 # Changelog
 
+## daedalus 0.3.7
+
+This patch version overhauls aspects of the NPI and contacts system.
+
+### Breaking changes
+
+- All contacts including workplace contacts are represented in a single
+  array (R) or rank 3 Eigen tensor (C++).
+
+- NPI effects on contact matrices are pre-calculated and stored in
+  `shared_state` and accessed in the ODE RHS rather than being
+  calculated on the fly.
+
+- ODE RHS calculations combine FOI calculations into a single step as
+  workplace transmission is rolled into overall transmission.
+
+- All `<daedalus_country>` objects have a minimum of 2 settings,
+  “community” and “workplace”.
+
+- **Community contacts are now scaled by default when an NPI is
+  passed**, which substantially reduces the epidemic size,
+  hospitalisations, and deaths. The default scaling of community
+  contacts is the mean of the workplace scaling specified. See the
+  vignette `vignettes/multiple_contact_settings.Rmd` for more
+  information.
+
+- Class `<daedalus_npi>` constructor also allows a numeric matrix for
+  custom openness coefficients for all age-economic-setting
+  combinations. Community contacts can be scaled per user-specified
+  values, overriding the default behaviour.
+
+- Removed header constant for number of contact settings, this is taken
+  from `<daedalus_country>` when passed to
+  [`daedalus()`](https://jameel-institute.github.io/daedalus/reference/daedalus.md).
+
+### Other changes
+
+- **Effective R calculation** now uses proportion of susceptible and
+  \\R_0\\ over NGM eigenvalue calculation for speed.
+
+- Tests and documentation has been updated to reflect changes to NPI and
+  contact mechanisms.
+
+- Added tests to check that
+  [`daedalus()`](https://jameel-institute.github.io/daedalus/reference/daedalus.md)
+  works with multiple contact settings.
+
+- Added scripts to the Make system to format and lint code.
+
 ## daedalus 0.3.6
 
 This patch version fixes an issue with the event generation
@@ -15,6 +64,14 @@ H_d\\ remains unchanged. \\\text{HFR}\\ is calculated as
 \\\text{min}(\omega_e \text{HFR}\_i, 1.0)\\ to prevent values \> 1.0
 when the excess-mortality modifier \\\omega_e\\ is applied.
 
+The excess mortality modifier \\\omega_e\\ has been increased from 1.6
+to 5.0 in `/inst/include/daedalus_constants.h`.
+
+There is an array access warning on Windows builds which has not been
+pinned down and is logged as
+[issue](https://github.com/jameel-institute/daedalus/issues/158)
+[\#158](https://github.com/jameel-institute/daedalus/issues/158).
+
 ### Breaking changes
 
 There are potentially breaking changes to the `<daedalus_output>` class
@@ -24,6 +81,10 @@ which now provides the raw ODE solution and events data from
 previously named `*_parameters` and provided as an unclassed list are
 now provided as classed types and named `*` (e.g. `"country"` provided
 as `<daedalus_country>`).
+
+The increase in the excess mortality scaling factor will lead to higher
+death counts and epidemic costs in most scenarios where hospital
+capacity is exceeded.
 
 ### Other changes
 

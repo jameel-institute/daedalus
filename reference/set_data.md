@@ -46,7 +46,7 @@ country_A
 #> • Name: United Kingdom
 #> • Demography: 3924490, 11762039, 39536463, and 12663012
 #> • Default contact matrix:
-#> • * setting name: "total"; found no more settings
+#> • * setting name: "community"; found 1 more setting: "workplace"
 #>             0-4      5-19    20-64       65+
 #> 0-4   1.9157895 1.5379290 4.704999 0.2863619
 #> 5-19  0.5131412 8.7339228 5.874591 0.7418483

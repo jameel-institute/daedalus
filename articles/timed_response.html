@@ -28,7 +28,7 @@
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -220,8 +220,10 @@ between days 30 and 90 after a pandemic use this code.</p>
 <li><p>Passing <code>NA</code> as the <code>name</code> rather than one
 of the pre-canned NPI strategies found in
 <code><a href="https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html">daedalus.data::closure_strategy_data</a></code>, and</p></li>
-<li><p>Passing a vector of the same length as the number of economic
-sectors (currently 45) to the <code>openness</code> argument.</p></li>
+<li><p>Passing a numeric <span class="math inline">\(M \times N\)</span>
+matrix, with $M = $ number of age-and-economic strata (49), and $N = $
+number of contact settings (2 by default) to the <code>openness</code>
+argument.</p></li>
 </ul>
 <p>A country and infection are still required as before.</p>
 <p>All other rules and requirements are the same as for a pre-canned
@@ -232,7 +234,10 @@ response; the pre-canned element is the openness coefficients.</p>
 <p><strong>See the next section</strong> for how to specify time-limited
 NPIs that are active over multiple intervals.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">openness</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">45</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">openness</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">49</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">49</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">npi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/class_npi.html">daedalus_npi</a></span><span class="op">(</span></span>
 <span>  <span class="cn">NA</span>, <span class="st">"GBR"</span>, <span class="st">"sars_cov_1"</span>,</span>
@@ -299,6 +304,16 @@ from school closures to an elimination strategy and back again.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">school_closures</span> <span class="op">&lt;-</span> <span class="fu">daedalus.data</span><span class="fu">::</span><span class="va"><a href="https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html">closure_strategy_data</a></span><span class="op">[[</span><span class="st">"school_closures"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">elimination</span> <span class="op">&lt;-</span> <span class="fu">daedalus.data</span><span class="fu">::</span><span class="va"><a href="https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html">closure_strategy_data</a></span><span class="op">[[</span><span class="st">"elimination"</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">school_closures</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">49</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>, <span class="va">school_closures</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">elimination</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">49</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>, <span class="va">elimination</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># start at day 30, 60, 90, 30 days each</span></span>
 <span><span class="va">npi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/class_npi.html">daedalus_timed_npi</a></span><span class="op">(</span></span>

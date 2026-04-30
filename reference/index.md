@@ -149,6 +149,8 @@ Functions used internally.
   [`validate_daedalus_response()`](https://jameel-institute.github.io/daedalus/reference/class_response.md)
   : Constructor for the \<daedalus_response\> super-class and
   sub-classes
+- [`count_settings()`](https://jameel-institute.github.io/daedalus/reference/count_settings.md)
+  : Count contact settings
 - [`country_name_from_arg()`](https://jameel-institute.github.io/daedalus/reference/country_name_from_arg.md)
   : Get country name from arg
 - [`daedalus-package`](https://jameel-institute.github.io/daedalus/reference/daedalus-package.md)
@@ -177,10 +179,16 @@ Functions used internally.
   : Initial values for model flags
 - [`assert_class_fields()`](https://jameel-institute.github.io/daedalus/reference/input_checks.md)
   : Check that a class has expected names
+- [`make_community_scaling()`](https://jameel-institute.github.io/daedalus/reference/make_community_scaling.md)
+  : Prepare community contacts scaling from workplace scaling
+- [`make_full_openness()`](https://jameel-institute.github.io/daedalus/reference/make_full_openness.md)
+  : Make a dummy openness matrix for dummy NPIs
 - [`make_initial_state()`](https://jameel-institute.github.io/daedalus/reference/make_initial_state.md)
   : Generate a default initial state for DAEDALUS
 - [`make_susc_matrix()`](https://jameel-institute.github.io/daedalus/reference/make_susc_matrix.md)
   : Prepare susceptibility matrix for a vaccine-country pair
+- [`make_workplace_scaling()`](https://jameel-institute.github.io/daedalus/reference/make_workplace_scaling.md)
+  : Prepare workplace setting scaling
 - [`new_daedalus_hosp_overflow()`](https://jameel-institute.github.io/daedalus/reference/new_daedalus_hosp_overflow.md)
   : Make a hospital overflow response
 - [`out_list_to_df()`](https://jameel-institute.github.io/daedalus/reference/out_list_to_df.md)
@@ -188,7 +196,6 @@ Functions used internally.
 - [`make_conmat_large()`](https://jameel-institute.github.io/daedalus/reference/prepare_contacts.md)
   [`make_work_contacts()`](https://jameel-institute.github.io/daedalus/reference/prepare_contacts.md)
   [`make_consumer_contacts()`](https://jameel-institute.github.io/daedalus/reference/prepare_contacts.md)
-  [`make_full_contacts()`](https://jameel-institute.github.io/daedalus/reference/prepare_contacts.md)
   : Make large contact matrix for Cpp model.
 - [`prepare_output()`](https://jameel-institute.github.io/daedalus/reference/prepare_output.md)
   : Prepare DAEDALUS data
@@ -200,6 +207,8 @@ Functions used internally.
   : Calculate the effective R
 - [`split_multi_soln()`](https://jameel-institute.github.io/daedalus/reference/split_multi_soln.md)
   : Split a dust2 solution with multiple groups
+- [`test_openness()`](https://jameel-institute.github.io/daedalus/reference/test_openness.md)
+  : Test if openness is passed correctly
 - [`drop_null()`](https://jameel-institute.github.io/daedalus/reference/tools.md)
   [`first()`](https://jameel-institute.github.io/daedalus/reference/tools.md)
   [`last()`](https://jameel-institute.github.io/daedalus/reference/tools.md)
@@ -220,5 +229,7 @@ Functions used internally.
   : Validate and return infection input
 - [`validate_npi_input()`](https://jameel-institute.github.io/daedalus/reference/validate_npi_input.md)
   : Validate npi inputs
+- [`validate_openness()`](https://jameel-institute.github.io/daedalus/reference/validate_openness.md)
+  : Check openness matrix
 - [`validate_vaccination_input()`](https://jameel-institute.github.io/daedalus/reference/validate_vaccination_input.md)
   : Validate vaccination inputs

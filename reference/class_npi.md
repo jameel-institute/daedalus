@@ -83,15 +83,16 @@ daedalus_timed_npi(start_time, end_time, openness, country)
 
 - openness:
 
-  For `daedalus_npi()`, an optional numeric vector giving the openness
-  of each economic sector in the model when the NPI is in effect.
+  For `daedalus_npi()`, an optional numeric matrix giving the openness
+  of each setting in the model when the NPI is in effect.
 
-  For `daedalus_timed_npi()`, a list of numeric vectors giving the
+  For `daedalus_timed_npi()`, a list of numeric matrices giving the
   openness coefficients for each interval specified by corresponding
   elements of `start_time` and `end_time`.
 
-  Expected to have a length of `N_ECON_SECTORS` (currently 45), with all
-  values are in the range \\\[0, 1\]\\,
+  Expected to have a minimum size of `N_ECON_SECTORS + N_AGE_GROUPS`
+  (currently 98), corresponding to two settings with 49 strata per
+  setting, with all values are in the range \\\[0, 1\]\\,
 
 - start_time:
 
@@ -160,7 +161,7 @@ daedalus_npi("school_closures", "GBR", "sars_cov_1")
 daedalus_npi(
   NA,
   "GBR", "sars_cov_1",
-  openness = rep(0.1, 45)
+  openness = cbind(rep(1, 49), rep(0.1, 49))
 )
 #> <daedalus_npi/daedalus_response>
 #> NPI strategy: custom
@@ -170,13 +171,24 @@ daedalus_npi(
 #> • Maximum duration (days): 365
 
 # time-limited NPI with multiple phases
+phase_1 <- cbind(
+  rep(1, 49),
+  rep(0.5, 49)
+)
+phase_2 <- cbind(
+  rep(1, 49),
+  rep(0.3, 49)
+)
+phase_3 <- cbind(
+  rep(1, 49),
+  rep(0.8, 49)
+)
+
 daedalus_timed_npi(
   start_time = c(10, 20, 30),
   end_time = c(15, 25, 40),
   openness = list(
-    rep(1, 45),
-    rep(0.5, 45),
-    rep(0.2, 45)
+    phase_1, phase_2, phase_3
   ),
   country = "GBR"
 )
@@ -184,6 +196,6 @@ daedalus_timed_npi(
 #> NPI strategy: custom_timed
 #> • Start time (days): 10, 20, and 30
 #> • End time (days): 15, 25, and 40
-#> • Openness (mean prop.): 1, 0.5, and 0.2
+#> • Openness (mean prop.): 0.5, 0.3, and 0.8
 #> • Maximum duration (days): NA
 ```

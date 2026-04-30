@@ -19,6 +19,7 @@ Institute R-universe](https://jameel-institute.r-universe.dev/builds),
 or from this repository using the *pak* package.
 
 ``` r
+
 if(!require("pak")) install.packages("pak")
 pak::pak("jameel-institute/daedalus", upgrade = FALSE)
 
@@ -73,6 +74,7 @@ vignette](https://jameel-institute.github.io/daedalus/articles/daedalus.html)
 for more details).
 
 ``` r
+
 library(daedalus)
 
 # run model for Canada

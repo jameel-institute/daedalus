@@ -1,0 +1,23 @@
+# Prepare workplace setting scaling
+
+Helper function to append a no-scaling vector of 1.0s to the front of a
+workplace contacts scaling vector.
+
+## Usage
+
+``` r
+make_workplace_scaling(x)
+```
+
+## Arguments
+
+- x:
+
+  A numeric vector of workplace contacts scaling, with each element in
+  the range \\\[0, 1\]\\. Expected to be length 45 (N_ECON_SECTORS), but
+  this is not checked.
+
+## Value
+
+A numeric vector of length 49 (N_AGE_GROUPS + N_ECON_SECTORS); this
+should be c(1, 1, 1, 1, x).

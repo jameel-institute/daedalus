@@ -7,6 +7,7 @@ which has a major effect on epidemic trajectories.
 Load required packages including *daedalus*.
 
 ``` r
+
 library(daedalus)
 library(ggplot2)
 library(dplyr)
@@ -26,6 +27,7 @@ to parameterise 100 `<daedalus_infection>` objects, which can be passed
 as a list to the function \[daedalus_multi_infection()\].
 
 ``` r
+
 flu_2009 <- daedalus_infection("influenza_2009")
 flu_2009_r0 <- get_data(flu_2009, "r0")
 
@@ -46,6 +48,7 @@ ggplot() +
 
 ``` r
 
+
 # parameterise daedalus_infection objects
 infection_list <- lapply(
   r0_samples, \(x) daedalus_infection("influenza_2009", r0 = x)
@@ -56,6 +59,7 @@ Run the model for the U.K. with the infection list passed as
 `infection`. No mitigation strategies are applied.
 
 ``` r
+
 # run model with 100 infection objects
 output_list <- daedalus_multi_infection(
   "GBR", infection_list,

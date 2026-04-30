@@ -5,6 +5,7 @@ health, social, and economic costs of a pandemic for different response
 scenarios.
 
 ``` r
+
 library(daedalus)
 library(data.table)
 #> 
@@ -22,6 +23,7 @@ For this example, we choose to model an outbreak of 1918 influenza in
 the United Kingdom.
 
 ``` r
+
 # get response scenario names
 response_scenarios <- c(
   "none", "elimination", "economic_closures", "school_closures"
@@ -42,6 +44,7 @@ requires output to be passed to the function
 [`get_costs()`](https://jameel-institute.github.io/daedalus/reference/daedalus_costs.md).
 
 ``` r
+
 # calculate costs
 cost_list <- lapply(output_list, get_costs, summarise_as = "domain")
 ```
@@ -50,6 +53,7 @@ We can transform the data into a wide data.frame and plot the costs for
 each response strategy.
 
 ``` r
+
 costs <- as.data.frame(cost_list)
 setDT(costs, keep.rownames = "domain")
 

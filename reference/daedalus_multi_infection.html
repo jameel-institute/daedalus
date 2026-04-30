@@ -15,7 +15,7 @@ running the model under uncertainty in infection parameters."></head><body>
     <a href="https://www.imperial.ac.uk/jameel-institute/" class="external-link"><img src="https://raw.githubusercontent.com/jameel-institute/jameelinst.rpkg.theme/refs/heads/main/inst/pkgdown/assets/logo_imperial_jameel.svg" id="logo" alt="Abdul Latif Jameel Institute for Disease and Emergency Analytics"></a>
     <a class="navbar-brand me-2" href="../index.html">daedalus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -110,8 +110,9 @@ minimum length of 2.</p></dd>
 
 <dt id="arg-response-strategy">response_strategy<a class="anchor" aria-label="anchor" href="#arg-response-strategy"></a></dt>
 <dd><p>A string for the name of response strategy followed,
-a numeric of length 45 (number of economic sectors), or a <code>&lt;daedalus_npi&gt;</code>
-object. Defaults to "none".
+a numeric of length 45 (number of economic sectors), a matrix with dimensions
+49 x N where N is the number of contacts settings, or a <code>&lt;daedalus_npi&gt;</code>
+object. Defaults to <code>NULL</code>, which simulates an unmitigated epidemic.
 While the response strategy is active, economic contacts are scaled using the
 package data object <code><a href="https://jameel-institute.github.io/daedalus.data/reference/closure_strategies.html">daedalus.data::closure_strategy_data</a></code>.</p></dd>
 
