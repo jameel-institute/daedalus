@@ -40,3 +40,4 @@
 ^\.vscode$
 ^.*\.png$
 ^plans$
+^\.claude$
