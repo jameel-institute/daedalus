@@ -23,6 +23,9 @@
 #' the whole population. Allowed groups correspond to modelled strata:
 #' `"age_group"`, `"vaccine_group"`, and `"econ_sector"`.
 #'
+#' `get_attack_rate()` does not support `"vaccine_group"` due to a shifting
+#' baseline effect.
+#'
 #' `get_daily_vaccinations()` only accepts "`age_group`" and `"econ_sector"`.
 #'
 #' @return A `<data.frame>` in long format, with one entry per
@@ -39,6 +42,10 @@
 #' number of new daily vaccination in each combination of `groups` if provided.
 #' Columns for the `groups` are added when `groups` are specified.
 #'
+#' - `get_attack_rate()` returns a data frame similar to
+#' `get_epidemic_summary()`, but with a `p_affected` column giving the value as
+#' a proportion of the initial group size (capped at 1.0).
+#'
 #' @examples
 #' data <- daedalus("Canada", "sars_cov_1")
 #'
@@ -53,6 +60,9 @@
 #'
 #' # get daily vaccinations
 #' daily_vaccinations <- get_new_vaccinations(data)
+#'
+#' # get attack rate
+#' get_attack_rate(data, "infections", groups = "age_group")
 #'
 #' @export
 get_incidence <- function(
@@ -271,4 +281,101 @@ get_life_years_lost <- function(output, groups = c("none", "age_group")) {
     },
     age_group = df
   )
+}
+
+
+#' @name epi_output_helpers
+#'
+#' @export
+get_attack_rate <- function(
+  data,
+  measures = c("infections", "hospitalisations", "deaths"),
+  groups = c("econ_sector", "age_group")
+) {
+  # set global variables to NULL
+  value <- NULL
+  compartment <- NULL
+  measure <- NULL
+  p_affected <- NULL
+
+  is_good_data <- checkmate::test_data_frame(data, any.missing = FALSE) ||
+    checkmate::test_class(data, "daedalus_output")
+
+  if (!is_good_data) {
+    cli::cli_abort(
+      "Expected `data` to be either a `data.frame` or a
+        {.cls daedalus_output} object."
+    )
+  } else if (is_daedalus_output(data)) {
+    data <- get_data(data)
+  }
+
+  # check measures and groups
+  measures <- rlang::arg_match(measures, SUMMARY_MEASURES, multiple = TRUE)
+
+  allowed_groups <- c("econ_sector", "age_group")
+  is_good_groups <- checkmate::test_subset(groups, allowed_groups)
+  if (!is_good_groups) {
+    cli::cli_abort(c(
+      "Expected `groups` to be either `NULL` or a character vector of
+        model groups.",
+      i = "Allowed groups are {.str {allowed_groups}}."
+    ))
+  }
+
+  data.table::setDT(data)
+  # calculate initial group sizes, assume data compartments are empty
+  if (is.null(groups)) {
+    # denom is full pop size
+    denom <- data[data$time == min(data$time), list(value = sum(value))]$value
+  } else {
+    denom <- data[
+      data$time == min(data$time),
+      list(value = sum(value)),
+      by = groups
+    ]$value
+  }
+
+  # subset compartments needed
+  compartments_needed <- c("new_infections", "new_hosp", "dead")
+  df_measures <- data.frame(
+    compartment = compartments_needed,
+    measure = SUMMARY_MEASURES
+  )
+  df_measures <- df_measures[df_measures$measure %in% measures, ]
+
+  # subset new infections compartment
+  dt_summary <- data[data$compartment %in% df_measures$compartment, ]
+  data.table::setDT(dt_summary)
+
+  # aggregate over grouping variables and get proportions capped at 1.0
+  dt_summary <- dt_summary[,
+    list(value = sum(value)),
+    by = c("time", "compartment", groups)
+  ]
+
+  dt_summary <- dt_summary[,
+    list(value = data.table::last(value)),
+    by = c("compartment", groups)
+  ]
+
+  dt_summary[,
+    measure := data.table::fcase(
+      compartment == "dead",
+      "total_deaths",
+      compartment == "new_infections",
+      "epidemic_size",
+      compartment == "new_hosp",
+      "total_hospitalisations"
+    )
+  ]
+
+  dt_summary[,
+    p_affected := pmin(value / denom, 1.0),
+    by = "measure"
+  ]
+
+  data.table::setDF(data)
+  data.table::setDF(dt_summary)
+  dt_summary[, setdiff(colnames(dt_summary), "compartment")]
 }

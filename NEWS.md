@@ -1,3 +1,7 @@
+# daedalus 0.3.8
+
+This patch version adds the function `get_attack_rate()` to allow calculation of the total fraction of age and economic sector groups infected and hospitalised.
+
 # daedalus 0.3.7
 
 This patch version overhauls aspects of the NPI and contacts system.

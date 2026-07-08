@@ -93,3 +93,26 @@ test_that("New vaccinations: basic expectations", {
     len = time_end + 1
   )
 })
+
+test_that("`get_attack_rate()`: Calculating attack rate works", {
+  o <- daedalus("GBR", "sars_cov_1", time_end = 100)
+
+  df <- get_attack_rate(o, "infections", "age_group")
+  expect_data_frame(df, min.rows = 3L, min.cols = 3L)
+  expect_true(
+    all(df$p_affected <= 1.0)
+  )
+
+  df <- get_attack_rate(o)
+  expect_names(
+    colnames(df),
+    must.include = c("econ_sector", "age_group")
+  )
+  expect_subset(
+    df$measure,
+    c("total_deaths", "epidemic_size", "total_hospitalisations")
+  )
+  expect_true(
+    all(df$p_affected <= 1.0)
+  )
+})

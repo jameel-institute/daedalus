@@ -5,6 +5,7 @@
 \alias{get_incidence}
 \alias{get_epidemic_summary}
 \alias{get_new_vaccinations}
+\alias{get_attack_rate}
 \title{Calculate daily incidences and summarise epidemic measures}
 \usage{
 get_incidence(
@@ -20,6 +21,12 @@ get_epidemic_summary(
 )
 
 get_new_vaccinations(data, groups = NULL)
+
+get_attack_rate(
+  data,
+  measures = c("infections", "hospitalisations", "deaths"),
+  groups = c("econ_sector", "age_group")
+)
 }
 \arguments{
 \item{data}{Either a \verb{<data.frame>} from a call to \code{get_data()} on a
@@ -38,6 +45,9 @@ correspond to model strata. Defaults to \code{NULL} which gives incidence across
 the whole population. Allowed groups correspond to modelled strata:
 \code{"age_group"}, \code{"vaccine_group"}, and \code{"econ_sector"}.
 
+\code{get_attack_rate()} does not support \code{"vaccine_group"} due to a shifting
+baseline effect.
+
 \code{get_daily_vaccinations()} only accepts "\code{age_group}" and \code{"econ_sector"}.}
 }
 \value{
@@ -52,6 +62,9 @@ value specified in \code{measure} for each of the groups specified by \code{grou
 \item \code{get_daily_vaccinations()} returns a data frame with columns for the
 number of new daily vaccination in each combination of \code{groups} if provided.
 Columns for the \code{groups} are added when \code{groups} are specified.
+\item \code{get_attack_rate()} returns a data frame similar to
+\code{get_epidemic_summary()}, but with a \code{p_affected} column giving the value as
+a proportion of the initial group size (capped at 1.0).
 }
 }
 \description{
@@ -73,5 +86,8 @@ get_epidemic_summary(
 
 # get daily vaccinations
 daily_vaccinations <- get_new_vaccinations(data)
+
+# get attack rate
+get_attack_rate(data, "infections", groups = "age_group")
 
 }
