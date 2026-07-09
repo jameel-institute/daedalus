@@ -21,6 +21,12 @@ get_epidemic_summary(
 )
 
 get_new_vaccinations(data, groups = NULL)
+
+get_attack_rate(
+  data,
+  measures = c("infections", "hospitalisations", "deaths"),
+  groups = c("econ_sector", "age_group")
+)
 ```
 
 ## Arguments
@@ -48,6 +54,9 @@ get_new_vaccinations(data, groups = NULL)
   whole population. Allowed groups correspond to modelled strata:
   `"age_group"`, `"vaccine_group"`, and `"econ_sector"`.
 
+  `get_attack_rate()` does not support `"vaccine_group"` due to a
+  shifting baseline effect.
+
   `get_daily_vaccinations()` only accepts "`age_group`" and
   `"econ_sector"`.
 
@@ -68,6 +77,10 @@ measure, and group chosen.
   number of new daily vaccination in each combination of `groups` if
   provided. Columns for the `groups` are added when `groups` are
   specified.
+
+- `get_attack_rate()` returns a data frame similar to
+  `get_epidemic_summary()`, but with a `p_affected` column giving the
+  value as a proportion of the initial group size (capped at 1.0).
 
 ## Examples
 
@@ -98,4 +111,12 @@ get_epidemic_summary(
 
 # get daily vaccinations
 daily_vaccinations <- get_new_vaccinations(data)
+
+# get attack rate
+get_attack_rate(data, "infections", groups = "age_group")
+#>   age_group    value       measure p_affected
+#> 1       0-4  1451573 epidemic_size  0.7282873
+#> 2      5-19  5840352 epidemic_size  0.9817187
+#> 3     20-64 25142970 epidemic_size  1.0000000
+#> 4       65+  3458087 epidemic_size  0.5060881
 ```

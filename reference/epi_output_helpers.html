@@ -5,7 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet"><link href="../deps/Source_Code_Pro-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Calculate daily incidences and summarise epidemic measures — epi_output_helpers"><meta name="description" content="Functions to quickly summarise timeseries data from
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet"><link href="../deps/Source_Code_Pro-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Calculate daily incidences and summarise epidemic measures — epi_output_helpers"><meta name="description" content="Functions to quickly summarise timeseries data from
 daedalus() to provide daily values for infections, hospitalisations,
 deaths, and vaccinations, while allowing grouping by different strata."><meta property="og:description" content="Functions to quickly summarise timeseries data from
 daedalus() to provide daily values for infections, hospitalisations,
@@ -87,7 +87,13 @@ deaths, and vaccinations, while allowing grouping by different strata.</p>
 <span>  groups <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">get_new_vaccinations</span><span class="op">(</span><span class="va">data</span>, groups <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">get_new_vaccinations</span><span class="op">(</span><span class="va">data</span>, groups <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_attack_rate</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  measures <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"infections"</span>, <span class="st">"hospitalisations"</span>, <span class="st">"deaths"</span><span class="op">)</span>,</span>
+<span>  groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"econ_sector"</span>, <span class="st">"age_group"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -113,6 +119,8 @@ provides the number of daily vaccinations.</p></dd>
 correspond to model strata. Defaults to <code>NULL</code> which gives incidence across
 the whole population. Allowed groups correspond to modelled strata:
 <code>"age_group"</code>, <code>"vaccine_group"</code>, and <code>"econ_sector"</code>.</p>
+<p><code>get_attack_rate()</code> does not support <code>"vaccine_group"</code> due to a shifting
+baseline effect.</p>
 <p><code>get_daily_vaccinations()</code> only accepts "<code>age_group</code>" and <code>"econ_sector"</code>.</p></dd>
 
 </dl></div>
@@ -127,6 +135,9 @@ value specified in <code>measure</code> for each of the groups specified by <cod
 <li><p><code>get_daily_vaccinations()</code> returns a data frame with columns for the
 number of new daily vaccination in each combination of <code>groups</code> if provided.
 Columns for the <code>groups</code> are added when <code>groups</code> are specified.</p></li>
+<li><p><code>get_attack_rate()</code> returns a data frame similar to
+<code>get_epidemic_summary()</code>, but with a <code>p_affected</code> column giving the value as
+a proportion of the initial group size (capped at 1.0).</p></li>
 </ul></div>
 
     <div class="section level2">
@@ -158,6 +169,14 @@ Columns for the <code>groups</code> are added when <code>groups</code> are speci
 <span class="r-in"><span><span class="co"># get daily vaccinations</span></span></span>
 <span class="r-in"><span><span class="va">daily_vaccinations</span> <span class="op">&lt;-</span> <span class="fu">get_new_vaccinations</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># get attack rate</span></span></span>
+<span class="r-in"><span><span class="fu">get_attack_rate</span><span class="op">(</span><span class="va">data</span>, <span class="st">"infections"</span>, groups <span class="op">=</span> <span class="st">"age_group"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   age_group    value       measure p_affected</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       0-4  1451573 epidemic_size  0.7282873</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      5-19  5840352 epidemic_size  0.9817187</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     20-64 25142970 epidemic_size  1.0000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       65+  3458087 epidemic_size  0.5060881</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -169,7 +188,7 @@ Columns for the <code>groups</code> are added when <code>groups</code> are speci
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

@@ -248,6 +248,7 @@ outcomes.
 - [`get_incidence()`](https://jameel-institute.github.io/daedalus/reference/epi_output_helpers.md)
   [`get_epidemic_summary()`](https://jameel-institute.github.io/daedalus/reference/epi_output_helpers.md)
   [`get_new_vaccinations()`](https://jameel-institute.github.io/daedalus/reference/epi_output_helpers.md)
+  [`get_attack_rate()`](https://jameel-institute.github.io/daedalus/reference/epi_output_helpers.md)
   : Calculate daily incidences and summarise epidemic measures
 - [`get_life_years_lost()`](https://jameel-institute.github.io/daedalus/reference/get_life_years_lost.md)
   : Get life-years lost by demographic group.
