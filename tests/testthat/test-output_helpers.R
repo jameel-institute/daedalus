@@ -102,6 +102,12 @@ test_that("`get_attack_rate()`: Calculating attack rate works", {
   expect_true(
     all(df$p_affected <= 1.0)
   )
+  expect_true(
+    all(df$p_affected >= 0.0)
+  )
+
+  df <- get_attack_rate(o, groups = NULL)
+  expect_data_frame(df, max.cols = 3L, max.rows = length(SUMMARY_MEASURES))
 
   df <- get_attack_rate(o)
   expect_names(
@@ -114,5 +120,17 @@ test_that("`get_attack_rate()`: Calculating attack rate works", {
   )
   expect_true(
     all(df$p_affected <= 1.0)
+  )
+  expect_true(
+    all(df$p_affected >= 0.0)
+  )
+
+  expect_error(
+    get_attack_rate(o, groups = "vaccine_group"),
+    "Expected `groups` to be"
+  )
+  expect_error(
+    get_attack_rate(o, "dummy_measure"),
+    "`measures` must be"
   )
 })
