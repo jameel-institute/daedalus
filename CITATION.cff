@@ -1,14 +1,14 @@
-# --------------------------------------------
-# CITATION file created with {cffr} R package
+# ------------------------------------------------
+# CITATION.cff file created with {cffr} R package
 # See also: https://docs.ropensci.org/cffr/
-# --------------------------------------------
+# ------------------------------------------------
  
 cff-version: 1.2.0
 message: 'To cite package "daedalus" in publications use:'
 type: software
 license: MIT
 title: 'daedalus: Model Health, Social, and Economic Costs of a Pandemic'
-version: 0.3.0
+version: 0.3.7
 abstract: Model the health, education, and economic costs of directly transmitted
   respiratory virus pandemics, under different scenarios of prior vaccine investment,
   policy interventions, and public behavioural change, using the 'DAEDALUS' integrated
@@ -60,11 +60,27 @@ references:
   url: https://www.R-project.org/
   authors:
   - name: R Core Team
+    website: https://ror.org/02zz1nj61
   institution:
     name: R Foundation for Statistical Computing
+    website: https://ror.org/05qewa988
     address: Vienna, Austria
-  year: '2025'
+  year: '2026'
+  doi: 10.32614/R.manuals
   version: '>= 3.5'
+- type: software
+  title: abind
+  abstract: 'abind: Combine Multidimensional Arrays'
+  notes: Imports
+  repository: https://CRAN.R-project.org/package=abind
+  authors:
+  - family-names: Plate
+    given-names: Tony
+    email: tplate@acm.org
+  - family-names: Heiberger
+    given-names: Richard
+  year: '2026'
+  doi: 10.32614/CRAN.package.abind
 - type: software
   title: checkmate
   abstract: 'checkmate: Fast and Versatile Argument Checks'
@@ -76,7 +92,7 @@ references:
     given-names: Michel
     email: michellang@gmail.com
     orcid: https://orcid.org/0000-0001-9754-0393
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.checkmate
 - type: software
   title: cli
@@ -88,7 +104,7 @@ references:
   - family-names: Csárdi
     given-names: Gábor
     email: gabor@posit.co
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.cli
 - type: software
   title: daedalus.data
@@ -110,7 +126,7 @@ references:
   - family-names: Johnson
     given-names: Robert
     orcid: https://orcid.org/0000-0002-7365-0042
-  year: '2025'
+  year: '2026'
   version: '>= 0.0.3'
 - type: software
   title: data.table
@@ -131,11 +147,14 @@ references:
     email: asrini@pm.me
   - family-names: Gorecki
     given-names: Jan
+    email: j.gorecki@wit.edu.pl
   - family-names: Chirico
     given-names: Michael
+    email: michaelchirico4@gmail.com
     orcid: https://orcid.org/0000-0003-0787-087X
   - family-names: Hocking
     given-names: Toby
+    email: toby.hocking@r-project.org
     orcid: https://orcid.org/0000-0002-3146-0865
   - family-names: Schwendinger
     given-names: Benjamin
@@ -144,7 +163,7 @@ references:
     given-names: Ivan
     email: ikrylov@disroot.org
     orcid: https://orcid.org/0000-0002-0172-3812
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.data.table
 - type: software
   title: dust2
@@ -155,7 +174,7 @@ references:
   - family-names: FitzJohn
     given-names: Rich
     email: rich.fitzjohn@gmail.com
-  year: '2025'
+  year: '2026'
 - type: software
   title: Rcpp
   abstract: 'Rcpp: Seamless R and C++ Integration'
@@ -189,7 +208,7 @@ references:
     orcid: https://orcid.org/0000-0001-8316-9503
   - family-names: Chambers
     given-names: John
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.Rcpp
 - type: software
   title: rlang
@@ -204,18 +223,8 @@ references:
   - family-names: Wickham
     given-names: Hadley
     email: hadley@posit.co
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.rlang
-- type: software
-  title: stats
-  abstract: 'R: A Language and Environment for Statistical Computing'
-  notes: Imports
-  authors:
-  - name: R Core Team
-  institution:
-    name: R Foundation for Statistical Computing
-    address: Vienna, Austria
-  year: '2025'
 - type: software
   title: bookdown
   abstract: 'bookdown: Authoring Books and Technical Documents with R Markdown'
@@ -227,7 +236,7 @@ references:
     given-names: Yihui
     email: xie@yihui.name
     orcid: https://orcid.org/0000-0003-0645-5666
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.bookdown
 - type: software
   title: countrycode
@@ -240,7 +249,7 @@ references:
     given-names: Vincent
     email: vincent.arel-bundock@umontreal.ca
     orcid: https://orcid.org/0000-0003-2042-7063
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.countrycode
 - type: software
   title: dplyr
@@ -265,7 +274,7 @@ references:
     given-names: Davis
     email: davis@posit.co
     orcid: https://orcid.org/0000-0003-4777-038X
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.dplyr
 - type: software
   title: ggdist
@@ -277,7 +286,7 @@ references:
   - family-names: Kay
     given-names: Matthew
     email: mjskay@northwestern.edu
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.ggdist
 - type: software
   title: ggplot2
@@ -317,7 +326,7 @@ references:
     given-names: Teun
     name-particle: van den
     orcid: https://orcid.org/0000-0002-9335-7468
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.ggplot2
 - type: software
   title: knitr
@@ -330,7 +339,7 @@ references:
     given-names: Yihui
     email: xie@yihui.name
     orcid: https://orcid.org/0000-0003-0645-5666
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.knitr
 - type: software
   title: latex2exp
@@ -342,7 +351,7 @@ references:
   - family-names: Meschiari
     given-names: Stefano
     email: stefano.meschiari@gmail.com
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.latex2exp
 - type: software
   title: rmarkdown
@@ -386,7 +395,7 @@ references:
     given-names: Richard
     email: rich@posit.co
     orcid: https://orcid.org/0000-0003-3925-190X
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.rmarkdown
 - type: software
   title: scales
@@ -404,8 +413,28 @@ references:
     orcid: https://orcid.org/0000-0002-5147-4711
   - family-names: Seidel
     given-names: Dana
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.scales
+- type: software
+  title: socialmixr
+  abstract: 'socialmixr: Social Mixing Matrices for Infectious Disease Modelling'
+  notes: Suggests
+  url: https://epiforecasts.io/socialmixr/
+  repository: https://CRAN.R-project.org/package=socialmixr
+  authors:
+  - family-names: Funk
+    given-names: Sebastian
+    email: sebastian.funk@lshtm.ac.uk
+  - family-names: Willem
+    given-names: Lander
+  - family-names: Gruson
+    given-names: Hugo
+  - family-names: Tierney
+    given-names: Nicholas
+    email: nicholas.tierney@gmail.com
+    orcid: https://orcid.org/0000-0003-1460-8722
+  year: '2026'
+  doi: 10.32614/CRAN.package.socialmixr
 - type: software
   title: spelling
   abstract: 'spelling: Tools for Spell Checking in R'
@@ -420,7 +449,7 @@ references:
   - family-names: Hester
     given-names: Jim
     email: james.hester@rstudio.com
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.spelling
 - type: software
   title: testthat
@@ -432,7 +461,7 @@ references:
   - family-names: Wickham
     given-names: Hadley
     email: hadley@posit.co
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.testthat
   version: '>= 3.0.0'
 - type: software
@@ -450,7 +479,7 @@ references:
     email: davis@posit.co
   - family-names: Girlich
     given-names: Maximilian
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.tidyr
 - type: software
   title: BH
@@ -468,7 +497,7 @@ references:
   - family-names: Kane
     given-names: Michael J.
     orcid: https://orcid.org/0000-0003-1899-6662
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.BH
 - type: software
   title: cpp11
@@ -487,7 +516,7 @@ references:
   - family-names: François
     given-names: Romain
     orcid: https://orcid.org/0000-0002-2444-4226
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.cpp11
 - type: software
   title: monty
@@ -504,7 +533,7 @@ references:
     given-names: Ed
   - family-names: Baguelin
     given-names: Marc
-  year: '2025'
+  year: '2026'
 - type: software
   title: RcppEigen
   abstract: 'RcppEigen: ''Rcpp'' Integration for the ''Eigen'' Templated Linear Algebra
@@ -526,6 +555,6 @@ references:
   - family-names: Qiu
     given-names: Yixuan
     orcid: https://orcid.org/0000-0003-0109-6692
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.RcppEigen
 
