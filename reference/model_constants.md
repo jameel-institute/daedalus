@@ -57,56 +57,6 @@ FLAG_NAMES
 MIN_DATA_COL_NAMES
 ```
 
-## Format
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 4.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `character` of length 4.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 45.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `character` of length 3.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
-An object of class `character` of length 9.
-
-An object of class `character` of length 5.
-
 ## Value
 
 Values for the model constants.

@@ -21,20 +21,6 @@ N_MODEL_COMPARTMENTS
 N_INFECTION_SUBSYSTEM
 ```
 
-## Format
-
-An object of class `character` of length 10.
-
-An object of class `list` of length 10.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 8.
-
-An object of class `integer` of length 1.
-
-An object of class `integer` of length 1.
-
 ## Value
 
 `COMPARTMENTS` returns a character vector of the epidemiological

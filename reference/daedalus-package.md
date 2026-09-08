@@ -25,6 +25,9 @@ Useful links:
 
 Authors:
 
+- Pratik Gupte <p.gupte24@imperial.ac.uk>
+  ([ORCID](https://orcid.org/0000-0001-5294-7819))
+
 - Patrick Doohan ([ORCID](https://orcid.org/0000-0001-8076-1106))
 
 - Robert Johnson ([ORCID](https://orcid.org/0000-0002-7365-0042))

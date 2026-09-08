@@ -14,16 +14,6 @@ WORK_EXPECTED_YEARS
 EARNINGS_LOSS_DISCOUNT
 ```
 
-## Format
-
-An object of class `numeric` of length 1.
-
-An object of class `numeric` of length 1.
-
-An object of class `numeric` of length 1.
-
-An object of class `numeric` of length 1.
-
 ## Details
 
 The Daedalus model uses these constants for economic value calculations:

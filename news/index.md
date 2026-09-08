@@ -1,5 +1,11 @@
 # Changelog
 
+## daedalus 0.3.9
+
+This patch version exports S3 methods for
+[`prepare_parameters()`](https://jameel-institute.github.io/daedalus/reference/prepare_parameters.md)
+and [`format()`](https://rdrr.io/r/base/format.html).
+
 ## daedalus 0.3.8
 
 This patch version adds the function

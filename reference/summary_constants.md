@@ -9,9 +9,3 @@ SUMMARY_MEASURES
 
 SUMMARY_GROUPS
 ```
-
-## Format
-
-An object of class `character` of length 3.
-
-An object of class `character` of length 3.

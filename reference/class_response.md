@@ -30,10 +30,6 @@ is_daedalus_response(x)
 validate_daedalus_response(x)
 ```
 
-## Format
-
-An object of class `character` of length 4.
-
 ## Arguments
 
 - name:
