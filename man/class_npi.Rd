@@ -26,19 +26,19 @@ daedalus_timed_npi(start_time, end_time, openness, country)
 }
 \arguments{
 \item{name}{An NPI strategy name from among
-\link[daedalus.data:closure_strategies]{daedalus.data::closure_strategy_names}, or \code{NA}.
+\link[daedalus.data:closure_strategy_names]{daedalus.data::closure_strategy_names}, or \code{NA}.
 Passing a pre-defined strategy name automatically pulls in openness
 parameters for the associated response strategy; these are stored as
-packaged data in \link[daedalus.data:closure_strategies]{daedalus.data::closure_strategy_data}.
+packaged data in \link[daedalus.data:closure_strategy_data]{daedalus.data::closure_strategy_data}.
 
 Pass \code{NA} to define a custom response strategy by passing a vector to
 \code{openness}.}
 
 \item{country}{A country or territory object of class \verb{<daedalus_country>},
 \strong{or} a country or territory name from those included in the package;
-see \link[daedalus.data:country_names_codes]{daedalus.data::country_names}, \strong{or} a country ISO2 or ISO3 code; see
-\link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso2c} and
-\link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso3c}.
+see \link[daedalus.data:country_names]{daedalus.data::country_names}, \strong{or} a country ISO2 or ISO3 code; see
+\link[daedalus.data:country_codes_iso2c]{daedalus.data::country_codes_iso2c} and
+\link[daedalus.data:country_codes_iso3c]{daedalus.data::country_codes_iso3c}.
 Country-specific data such as the community and workplace contacts, the
 demography, and the distribution of the workforce into economic sectors is
 automatically accessed from package data for the relevant country name if it
@@ -48,7 +48,7 @@ To override package defaults for country characteristics, pass a
 
 \item{infection}{An infection parameter object of the class
 \verb{<daedalus_infection>}, \strong{or} an epidemic name for which data are provided
-in the package; see \link[daedalus.data:epidemic_data]{daedalus.data::epidemic_names} for historical epidemics
+in the package; see \link[daedalus.data:epidemic_names]{daedalus.data::epidemic_names} for historical epidemics
 or epidemic waves for which parameters are available.
 Passing the name as a string automatically accesses the default parameters
 of an infection. Create and pass a \verb{<daedalus_infection>} to tweak infection

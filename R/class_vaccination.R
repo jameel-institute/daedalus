@@ -266,6 +266,8 @@ print.daedalus_vaccination <- function(x, ...) {
 #'
 #' @keywords internal
 #'
+#' @export
+#'
 #' @noRd
 format.daedalus_vaccination <- function(x, ...) {
   chkDots(...)
@@ -337,6 +339,8 @@ set_data.daedalus_vaccination <- function(x, ...) {
 #' @name prepare_parameters
 #'
 #' @keywords internal
+#'
+#' @export
 prepare_parameters.daedalus_vaccination <- function(x, ...) {
   chkDots(...)
   validate_daedalus_vaccination(x)

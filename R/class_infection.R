@@ -306,6 +306,7 @@ print.daedalus_infection <- function(x, ...) {
 #' @return Invisibly returns the `<daedalus_infection>` object `x`.
 #' Called for printing side-effects.
 #' @keywords internal
+#' @export
 #' @noRd
 format.daedalus_infection <- function(x, ...) {
   chkDots(...)
@@ -384,6 +385,8 @@ set_data.daedalus_infection <- function(x, ...) {
 #' @name prepare_parameters
 #'
 #' @keywords internal
+#'
+#' @export
 prepare_parameters.daedalus_infection <- function(x, ...) {
   chkDots(...)
 

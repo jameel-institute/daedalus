@@ -367,6 +367,8 @@ print.daedalus_npi <- function(x, ...) {
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @export
 format.daedalus_npi <- function(x, ...) {
   chkDots(...)
 

@@ -308,6 +308,8 @@ print.daedalus_behaviour <- function(x, ...) {
 #'
 #' @keywords internal
 #'
+#' @export
+#'
 #' @noRd
 format.daedalus_behaviour <- function(x, ...) {
   chkDots(...)
@@ -336,6 +338,8 @@ dummy_behaviour <- function() {
 #' @name prepare_parameters
 #'
 #' @keywords internal
+#'
+#' @export
 prepare_parameters.daedalus_behaviour <- function(x, ...) {
   validate_daedalus_behaviour(x)
 
