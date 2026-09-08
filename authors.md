@@ -29,7 +29,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/jameel-institute/daedalus/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/jameel-institute/daedalus/blob/v0.3.9/DESCRIPTION)
 
 Gupte P, Doohan P, Johnson R, Perez-Guzman P, FitzJohn R, Russell E,
 Mears D, Hauck K (2026). *daedalus: Model Health, Social, and Economic
