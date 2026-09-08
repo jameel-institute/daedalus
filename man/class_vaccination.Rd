@@ -23,7 +23,7 @@ is_daedalus_vaccination(x)
 }
 \arguments{
 \item{name}{A vaccination investment scenario name as a string.
-Passing a name from among \link[daedalus.data:vaccine_scenarios]{daedalus.data::vaccination_scenario_names} leads
+Passing a name from among \link[daedalus.data:vaccination_scenario_names]{daedalus.data::vaccination_scenario_names} leads
 to any optional parameters (see below) being drawn from pre-canned scenarios.
 These are stored as packaged data in
 \code{daedalus.data::vaccination_scenario_data}.

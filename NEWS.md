@@ -1,3 +1,7 @@
+# daedalus 0.3.9
+
+This patch version exports S3 methods for `prepare_parameters()` and `format()`.
+
 # daedalus 0.3.8
 
 This patch version adds the function `get_attack_rate()` to allow calculation of the total fraction of age and economic sector groups infected and hospitalised.

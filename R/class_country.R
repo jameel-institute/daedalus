@@ -296,6 +296,9 @@ print.daedalus_country <- function(x, ...) {
 #' Called for printing side-effects.
 #'
 #' @keywords internal
+#'
+#' @export
+#'
 #' @noRd
 format.daedalus_country <- function(x, ...) {
   chkDots(...)
@@ -370,7 +373,10 @@ get_data.daedalus_country <- function(
 #' Prepare country parameters for model
 #'
 #' @name prepare_parameters
+#'
 #' @keywords internal
+#'
+#' @export
 prepare_parameters.daedalus_country <- function(x, ...) {
   chkDots(...)
   validate_daedalus_country(x)

@@ -77,6 +77,7 @@ print.daedalus_output <- function(x, ...) {
 }
 
 #' @noRd
+#' @export
 format.daedalus_output <- function(x, ...) {
   chkDots(...)
   validate_daedalus_output(x)

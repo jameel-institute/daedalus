@@ -1,5 +1,4 @@
 BH
-Bajaj
 CMD
 COVID
 CoV
@@ -8,6 +7,7 @@ Cov
 Covid
 Cpp
 Diekmann
+ECON
 EPPI
 Eigen
 FOI
@@ -33,14 +33,12 @@ NPIs
 ORCID
 POLYMOD
 Perez
-Pianella
 Rcpp
 RcppEigen
 Readmes
 SARS
 SEIR
 Soc
-Sumali
 Timesteps
 UKHSA
 VLY
@@ -99,6 +97,7 @@ susceptibles
 symp
 sympt
 th
+timeseries
 timesteps
 unclassed
 xN

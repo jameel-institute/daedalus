@@ -21,6 +21,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Pratik Gupte \email{p.gupte24@imperial.ac.uk} (\href{https://orcid.org/0000-0001-5294-7819}{ORCID})
   \item Patrick Doohan (\href{https://orcid.org/0000-0001-8076-1106}{ORCID})
   \item Robert Johnson (\href{https://orcid.org/0000-0002-7365-0042}{ORCID})
   \item Pablo Perez-Guzman (\href{https://orcid.org/0000-0002-5277-5196}{ORCID})

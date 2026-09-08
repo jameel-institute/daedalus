@@ -15,8 +15,8 @@ is_daedalus_country(x)
 }
 \arguments{
 \item{country}{A string giving the country or territory name, or ISO2 or
-ISO3 code; must be from among \link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso2c} or
-\link[daedalus.data:country_names_codes]{daedalus.data::country_codes_iso3c} or \link[daedalus.data:country_names_codes]{daedalus.data::country_names}.}
+ISO3 code; must be from among \link[daedalus.data:country_codes_iso2c]{daedalus.data::country_codes_iso2c} or
+\link[daedalus.data:country_codes_iso3c]{daedalus.data::country_codes_iso3c} or \link[daedalus.data:country_names]{daedalus.data::country_names}.}
 
 \item{contact_matrix}{An optional named list of numeric matrices,
 representing age-specific contact matrices in different contexts or settings.
