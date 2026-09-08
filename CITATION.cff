@@ -8,7 +8,7 @@ message: 'To cite package "daedalus" in publications use:'
 type: software
 license: MIT
 title: 'daedalus: Model Health, Social, and Economic Costs of a Pandemic'
-version: 0.3.7
+version: 0.3.9
 abstract: Model the health, education, and economic costs of directly transmitted
   respiratory virus pandemics, under different scenarios of prior vaccine investment,
   policy interventions, and public behavioural change, using the 'DAEDALUS' integrated
@@ -108,7 +108,7 @@ references:
   doi: 10.32614/CRAN.package.cli
 - type: software
   title: daedalus.data
-  abstract: 'daedalus.data: DAEDALUS Data'
+  abstract: 'daedalus.data: Data for the Daedalus Model'
   notes: Imports
   url: https://jameel-institute.github.io/daedalus.data/
   authors:
